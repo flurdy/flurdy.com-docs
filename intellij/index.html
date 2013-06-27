@@ -1,0 +1,760 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>Ubuntu + IntelliJ + Maven + Jetty + JRebel</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta name="keyword" content="ubuntu,intellij,idea,maven,jrebel,jetty,java,javarebel,howto,install,setup"/>
+	<meta name="description" content="Installing IntelliJ IDEA in Ubuntu using Maven Jetty plugin and JRebel"/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		h5 { margin: 0.4em 0.2em 0.1em 0; padding: 0; }
+		h3 { margin-left: 2em; }
+		h4 { margin-left: 4em; }
+		li.indent2nd h4 { margin-left: 0em; }
+		li.indent3rd h4 { margin-left: 0em; }
+		#searchbox { float: right; }
+		ol.second { list-style-type: lower-alpha; }
+		ol.third { list-style-type: lower-roman; }		
+		code { white-space: nowrap; width: 40em; }
+		code.file { width: 40em; }
+		code.wide { width: 60em; }
+		body  { min-width: 45em; max-width: 80em; }
+		#starboard .addthis_toolbox { margin: 1em 0 1em 5em;  }
+		#starboard #shirts { margin-left: 4em;  }
+		li.aims { text-size: 1.2em; font-weight: bolder; }
+		.indent2nd { margin-left: 2.5em; }
+		.indent3rd { margin-left: 4.5em; }
+	</style>
+</head>
+<body>
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img 
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>Ubuntu + IntelliJ + Maven + Jetty + JRebel</h1>
+	
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+	</div>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="#feedback">feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a> |</li>
+		<li><a href="/docs">more docs</a></li>
+	</ul>
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+/* flurdy intellij doc */
+google_ad_slot = "4043291202";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<div id="starboard" style="" >
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+<h4>Table of contents</h4>
+<ol>
+	<li>
+		<a href="#aim">Aim</a>
+		<ol class="second">
+			<li><a href="#aim_why">Why?</a></li>
+			<li><a href="#aim_preq">Prerequisites</a>
+			<!--	<ol class="third">
+					<li><a href="#aim_preq_ubuntu">Ubuntu</a></li>	
+					<li><a href="#aim_preq_project">Project</a></li>	
+				</ol>	-->
+			</li>	
+		</ol>
+	</li>
+	<li>
+		<a href="#java">Java</a>
+		<ol class="second">
+			<li><a href="#java_install">Install Java</a></li>
+			<li><a href="#java_configure">Configure Java</a></li>			
+		</ol>
+	</li>
+	<li>
+		<a href="#maven">Maven</a>
+		<ol class="second">
+			<li><a href="#maven_install">Install Maven</a></li>
+			<li>
+				<a href="#maven_configure">Configure Maven</a>
+				<ol class="third">
+					<li><a href="#maven_settings">Settings.xml</a></li>	
+				</ol>	
+			</li>	
+			<li><a href="#maven_run">Download the internet</a></li>	
+		</ol>
+	</li>
+	<li><a href="#jrebel">JRebel</a>
+		<ol class="second">
+			<li><a href="#jrebel_license">Jrebel license</a></li>
+			<li><a href="#jrebel_download">Download Jrebel</a></li>
+			<li><a href="#jrebel_install">Install Jrebel</a></li>
+			<li><a href="#jrebel_configure">Configure Jrebel</a></li>			
+		</ol>
+	</li>
+	<li><a href="#intellij">IntelliJ IDEA</a>
+		<ol class="second">
+			<li><a href="#intellij_license">Intellij license</a></li>
+			<li><a href="#intellij_download">Download IntelliJ</a></li>
+			<li>
+				<a href="#intellij_install">Install IntelliJ</a>
+				<ol class="third">
+					<li><a href="#intellij_menu">Add IntelliJ to the menu</a></li>
+				</ol>
+			</li>
+			<li>	
+				<a href="#intellij_configure">Configure IntelliJ</a>
+				<ol class="third">
+					<li><a href="#intellij_maven">Configure Maven in IntelliJ</a></li>
+					<li><a href="#intellij_JRebel">Install &amp; configure<br/>JRebel plugin in IntelliJ</a></li>
+				</ol>
+			</li>
+		</ol>
+	</li>
+	<li><a href="#project">Your project</a>
+	      <ol>
+		  <li><a href="#project_import">Import project into IntelliJ</a></li>
+	      </ol>
+	</li>	
+	<li>
+		<a href="#jetty">Jetty</a>
+		<ol class="second">
+			<li><a href="#jetty_run">Run Jetty in IntelliJ</a></li>
+		</ol>	
+	</li>
+	<li>
+	  <a href="#extension">Extensions</a>
+	  <ol class="second">
+	    <li><a href="#extension_compile">Compile on Save</a></li>
+	  </ol>
+	</li>
+	<li><a href="#references">References</a></li>
+	<li><a href="#feedback">Feedback</a></li>
+</ol>
+
+
+<table border="1" cellpadding="3" cellspacing="1" id="shirts">
+<tr>
+	<td colspan="2"><a 
+		href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3495142"><img border="0"
+		 width="170" alt="wont fix puta" 
+		src="http://image.spreadshirt.com/image-server/image/product/3876780/view/1/type/png/width/280/height/280" title="flurdy shirts (US): NO I wont fix your computer"/></a></td>
+</tr><tr>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/linux-v-bill-A5414231"><img border="0" width="78" alt="kill bill" 
+		src="http://flurdy.spreadshirt.com/image-server/image/design/3257345/type/png/width/190/height/190" title="flurdy shirts (US): Kill Bill"/></a></td>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/smiley-A3637296/customize/color/5"><img border="0" width="78" alt="devil smile" 
+		src="http://image.spreadshirt.com/image-server/image/product/4016733/view/1/type/png/width/190/height/190" title="flurdy shirts (US): devil smile"/></a></td>
+</tr><tr>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/beast-mode-A3760998/customize/color/4"><img border="0" width="78" alt="beast mode" 
+		src="http://image.spreadshirt.com/image-server/image/product/3903955/view/1/type/png/width/190/height/190" title="flurdy shirts (US): Beast Mode"/></a></td>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3491809"><img border="0" width="78" alt="dumb people" 
+		src="http://image.spreadshirt.com/image-server/image/product/3874699/view/1/type/png/width/280/height/280" title="flurdy shirts (US): I see dumb people"/></a></td>
+</tr>
+<tr>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/the-prophet-by-be-him-4-van-tribe-I2810099"><img border="0" width="78" alt="prophet" 
+		src="http://image.spreadshirt.com/image-server/image/product/4075238/view/1/type/png/width/190/height/190" title="flurdy shirts (US): The prophet"/></a></td>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com//wtf-A3492525"><img border="0" width="78" alt="wtf" 
+		src="http://image.spreadshirt.com/image-server/image/product/3875236/view/2/type/png/width/280/height/280" title="flurdy shirts (US): WTF?"/></a></td>
+</tr>
+<tr>
+	<td colspan="2" align="center"> 
+		<h6><a href="http://shirts.flurdy.com">shirts.flurdy.com</a><br/>
+		<a href="http://shirts.flurdy.com/us">us</a> |
+		<a href="http://shirts.flurdy.com/uk">uk</a> |
+		<a href="http://shirts.flurdy.com/eu">eu</a></h6>
+	</td>
+</tr>
+</table>
+</div>
+
+<a name="aim"></a>
+<br/>
+
+<h2>1 Aim</h2>
+<ul>
+	<li class="aims">
+		Main aim is to use <a href="http://www.jetbrains.com/idea/">IntelliJ IDEA</a> in <a href="http://www.ubuntu.com">Ubuntu</a>
+		for <a href="http://www.java.com">Java</a> based web applications.
+	</li>
+	<li class="aims">
+		With <a href="http://maven.apache.org">Maven</a> and <a href="http://www.eclipse.org/jetty/">Jetty</a> through its <a href="http://wiki.eclipse.org/Jetty/Feature/Jetty_Maven_Plugin">plugin</a> as the server
+	</li>
+	<li class="aims">
+		And speeding up development with <a href="http://www.zeroturnaround.com/jrebel/">JRebel</a>
+	</li>
+</ul>
+
+<a name="aim_why"></a>
+<h3>1.a Why?</h3>
+<p class="indent2nd">
+	The combination of Ubuntu, IntelliJ, Maven, Jetty and JRebel enables really quick web app development in Java.
+</p>
+<ul>
+	<li>
+		<p>
+		<b>Ubuntu</b>.	
+			Feel handicapped when forced to use dumbdowned Windows at work.
+		<!--
+			My prefered operating system.
+			Proper window management, workspace and command line.
+			No file locking which kills jetty redployments of e.g. css sources on Windows.
+		-->	
+		</p>
+	</li>	
+	<li>
+		<p>
+		<b>Maven</b>.	
+			A build system with flaws but still better than most,
+			and especially important as it is used by most projects.
+		</p>
+	</li>	
+	<li>
+		<p>
+		<b>IntelliJ IDEA</b>.
+			An <a href="http://en.wikipedia.org/wiki/IDE">IDE</a>
+			with many ingenious little tricks to make development speedier 
+			and feels very comfortable to use.
+			At work my IDE
+			is often either <a href="http://www.eclipse.org">Eclipse</a> on some projects
+			as it often is the company standard,
+			or <a href="http://www.netbeans.org">NetBeans</a>
+			when work refuse to buy IntelliJ licenses.
+			But with some clients and at home with my FOSS license 
+			I am much more productive with IntelliJ.
+		</p>
+	</li>	
+	<li>
+		<p>
+		<b>Jetty</b>.
+			A standalone java web application server.
+			It is quick and very light.
+			The Maven plugin for it makes it easy to bundle
+			and launch locally.
+			It also then allows for very swift development cycles.
+		</p>
+	</li>	
+	<li>
+		<p>
+		<b>JRebel</b>.	
+			JRebel (N&eacute;e JavaRebel) 
+			reloads java classes dynamically
+			and allows even swifter development cycles,
+			by negating the need to ever redeploy.
+			This saves a lot of time, thus money,
+			and improves quality with quicker feedback loops.
+		</p>
+	</li>	
+</ul>
+<p class="indent2nd">
+	And I need these tools to work together seamlessly.
+</p>
+
+<a name="aim_preq"></a>
+<h3>1.b Prerequisites</h3>
+<ul>
+<li class="indent3rd">
+<h4>Ubuntu</h4>
+<p>
+	I will assume you have a normal version of <a href="http://www.ubuntu.com">Ubuntu Desktop</a> installed.
+	This guide was based upon Ubuntu 10.04 lucid lynx.
+</p>
+</li>
+<li class="indent3rd">
+<h4>Project</h4>
+<p>
+	A normal <a href="http://java.sun.com">java based</a> 
+	webapp project 
+	buildt with <a href="http://maven.apache.org">maven</a>
+	that are using the <a href="http://www.eclipse.org/jetty/">jetty plugin</a> is assumed
+	to be checked out on your machine.
+	If you do not have one set up, 
+	you can read up on <a href="http://en.wikipedia.org/wiki/Java_(software_platform)">java</a>, 
+	<a href="http://en.wikipedia.org/wiki/Apache_Maven">maven</a> &amp; 
+	<a href="http://en.wikipedia.org/wiki/Jetty_(web_server)">jetty</a>
+	and clone an <a href="http://github.com/flurdy/WebAppTemplate">example app</a> of mine.
+</p>
+</li>
+</ul>
+
+
+<a name="java"></a>
+<br/>
+
+<h2>2 Java</h2>
+<a name="java_install"></a>
+<h3>2.a Install Java</h3>
+<p></p>
+<code class="indent2nd">sudo aptitude install sun-java6-jdk</code>
+
+<a name="java_configure"></a>
+<h3>2.b Configure Java</h3>
+
+<p class="indent2nd">In case of other Java JDK are installed, choose Sun's flavour</p>
+<code class="indent2nd">sudo update-alternatives --config java</code>
+<code class="indent2nd">sudo update-alternatives --config javac</code>
+
+<p class="indent2nd">Environment variables</p>
+<code class="indent2nd">sudo vi /etc/profile.d/java.sh</code>
+<code class="file">
+	export JAVA_HOME=/usr/lib/jvm/java-6-sun<br/>
+	export JDK_HOME=/usr/lib/jvm/java-6-sun
+</code>
+<code class="indent2nd">sudo chmod +x /etc/profile.d/java.sh</code>
+
+
+
+
+
+<br/>
+
+<a name="maven"></a>
+<br/>
+
+<h2>3 Maven</h2>
+<a name="maven_install"></a>
+<h3>3.a Install Maven</h3>
+<p class="indent2nd">
+	Your choice: either install via Ubuntu package repository or <a href="http://maven.apache.org/download.html">download the full Maven directly</a>.
+	The repository version depends on a load of unneccesary packages such as gjc, Ant etc.
+	So most people recommend using the apache.org dowload instead. 
+</p>	
+<p class="indent2nd">
+	For this howto I will utilise the repository version, but the only difference afterwards is the path.
+	(You may try and restrict the installation of optional packages...)
+</p>
+<code class="indent2nd">sudo aptitude install maven2</code>
+<br/>
+<p class="indent2nd">
+	If you prefer the downloaded archive then do this instead:
+</p>
+<code class="indent2nd">
+	tar xzf apache-maven-<i>2.2.1</i>.tar.gz;<br/>
+	sudo mkdir /opt/apache;<br/>
+	sudo mv apache-maven-<i>2.2.1</i> /opt/apache/maven-<i>2.2.1</i>;<br/>
+	cd /opt/apache;<br/>
+	sudo ln -s maven-<i>2.2.1</i> maven;
+</code>
+<p class="indent2nd">
+	And refer to <i>/opt/apache/maven</i> instead of <i>/usr/share/maven2</i> in the paths below.
+</p>
+
+<a name="maven_configure"></a>
+<h3>3.b Configure Maven</h3>
+<p class="indent2nd">
+	Some programs depend on different environment variables for Maven.
+	<br/>
+	Also the default memory assignment is very low so you may optionally add it.
+</p>
+<code class="indent2nd">sudo vi /etc/profile.d/maven.sh</code>
+<code class="file">
+	export MAVEN_HOME=<i>/usr/share/maven2</i><br/>
+	export M2_HOME=<i>/usr/share/maven2</i><br/>
+	<span class="comment">#export MAVEN_OPTS=-Xms128M -Xmx512M -XX:MaxPermSize=256m</span><br/>
+	<span class="comment">#export MAVEN_OPTS=-noverify -javaagent:$JREBEL_HOME/jrebel.jar<br/>
+</code>
+<code class="indent2nd">sudo chmod +x /etc/profile.d/maven.sh</code>
+
+<h4>3.b.i Settings.xml</h4>
+<p class="indent3rd">	
+	Depending on your project you may need to configure the default <a href="http://maven.apache.org/settings.html">maven settings</a>,
+	such as any mirrors you use, passwords, other <a href="http://code.flurdy.com/nexus">repositories</a>, profiles etc.<br/>
+		But that is out of scope of this document.
+</p>
+<code class="indent3rd">
+	mkdir  ~/.m2;<br/>
+	vi  ~/.m2/settings.xml
+</code>
+
+
+<a name="maven_run"></a>
+<h3>3.c Download the internet</h3>
+<p class="indent2nd">
+	Because of maven dependency characteristics it is wise to do an initial
+	a simple clean &amp; build of your application do download all the 
+	dependencies, and the special <i>go-offline</i> goal.
+	Remember to include any potential profiles if they have dependencies.
+	( -P profile1,profile2....)
+</p>
+<p class="indent2nd">This may take a while.... But you only have to do it once (ish..)</p>
+<code class="indent2nd">
+	cd <i>/path/to/your/project</i>,<br/>
+	mvn clean;<br/>
+	<span class="comment"># Wait a little while....</span><br/>
+	mvn dependency:go-offline;<br/>
+	<span class="comment"># Wait a long while....</span><br/>
+	mvn install;<br/>
+	<span class="comment"># Wait a longer while....</span><br/>
+	mvn jetty:run;<br/>
+	<span class="comment"># Wait a longish while....</span>
+</code>
+<p class="indent2nd">When ready kill Jetty with <b>^C</b> (As in ctrl+c)</p>
+<p class="indent2nd">
+	Remember from now on you should mostly do append <b>-o</b> parameter (offline) to speed up builds.
+</p>
+
+
+
+
+
+<br/>
+
+<a name="jrebel"></a>
+<br/>
+
+<h2>4 JRebel</h2>
+
+<a name="jrebel_license"></a>
+<h3>4.a JRebel license</h3>
+<p class="indent2nd">
+	You need to <a href="http://www.zeroturnaround.com/jrebel/">obtain a license</a> to run JRebel.<br/>
+	You can use the trial version for 30 days. (Its worth it)
+</p>
+<p class="indent2nd">
+	Note: ZeroTurnaround do offer <a href="http://www.zeroturnaround.com/blog/javarebel-for-open-source-development/">free licenses</a>
+	for <a href="http://en.wikipedia.org/wiki/FOSS">open source</a> developers.
+</p>
+
+<a name="jrebel_download"></a>
+<h3>4.b Download JRebel</h3>
+<p class="indent2nd">
+	<a href="http://www.zeroturnaround.com/jrebel/current/">Download the generic JAR installer</a>
+</p>
+
+<a name="jrebel_install"></a>
+<h3>4.c Install JRebel</h3>
+<code class="indent2nd">
+	cd /tmp;<br/>
+	unzip ~/Downloads/jrebel-*-setup.zip;<br/>
+	sudo -jar jrebel/jrebel-setup.zip
+</code>
+<p class="indent2nd">
+	I tend to choose <i>/opt/ZeroTurnaround/JRebel</i> as my install path,
+	but the default it <i>/usr/local/ZeroTurnaround/Jrebel</i>.
+</p>
+
+<a name="jrebel_configure"></a>
+<h3>4.d Configure JRebel</h3>
+
+<p class="indent2nd">
+	If the installer doesn't trigger the configuration,
+	or you want to reconfigure:
+</p>
+<code class="indent2nd">sudo <i>/opt/ZeroTurnaround/JRebel</i>/bin/jrebel-config.sh</code>
+<ol>
+	<li>Choose <i>"IntelliJ 8.x or later"</i> as IDE</li>
+	<li>Tick <i>"I use maven to build my application"</i></li>
+	<li>Tick <i>"I run the server from my IDE"</i></li>	
+	<li>Click <i>Next</i> and read how JRebel integrates with IntelliJ.</li>
+	<li>Click <i>Next</i> and read how JRebel integrates with Maven, you may want to update your projects Pom file.</li>
+	<li>Click <i>Next</i> and read how the servers inside IDEs are affected.</li>
+	<li>A usefull tip is the <i>ctrl+s</i> remaped keyboard shortcut</li>
+	<li>In the top right click on <i>"Configure manually"</i></li>
+	<li>In <i>"Java version"</i> choose <i>"Java 5 or later"</i></li>
+	<li>In <i>"Operating System"</i> choose <i>"Unix-like (Linux, Mac OS C, etc)"</i></li>
+	<li>In <i>"Server"</i> choose <i>"Maven Jetty Plugin"</i></li>
+	<li>Read how you should update your projects <i>pom.xml</i> by setting the <i>scanIntervalseconds</i> to 0</li>
+	<li>
+		Add the jrebel line to maven opts
+		<code>sudo vi /etc/profile.d/maven.sh</code>
+		And then uncomment or add the MAVEN_OPTS line:
+		<code class="file wide">export MAVEN_OPTS="-noverify -javaagent:<i>/opt/ZeroTurnaround/JRebel</i>/jrebel.jar $MAVEN_OPTS"</code>
+	</li>
+	<li>Click <i>Next</i></li>
+	<li>Tick <i>"Log to file"</i></li>
+	<li>
+		Set <i>"Custom log file location"</i> to <i>"/var/log/jrebel/jrebel.log"</i>.
+		Create the jrebel log folder:
+		<code>
+			sudo mkdir /var/log/jrebel;<br/>
+			sudo chown jrebel:jrebel /var/log/jrebel
+		</code>	
+	</li>
+	<li>Pick your plugins..</li>
+	<li>Click <i>Next</i> and <i>Finish</i></li>
+</ol>	
+
+<code class="indent2nd">sudo vi /etc/profile.d/jrebel.sh</code>
+<code class="file">
+	export JREBEL_HOME=<i>/opt/ZeroTurnaround/JRebel</i>
+</code>
+<code class="indent2nd">sudo chmod +x /etc/profile.d/jrebel.sh</code>
+
+
+
+
+
+
+
+<br/>
+
+<a name="intellij"></a>
+<br/>
+
+<h2>5 IntelliJ IDEA</h2>
+
+
+<a name="intellij_license"></a>
+<h3>5.a  IntelliJ license</h3>
+<p class="indent2nd">Decide which version you want. I will assume a trial of the ultimate edition.</p>
+<p class="indent2nd">
+	Note: JetBrains do offer <a href="http://www.jetbrains.com/idea/buy/buy.jsp#openSource">free licenses</a> for IntelliJ Ultimate
+	for <a href="http://en.wikipedia.org/wiki/FOSS">open source</a> developers.
+</p>
+
+<a name="intellij_download"></a>
+<h3>5.b Download IntelliJ</h3>
+<p class="indent2nd">
+	Go to JetBrains <a href="http://www.jetbrains.com/idea/download/">IntelliJ download page</a>,
+	and download the most recent version.
+</p>
+
+<a name="intellij_install"></a>
+<h3>5.c Install IntelliJ</h3>
+<p class="indent2nd">
+	Like JRebel I prefer <i>/opt/jetbrains</i> as my install location. You may prefer directly in <i>/opt</i> or in <i>/usr/local</i>, etc.
+</p>
+<code class="indent2nd">
+	cd /tmp;<br/>
+	tar xzf ~/Downloads/ideaIU-<i>10.0.1</i>.tar.gz;<br/>
+	sudo chown -R root:root idea-IU-<i>99.32</i>;<br/>
+	sudo mkdir <i>/opt/jetbrains</i>;<br/>
+	sudo mv idea-IU-<i>99.32</i> <i>/opt/jetbrains/</i>;<br/>
+	sudo cd <i>/opt/jetbrains</i>;<br/>
+	sudo ln -s idea--IU-<i>99.32</i> idea;
+</code>
+
+<a name="intellij_menu"></a>
+<h4>5.c.i Add IntelliJ to the menu</h4>
+<ol class="indent3rd">
+	<li>Select <i>System/Preferences/Main Menu</i></li>
+	<li>In the left column, select <i>Programming</i></li>
+	<li>Click <i>New item</i></li>
+	<li>Enter <i>"IntelliJ IDEA"</i> as the <i>Name</i></li>
+	<li>Enter <i>/opt/jetbrains/idea/bin/idea.sh</i> as the <i>Command</i></li>
+	<li>Click on the icon on the left to choose icon.</li>
+	<li>Enter <i>/opt/jetbrains/idea/bin/</i> in the <i>Location</i> field</li>
+	<li>Choose <i>idea128.png</i> as the icon and click on <i>Open</i></li>
+	<li>Then <i>OK</i>, then <i>Close</i></li>	
+</ol>	
+	
+
+<a name="intellij_configure"></a>
+<h3>5.d Configure IntelliJ</h3>
+<p class="indent2nd">On first launch IntelliJ will ask you a series of questions regarding plugins etc.</p>
+<p class="indent2nd">Choose maven plugin amongst others.</p>
+
+<a name="intellij_maven"></a>
+<h4>5.d.i Configure Maven in IntelliJ</h4>
+<p class="indent3rd">
+	Open settings via <i>File/Settings/maven</i>
+	and enter <i>Maven home directory</i> as <i>/usr/share/maven2</i>
+</p>
+
+<a name="intellij_jrebel"></a>
+<h4>5.d.ii Install &amp; configure JRebel plugin in IntelliJ</h4>
+<ol class="indent3rd">
+	<li>Open the plugins section via <i>File/Settings/Plugins</i></li>
+	<li>Choose the <i>Available</i> tab</li>
+	<li>Search for JRebel</li>
+	<li>Right click on <i>JRebel Plugin</i> and choose <i>Download and install</i> </li>
+	<li>Once installed go to <i>File/Settings/JRebel</i></li>
+	<li>Enter <i>/opt/ZeroTurnaround/JRebel/jrebel.jar</i> in <i>JRebel location</i></li>
+</ol>
+
+<br/>
+
+<a name="project"></a>
+<br/>
+<h2>6 Your project</h2>
+
+<a name="project_import"></a>
+<h3>6.a Import project into IntelliJ</h3>
+<ol>
+	<li>Find your project via <i>File/New project</i></li>
+	<li>Choose <i>Import project from External model</i></li>
+	<li>Select <i>Maven</i></li>	
+	<li>Find your project root</li>
+	<li>Check <i>Environment settings</i> still refer to <i>/usr/share/maven2</i> as Maven location</li>
+	<li>Wait awhile for IntelliJ to load the new project information</li>
+</ol>	
+
+
+
+<br/>
+
+<a name="jetty"></a>
+<br/>
+
+<h2>7 Jetty</h2>
+
+<a name="jetty_run"></a>
+<h3>7.a Run Jetty in IntelliJ</h3>
+<ol>
+	<li>In IntelliJ, click to open <i>Maven Projects</i> on the right hand side</li>
+	<li>
+		Expand 
+		 <ol>
+		 	<li><i>your project</i></li></li>
+			<li><i>Plugins</i></li>
+			<li><i>Jetty</i></li>
+		</ol>
+	</li>	
+	<li>Right clik on <i>jetty:run</i></li>
+	<li>
+		I choose the top option <i>Run Maven build</i>,
+		which is the same as if I double clicked on <i>jetty:run</i>.
+		<br/>
+		( Others say you should choose <i>Run with JRebel</i>,
+		but the top option works for me, 
+		and the JRebel action actually gives me an error 
+		that maven is not configured...)
+	</li>
+</ol>
+
+<!--
+save flow
+-->
+
+
+<br/>
+<a name="extension"></a>
+<br/>
+
+<h2>8 Extension</h2>
+
+
+<a name="extension_compile"></a>
+<h3>8.a Compile on save</h3>
+
+<p class="indent2nd">
+	IntelliJ does not support Compile-on-save / Auto-build.<br/>
+	This feature is essential to get the best time saving from using JRebel.
+</p>
+<p class="indent2nd">
+	So you will have to manually enter <i>ctrl++shift+F9</i> to compile your file,
+	or just <i>ctrl+F9</i> to build your whole project.
+</p>
+<p class="indent2nd">
+	A decent work around is to map <i>ctrl+s</i> as the build command.<br/>
+</p>
+<p class="indent2nd">
+	Another is to install a plugin called <i>Eclipse Mode</i>, which auto build like eclipse.
+	<br/>
+	(I have not been able to get this to work as expected)
+</p>
+
+
+
+
+
+
+<br/>
+<a name="references"></a>
+<br/>
+
+<h2>9 References</h2>
+
+<ul>
+	<li><a href="">Matt Raible's tips on IntelliJ on Mac OS X</a></li>
+</ul>
+
+
+
+<br/>
+<a name="feedback"></a>
+<br/>
+
+<h2>10 Feedback</h2>
+	
+	<ul>
+		<li>If you find any elements are missing, please <a href="/contact/">let me know</a>.</li>
+		<li>If you spot any errors, please <a href="/contact/">let me know</a>.</li>
+		<li>
+			If there are elements you want to discuss,
+			the <a href="http://www.ubuntuforums.org">Ubuntu forums</a> are very busy and usefull.
+		</li>
+		<li>If you found this helpfull, why not buy a <a href="http://shirts.flurdy.com">t-shirt</a> from my shop?</li>
+		<li>If you would like committed help from me, consider <a href="http://www.eray.co.uk">hiring me</a>?</li>
+		<li>
+			If you write/find similar howto, or even one based on these, 
+			please <a href="/contact/">let me know</a> so I can link to it!
+		</li>
+	</ul>
+
+	
+	
+
+	<ul class="horizontal">
+		<li><a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="http://flurdy.com/contact/">feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a> |</li>
+		<li><a href="/docs">more docs</a></li>
+	</ul>	
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+	<ul class="horizontal">
+		<li>(</li>
+		<li><i>started May 2010</i> |</li>
+		<li><i>last updated January 2011</i> </li>
+		<li>)</li>
+	</ul>	
+	
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript"> 
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+</body>
+</html>
+
