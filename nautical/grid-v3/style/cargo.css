@@ -1,0 +1,72 @@
+/* 
+    Document   : grid
+    Created on : Sep 16, 2009, 9:08:21 AM
+    Author     : ivar
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+
+#bow { text-align: center;  }
+#bow h1 {
+	margin: 0.2em 0em 0.2em 0;
+	padding: 0em;
+	text-shadow: black 0.1em 0.1em 0.2em;
+	-moz-text-shadow: black 0.1em 0.1em 0.2em;
+}
+
+#stern { padding: 0.2em 1em 1em 1em; }
+#stern img { float: right; border: 0; }
+#stern p { margin: 0; padding: 0.3em 0 0 0; font-size: 0.4em; color: gray; float: left;}
+
+#aft { text-align: right; }
+
+ul.horizontal {
+	margin: 0;
+}
+ul.horizontal li {
+	display: inline;
+	padding-right: 20px;
+	list-style: none;
+}
+
+#lookout ul.horizontal { }
+#lookout ul.horizontal li { font-size: 1em; font-weight: bold; }
+#lookout ul.horizontal li a { text-decoration: none; color: black; }
+#lookout ul.horizontal li a:hover,
+#lookout ul.horizontal li a:active { text-decoration: underline; color: blue; }
+
+#aft ul.horizontal { }
+#aft ul.horizontal li { font-size: 0.8em; font-weight: bold; }
+#aft ul.horizontal li a {  color: black; }
+#aft ul.horizontal li a:hover,
+#aft ul.horizontal li a:active { text-decoration: underline; color: blue; }
+
+
+ul.vertical { padding: 0.1em; }
+ul.vertical li { list-style: none; white-space: nowrap; }
+ul.vertical li a { }
+
+#hatch { vertical-align: top; }
+#hatch ul.vertical { vertical-align: top; }
+#hatch ul.vertical li { font-size: 0.8em; font-weight: bold; padding: 0.2em 0.2em; }
+#hatch ul.vertical li button { width: 100%; }
+
+ul.feedbackPanel { text-align: center; border-top: 1px solid #990000; padding: 0.5em 0.2em; margin: 0; }
+ul.feedbackPanel li { list-style: none; font-size: 0.75em; }
+ul.feedbackPanel li.feedbackPanelINFO { color: #00aa00; }
+ul.feedbackPanel li.feedbackPanelWARNING { color: #cc6600; font-weight: bold; }
+ul.feedbackPanel li.feedbackPanelERROR { color: #aa0000; font-weight: bold; }
+
+
+#jib { text-align: center; }
+#jib h2 { font-size:1.4em; margin:0.05em 0.2em; }
+
+#lighthouse > .compartment, #buoy > .compartment { height: 1em; }
+
+
+#tug > .compartment > iframe, #tug > .compartment img,
+#net > .compartment > iframe, #net > .compartment img { width: 36em; height: 3em; }
+#ama > .compartment > iframe, #ama > .compartment img { width: 6em; height: 22em; }
+
+

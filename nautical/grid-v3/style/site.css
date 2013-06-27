@@ -1,0 +1,153 @@
+/* 
+    Document   : site.css 
+    Created on : Sep 16, 2009, 9:08:21 AM
+    Author     : ivar
+    Description:
+*/
+
+/* borders */
+/* ship borders */
+#tug > .compartment > iframe, #tug > .compartment img ,
+#net > .compartment > iframe, #net > .compartment img ,
+#ama > .compartment > iframe, #ama > .compartment img,
+#lighthouse  > .compartment, #buoy  > .compartment,
+#hull {
+	border: 0.2em outset #990000;
+}
+
+/* rounding & shadows */
+#tug > .compartment > iframe, #tug > .compartment img ,
+#net > .compartment > iframe, #net > .compartment img ,
+#ama > .compartment > iframe, #ama > .compartment img ,
+#hull {
+	border-radius: 20px;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+}
+
+#lighthouse  > .compartment {
+ 	border-top-width: 0.1em;
+	border-bottom-right-radius: 20px;
+	border-bottom-left-radius:  20px;
+	-moz-border-radius-bottomleft: 20px;
+	-moz-border-radius-bottomright: 20px;
+	-webkit-border-bottom-left-radius: 20px;
+	-webkit-border-bottom-right-radius: 20px;
+}	
+
+#tug > .compartment > iframe, #tug > .compartment img ,
+#net > .compartment > iframe, #net > .compartment img ,
+#ama > .compartment > iframe, #ama > .compartment img ,
+#lighthouse  > .compartment,  #buoy  > .compartment ,
+#hull {
+	box-shadow: 10px 10px 15px -5px #333333;
+	-webkit-box-shadow: 10px 10px 15px -5px #333333;
+	-moz-box-shadow: 10px 10px 15px -5px #333333;
+}
+
+/* internal */
+#lookout,  #stern, #aft { border-top: 1px solid #990000; }
+#lookout, #jib, #foremast { border-bottom: 1px solid #990000;  }
+#port, #hatch { border-right: 1px solid #990000;  }
+#starboard, #deck { border-left: 1px solid #990000;  }
+
+
+/* colours */
+body {  background-color: #cc0000;  color: black; }
+#hull { background-color: #ffffff;  }
+#tug > .compartment > iframe, #tug > .compartment img ,
+#net > .compartment > iframe, #net > .compartment img ,
+#ama > .compartment > iframe, #ama > .compartment img ,
+#lighthouse  > .compartment, #buoy  > .compartment {
+	background-color: #ffffff;
+}
+
+
+/* dimensions   */
+.structure {  }
+.compartment { padding: 0.2em 1em; }
+body {  }
+#ocean { margin-left: 1em; }
+#ballast { width: 25em; padding: 2em; min-height: 18em;  }
+
+#port {  width: 3em; min-width: 1em; }
+#starboard {  width: 4em; min-width: 4em;   }
+#hatch { width: 4em; min-width: 4em;   }
+#deck { width: 5em; min-width: 5em;  }
+
+#port.compartment ,
+#starboard.compartment ,
+#hatch.compartment ,
+#deck.compartment  {  padding: 0.2em 0.2em; }
+
+#bridge.compartment  {  padding: 0 0; }
+
+
+#ama { padding: 0.8em 0 0 1em;  }
+#tug > .compartment { margin: 0 0 0.5em 0; text-align: center; }
+#net > .compartment { margin: 0.5em 0 0 0; text-align: center; }
+#ama > .compartment { min-height: 24em; text-align: center;  }
+#tug > .compartment > iframe, #tug > .compartment img ,
+#net > .compartment > iframe, #net > .compartment img {
+	margin: 0; padding: 0.2em; }
+#ama > .compartment > iframe, #ama > .compartment img {
+	margin: 0; padding: 0.2em; }
+
+
+
+
+/* structure */
+root { }
+html { }
+body {  }
+#ocean { font-family: Arial, sans-serif, serif;  }
+#fleet {  }
+#regatta {  }
+#ship {  }
+#vaka {  }
+#hull {  }
+#keel {  }
+#innerhull { }
+#bulkhead {  }
+#ballast {  }
+
+/* compartments */
+#prow { }
+#bow { }
+#lookout {   }
+#port {   }
+#starboard {    }
+#jib {  }
+#hatch {    }
+#deck {   }
+#cockpit {  }
+#aft {  }
+#stern {   }
+#anchor { }
+
+#cargo { }
+
+/* flotilla */
+#lighthouse {  }
+#buoy {  }
+#tug {  }
+#net {  }
+#ama {  }
+
+#lighthouse > .compartment {  }
+#buoy > .compartment {  }
+#tug > .compartment {  }
+#net > .compartment {  }
+#ama > .compartment {  }
+
+#tug > .compartment > iframe, #tug > .compartment img { }
+#net > .compartment > iframe, #net > .compartment img { }
+#ama > .compartment > iframe, #ama > .compartment img { }
+
+
+#tug > .compartment > iframe, #tug > .compartment img,
+#net > .compartment > iframe, #net > .compartment img,
+#ama > .compartment > iframe, #ama > .compartment img { padding: 0.5em; }
+
+/* #prow, #foremast, #starboard, #port, #deck  { display: none; }
+#tug, #net, #ama { display: none; }  */

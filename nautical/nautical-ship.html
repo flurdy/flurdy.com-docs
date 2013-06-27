@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd" xml:lang="en" lang="en">
+<head>	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>nautical by flurdy</title>	
+	<meta http-equiv="Keywords" content="ship,flurdy,grid,css,html,stylesheet" />
+	<meta name="description" content="Ship grid layout by flurdy using html and css. Easy grid separated sections." />
+	<style>		 
+	/* ****  flurdy's nautical layout  ******* */
+		
+	/* layout */ 	
+	#ocean { display: table; height: 100%; width: 100%; margin: 0 auto; }
+	#fleet { display: table-cell; vertical-align: middle; }	
+	#regatta { display: table; margin: auto; }
+	#vaka { vertical-align: top; }
+	
+	#ship, #keel, #bulkhead { display: table; }
+	#flare, #buoy, #tug, #net, #hull { display: table-row; }	
+	#vaka, #ama, #port, #starboard, #hatch, #deck { display: table-cell; }		
+		
+	/* sizes */
+	html { height: 100%; }
+	body { height: 97%; }	
+	#vaka {  }
+	#ballast { width: 30em; padding: 1em; /* min-height: 500px; */ }
+	#fleet { border-spacing: 2em; }
+	#ship { border-spacing: 2em 0em; }
+	#vaka { border-spacing: 0em; }
+	
+	/* background colours */
+	#tug, #net, #ama { background-color: grey;}
+	#vaka { background-color: silver; }		
+	
+	/* borders */
+	#lookout, #cockpit, #aft, #stern { border-top: 1px solid black; }
+	#lookout, #jib { border-bottom: 1px solid black; }
+	#port, #hatch  { border-right: 1px solid black; }
+	#starboard, #deck  { border-left: 1px solid black; }
+	#vaka, #ama { border: 3px outset black; }
+	#tug > div, #net > div { border: 3px outset black; }
+	#flare > div, #prow, #anchor, #buoy > div { border: 1px dotted black; }
+	
+	.compartment { text-align: center; padding: 0.1em 0.2em; font-size: 9pt;	 }
+	
+	</style>
+</head>
+<body>
+	<div id="ocean" class="structure">
+		<div id="flare"><div class="compartment">flare</div></div>
+		<div id="fleet" class="structure">
+			<div id="regatta" class="structure">
+				<div id="tug"><div class="compartment">tug</div></div>
+				<div id="ship" class="structure">
+					<div id="prow" class="compartment">prow</div>
+					<div id="hull" class="structure">	
+						<div id="vaka" class="structure">			
+							<div id="bow" class="compartment">bow</div>		
+							<div id="lookout" class="compartment">lookout</div>
+							<div id="keel" class="structure">
+								<div id="port" class="compartment leftColumn">port</div>
+								<div id="innerhull" class="structure">
+									<div id="jib" class="compartment">jib</div>
+									<div id="bulkhead" class="structure">
+										<div id="hatch" class="compartment leftColumn">hatch</div>
+										<div id="ballast" class="compartment">
+											<div id="cargo">	
+												dynamic cargo which scales height as needed. 
+												dynamic cargo which scales height as needed. 
+												dynamic cargo which scales height as needed. 
+												dynamic cargo which scales height as needed. 
+												dynamic cargo which scales height as needed. 
+												dynamic cargo which scales height as needed. 
+											</div>
+										</div>
+										<div id="deck" class="compartment rightColumn ">deck</div>	
+									</div>
+									<div id="cockpit" class="compartment">cockpit</div>
+								</div>								
+								<div id="starboard" class="compartment rightColumn ">starboard</div>
+							</div>
+							<div id="aft" class="compartment">aft</div>		
+							<div id="stern" class="compartment">stern</div>
+						</div>
+						<div id="ama" class="compartment">ama</div>
+					</div>
+					<div id="anchor" class="compartment">anchor</div>
+				</div>
+				<div id="net"><div class="compartment">net</div></div>
+			</div>
+		</div>
+		<div id="buoy"><div class="compartment">buoy</div></div>
+	</div>
+</body>
+</html>
