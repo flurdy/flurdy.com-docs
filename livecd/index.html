@@ -1,0 +1,168 @@
+
+
+<html>
+<head>
+	<title>Remote SSH to LiveCD howto</title>
+	<style>
+		body{
+			font-family: Sans-Serif;
+			margin: 0px;
+			border: 10px solid #ccc;
+			font-size: 9pt;
+			padding: 10px;
+			background-color: #fff;
+			color: #000;
+		}
+		h2{ font-size: 18pt; font-weight: 600;}
+		h3{ 
+			font-size: 14pt;
+			font-weight: bold;
+		}
+		h4{ 
+			font-size: 11pt; 
+			font-weight: normal;
+			}
+		h5{ font-size: 9pt; font-weight: normal;}
+		code{ 
+			font-size: 9pt; 
+			font-weight: bold;
+			background-color: #ddd;
+			border: 1px solid #aaa;
+			display: block;
+		}
+		li h5{ margin: 2px; }
+	</style>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<style type="text/css">
+  table {
+    font-size: 1em;
+  }
+  div, address, ol, ul, li, option, select { 
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  p {
+    margin: 0px;
+  }
+  blockquote {padding: 10px; border: 1px #DDDDDD dashed }
+  a img {border: 0}
+  body {
+    line-height: normal;
+  }
+</style>
+</head>
+<body>
+
+<h2>Remote SSH to LiveCD howto</h2>
+
+<p>
+	Why: Because of corruputed Windows registry in family pc.<br />
+	So need to move registry files on NTFS partition. <br />
+	<a href="/docs/ntfs/index.html">Follow on tutorial to accomplish that.</a>
+</p>
+
+
+<hr />
+
+<br />
+1. Physical start<br />
+<br />
+
+1.1. Download ubuntu desktop x86 iso from&nbsp;
+<a href="http://www.ubuntu.com/getubuntu/download">http://www.ubuntu.com/getubuntu/download</a><br />
+1.2. Burn download ubuntu ISO image to a cd.<br>
+1.3. plug a network cable into the broken pc.<br>
+1.4.* pop the cd into the broken pc.<br>
+1.5. turn on the broken pc.<br>
+<br>
+<br>
+2.* Boot Menu<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+2.1 Keyboard<br>
+2.1.1. Press <b>F3</b> to be prompted for keyboard language<br>
+2.1.2. Find UK english with cursor keys.<br>
+2.1.3. Press <b>enter</b> to select it.<br>
+2.2. Boot selection.<br>
+2.2.1. Make sure to top line of the text menu is highligted and press
+<b>enter</b> on to boot up ubuntu linux.<br>
+2.2.2.* Wait up to 10mins as it boots.<br>
+<br>
+3.&nbsp; Install SSH<br clear=all>
+<br>
+3.1. Press <b>CTRL</b>+<b>ALT</b>+<b>F1</b> hard a few times.<br>
+3.2. you should get a black screen with a command line prompt.<br>
+3.2.1.* type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>sudo apt-get install
+ssh-server<br>
+</b>3.2.2. Set a password<b><br>
+</b> 3.2.2.1. type:&nbsp;&nbsp;&nbsp;&nbsp; <b>passwd<br>
+</b>3.2.2.2. hit <b>enter </b>when prompted for old password as the old one was
+empty<br>
+3.2.2.3. enter a new password<br>
+3.2.2.4. enter the same password again<br>
+3.2.2.5. Tell me the password created.<br>
+<br>
+4. Starting remote SSH tunnel<br>
+<br>
+4.1. Change <i>USERNAME </i>below to emailed username. Change <i>SERVERNAME
+</i>to emailed servername<br>
+&nbsp;&nbsp;&nbsp;&nbsp;type<b>: ssh -Nv -R&nbsp; 19022:localhost:22&nbsp;&nbsp;
+</b><b><i><u>USERNAME</u></i></b><b>@<i><u>SERVERNAME<br>
+</u></i></b>4.2. If prompted for confirmation that you trust the server. type
+<b>Yes</b><b><br>
+</b>4.3.* Enter emailed password for the server<br>
+<br>
+5. Do whatever remote actions needed.<br>
+<br>
+6. When finished<br>
+<br>
+6.1. Stopping remote ssh server tunnel<br>
+6.1.1 Press <b>CTRL</b>+<b>C </b>a few times to kill the ssh tunnel.<br>
+6.2. Shutdown<br>
+6.2.1. type <b>sudo halt</b><br>
+<br>
+<br>
+Appendix.<br>
+Possible problems<br>
+1.4. To insert the CD, you may need to switch the pc on open cd drive, pop it
+in, and switch the pc off again.<br>
+2. Sometimes the CD is not set as available boot medium, you need to change the
+BIOS boot preference.<br>
+2.2.2. Sometimes the CD does not start the Ubuntu live CD GUI properly. This is
+not a problem, as we are not interested in it. Once it tries it is basically
+ready to switch to Screen1 where we use the command prompt.<br>
+3.2.1. If on a corporate network. you need to enter the proxy you use as well.<br>
+&nbsp;&nbsp;&nbsp; Swap <i>IP</i> and <i>PORT</i> below for whatever value your
+network proxy uses.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Type <b>export
+http_proxy=http://</b><b><i><u>IP</u></i></b><b>:</b><b><i><u>PORT</u></i></b><br>
+</i>4.3. If the server is set to not accept password over ssh, but perhaps ssh
+key, you need to temporarily allow passwords again on the server.<br>
+<br>
+<br>
+--<br>
+Mvh,<br>
+<br>
+Ivar Abrahamsen<br>
+| <a href=http://flurdy.com/ target=_blank>flurdy.com</a> |&nbsp;
+<br />
+<br />
+<!--Creative Commons License--><a rel="license" href="http://creativecommons.org/licenses/by/2.0/uk/"><img alt="Creative Commons License" border="0" src="http://creativecommons.org/images/public/somerights20.png"/></a><br/><h5>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/2.0/uk/">Creative Commons Attribution 2.0 England &amp; Wales License</a>.</h5><!--/Creative Commons License-->
+<!-- <rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<Work rdf:about="">
+		<license rdf:resource="http://creativecommons.org/licenses/by/2.0/uk/" />
+	<dc:type rdf:resource="http://purl.org/dc/dcmitype/Text" />
+	</Work>
+	<License rdf:about="http://creativecommons.org/licenses/by/2.0/uk/"><permits rdf:resource="http://web.resource.org/cc/Reproduction"/><permits rdf:resource="http://web.resource.org/cc/Distribution"/><requires rdf:resource="http://web.resource.org/cc/Notice"/><requires rdf:resource="http://web.resource.org/cc/Attribution"/><permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/></License></rdf:RDF> -->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+	</script>
+	<script type="text/javascript">
+	_uacct = "UA-281408-1";
+	urchinTracker();
+	</script>
+
+
+
+</body>
+</html>
