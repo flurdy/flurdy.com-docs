@@ -1,0 +1,969 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>ec2 - Ubuntu server in the cloud</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		html { }
+		body { min-width: 90em; max-width: 110em; }
+		#deck { float: right; width: 10em; margin: 1em 7em 1em 1em; }
+		#starboard, #ec2toc { margin: 1em 30em 1em 1em; }
+		table.onecommand { width: 75em;  }
+		table.onecommand td.readable { min-width: 15em;  }
+	</style>
+</head>
+<body>
+
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>ec2 - Amazon Elastic Compute Cloud tips and howtos</h1>
+
+	<h2>
+		Simple Ubuntu Server in the cloud
+	</h2>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+	<h5>
+		This page is part of <a href="/docs/ec2/index.html">larger set of tips &amp; howtos on ec2 by flurdy.</a>
+	</h5>
+
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+
+	<div id="ec2toc">
+		<h5><a href="/docs/ec2/">Other ec2 docs</a> by flurdy</h5>
+		<ul>
+			<li>
+				Tips
+				<ul>
+					<li><a href="/docs/ec2/basics/">basics</a></li>
+					<li><a href="/docs/ec2/network/">instances</a></li>
+					<li><a href="/docs/ec2/ami/">ami</a></li>
+					<li><a href="/docs/ec2/ebs/">ebs</a></li>
+					<li><a href="/docs/ec2/backup/">backup</a></li>
+				</ul>
+			</li>
+			<li>
+				Howtos
+				<ul>
+					<li><a href="/docs/ec2/ubuntu/">ubuntu</a></li>
+					<li><a href="/docs/ec2/apache_tomcat/">apache &amp; tomcat</a></li>
+					<li><a href="/docs/ec2/mail/">mail</a></li>
+					<li><a href="/docs/ec2/remote/">remote</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+	<div id="starboard">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+/* e2 skyscraper */
+google_ad_slot = "1431774089";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--
+		<img src="http://code.flurdy.com/images/skyscraper.gif" align="right" alt="" />
+-->
+	</div>
+
+	<br />
+
+	<p>
+		Setting up an simple server as a base for all future server demands.<br/>
+		Based on Canonical's own release images. <br/>
+		Enables easy launch of already setup and working server instances quickly.<br/>
+		Separated step by step so it should be easy to follow.
+	</p>
+
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7805345644641760";
+/* ec2 ubuntu leaderboard */
+google_ad_slot = "1268408074";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+	<h3>
+		Pre requisits
+	</h3>
+
+	<ul>
+		<li><a href="/docs/ec2/basics/index.html">Amazon ec2 introduction &amp;  beginners guide</a></li>
+		<li><a href="/docs/ec2/network/index.html">Amazon ec2 instances</a></li>
+	</ul>
+
+	<p>
+		Make sure you <a href="/docs/ec2/basics/index.html">know enough about ec2</a>, have elasticfox installed
+		and know about the
+		<a href="/docs/ec2/network/index.html#cost">costs</a> and <a href="/docs/ec2/basics/index.html#risks">risks</a> involved.
+	</p>
+
+
+
+ 	<h3>Base image</h3>
+	<p>
+		In <a href="https://addons.mozilla.org/en-US/firefox/addon/11626">elasticfox</a>
+		or <a href="http://aws.amazon.com/console/">aws console</a> locate your base image.
+		I recommend <a href="http://uec-images.ubuntu.com/releases/lucid/release/">Canonical's own images</a>:
+
+		<a href="http://uec-images.ubuntu.com/releases/lucid/release/">lucid (10.04 LTS)</a>
+		<a href="http://uec-images.ubuntu.com/releases/maverick/release/">maverick (10.10)</a>
+		<a href="http://uec-images.ubuntu.com/releases/natty/release/">natty (11.04)</a>
+		<a href="http://uec-images.ubuntu.com/releases/oneiric/release/">oneiric (11.10)</a>
+		<a href="http://uec-images.ubuntu.com/releases/precise/release/">precise (12.04)</a>.
+
+		However images made by Eric Hammond at <a href="http://alestic.com">alestic</a>
+		are also commendable.<br/>
+	</p>
+	<p>
+		At the time of writing the images I would choose are these ones:
+	</p>
+
+	<table class="listing">
+		<tr>
+			<th>Region</th>
+			<th>Arch</th>
+			<th>Store</th>
+			<th>AMI ID</th>
+			<th>AMI Manifest</th>
+		</tr>
+		<!--
+		<tr>
+			<td>US-east</td>
+			<td>32bit</td>
+			<td>instance</td>
+			<td>ami-a403f7cd</td>
+			<td>ubuntu-images/ubuntu-lucid-10.04-i386-server-201001020.1.manifest.xml</td>
+		</tr>
+		-->
+		<tr>
+			<td>US-east</td>
+			<td>32bit</td>
+			<td>ebs</td>
+			<td>ami-ab36fbc2</td>
+			<td>ubuntu-images/ubuntu-lucid-10.04-i386-server-20110930.manifest.xml</td>
+		</tr>
+		<tr>
+			<td>US-east</td>
+			<td>64bit</td>
+			<td>ebs</td>
+			<td>ami-ad36fbc4</td>
+			<td>ubuntu-images/ubuntu-lucid-10.04-amd64-server-20110930.manifest.xml</td>
+		</tr>
+		<tr>
+			<td>EU-west</td>
+			<td>32bit</td>
+			<td>instance</td>
+			<td>ami-c00e3cb4</td>
+			<td>ubuntu-images-eu/ubuntu-lucid-10.04-i386-server.20110930.manifest.xml</td>
+		</tr>
+	</table>
+	<p>
+		Other alternatives exist such as 64bit
+		 and EBS as boot store.<br/>
+		 (note: small instance is 32bit only, while all others including micro accept 64bit)
+	</p>
+	<p>
+		If another non official Canonical image is chosen, please make allowances for differences.
+		E.g. Perhaps <i>root</i> is the default user and not <i>ubuntu</i>.
+	</p>
+
+	<h4>Assumtions:</h4>
+	<ul>
+		<li>Your AWS ssh key is in <i>.ec2</i> folder.</li>
+		<li>Your normal ssh keys are in <i>.ssh</i> folder.</li>
+		<li>Your normal ssh key is called <i>id_rsa</i>.
+		</li>
+	</ul>
+	<p>
+		Change commands below if any different.
+	</p>
+
+	<h4>Legends to replace</h4>
+
+	<ul>
+		<li><i>yourAwsKey</i>:
+			Replace with your SSH key associatede  with ec2.
+		</li>
+		<li><i>yourLocalSshKey</i>:
+			Replace with your renamed SSH key.
+		</li>
+		<li><i>yourUser</i>:
+			Replace with your chosen username.
+		</li>
+		<li><i>publicDNSname</i>:
+			Replace with the DNS name of the server you want to make an image of.
+			Found via elasticfox (right click on the instance and choose copy public dns).
+		</li>
+	</ul>
+
+
+	<h4>Step by step</h4>
+
+	<p>
+		Different columns for describing the steps,
+		and whether the commands are to be run locally or on the actual ec2 instance.
+	</p>
+
+	<table class="stepCommands">
+		<tr>
+			<th rowspan="2">Description</th>
+			<th colspan="2">Commands</th>
+		</tr>
+		<tr>
+			<th>Remote ec2 instance</th>
+			<th>Local machine</th>
+		</tr>
+		<tr>
+			<td class="readable">
+				Launch Canonical Ubuntu base image mentioned above.
+			</td>
+			<td class="readable"></td>
+			<td class="readable"></td>
+		</tr>
+		<tr>
+			<td>
+				Log in from your local machine into the ec2 instance
+			</td>
+			<td></td>
+			<td><code>
+				ssh -v -i <i>.ec2</i>/<i>yourAwsKey</i> <i>ubuntu</i>@<i>publicDNSname</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td>Modify package source repositories</td>
+			<td><code>
+				sudo vi /etc/apt/sources.list
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				Add <i>restricted</i> and <i>multiverse</i> repositories,
+				by entering this command in VI
+			</td>
+			<td><code>
+				:%s/main un/main restricted multiverse un/g<br/>
+				:wq
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				Update apt then upgrade your packages,
+				so that you are up to date.
+
+				I do get prompted with grub configuration in the upgrade,
+				which I respond to both questions with the OK button.
+			</td>
+			<td><code>
+				sudo aptitude update;<br/>
+				sudo aptitude safe-upgrade
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				To be sure the update has not broken your system,
+				reboot it. There is no risk as you have not really
+				done anything with it yet.
+				It will throw your user out when it shuts down.
+			</td>
+			<td><code>
+				sudo reboot now
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				After a few minutes re-log in from your local machine into the ec2 instance
+			</td>
+			<td></td>
+			<td><code>
+				ssh -v -i <i>.ec2</i>/<i>yourAwsKey</i> <i>ubuntu</i>@<i>publicDNSname</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td>Do a quick check to see if it did reboot</td>
+			<td><code>
+				last
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Add your user, enter password and if any details</td>
+			<td><code>
+				adduser <i>yourUser</i>
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				Upload from your local machine your normal SSH public key (or your AWS SSH public key)
+				to this user
+			</td>
+			<td></td>
+			<td><code>
+				scp -i <i>.ec2</i>/<i>yourAwsKey</i> <i>.ssh</i>/<i>id_rsa</i>.pub <i>ubuntu</i>@<i>publicDNSname</i>:
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Rename (if neccessary) your ssh key file to something recognisable.
+				Append this to the ubuntu users accepted keys,
+				and to your users keys.
+			</td>
+			<td><code>
+				mv <i>id_rsa</i>.pub .ssh/<i>yourLocalSshKey</i>.pub;<br/>
+				cat .ssh/<i>yourLocalSshKey</i>.pub &gt;  .ssh/authorized_keys;<br/>
+				sudo cp .ssh/<i>yourLocalSshKey</i>.pub /home/<i>yourUser</i>/;<br/>
+				sudo chown <i>yourUser</i>:<i>yourUser</i> /home/<i>yourUser</i>/<i>yourLocalSshKey</i>.pub;<br/>
+				sudo su <i>yourUser</i>;<br/>
+				cd;<br/>
+				mkdir .ssh;<br/>
+				mv <i>yourLocalSshKey</i>.pub .ssh/;<br/>
+				cat .ssh/<i>yourLocalSshKey</i>.pub &gt; .ssh/authorized_keys2;<br/>
+				chmod 700 .ssh;<br/>
+				chmod 600 .ssh/authorized_keys2;<br/>
+				exit
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td rowspan="2">
+				In another window try and login with your normal SSH key.
+				First try your normal username, then log out.
+				Then again as the ubuntu user.
+			</td>
+			<td></td>
+			<td><code>
+				ssh -v -i <i>.ssh</i>/<i>id_rsa</i> <i>yourUser</i>@<i>publicDNSname</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td><code>
+				exit
+			</code></td>
+			<td><code>
+				ssh -v -i <i>.ssh</i>/<i>id_rsa</i> <i>ubuntu</i>@<i>publicDNSname</i>;<br/>
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Now still as the ubuntu user in the old shell or a new one
+				lets create some groups and add <i>yourUser</i> to these.
+			</td>
+			<td><code>
+				sudo usermod -a -G adm,admin <i>yourUser</i>;<br/>
+			</code></td>
+			<td></td>
+		<tr>
+		<tr>
+			<td>
+				Optional:<br/>
+				I use some japanese inspired group selection which you can skip.
+				<br/>
+				I also add a limited <i>billy</i> user for future purposes.
+			</td>
+			<td><code>
+				sudo addgroup shogun;<br/>
+				sudo addgroup samurai;<br/>
+				sudo addgroup ninja;<br/>
+				sudo addgroup nikkei;<br/>
+				sudo addgroup issei;<br/>
+				sudo addgroup nissei;<br/>
+				sudo addgroup sansei;<br/>
+				sudo addgroup yonsei;<br/>
+				sudo addgroup sosen;<br/>
+				sudo usermod -a -G shogun,samurai,ninja,nikkei,issei <i>yourUser</i>;<br/>
+				<br/>
+				sudo addgroup nomate;<br/>
+				sudo useradd -g nomate -M billy
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				Now again try to log in directly as <i>yourUser</i>.
+			</td>
+			<td></td>
+			<td><code>
+				ssh -v -i <i>.ssh</i>/<i>id_rsa</i> <i>yourUser</i>@<i>publicDNSname</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Now as <i>yourUser</i> session see if you have full sudo pemissions.
+				If okay exit the older ubuntu user session
+				and from now use your <i>yourUser</i> session.
+			</td>
+			<td><code>
+				sudo last
+			</code></td>
+			<td></td>
+		</tr>
+	</table>
+
+	<p><b>Stage 1 done</b></p>
+
+	<br/>
+	<br/>
+
+	<p>
+		You now do have a workable Ubuntu server.
+		You can <a href="#ami">skip down to making an AMI image</a>
+		if you want to,
+		but I recommend following the next section first.
+	</p>
+
+	<br/>
+
+	<div id="deck">
+		<table border="1" cellpadding="3" cellspacing="1">
+<tr>
+	<td colspan="2"><a
+		href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3495142"><img border="0"
+		 width="170" alt="wont fix puta"
+		src="http://image.spreadshirt.com/image-server/image/product/3876780/view/1/type/png/width/280/height/280" title="flurdy shirts (US): NO I wont fix your computer"/></a></td>
+</tr><tr>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/linux-v-bill-A5414231"><img border="0" width="78" alt="kill bill"
+		src="http://flurdy.spreadshirt.com/image-server/image/design/3257345/type/png/width/190/height/190" title="flurdy shirts (US): Kill Bill"/></a></td>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/smiley-A3637296/customize/color/5"><img border="0" width="78" alt="devil smile"
+		src="http://image.spreadshirt.com/image-server/image/product/4016733/view/1/type/png/width/190/height/190" title="flurdy shirts (US): devil smile"/></a></td>
+</tr><tr>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/beast-mode-A3760998/customize/color/4"><img border="0" width="78" alt="beast mode"
+		src="http://image.spreadshirt.com/image-server/image/product/3903955/view/1/type/png/width/190/height/190" title="flurdy shirts (US): Beast Mode"/></a></td>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3491809"><img border="0" width="78" alt="dumb people"
+		src="http://image.spreadshirt.com/image-server/image/product/3874699/view/1/type/png/width/280/height/280" title="flurdy shirts (US): I see dumb people"/></a></td>
+</tr>
+<tr>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/the-prophet-by-be-him-4-van-tribe-I2810099"><img border="0" width="78" alt="prophet"
+		src="http://image.spreadshirt.com/image-server/image/product/4075238/view/1/type/png/width/190/height/190" title="flurdy shirts (US): The prophet"/></a></td>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com//wtf-A3492525"><img border="0" width="78" alt="wtf"
+		src="http://image.spreadshirt.com/image-server/image/product/3875236/view/2/type/png/width/280/height/280" title="flurdy shirts (US): WTF?"/></a></td>
+</tr>
+<tr>
+	<td colspan="2" align="center">
+		<h6><a href="http://shirts.flurdy.com">shirts.flurdy.com</a><br/>
+		<a href="http://shirts.flurdy.com/us">us</a> |
+		<a href="http://shirts.flurdy.com/uk">uk</a> |
+		<a href="http://shirts.flurdy.com/eu">eu</a></h6>
+	</td>
+</tr>
+</table>
+</div>
+
+	<table class="stepCommands onecommand">
+		<tr>
+			<th rowspan="2">Description</th>
+			<th colspan="1">Commands</th>
+		</tr>
+		<tr>
+			<th>Remote ec2 instance</th>
+		</tr>
+		<tr>
+			<td class="readable">
+				Next install some libraries.
+				First the ec2 AMI tools,
+				so that you can make ec2 AMI images.
+			</td>
+			<td class="readable"><code>
+				sudo aptitude install ec2-ami-tools
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Then a firewall, Shorewall.
+				You could stick with UFW if you like.
+				Yes AWS/ec2 does already have Security groups,
+				but with a local firewall you can be more flexible (and secure).
+			</td>
+			<td><code>
+				sudo aptitude install shorewall-common shorewall-perl shorewall-doc
+			</code></td>
+		</tr>
+		<tr>
+			<td>Now lets configure shorewall for default usage</td>
+			<td><code>
+				cd /usr/share/doc/shorewall/default-config/;<br/>
+				sudo cp interfaces zones hosts policy routestopped rules \<br/>
+				/etc/shorewall/;<br/>
+				cd /etc/shorewall
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Open the interfaces file.<br/>
+				This defines the physical network interfaces on your instance.
+			</td>
+			<td><code>
+				sudo vi interfaces
+			</code></td>
+		</tr>
+		<tr>
+			<td>Add as second to last line:</td>
+			<td><code>
+				net &nbsp;&nbsp;eth0 &nbsp;&nbsp;detect &nbsp;&nbsp;dhcp,tcpflags,logmartians,nosmurfs
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Open the zones file.<br/>
+				What we call the different network zones
+				that may call this instance.
+			</td>
+			<td><code>
+				sudo vi zones
+			</code></td>
+		</tr>
+		<tr>
+			<td>Include and append after the firewall line:</td>
+			<td><code>
+				fw &nbsp;&nbsp;&nbsp;firewall<br/>
+				ec2 &nbsp;&nbsp;ipv4<br/>
+				net &nbsp;&nbsp;ipv4
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Open the hosts file.<br/>
+				How we define zones that is not defined by network interface.
+			</td>
+			<td><code>
+				sudo vi hosts
+			</code></td>
+		</tr>
+		<tr>
+			<td>Add as second to last line:</td>
+			<td><code>
+				ec2 &nbsp;&nbsp;eth0:10.0.0.0/8
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Open the policy file.<br/>
+				How the firewall will act on traffic.
+				We later create exceptions in the rules file.
+			</td>
+			<td><code>
+				sudo vi policy
+			</code></td>
+		</tr>
+		<tr>
+			<td>Add as second to last line:</td>
+			<td><code>
+				$FW &nbsp;&nbsp;$FW &nbsp;&nbsp;ACCEPT<br/>
+				$FW &nbsp;&nbsp;net &nbsp;&nbsp;ACCEPT<br/>
+				$FW &nbsp;&nbsp;ec2 &nbsp;&nbsp;ACCEPT<br/>
+				ec2 &nbsp;&nbsp;$FW &nbsp;&nbsp;REJECT &nbsp;&nbsp;info<br/>
+				net &nbsp;&nbsp;$FW &nbsp;&nbsp;DROP &nbsp;&nbsp;&nbsp;&nbsp;info<br/>
+				ec2 &nbsp;&nbsp;all &nbsp;&nbsp;DROP &nbsp;&nbsp;&nbsp;&nbsp;info<br/>
+				net &nbsp;&nbsp;all &nbsp;&nbsp;DROP &nbsp;&nbsp;&nbsp;&nbsp;info<br/>
+				all &nbsp;&nbsp;all &nbsp;&nbsp;REJECT &nbsp;&nbsp;info
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Open the routestopped file<br/>
+				This defines if and how the traffic
+				should be allowed if for some reason the firewall is down.
+				Since we have no physical means of getting to the machine
+				I tend to think you have to let the world in...
+			</td>
+			<td><code>
+				sudo vi routestopped
+			</code></td>
+		</tr>
+		<tr>
+			<td>Add as second to last line:</td>
+			<td><code>
+				eth0 &nbsp;&nbsp;0.0.0.0 &nbsp;&nbsp;routeback
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Open the rules file.<br/>
+				This defines the actual rules of the firewall.
+				Since this is can in the future be used for many purposes,
+				we add commented out lines to be toggled on later,
+				but restricting ourselves as default.
+			</td>
+			<td><code>
+				sudo vi rules
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Add these as second to last line:<br/>
+				The template does seem to have a typo in it:
+				so remember to comment out <i>SECTION NEW</i>
+			</td>
+			<td><code>
+				#SECTION NEW<br/>
+				<br/>
+				Ping(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				Ping(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				ACCEPT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$FW &nbsp;&nbsp;ec2 &nbsp;&nbsp;icmp<br/>
+				Trcrt(ACCEPT) &nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				Trcrt(ACCEPT) &nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				<br/>
+				SSH(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				SSH(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				<br/>
+				#Web(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#Web(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#ACCEPT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW &nbsp;&nbsp;tcp &nbsp;&nbsp;8009<br/>
+				<br/>
+				#SMTP(ACCEPT) &nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#SMTP(ACCEPT) &nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#SMTPS(ACCEPT) &nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#SMTPS(ACCEPT) &nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#Submission(ACCEPT) &nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#Submission(ACCEPT) &nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#IMAP(ACCEPT) &nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#IMAP(ACCEPT) &nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#IMAPS(ACCEPT) &nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#IMAPS(ACCEPT) &nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#POP3(ACCEPT) &nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#POP3(ACCEPT) &nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW<br/>
+				#POP3S(ACCEPT) &nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				<br/>
+				#VNC(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#VNCL(ACCEPT) &nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				#ACCEPT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW &nbsp;&nbsp;tcp &nbsp;&nbsp;5800:5809<br/>
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Next lets test shorewall worked. <br/>
+				And if so lest start it.<br/>
+				And then enable for it automatically start
+				</td>
+			<td><code>
+				sudo shorewall check;<br/>
+				sudo shorewall safe-start;<br/>
+				sudo vi /etc/default/shorewall
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				Toggle startup
+			</td>
+			<td><code>
+				startup=1
+			</code></td>
+		</tr>
+	</table>
+
+	<br/>
+
+	<p>
+		<b>Stage 2 done</b>
+	</p>
+	<p>
+		You now have a very good Ubuntu server to
+		create other servers from.	<br/>
+		Follow the <a href="/docs/ec2/ami/index.html">AMI making</a>
+		page to create an image of this.<br/>
+		It is important to launch and test the new images.
+	</p>
+
+
+	<h3>Swap memory</h3>
+
+	<p>
+		Micro instances only have 700MB of memory.
+		If you have a micro instance you might want to add a Swap space
+		to exend this amount.
+	</p>
+
+	<table class="stepCommands onecommand">
+		<tr>
+			<td class="readable">You can check the current memory usage with:</td>
+			<td rowspan="3"><code>free -m</code></td>
+		</tr>
+		<tr>
+			<td class="readable" colspan="1">
+				If on the <b>Mem:</b> line the <b>free</b>
+				coloumn shows a number less than 100,
+				you are running out of memory.
+		</tr>
+		<tr>
+			<td class="readable" colspan="1">
+				Please ensure there is no <b>Swap:</b> line,
+				as that would indicate this instance already have
+				swap space and you do not need another one.
+			</td>
+		</tr>
+		<tr>
+			<th class="readable" colspan="2">
+				Create &amp; volume
+			</th>
+		</tr>
+		<tr>
+			<td class="readable" colspan="1">
+				Create a 2GB EBS disk via the <a href="https://console.aws.amazon.com/ec2/">AWS console</a>.
+			</td>
+			<td class="readable" colspan="1">
+				<ol>
+					<li>Ensure you are in the correct AWS "<b>Region</b>"</li>
+					<li>go to "Elastic Block Store" "<b>Volumes</b>" page</li>
+					<li>click "Create Volume"</li>
+					<li>enter size as 2 GiB</li>
+					<li>carefully choose correct "<b>Availability zone</b>"</li>
+					<li>do not select a snapshot</li>
+					<li>click "<b>Yes, Create</b>"</li>
+				</ol>
+			</td>
+		</tr>
+		<tr>
+			<td class="readable" colspan="1">
+				Attach the volume to your instance
+			</td>
+			<td class="readable" colspan="1">
+				<ol>
+					<li>Once the status is "<b>Available</b>",</li>
+					<li>attach it to your instance by selecting it </li>
+					<li>and clicking "<b>Attach Volume</b>",</li>
+					<li>select your instance,</li>
+					<li>if desired modify the consoles suggested device name<br/>
+						(eg.: /dev/sdf, /dev/sdi, /dev/sdg, /dev/sdk etc),</li>
+					<li>click "<b>Yes, Attach</b>".</li>
+			</td>
+		</tr>
+		<tr>
+			<th class="readable" colspan="2">
+				Format and mount swap space
+			</th>
+		</tr>
+		<tr>
+			<td class="readable">
+				Format the volume:<br/>
+				As of newer Ubuntu releases
+				the devices are called /dev/<i>xvdf</i>.<br/>
+				Previously they were called
+				/dev/<i>sdf</i>.<br/>
+				Replace <i>sdf</i> with relevant drive name.
+			</td>
+			<td class="readable"><code>
+				sudo mkswap /dev/<i>sdf</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td class="readable">
+				Active as swap
+			</td>
+			<td class="readable"><code>
+				sudo swapon /dev/<i>sdf</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td class="readable">
+				Check free memory and new swap space
+			</td>
+			<td class="readable"><code>
+				free -m
+			</code></td>
+		</tr>
+		<tr>
+			<td class="readable">
+				Persist swap space by editing fstab
+			</td>
+			<td class="readable"><code>
+				sudo vi /etc/fstab
+			</code></td>
+		</tr>
+		<tr>
+			<td class="readable">
+				Add this line
+			</td>
+			<td class="readable"><code>
+				/dev/<i>sdf</i>				swap	swap	defaults		0		0
+			</code></td>
+		</tr>
+	</table>
+
+	<p>
+		Please note that heavy use of the swap space might cost more
+		money than simply using a Small instance.
+		This is as IO usage across EBS are charged by AWS.
+	</p>
+
+	<h3>Extending</h3>
+
+	<p>
+		You can now extend this instance/image
+		and make another image.
+	</p>
+
+	<ul>
+		<li>
+			You can install the software you think
+			you will need on all servers, such as:
+			<ul>
+				<li>postfix, mutt, sendmail</li>
+				<li>apache2, lighthttpd, tomcat</li>
+				<li>java, ruby, mono</li>
+				<li>mysql, postgress, firebird</li>
+				<li>subversion, mercurial, git</li>
+				<li>etc..</li>
+			</ul>
+			Remember to keep it light
+			and don't install things you will rarely use.
+		</li>
+		<li>You can restrict or even remove the ubuntu user</li>
+		<li>You can enable/disable sshd password login</li>
+		<li>You can disable root login in sshd</li>
+		<li>You can configure .bashrc colours aliases, .vimrc preferences etc</li>
+		<li>You can add default ~/bin executables</li>
+		<li>You can import public .gnupg keys</li>
+	</ul>
+
+	<p>
+		One very recommended step is to install a very usefull script
+		for backing up and syncing with <a href="http://s3.amazonaws.com">S3</a>
+		called <a href="http://www.s3sync.net">s3sync</a>.<br/>
+		I have a detailed how to set up this on my <a href="/docs/ec2/backup/index.html">backup page</a>.
+	</p>
+
+	<p>
+		I would perhaps also prepare the use of EBS.
+		But make sure your image works on its own without EBS.
+		More on the <a href="/docs/ec2/ebs/index.html">EBS tips page</a>.
+	</p>
+
+	<p>
+		Once you do have a ready Ubuntu server image (Congratulations)
+		then make sure you boot it, and make sure you can log in etc.
+		And at the make sure you shutdown and terminate all instances!
+	</p>
+
+
+
+	<h3>What next?</h3>
+
+	<p>
+		You can keep reading on my suggested use of these instances:
+	</p>
+	<ul>
+		<li>
+			<b><a href="/docs/ec2/network/index.html">ec2 instances</a></b>.<br/>
+			My advice on instances and what types to run and keep ready.
+		</li>
+		<li>
+			<b><a href="/docs/ec2/apache_tomcat/index.html">Apache &amp; Tomcat</a></b>.<br/>
+			My advice on setting up a web server and webapp servers.
+		</li>
+		<li>
+			<b><a href="/docs/ec2/mail/index.html">Mail server</a></b>.<br/>
+			My advice on setting up mail servers.
+		</li>
+	</ul>
+
+<br/>
+
+	<div>
+		<h3>Update for Ubuntu 12.04+</h3>
+		<p>
+
+		</p>
+		<ul>
+			<li><em>aptitude</em> deprecated. Use <em>apt-get</em> instead.</li>
+			<li><em>shorewall-common</em> and <em>shorewall-perl</em> not in main repo. Use <em>shorewall</em> and <em>shorewall-doc</em> only.</li>
+		</ul>
+	</div>
+
+<br/>
+
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+	</div>
+
+<br/>
+<br/>
+
+	<p>
+		<a href="/docs/ec2/index.html">back to flurdy's ec2 docs</a>
+	</p>
+
+
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback/">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+</body>
+</html>
+

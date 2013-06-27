@@ -1,0 +1,448 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>ec2 - Beginners Guide</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+	</style>
+</head>
+<body>
+
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img 
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>ec2 - Amazon Elastic Compute Cloud tips and howtos</h1>
+
+	<h2>Amazon ec2 Introduction &amp; Beginners Guide</h2>
+	
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>		
+
+	<h5>
+		This page is part of <a href="/docs/ec2/index.html">larger set of tips &amp; howtos on ec2 by flurdy.</a>
+	</h5>
+		
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+		
+	<div id="ec2toc">
+		<h5><a href="/docs/ec2/">Other ec2 docs</a> by flurdy</h5>
+		<ul>
+			<li>
+				Tips				
+				<ul>
+					<li><a href="/docs/ec2/basics/">basics</a></li>
+					<li><a href="/docs/ec2/network/">instances</a></li>
+					<li><a href="/docs/ec2/ami/">ami</a></li>
+					<li><a href="/docs/ec2/ebs/">ebs</a></li>
+					<li><a href="/docs/ec2/backup/">backup</a></li>
+				</ul>
+			</li>
+			<li>
+				Howtos
+				<ul>
+					<li><a href="/docs/ec2/ubuntu/">ubuntu</a></li>
+					<li><a href="/docs/ec2/apache_tomcat/">apache &amp; tomcat</a></li>
+					<li><a href="/docs/ec2/mail/">mail</a></li>
+					<li><a href="/docs/ec2/remote/">remote</a></li>
+				</ul>
+			</li>
+		</ul>	
+	</div>
+	
+	<br/>
+
+	<div id="starboard">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+/* e2 skyscraper */
+google_ad_slot = "1431774089";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--		
+		<img src="http://code.flurdy.com/images/skyscraper.gif" align="right" alt="" />
+-->
+	</div>
+
+	<a name="benefits"></a>
+	<h3>
+		Benefits of ec2
+	</h3>
+	<p>
+		Why use ec2? 
+		It does not fit everyones requirements.
+		It does fit people whom require Software-as-a-Service
+		or people whom require hosting of servers (me).
+		I think of it as hosting in the cloud,
+		and the end results are often SaaS. 
+	</p>
+	<p>
+		ec2 as colocation hosting is not the cheapest. However it is quite resonable and was cheaper than my previous hosting service provider.
+		It is however exceptionally flexible with its ability to
+		launch instances as required and you pay only for that use.
+		It is quite fun launching 10s if not 100s of servers
+		to test out some load balancing etc. 
+		You can do that immidietly at any time and use it for whatever you need.
+		Then you shut them down, knowing you have not committed to pay for those 
+		servers the rest of the month or similar which a normal provider would insist.
+		Or worse having bought all that the hardware yourself.
+	</p>
+	<p>
+		In the end it fits my needs very much, and I hope yours too.
+	</p>
+
+	<h4>
+		Drawbacks
+	</h4>
+	<p>
+		Some of the drawbacks are:
+	</p>
+	<ul> 
+		<li>The <a href="#risks">risks</a> mentioned further down.</li>
+		<li>
+			Nothing is local. 
+			So you have to only use the API,
+			and accept the risk of <i>instance death</i>.
+		</li>
+		<li>
+			The learning threshold is significant to scare non-geeks.
+		</li>
+		<li>
+			<a href="http://aws.amazon.com/devpay/">Amazon AWS's DevPay</a> sounds
+			like a good method of generating a revenue for making images etc.
+			But is only for people in the US, so useless.
+		</li>
+	</ul>
+	
+	
+	<br/>
+
+
+	<a name="guide"></a>
+	<h3>
+		Beginners guide
+	</h3>
+	
+		
+	<h3>
+		Pre requisits
+	</h3>
+
+	<ul>
+		<li>
+			You need to be comfortable with command line Linux.
+			Otherwise let someone else do this for you.
+		</li>
+	</ul>
+	
+	
+	<h3>
+		Read up
+	</h3>
+
+	<p>
+		Find out as much as you can about the Amazon elastic compute cloud.	
+	</p>
+	<ul>
+		<li><a href="http://aws.amazon.com">Amazon Web Services</a></li>
+		<li><a href="http://aws.amazon.com/ec2">Amazon ec2</a></li>
+		<li><a href="http://en.wikipedia.org/wiki/Amazon_Web_Services">AWS om Wikipedia</a></li>
+		<li><a href="http://en.wikipedia.org/wiki/Amazon_Elastic_Compute_cloud">ec2 om Wikipedia</a></li>
+		<li><a href="http://alestic.com">Alestic</a></li>
+		<li><a href="http://www.ubuntu.com/cloud/public">Ubuntu Cloud</a></li>
+	</ul>
+		
+
+
+	<h3>
+		Register with Amazon Web Services
+	</h3>
+	
+	<ul>
+		<li><a href="http://aws.amazon.com">Amazon Web Services</a></li>
+	</ul>
+
+
+
+		
+	<h3>
+		Tools
+	</h3>
+
+	<ul>
+		<li><a href="http://aws.amazon.com/ec2/#resources">Amazon ec2 resources</a></li>
+		<li><a href="https://addons.mozilla.org/en-US/firefox/addon/11626">elasticfox</a></li>
+		<li><a href="http://aws.amazon.com/console">Amazon ec2 console</a></li>
+	</ul>
+
+	<p>
+		You can install the command line tools,
+		but these pages will assume you have installed the preferable elasticfox gui.
+		However the more recent aws console is easy and a good choice.
+	</p>
+
+
+	<h4>SSH Key</h4>
+	<p>
+		You should pick your ec2 region, EU or USA.
+		Then via Elasticfox's KeyPairs tab create a SSH key
+		to use with ec2.
+	</p>
+
+	<h4>Security Groups</h4>
+	<p>
+		The default security group is quite open I tend to create
+		thse 5 groups in addition:
+	</p>
+
+	<table class="listing">
+	<tr>	
+		<th>Group Name</th>
+		<th>Protocol</th>
+		<th>From port</th>
+		<th>To port</th>
+		<th>Source</th>
+	</tr>
+	<tr>	
+		<td rowspan="1">SSH</td>
+		<td>tcp</td>
+		<td>22</td>
+		<td>22</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td rowspan="3">Web</td>
+		<td>tcp</td>
+		<td>80</td>
+		<td>80</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>443</td>
+		<td>443</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>8000</td>
+		<td>8999</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td rowspan="7">Mail</td>
+		<td>tcp</td>
+		<td>25</td>
+		<td>25</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>143</td>
+		<td>143</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>465</td>
+		<td>465</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>587</td>
+		<td>587</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>993</td>
+		<td>993</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>110</td>
+		<td>110</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>995</td>
+		<td>995</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td rowspan="3">VNC</td>
+		<td>tcp</td>
+		<td>5500</td>
+		<td>5510</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>5800</td>
+		<td>5810</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td>tcp</td>
+		<td>5900</td>
+		<td>5910</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>	
+		<td rowspan="2">Ping</td>
+		<td>icmp</td>
+		<td>-1</td>
+		<td>-1</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	<tr>
+		<td>icmp</td>
+		<td>8</td>
+		<td>8</td>
+		<td>0.0.0.0/0</td>
+	</tr>
+	</table>
+
+	<br/>
+	
+	<h3>
+		Experiment
+	</h3>
+
+	<p>
+		Get a feel for ec2 by experimenting with images.
+	</p>
+
+	<ul>
+		<li>My <a href="../ubuntu/index.html">Ubuntu server in the cloud</a> howto</li>
+	</ul>
+
+	<p>
+		Take care of shutting down and terminating all at the end.
+	</p>
+	
+	<br/>
+	<br/>
+
+	
+	<a name="risks"></a>
+	<h3>Risks</h3>
+	
+	<h4>
+		Beware of the risks of using Amazon ec2.
+	</h4>
+	<ul>
+		<li>	
+			<h4>Costs</h4>
+			<p>
+				Amazon AWS costs are for the time your running instance(s) are running, 
+				traffic to and from internett, S3 storage used, unused IPs and EBS usage.
+			</p>
+			<p>
+				The risks are 
+			</p>
+				<ul>
+					<li>Not knowing these costs.</li>
+					<li>Accidentally leaving unused instances running 24/7, as instance running are normally the bulk of your costs.</li>
+					<li>Getting <a href="http://en.wikipedia.org/wiki/Slashdot_effect">slashdotted</a>. If you don't have a good portion of revenue from traffic, e.g. ads etc, such an event will murder your traffic costs.</li>
+				</ul>	
+			<p>
+				I have <a href="../network/index.html#costs">a separate page covering expected costs</a> if a similar setup to mine.				
+			</p>
+		</li>	
+		<li>	
+			<h4>Security</h4>
+			<p>
+				It is on the net. Be vigilant.
+			</p>
+		</li>	
+		<li>	
+			<h4>Data loss</h4>
+			<p>		
+				Dead instances and all their data can not be recoved.<br/>
+				Take <a href="../backup/index.html">backups</a> and use <a href="../ebs/index.html">EBS</a> judisciously.
+			</p>
+		</li>	
+	</ul>
+
+
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+	</div>
+	
+
+<br/>
+<br/>
+
+	<p>
+		<a href="/docs/ec2/index.html">back to flurdy's ec2 docs</a>
+	</p>
+
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="http://flurdy.com/contact/">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>	
+	
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+	
+
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript"> 
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+</body>
+</html>
+

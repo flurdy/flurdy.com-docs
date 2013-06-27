@@ -1,0 +1,941 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>ec2 - Apache Httpd and Tomcat servers</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		html { }
+		body { min-width: 85em; max-width: 100em; }
+		#starboard { margin-right: 10em;  }
+		#ec2toc { margin-right: 10em; }
+		code.command { width: 20em; }
+	</style>
+</head>
+<body>
+	<div id="page">
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>ec2 - Amazon Elastic Compute Cloud tips and howtos</h1>
+
+	<h2>
+		Apache Httpd and Tomcat servers
+	</h2>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+	<h5>
+		This page is part of <a href="/docs/ec2/index.html">larger set of tips &amp; howtos on ec2 by flurdy.</a>
+	</h5>
+
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<a class="addthis_button_preferred_1"></a>
+<a class="addthis_button_preferred_2"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+
+	<div id="ec2toc">
+		<h5><a href="/docs/ec2/">Other ec2 docs</a> by flurdy</h5>
+		<ul>
+			<li>
+				Tips
+				<ul>
+					<li><a href="/docs/ec2/basics/">basics</a></li>
+					<li><a href="/docs/ec2/network/">instances</a></li>
+					<li><a href="/docs/ec2/ami/">ami</a></li>
+					<li><a href="/docs/ec2/ebs/">ebs</a></li>
+					<li><a href="/docs/ec2/backup/">backup</a></li>
+				</ul>
+			</li>
+			<li>
+				Howtos
+				<ul>
+					<li><a href="/docs/ec2/ubuntu/">ubuntu</a></li>
+					<li><a href="/docs/ec2/apache_tomcat/">apache &amp; tomcat</a></li>
+					<li><a href="/docs/ec2/mail/">mail</a></li>
+					<li><a href="/docs/ec2/remote/">remote</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+<br/>
+	<p>
+		Simple step by step guide on how to set up Apache httpd server
+		and Apache Tomcat java container server on an ec2 instance.
+	</p>
+
+	<p>
+		Note:
+		Apache Httpd server is for the rest of this tutorial called apache.<br/>
+		Apache Tomcat java container server is for the rest of this tutorial called tomcat.
+	</p>
+
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7805345644641760";
+/* ec2 apache leaderbord */
+google_ad_slot = "4431501081";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+	<h3>
+		Pre requisits
+	</h3>
+	<ul>
+		<li><a href="/docs/ec2/basics/index.html">Amazon ec2 beginners guide</a></li>
+		<li><a href="/docs/ec2/ubuntu/index.html">Simple ubuntu server in the cloud</a></li>
+	</ul>
+
+
+	<h3>
+		Different setups:
+	</h3>
+	<ul>
+		<li><a href="#apache">Just Apache</a></li>
+		<li><a href="#oneServer">Apache and Tomcat on the same server with mod_jk</a></li>
+		<li><a href="#sameProxy">Apache and Tomcat on the same server with mod_proxy</a></li>
+		<li><a href="#twoServers">Apache and Tomcat on different servers with mod_proxy</a></li>
+		<li><strike>Apache and multiple Jetty on different servers with mod_proxy</strike></li>
+		<li><a href="#virtual_hosting">Virtual Hosting</a></li>
+		<li><a href="#references">References</a></li>
+	</ul>
+
+
+	<br/>
+
+	<div id="starboard">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+/* e2 skyscraper */
+google_ad_slot = "1431774089";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--
+		<img src="http://code.flurdy.com/images/skyscraper.gif" align="right" alt="" />
+-->
+<table border="1" cellpadding="3" cellspacing="1">
+<tr>
+	<td colspan="2"><a
+		href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3495142"><img border="0"
+		 width="170" alt="wont fix puta"
+		src="http://image.spreadshirt.com/image-server/image/product/3876780/view/1/type/png/width/280/height/280" title="flurdy shirts (US): NO I wont fix your computer"/></a></td>
+</tr><tr>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/linux-v-bill-A5414231"><img border="0" width="78" alt="kill bill"
+		src="http://flurdy.spreadshirt.com/image-server/image/design/3257345/type/png/width/190/height/190" title="flurdy shirts (US): Kill Bill"/></a></td>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/smiley-A3637296/customize/color/5"><img border="0" width="78" alt="devil smile"
+		src="http://image.spreadshirt.com/image-server/image/product/4016733/view/1/type/png/width/190/height/190" title="flurdy shirts (US): devil smile"/></a></td>
+</tr><tr>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/beast-mode-A3760998/customize/color/4"><img border="0" width="78" alt="beast mode"
+		src="http://image.spreadshirt.com/image-server/image/product/3903955/view/1/type/png/width/190/height/190" title="flurdy shirts (US): Beast Mode"/></a></td>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3491809"><img border="0" width="78" alt="dumb people"
+		src="http://image.spreadshirt.com/image-server/image/product/3874699/view/1/type/png/width/280/height/280" title="flurdy shirts (US): I see dumb people"/></a></td>
+</tr>
+<tr>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com/the-prophet-by-be-him-4-van-tribe-I2810099"><img border="0" width="78" alt="prophet"
+		src="http://image.spreadshirt.com/image-server/image/product/4075238/view/1/type/png/width/190/height/190" title="flurdy shirts (US): The prophet"/></a></td>
+	<td colspan="1"><a
+		href="http://flurdy.spreadshirt.com//wtf-A3492525"><img border="0" width="78" alt="wtf"
+		src="http://image.spreadshirt.com/image-server/image/product/3875236/view/2/type/png/width/280/height/280" title="flurdy shirts (US): WTF?"/></a></td>
+</tr>
+<tr>
+	<td colspan="2" align="center">
+		<h6><a href="http://shirts.flurdy.com">shirts.flurdy.com</a><br/>
+		<a href="http://shirts.flurdy.com/us">us</a> |
+		<a href="http://shirts.flurdy.com/uk">uk</a> |
+		<a href="http://shirts.flurdy.com/eu">eu</a></h6>
+	</td>
+</tr>
+</table>
+	</div>
+
+
+	<div class="section">
+
+	<a name="apache"></a>
+	<h3>
+		Just Apache
+	</h3>
+
+	<p>
+		If you all you need is plain web sites with perhaps PHP,
+		then this section is all you need.<br/>
+		To add Tomcat, part of the sections further down require
+		this section as well.
+	</p>
+
+	<table class="stepCommands">
+	<tr>
+		<th>Description</th>
+		<th>Commands</th>
+	</tr>
+	<tr>
+		<td>Install apache and PHP support</td>
+		<td>
+			<code>sudo aptitude install apache2 php5</code>
+		</td>
+	</tr>
+	<tr>
+		<td>Enable SSL/TSL encryption</td>
+		<td>
+			<code>sudo a2enmod ssl</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			I update the default-ssl virtual host
+			from _default_ to *.
+			This is if you have multipe ssl sites.
+		</td>
+		<td>
+			<code>
+				sudo vi /etc/apache2/sites-available/default-ssl
+			</code>
+			<code>
+				&lt;VirtualHost *:443&gt;
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			If you want to enable mod_rewrite
+		</td>
+		<td>
+			<code>
+				sudo a2enmod rewrite
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>Enable changes by restarting apache2</td>
+		<td>
+			<code>
+				apache2ctl -t;<br/>
+				sudo /etc/init.d/apache2 restart
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Next enable the web ports in your firewall
+		</td>
+		<td>
+			<code>
+				sudo vi /etc/shorewall/rules
+			</code>
+			<code>
+				Web(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;net &nbsp;&nbsp;$FW<br/>
+				Web(ACCEPT) &nbsp;&nbsp;&nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			You can add more <a href="#virtual_hosting">virtual hosts</a> in /etc/apache2/sites-available.
+			and then enable them with:
+		</td>
+		<td>
+			<code>
+				<code>
+					sudo a2ensite <i>virtualhostfile</i>
+				</code>
+			</code>
+		</td>
+	</tr>
+	</table>
+
+	<p>
+		Extensions:
+	</p>
+
+	<ul>
+		<li><strike>Subversion with mod_svn</strike></li>
+		<li><strike>Multi virtual hosts with SSL</strike></li>
+	</ul>
+
+	</div>
+
+
+	<br/>
+
+
+	<div class="section" style="clear: left;">
+
+	<a name="oneServer"></a>
+	<h3>
+		Apache and Tomcat on the same server with mod_jk
+	</h3>
+
+	<p>
+		(Note: mod-jk2 is deprecated, use mod-jk)
+	</p>
+	<p>
+		If you are having apache and tomcat on the same server,
+		you can use the old way of mod-jk.
+		<br/>
+		Note however mod-jk2 is now deprecated and you have to use
+		mod-jk (1).
+		<br/>
+		But today mod-proxy as detailed below
+		is even prefered over mod-jk in general.
+	</p>
+
+
+	<table class="stepCommands">
+	<tr>
+		<th>Description</th>
+		<th>Commands</th>
+	</tr>
+	<tr>
+		<td class="readable">Install Apache</td>
+		<td class="readable">
+			Follow <a href="#apache">Just Apache</a> above.
+		</td>
+	</tr>
+	<tr>
+		<td>Install Tomcat and mod-jk</td>
+		<td>
+			<code>sudo aptitude install tomcat6 libapache2-mod-jk</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Create mod-jk configuration
+		</td>
+		<td>
+			<code>
+				sudo cp /usr/share/doc/libapache2-mod-jk/httpd_example_apache2.conf /etc/apache2/conf.d/mod-jk.conf
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			To enable webapp passthroughs edit your virtual hosts.<br/>
+			<i>/example</i> will be picked up by the tomcat.<br/>
+			<i>/example/contact</i>  will be not passed to tomcat and
+			instead handled by apache.
+		</td>
+		<td>
+			<code>
+				JkMount /example* ajp13_worker<br/>
+				JkUnMount /example/contact ajp13_worker
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>Enable changes by restarting apache and tomcat</td>
+		<td>
+			<code>
+				apache2ctl -t;<br/>
+				sudo /etc/init.d/apache2 restart;<br/>
+				sudo /etc/init.d/tomcat6 restart
+			</code>
+		</td>
+	</tr>
+	</table>
+
+	</div>
+
+	<br/>
+
+
+	<div class="section">
+
+	<a name="sameProxy"></a>
+	<h3>
+		Apache and Tomcat on the same server with mod_proxy
+	</h3>
+
+	<p>
+		Follow the <a href="#differentProxy">different servers with mod_proxy</a> below but
+		skip the firewall bit and don't need new aliases.
+	</p>
+
+	</div>
+	<br/>
+
+	<div class="section">
+
+	<a name="twoServers"></a>
+	<a name="differentProxy"></a>
+	<h3>
+		Apache and Tomcat on different servers with mod_proxy
+	</h3>
+
+	<p>
+
+		This will tell you how to set up apache and tomcat
+		on two different isntance servers in ec2 (or anywhere really).
+		<br/>
+		This is how I have my set up and it works very well.
+	</p>
+
+	<p>
+		This is very much based on these guides:
+	</p>
+	<ul>
+		<li><a href="http://rimuhosting.com/mod_jk2_and_mod_proxy_ajp.jsp">JSP Hosting: mod_proxy_ajp or mod_jk2 Apache Connectors</a></li>
+		<li><a href="https://help.ubuntu.com/9.10/serverguide/C/tomcat.html">Ubuntu Help: Tomcat</a></li>
+		<li><a href="http://www.apachetutor.org/admin/reverseproxies">Running a Reverse Proxy with Apache</a></li>
+	</ul>
+
+	<br/>
+
+
+	<table class="stepCommands">
+	<tr>
+		<th rowspan="2">Description</th>
+		<th colspan="2">Commands</th>
+	</tr>
+	<tr>
+		<th>Apache server</th>
+		<th>Tomcat server</th>
+	</tr>
+	<tr>
+		<td class="readable">
+			Fire up two <a href="/docs/ec2/ubuntu/index.html">ubuntu servers</a> in Elasticfox.
+			One will be your Apache server.
+			The other your Tomcat server.
+		</td>
+		<td class="readable"></td>
+		<td class="readable"></td>
+	</tr>
+	<tr>
+		<td>
+			Install apache and tomcat.<br/>
+			Note Sun will require you to accept the DLJ license when installing java.
+		</td>
+		<td>
+			Follow <a href="#apache">Just Apache</a> above.
+		</td>
+		<td>
+			<code>sudo aptitude install sun-java6-jdk tomcat6 tomcat6-admin</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Enable mod proxy
+		</td>
+		<td>
+			<code>sudo a2enmod proxy_ajp</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>And allow proxying by changing the "<i>Deny from all</i>" to "<i>Allow from all</i>"</td>
+		<td>
+			<code>sudo vi /etc/apache2/mods-enabled/proxy.conf</code>
+			<code>
+			       Order deny,allow<br/>
+			       Allow from all<br/>
+			       #Deny from all
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Enable AJP port by uncommenting Connector</td>
+		<td>
+		</td>
+		<td>
+			<code>sudo vi /etc/tomcat6/server.xml</code>
+			<code>
+				&lt;Connector port="8009" protocol="AJP/1.3" redirectPort="8443" /&gt;
+			</code>
+
+		</td>
+	</tr>
+	<tr>
+		<td>Add an admin and manager user</td>
+		<td></td>
+		<td>
+			<code>sudo vi /etc/tomcat6/tomcat-users.xml</code>
+			<code>
+				&lt;role rolename="admin"/&gt;<br/>
+				&lt;role rolename="manager"/&gt;<br/>
+				&lt;user username="<i>yourUser</i>" password="<i>aPassword</i>" roles="admin,manager"/&gt;
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Bump up the memory available to Tomcat.
+			<br/>
+			And disable tomcat security
+		</td>
+		<td></td>
+		<td>
+			<code>sudo vi /etc/default/tomcat6</code>
+			<code>
+	JAVA_OPTS="-Djava.awt.headless=true -Xms128M -Xmx1280M -XX:MaxPermSize=256m"<br/>
+	TOMCAT6_SECURITY=no
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Open the firewall up on the tomcat server
+			to AJP traffic by enabling port 8009.<br/>
+			(You can also test if the tomcat server works
+			by enabled Web from the net zone temporarily)
+		</td>
+		<td></td>
+		<td>
+			<code>
+				sudo vi /etc/shorewall/rules
+			</code>
+			<code>
+				ACCEPT &nbsp;&nbsp;ec2 &nbsp;&nbsp;$FW &nbsp;&nbsp;tcp &nbsp;&nbsp;8009
+			</code>
+			<code>
+				sudo shorewall check;<br/>
+				sudo shorewall safe-restart
+			</code>
+	</tr>
+	<tr>
+		<td>
+			Now since both servers
+			are in ec2 you probably want to run them
+			on traffic just across the ec2 to avoid
+			extra traffic charges, for performance and security.
+			But if you use virtual hosts
+			then e.g. your tomcat server at <i>apps.example.com</i>
+			will not resolve across ec2 private IP range.
+			There are various ways to resolve this.<br/>
+			<br/>
+			One solution is this:
+			Create aliases such as:
+			<i>local.apps.example.com</i>,
+			<i>local.another.example.com</i>, etc
+			in the apache server hosts file
+			or the actual DNS
+			with the tomcat servers internal IP
+			which for example is 10.<i>2.3.4</i>.
+			(The private IP can be found in Elasticfox
+			by right clicking on the tomcat instance
+			and selecting copy Private IP)
+		</td>
+		<td>
+			<code>sudo vi /etc/hosts</code>
+			<code>10.<i>2.3.4</i> <i>local.apps.example.com</i></code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			Create a folder to put virtual hosts in eg /var/lib/tomcat6/<i>vhosts</i>
+		</td>
+		<td></td>
+		<td>
+			<code>
+				sudo mkdir <i>/var/lib/tomcat6/vhosts</i>;<br/>
+				sudo chown tomcat6:tomcat6 <i>/var/lib/tomcat6/vhosts</i>
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Create virtual hosts on the tomcat server
+			towards the end of the file after the default host.
+		</td>
+		<td></td>
+		<td>
+			<code>
+				sudo mkdir <i>/var/lib/tomcat6/vhosts/example.com</i>;<br/>
+				sudo chown tomcat6:tomcat6 <i>/var/lib/tomcat6/vhosts/example.com</i>;<br/>
+				sudo vi /etc/tomcat6/server.xml
+			</code>
+			<code>
+	&lt;Host name="<i>www.example.com</i>" appBase="<i>vhosts</i>/<i>example.com</i>"<br/>
+	&nbsp;&nbsp; unpackWARs="true" autoDeploy="true" xmlValidation="false" xmlNamespaceAware="false"&gt;<br/>
+	&nbsp;&nbsp;&nbsp; &lt;!-- &lt;Alias&gt;<i>local.apps.example.com</i>&lt;/Alias&gt; --&gt;<br/>
+			      	&lt;/Host&gt;
+			</code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Now you should upload a war file to the folders.
+			E.g as a subcontext <i>www.example.com/example</i><br/>
+			or as the default root application <i>www.example.com/</i>:
+		</td>
+		<td></td>
+		<td>
+			<code>sudo cp <i>example-2.1-SNAPSHOT</i>.war <i>/var/lib/tomcat6/vhosts/example.com/example.war</i></code>
+			<code>sudo cp <i>example-2.1-SNAPSHOT</i>.war <i>/var/lib/tomcat6/vhosts/example.com/ROOT.war</i></code>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			For each virtual host (/etc/apache2/sites-available/)<a href="#virtual_hosting"><sup>[1]</sup></a>
+			and within its &lt;VirtualHost&gt; tag, you need to start the delegation section with:
+		</td>
+		<td>
+			<code>
+				&lt;IfModule mod_proxy.c&gt;
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			And end with:
+		</td>
+		<td>
+			<code>
+	  			&lt;/IfModule&gt;
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			To preserve the host requested by the user when using virtual hosts on tomcat,<br/>
+			otherwise tomcat uses the actual ProxyPass alias.
+		</td>
+		<td>
+			<code>
+				ProxyPreserveHost On
+			</code>
+		</td>
+		<td></td>
+	</tr><tr>
+		<td>
+			To delegate /example to the webapp use this
+		</td>
+		<td>
+			<code>
+		ProxyPass /example ajp://<i>local.apps.example.com</i>:8009/<br/>
+		ProxyPassReverse /example ajp://<i>local.apps.example.com</i>:8009/
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			To enable the manager app do this
+		</td>
+		<td>
+			<code>
+		ProxyPass /manager ajp://<i>local.apps.example.com</i>:8009/manager<br/>
+		ProxyPassReverse /manager ajp://<i>local.apps.example.com</i>:8009/manager
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			To delegate everything in this virtual host:
+		</td>
+		<td>
+			<code>
+		ProxyPass / ajp://<i>local.apps.example.com</i>:8009/<br/>
+		ProxyPassReverse / ajp://<i>local.apps.example.com</i>:8009/
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			To delegate everything but not the images folder do this:<br/>
+			Note the "not" bits must come first.
+		</td>
+		<td>
+			<code>
+		ProxyPass /images !<br/>
+		ProxyPass / ajp://<i>local.apps.example.com</i>:8009/<br/>
+		ProxyPassReverse / ajp://<i>local.apps.example.com</i>:8009/<br/>
+			</code>
+		</td>
+		<td></td>
+	</tr></td>
+	</tr>
+	<tr>
+		<td>
+			If tomcat listens to a different alias than the user connects with,<br/>
+			you want to disable preserve hosts and use the alias in proxypass.<br/>
+			Also make sure your apache machine knows of this alias.<br/>
+			You need to reverse proxy the cookies as well:
+		</td>
+		<td>
+			<code>
+				ProxyPreserveHost Off<br/>
+				ProxyPass / ajp://<i>local.apps.example.com</i>:8009/<br/>
+				ProxyPassReverse / ajp://<i>local.apps.example.com</i>:8009/<br/>
+				ProxyPassReverseCookieDomain <i>local.apps.example.com</i> <i>www.example.com</i>
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>
+			This is a full example.<br/>
+			Note manager is commented out as the full
+			delegation already covers it.
+		</td>
+		<td>
+			<code>
+	&lt;IfModule mod_proxy.c&gt;<br/>
+	&nbsp;&nbsp;ProxyPreserveHost On<br/>
+	&nbsp;&nbsp;ProxyPass /css !<br/>
+	&nbsp;&nbsp;ProxyPass / ajp://<i>local.apps.example.com</i>:8009/<br/>
+	&nbsp;&nbsp;ProxyPassReverse / ajp://<i>local.apps.example.com</i>:8009/<br/>
+	&nbsp;&nbsp;# ProxyPassReverseCookieDomain <i>local.apps.example.com</i> <i>www.example.com</i><br/>
+	&nbsp;&nbsp;# ProxyPass /manager ajp://<i>local.apps.example.com</i>:8009/manager<br/>
+	&nbsp;&nbsp;# ProxyPassReverse /manager ajp://<i>local.apps.example.com</i>:8009/manager<br/>
+	  &lt;/IfModule&gt;
+			</code>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Now restart apache and tomcat</td>
+		<td>
+			<code>
+				 apache2ctl -t;<br/>
+				 sudo /etc/init.d/apache2 restart
+			</code>
+		</td>
+		<td>
+			<code>
+				sudo /etc/init.d/tomcat6 restart
+			</code>
+		</td>
+	</tr>
+	</table>
+
+	<br/>
+	<br/>
+
+	<p>
+		That should be it!
+	</p>
+	<p>
+		If you do not want to use mod_ajp, then mod_http works fine too. <br/>
+		Remember to open different firewall ports.
+		And use the proxypass http:// instead of ajp and the correct ports.
+	</p>
+
+
+	</div>
+
+	<br/>
+
+	<div class="section">
+
+	<a name="multipleJetty"></a>
+	<h3>
+		<strike>Apache and multiple Jetty on different servers with mod_proxy </strike>
+	</h3>
+
+	<p>
+		Similar to section above <a href="#differentProxy">tomcat on different servers</a>,
+		with different ports etc in the mod-proxy ProxyPass commands.
+		<br/>
+		As I myself use plenty of maven jetty plugin apps this is very usefull.
+		<br/>
+		<br/>
+		More detail to come...
+	</p>
+	<br/>
+
+	<a name="virtual_hosting"></a>
+	<div class="section">
+
+		<h3>Virtual Hosting</h3>
+
+		<p>
+			Quick rundown on how to set up virtual hosting, ie listen to several domain names and showing different websites.
+		</p>
+		<br/>
+		<p>
+			The configuration is in /etc/apache2/sites-available.
+			Each site generally has separate files.
+			<br/>
+			E.g : if we host two domains <i>example.com</i> and <i>invalid.net</i>,
+			then convention say they are configured in:
+			<br/>
+			/etc/apache2/sites-available/<i>example.com</i>		&amp;
+			/etc/apache2/sites-available/<i>invalid.net</i>.
+		</p>
+		<p>
+			Within each of these files you might have several
+			&lt;VirtualHost&gt; sections, but minimum one.
+			<br/>
+			You might have one for <i>www.example.com</i>,
+			another which redirects <i>example.com</i> to <i>www.example.com</i>,
+			a third for <i>intra.example.com</i> etc.
+		</p>
+		<p>
+			Here is a typical virtual host files (without any tomcat delegation):
+		</p>
+		<code class="file">
+&lt;VirtualHost *:80&gt;<br/>
+&nbsp;&nbsp;	ServerAdmin webmaster@<i>example.com</i><br/>
+&nbsp;&nbsp; 	ServerName www.<i>example.com</i><br/>
+&nbsp;&nbsp; 	DocumentRoot /var/www/<i>example.com</i><br/>
+&nbsp;&nbsp; 	ErrorLog /var/log/apache2/error-<i>example.com</i>.log<br/>
+&nbsp;&nbsp; 	LogLevel warn<br/>
+&nbsp;&nbsp; 	CustomLog /var/log/apache2/access-<i>example.com</i>.log vhost_combined<br/>
+&nbsp;&nbsp; 	ServerSignature On<br/>
+&lt;/VirtualHost%gt;<br/>
+<br/>
+&lt;VirtualHost *:80&gt;<br/>
+&nbsp;&nbsp; 	ServerName example.com<br/>
+&nbsp;&nbsp; 	ServerAlias example.co.uk<br/>
+&nbsp;&nbsp; 	CustomLog /var/log/apache2/redirect-access.log vhost_combined<br/>
+&nbsp;&nbsp; 	Redirect permanent / http://www.<i>example.com</i>/<br/>
+&lt;/VirtualHost&gt;
+		</code>
+		<p>
+			Once configured, you can enable this virtual host with this command:
+		</p>
+		<code class="command">sudo a2ensite <i>example.com</i></code>
+		<p>
+			This basically puts a softlink in /etc/apache2/sites-enabled to the <i>example.com</i> file in /etc/apache2/sites-available.
+			<br/>
+			The opposite to this is the a2dissite command.
+		</p>
+		<p>
+		</p>
+
+	</div>
+
+	<br/>
+
+	<a name="references"></a>
+	<div class="section">
+
+		<h3>References</h3>
+
+		<ul>
+			<li>
+				Apache httpd
+				<ul>
+					<li><a href="http://httpd.apache.org">Website</a></li>
+					<li><a href="http://httpd.apache.org/docs/2/2/">Documentation</a></li>
+				</ul>
+			</li>
+			<li>
+				Apache Tomcat
+				<ul>
+					<li><a href="http://tomcat.apache.org">Website</a></li>
+					<li><a href="http://tomcat.apache.org/tomcat-7.0-doc/">Documentation</a></li>
+				</ul>
+			</li>
+			<li>
+				Ubuntu
+				<ul>
+					<li><a href="http://www.ubuntu.com">Website</a></li>
+					<li><a href="https://help.ubuntu.com/10.04/serverguide/C/httpd.html">Apache documentation</a></li>
+					<li><a href="http://help.ubuntu.com/10.04/serverguide/C/tomcat.html">Tomcat documentation</a></li>
+				</ul>
+			</li>
+			<li>
+				flurdy's ec2:
+				<ul>
+					<li><a href="/docs/ec2">ec2 documentation index</a></li>
+					<li><a href="/docs/ec2/basics/">Amazon ec2 Introduction &amp; Beginners Guide</a></li>
+					<li><a href="/docs/ec2/ubuntu/">Simple Ubuntu Server in the cloud</a></li>
+				</ul>
+			</li>
+		</ul>
+
+	</div>
+
+	<br/>
+
+	<br/>
+	<p>
+		Remember <a href="/docs/ec2/index.html#feedback">feedback</a> is important!
+	</p>
+
+	</div>
+
+<br/>
+
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+	</div>
+<br/>
+<br/>
+
+	<p>
+		<a href="/docs/ec2/index.html">back to flurdy's ec2 docs</a> for more ec2 tips and howtos.
+	</p>
+
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+
+	</div>
+
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+
+</body>
+</html>
+

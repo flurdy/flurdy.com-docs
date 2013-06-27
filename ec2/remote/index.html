@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>ec2 - Remote access via the cloud</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+	</style>
+</head>
+<body>
+
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img 
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>ec2 - Amazon Elastic Compute Cloud tips and howtos</h1>
+
+	<h2>
+		Remote access via the cloud
+	</h2>
+	
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>	
+	
+	<h5>
+		This page is part of <a href="/docs/ec2/index.html">larger set of tips &amp; howtos on ec2 by flurdy.</a>
+	</h5>
+	
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+
+	<div id="ec2toc">
+		<h5><a href="/docs/ec2/">Other ec2 docs</a> by flurdy</h5>
+		<ul>
+			<li>
+				Tips				
+				<ul>
+					<li><a href="/docs/ec2/basics/">basics</a></li>
+					<li><a href="/docs/ec2/network/">instances</a></li>
+					<li><a href="/docs/ec2/ami/">ami</a></li>
+					<li><a href="/docs/ec2/ebs/">ebs</a></li>
+					<li><a href="/docs/ec2/backup/">backup</a></li>
+				</ul>
+			</li>
+			<li>
+				Howtos
+				<ul>
+					<li><a href="/docs/ec2/ubuntu/">ubuntu</a></li>
+					<li><a href="/docs/ec2/apache_tomcat/">apache &amp; tomcat</a></li>
+					<li><a href="/docs/ec2/mail/">mail</a></li>
+					<li><a href="/docs/ec2/remote/">remote</a></li>
+				</ul>
+			</li>
+		</ul>	
+	</div>
+	
+	<h4><i>Document state: draft</i></h4>
+
+	
+	<ul>
+		<li>Started this section: 17th Nov 2009</li>
+		<li>Last update: 3rd Dec 2009</li>
+		<li>Estimated usuable release: Jan 2010</li>
+	</ul>
+
+
+
+	<div id="starboard">
+<script type="text/javascript">
+google_ad_client = "pub-7805345644641760";
+/* e2 skyscraper */
+google_ad_slot = "1431774089";
+google_ad_width = 160;
+google_ad_height = 600;
+//
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--	
+		<img src="http://code.flurdy.com/images/skyscraper.gif" align="right" alt="" />
+	-->
+	</div>
+	
+
+	<p>
+		As a person allocated as the "IT" person in the family,
+		irrespective of that my actual job is integrating banking systems 
+		or telecom billing systems,
+		I have to perform HelpDesk/Support for all sides of the family.
+		As some live in different cities and countries this is mostly remote support.
+		So I have as part of my scheme to keep my sanity installed
+		a VNC client on all my family's PCs which are mostly Windows.
+	</p>
+			
+	<p>
+		But previously that meant connecting directly which meant
+		opening firewalls, relying on them entering text correctly etc.
+		Which was a pain and error prone.
+		Especially as my own IPs etc would change over time.
+	</p>
+	
+	<p>
+		But the solution to this is ec2. 
+		With this I can keep a static "batch" file
+		on their desktops to connect to an elastic IP in the cloud.
+		So this means my actual location is irrelevant,
+		and they do not have to enter anything.
+		At worst, without a batch script they have to enter a 
+		standard url.
+	</p>
+	
+	<p>	
+		Here are some of my sanity preserving steps:
+		(Including a way to recover and fix remote Windows machine by using a Linux Live CD.)
+	</p>
+	
+	
+		
+	<h3>
+		Pre requisites
+	</h3>
+	<ul>
+		<li><a href="/docs/ec2/basics/">Amazon ec2 beginners guide</a></li>
+		<li><a href="/docs/ec2/ubuntu/">Simple ubuntu server in the cloud</a></li>
+		<li><a href="/docs/ec2/network/">ec2 instances</a></li>
+		<li><a href="/docs/ec2/ami/">How to make an Amazon Machine Image (AMI)</a></li>
+	</ul>
+
+	
+	<p>
+	</p>
+		
+	<a name="vnc"></a>
+	<h3>
+		VNC tunnel
+	</h3>
+
+	
+	<p>
+	</p>
+	
+	<pre>		
+	
+		install a vnc type on local machine		
+				
+		install realvnc/tightvnc on family pcs
+				
+		Allocate IP address (if non already unused) in elasticfox
+				
+		create batch script for family to run from their desktop
+			launches vnc and connects to ec2 instance
+			using elastic IP allocated
+			
+		configure a ec2 security group to allow vnc in elasticfox
+		
+		launch an ubuntu AMI with ssh and vnc security group
+	
+		assign elastic IP to instance in elasticfox
+	
+		configure shorewall on ec2 instance
+			to listen to desired external vnc port (and ssh)
+			if not part of the AMI
+								
+		open ssh script locally to tunnel vnc and relay through ec2 instance
+		
+		if not allowed to open restricted ports on ec2 instance via ssh tunnel
+			then run ssh script on ec2 instance to connect to local port and listen to external port
+			
+		run dos batch script to connect to ec2 instance from family pc
+		
+		run vnc locally to connect to ssh tunnel locally	
+		
+		voila
+		
+	</pre>
+
+	<a name="ssh"></a>
+	<h3>
+		Remote SSH access
+	</h3>
+
+	<p>
+		Refer to <a href="/docs/livecd/">my live cd doc</a>.
+		In SERVERNAME use the public dns name of your ec2 instance.
+	</p>
+	
+	<pre>
+	</pre>
+	
+	
+	
+	<a name="jungle"></a>
+	<h3>
+		Jungle Disk uploading 
+	</h3>
+
+	<p>
+	</p>
+	
+	<pre>
+		Sign up for Jungle Disk.
+		Was a one off $20 when I signed up.
+		Now is $2 or $3 subscription.
+		S3 costs on top.
+		
+
+		Launch alestic 32bit desktop (need ubuntu karmic due to fuse not in kernal before)
+		<s>http://ec2jaunty-desktop.notlong.com/</s>
+		follow that page to install nxclient
+		
+		Launch alestic karmic desktop build hints
+		http://alestic.com/2009/11/ec2-karmic-desktop
+		need to understand user data scripts beforehand
+		
+		Or create your own desktop
+			Launch your ubuntu server or canonical image.
+			Install ubuntu-desktop (takes time)
+			
+		suggest making AMI
+		
+		install NX (see alestic script http://run.alestic.com/install/desktop)
+					
+		suggest making AMI
+
+		follow http://blog.kenweiner.com/2008/03/jungle-disk-on-linux.html
+		download http://downloads.jungledisk.com/jungledisk/jungledisk.tar.gz
+		<s>http://downloads.jungledisk.com/jungledisk/junglediskdesktop_301-0_i386.deb</s>
+		untar move to /opt
+		install fuse-utils davfs
+		add to fuse group
+		run junglemonitor
+		enter keys
+		select bucket
+
+		note speed differnences if ec2 instance is in the same region as s3 bucket
+	
+		or use ec2 windows....
+	</pre>
+	
+
+	<a name="http"></a>
+	<h3>Tunnel SSH over Http</h3>
+	<p>
+		No, not the other way round...<br/>
+		Tunneling web traffic through SSH is easy and well covered on the net.<br/>
+		But tunneling SSH through a http proxy if SSH is blocked by the firewall
+		is less common but very helpfull.
+	</p>
+	<p>
+		If you are behind an restrictive firewall that does not allow SSH, 
+		then this is how to circumvent that restriction.
+	</p>
+	<p>
+		I can understand restricting SSH access for the general staff,
+		however for a developer it is if someone tied my hands behind
+		my back and forced me to type with my nose
+		(especially if Windows is forced on me as well...).
+	</p>
+	<p>
+	</p>
+	<p>
+	</p>
+	<pre>
+		http://proxytunnel.sourceforge.net/intro.php
+		http://daniel.haxx.se/docs/sshproxy.html
+		http://www.mtu.net/~engstrom/ssh-proxy.php
+		http://shsc.info/SSHThroughHTTPProxy
+	</pre>
+
+<br/>
+
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+	</div>
+
+
+<br/>
+<br/>
+
+	<p>
+		Head <a href="/docs/ec2/index.html">back to flurdy's ec2 docs</a>
+		for more ec2 tips and howtos?
+	</p>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>	
+	
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript"> 
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+	
+</body>
+</html>
+

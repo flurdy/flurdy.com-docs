@@ -1,0 +1,607 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>ec2 - How to make an Amazon Machine Image (AMI)</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta http-equiv="Keywords" content="ec2,ami,amazon,aws,image,howto,machine,tips">
+	<meta name="description" content="How to make an Amazon Machine Image (AMI) for use with Amazon ec2. With step by step commands.">
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		html { }
+		body { min-width: 100em; max-width: 110em; }
+		#starboard, #ec2toc { margin: 1em 30em 1em 1em; }
+	</style>
+</head>
+<body>
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>ec2 - Amazon Elastic Compute Cloud tips and howtos</h1>
+
+	<h2>How to make an Amazon Machine Image (AMI)</h2>
+
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+	<h5>
+		This page is part of <a href="/docs/ec2/">larger set of tips &amp; howtos on ec2 by flurdy.</a>
+	</h5>
+
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<a class="addthis_button_preferred_1"></a>
+<a class="addthis_button_preferred_2"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+
+	<div id="ec2toc">
+		<h5><a href="/docs/ec2/">Other ec2 docs</a> by flurdy</h5>
+		<ul>
+			<li>
+				Tips
+				<ul>
+					<li><a href="/docs/ec2/basics/">basics</a></li>
+					<li><a href="/docs/ec2/network/">instances</a></li>
+					<li><a href="/docs/ec2/ami/">ami</a></li>
+					<li><a href="/docs/ec2/ebs/">ebs</a></li>
+					<li><a href="/docs/ec2/backup/">backup</a></li>
+				</ul>
+			</li>
+			<li>
+				Howtos
+				<ul>
+					<li><a href="/docs/ec2/ubuntu/">ubuntu</a></li>
+					<li><a href="/docs/ec2/apache_tomcat/">apache &amp; tomcat</a></li>
+					<li><a href="/docs/ec2/mail/">mail</a></li>
+					<li><a href="/docs/ec2/remote/">remote</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+	<br/>
+
+	<p>
+		This will tell you step by step how to create a Amazon AWS ec2 AMI image.
+		<br/>
+		It presumes you know all about ec2, know what an AMI is and have followed the previous required guides.
+	</p>
+
+
+	<script type="text/javascript"><!--
+	google_ad_client = "ca-pub-7805345644641760";
+	/* ec2 ami leaderboard */
+	google_ad_slot = "9182035465";
+	google_ad_width = 728;
+	google_ad_height = 90;
+	//-->
+	</script>
+	<script type="text/javascript"
+	src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+	</script>
+
+	<h3>
+		Pre requisites
+	</h3>
+	<ul>
+		<li><a href="/docs/ec2/basics/">Amazon ec2 beginners guide</a></li>
+		<li><a href="/docs/ec2/ubuntu/">Simple ubuntu server in the cloud</a></li>
+		<li><a href="/docs/ec2/backup/">Backup tips</a></li>
+	</ul>
+
+	<p>
+		You need to be comfortable with running an <a href="/docs/ec2/basics/">ec2 instance</a>.<br/>
+		Obviously you need an instance to make an image from,
+		and I will assume this is an Ubuntu one similar to my <a href="/docs/Ec2/ubuntu">ubuntu server tips</a>.<br/>
+		You need to be set up with S3, and have a backup plan and a bucket for AMIs beforehand.
+		Check my <a href="/docs/ec2/backup/">backup</a> page for S3 tips.
+	</p>
+
+	<div id="starboard">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+/* e2 skyscraper */
+google_ad_slot = "1431774089";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--
+		<img src="http://code.flurdy.com/images/skyscraper.gif" align="right" alt="" />
+-->
+	</div>
+
+	<h4>EBS or instance based boot</h4>
+	<p>
+		Basically if your instance is booted and running from the default assigned disk
+		or booted and running directly from an EBS store.
+		This guide will assume instance boot.
+	</p>
+	<p>
+		How to make an image of an EBS boot will be made soon.
+		(Basically you take a snapshot of it and some extra steps,
+			the AWS console automates this for you)
+	</p>
+
+
+	<h3>Step by step</h3>
+
+	<p>
+	</p>
+
+	<h4>Assumtions:</h4>
+	<ul>
+		<li>ssh key is in <i>.ec2</i> folder.</li>
+		<li>.pem files is in <i>.ec2</i> folder.</li>
+		<li><i>ubuntu</i> is the user you want to use.</li>
+		<li>Encrypted text file with AWS details is called <i>accessKeys.txt.gpg</i> in the <i>.ec2</i> folder.</li>
+	</ul>
+	<p>
+		Change commands below if any different.
+	</p>
+
+	<h4>Legends to replace</h4>
+	<ul>
+		<li><i>yourAwsKey</i>:
+			Replace with your SSH key associatede  with ec2.
+		</li>
+		<li><i>awsUser</i>:
+			Replace with your Amazon AWS user id string.
+		</li>
+		<li><i>awsAccessKey</i>:
+			Replace with your Amazon AWS access key string.
+		</li>
+		<li><i>awsSecretKey</i>:
+			Replace with your Amazon AWS secret key string.
+		</li>
+		<li><i>yourGpgEmailId</i>:
+			Replace with your email address with a GPG key.
+		</li>
+		<li><i>publicDNSname</i>:
+			Replace with the DNS name of the server you want to make an image of.
+			<br/>
+			Can be a your real dns domain name
+			or the dynamic ec2 one found via elasticfox.
+		</li>
+		<li><i>descriptive_name-date-version</i>:
+			Repalce with a good naming strategy,
+			as you quickly create a lot of images...
+		</li>
+		<li><i>s3bucket</i>:
+			Replace with whatever your S3 bucket is called where you want
+			the images to be stored.
+		</li>
+		<li><i>publiDNSNameOfNewImage</i>:
+			Replace with the dynamic ec2 public DNS name found via elasticfox
+			of the new instance.
+		</li>
+	</ul>
+
+	<h4>Beforehand</h4>
+	<p>
+		Steps you need to do before hand. But only once.
+	</p>
+
+	<table class="stepCommands">
+		<tr>
+			<th>Local</th>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Make sure you have your AWS ssh key at hand</li>
+					<li>Make sure you got your two AWS certifcates at hand</li>
+					<li>Find your Amazon AWS access key IDs</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td><code>
+				vi <i>~/.ec2/accessKeys.txt</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Past details into the file so it looks something like this:</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td><code>
+				export AWS_ACCESS_KEY_ID=<i>awsAccessKey</i><br/>
+				export AWS_SECRET_ACCESS_KEY=<i>awsSecretKey</i><br/>
+				export AWS_USER=<i>awsUser</i>
+			</code></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Save and exit VIM</li>
+					<li>Next encrypt this text file if you want to</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td><code>
+				gpg -r <i>yourGpgEmailId</i> -e <i>~/.ec2/accessKeys.txt</i>;<br/>
+				shred -u <i>~/.ec2/accessKeys.txt</i>
+			</code></td>
+		</tr>
+	</table>
+
+	<h4>Commands</h4>
+
+	<p>
+		Step by step commands to do every time you want to make an AMI.
+		Which you should do at regular intervals
+		and definetly after evey major change to your instance.
+		(Having a good <a href="/docs/ec2/backup/index.html">backup</a>
+		and <a href="/docs/ec2/ebs/index.html">EBS</a> strategy
+		reduces this frequency.)
+	</p>
+
+
+	<table class="stepCommands">
+		<tr>
+			<th>Remote/ec2 instance to backup</th>
+			<th>Local</th>
+			<th>Remote/ec2 new instance image</th>
+		</tr>
+		<tr>
+			<td></td>
+			<td><code>
+				ssh -i <i>.ec2</i>/<i>yourAwsKey</i> <i>ubuntu</i>@<i>publicDNSname</i>
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>
+				cd /mnt;<br/>
+				sudo mkdir ec2;<br/>
+				sudo chown <i>ubuntu</i>:<i>ubuntu</i> ec2
+			</code></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><code>
+				scp -i <i>.ec2</i>/<i>yourAwsKey</i> <i>.ec2</i>/*.pem <i>ubuntu</i>@<i>publicDNSname</i>:/mnt/ec2/
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>vi ec2/api</code></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><code>gpg -d <i>.ec2</i>/<i>accessKeys.txt.gpg</i></code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<ul>
+					<li>Copy access keys lines</li>
+				</ul>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Paste inn ssh keys into VIM window</li>
+					<li>Save and exit VIM</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>
+				source ec2/api;<br/>
+				sudo mkdir bundle
+			</code></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				Shut down any services, e.g. Apache, Postfix, etc.<br/>
+				(Depends on what is running on your instance)<br/>
+					Here are a couple of examples:
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<code>
+					sudo /etc/init.d/<i>apache2</i> stop;<br/>
+					sudo /etc/init.d/<i>spamassassin</i> stop;<br/>
+					sudo /etc/init.d/<i>amavis</i> stop;<br/>
+					sudo /etc/init.d/<i>clamav-freshclam</i> stop;<br/>
+					sudo /etc/init.d/<i>clamav-daemon</i> stop;<br/>
+					sudo /etc/init.d/<i>courier-authdaemon</i> stop;<br/>
+					sudo /etc/init.d/<i>courier-imap-ssl</i> stop;<br/>
+					sudo /etc/init.d/<i>courier-imap</i> stop;<br/>
+					sudo /etc/init.d/<i>postfix</i> stop;<br/>
+					sudo /etc/init.d/<i>tomcat6</i> stop;<br/>
+					sudo /etc/init.d/<i>mysql stop
+				</code>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+					Unmount any <a href="/docs/ec2/ebs/index.html">EBS</a>,
+					if any are attached to this instance.<br/>
+					Here are a couple of examples:
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<code>
+					sudo umount <i>/mnt/www</i>;<br/>
+					sudo umount <i>/mnt/webapps</i>;<br/>
+					sudo umount <i>/mnt/logs</i>;<br/>
+					sudo umount <i>/mnt/home</i>;<br/>
+					sudo umount <i>/mnt/mail</i>;<br/>
+					sudo umount <i>/mnt/mysql</i>
+				</code>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li><h5>Warning. If to be made public please verify:</h5>
+						<ul>
+							<li>log files are emptied</li>
+							<li>no bash history is retained</li>
+							<li>your ssh key is not left in any authorizedKeys files</li>
+							<li>passwords are reset</li>
+							<li>other services with passwords are reset (mysql, etc)</li>
+							<li>/tmp and similar is cleared</li>
+							<li>god knows what do do with ext3 journals?:..</li>
+							<li>.....</li>
+						</ul>
+					</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>
+				sudo ec2-bundle-vol -d /mnt/bundle/ \<br/>
+				-k /mnt/ec2/pk-*.pem -c /mnt/ec2/cert-*.pem \<br/>
+				-u  $AWS_USER -s 4096 -r i386 \<br/>
+				-p <i>descriptive_name-date-version</i>
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Wait awhile... till its done.</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>If not already done, create the bucket to be used for storing the AMI</li>
+					<li>
+						This assumes you have <a href="http://s3sync.net">s3sync</a> installed on the instance.<br/>
+						For more info on s3sync and installation guide
+						read my <a href="/docs/ec2/backup/">backup page</a>.
+					</li>
+					<li>
+						If you do not have or want s3sync,<br/>
+						you need to create a bucket via the ec2 command line tools
+						or tools like <a href="/docs/ec2/index.html#links">s3fox</a>
+					</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>
+					s3cmd.rb	createbucket <i>s3bucket</i>
+			</code></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Upload the AMI to S3</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>
+				ec2-upload-bundle -b <i>s3bucket</i> \<br/>
+				-m /mnt/bundle/<i>descriptive_name-date-version</i>.manifest.xml \<br/>
+				-a $AWS_ACCESS_KEY_ID -s $AWS_SECRET_ACCESS_KEY \<br/>
+				--location <i>US</i>
+			</code></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Wait awhile... till its done.</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<ul>
+					<li>Register via elasticfox (or command line...)</li>
+					<li>Path to use is <i>s3bucket</i>/<i>descriptive_name-date-version</i>.manifest.xml</li>
+					<li>Find new image in elasticfox and boot it</li>
+				</ul>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td><code>
+				ssh -i <i>.ec2</i>/<i>yourAwsKey</i> <i>ubuntu</i>@<i>publicDNSnameOfNewImage</i>
+			</code></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td>
+				<ul>
+					<li>Test if you can log in and looks ok.</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td><code>
+				sudo shutdown -h now
+			</code></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<ul>
+					<li>Terminate test instance in elasticfox (be carefull...)</li>
+				</ul>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>sudo rm -rf ec2 bundle</code></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					<li>Mount EBSes again</li>
+					<li>Start services previously stopped</li>
+				</ul>
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<ul>
+					<li>You can via elasticfox make this instance image public! Risky...</li>
+				</ul>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+
+	<br/>
+
+	<p>
+	 Voila!
+	 </p>
+
+
+	 <p>
+	 	Any issues or comments, refer to my <a href="/docs/ec2/index.html#feedback">feedback</a> :)
+	</p>
+
+<br/>
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+	</div>
+
+<br/>
+<br/>
+	<p>
+		head <a href="/docs/ec2/index.html">back to flurdy's ec2 docs</a>
+		for more ec2 tips and howtos?
+	</p>
+
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+
+</body>
+</html>
+

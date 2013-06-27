@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>ec2 - Mail server in the cloud</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+	</style>
+</head>
+<body>
+	
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img 
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+
+	<h1>ec2 - Amazon Elastic Compute Cloud tips and howtos</h1>
+
+	<h2>
+		Mail server in the cloud
+	</h2>
+	
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+
+	<div id="ec2toc">
+		<h5><a href="/docs/ec2/">Other ec2 docs</a> by flurdy</h5>
+		<ul>
+			<li>
+				Tips				
+				<ul>
+					<li><a href="/docs/ec2/basics/">basics</a></li>
+					<li><a href="/docs/ec2/network/">instances</a></li>
+					<li><a href="/docs/ec2/ami/">ami</a></li>
+					<li><a href="/docs/ec2/ebs/">ebs</a></li>
+					<li><a href="/docs/ec2/backup/">backup</a></li>
+				</ul>
+			</li>
+			<li>
+				Howtos
+				<ul>
+					<li><a href="/docs/ec2/ubuntu/">ubuntu</a></li>
+					<li><a href="/docs/ec2/apache_tomcat/">apache &amp; tomcat</a></li>
+					<li><a href="/docs/ec2/mail/">mail</a></li>
+					<li><a href="/docs/ec2/remote/">remote</a></li>
+				</ul>
+			</li>
+		</ul>	
+	</div>
+	
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>	
+	
+	<h5>
+		This page is part of <a href="/docs/ec2/index.html">larger set of tips &amp; howtos on ec2 by flurdy.</a>
+	</h5>
+	
+	<div id="starboard">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+/* e2 skyscraper */
+google_ad_slot = "1431774089";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<!--		
+		<img src="http://code.flurdy.com/images/skyscraper.gif" align="right" alt="" />
+-->
+	</div>
+
+	<p>
+		Amazon ec2 is an excellent stage for servers,
+		and mail servers fits in very well.
+		Here is a quick guide on setting up a mail server
+		and on demand backup mx as well in the cloud.
+	</p>
+	
+	<h3>
+		Pre requisits
+	</h3>
+	<ul>
+		<li><a href="/docs/ec2/basics/index.html">Amazon ec2 beginners guide</a></li>
+		<li><a href="/docs/ec2/ubuntu/index.html">Simple ubuntu server in the cloud</a></li>
+	</ul>
+
+	<h3>
+		Two howtos in one:
+	</h3>
+	<ul>
+		<li><a href="#mailserver">Mail server</a></li>
+		<li><a href="#backupserver">Backup mail server</a></li>
+	</ul>
+	
+	<br/>
+	
+	
+		
+	<a name="mailserver"></a>	
+	<h3>
+		Mail server
+	</h3>
+
+	<p>
+		Instead of duplicating howtos, 
+		follow my <a href="/docs/postfix/">How to set up a mail server on a GNU / Linux system</a> instead.
+	</p>
+	<br/>
+	
+
+	<a name="backupserver"></a>	
+	<h3>
+		Backup mail server
+	</h3>
+	
+	<p>		
+		If as above you can follow my <a href="/docs/postfix/">How to set up a mail server on a GNU / Linux system</a>, then there is a extention section
+		on how to set up <a href="/docs/postfix/index.html#ext_mx">backup mx servers</a>.
+	</p>
+	<p>
+		This section will be extended to show how to set this up
+		without the local delivery, without IMAP etc, thus a true backup mx.
+	</p>
+
+
+
+	<a name="backupserver"></a>	
+	<h3>
+		Amazon ec2 Mail issues
+	</h3>
+	
+	<p>
+		Having mail servers in the cloud of Amazon ec2 does have a couple of issues.
+	</p>
+	<ul>
+		<li>
+			Spammers set up mail spamming instances in the ec2 cloud.
+			Thus the ec2 ips are blocked by some spam checking tools.
+			In the postfix howto document I tell you how to unlist your public ip.
+			Basically go to <a href="http://spamhaus.org">spamhaus.org</a>
+			and fill their unlisting forms.
+		</li>
+		<li>
+			Amazon have themselves set up restrictions for this.
+			Thus port 25 traffic of new AWS accounts are restricted.
+			Follow the advice in 
+			<a href="http://aws.amazon.com/ec2/faqs/#Are_there_any_limitations_in_sending_email_from_EC2_instances">their article</a> on how to 
+			<a href="http://aws.amazon.com/contact-us/ec2-email-limit-request/">be approved</a>.
+		</li>
+		<li>
+			Thirdly,  if you are in the cloud, your mail server is not local.
+			So if you sent 50MB files as attachment to someone else,
+			the transfer will take awhile compared to a local mail server.
+		</li>
+	</ul>
+
+<br/>
+
+	<div id="searchbox">
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	<div>
+     		<input type="hidden" name="cx" value="partner-pub-7805345644641760:kgd71hsfszt" />
+        	<input type="hidden" name="ie" value="ISO-8859-1" />
+	      	<input type="text" name="q" size="31" />
+	        <input type="submit" name="sa" value="Search" />
+	</div>
+	</form>
+	<script type="text/javascript" src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"></script>
+<!--
+		<input type="hidden" name="cof" value="FORID:10" />
+-->
+
+<br/>
+<br/>
+
+	<p>
+		<a href="/docs/ec2/index.html">back to flurdy's ec2 docs</a>
+	</p>
+
+
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="/docs/ec2/index.html#feedback">contact/feedback</a> |</li>
+		<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>	
+	
+	<a href="http://flurdy.com"><img src="/images/flurdy-small.png" border="0" align="right" alt="flurdy" title=""/></a>
+	
+	<br/>
+<!--[if IE 6]>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript"> 
+		var __noconflict = true;
+		var IE6UPDATE_OPTIONS = {
+			icons_path: "http://static.ie6update.com/hosted/ie6update/images/",
+			url: "http://www.mozilla.com/en-US/firefox/ie.html?from=sfx&amp;uid=49307&amp;t=450"
+		}
+	</script>
+	<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-281408-1";
+		urchinTracker();
+	</script>
+	
+</body>
+</html>
+

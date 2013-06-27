@@ -1,0 +1,78 @@
+
+html {
+	padding: 0.2em 0.5em;
+	background-color: #ddd;
+ }
+
+body{
+	color: black;
+	font-family: Arial, Sans, sans-serif, serif;
+	margin: 1em;
+	padding: 1em;
+	background-color: #fff;
+	border: 1px outset black;
+	max-width: 70em;
+}
+
+ul.horizontal { }
+ul.horizontal li {  list-style: none; display: inline; }
+
+h1 { font-size: 22pt; }
+h2 { font-size: 18pt; }
+h3 { font-size: 14pt; margin: 1.5em 0.5em 0.5em 0.1em; }
+h4 { font-size: 12pt; margin: 1.5em 0.5em 0.5em 0.1em; }
+h5 { font-size: 10pt; font-weight: bold; }
+li { font-size: 10pt; }
+p { font-size: 10pt; }
+i { color: #035303; font-weight: bold; }
+code i { color: #339333; }
+
+#starboard { float: right; clear: right; margin: 1em; padding: 0.5em 1.0em 0.5em 0.5em; }
+#starboard iframe { border: 2px inset silver; }
+
+code { background-color: black; border: 1px inset silver;
+	color: white; display: block; font-size: 9pt; font-family: monospace;
+	padding: 0.3em 0.5em;
+	white-space: nowrap;
+ }
+table.stepCommands { border: 3px outset silver; }
+table.stepCommands th { font-size: 12pt; }
+table.stepCommands th,
+table.stepCommands td { border: 1px inset silver; background-color: white; }
+table.stepCommands td { font-size: 10pt; }
+table.stepCommands td code {  }
+table.stepCommands td code i { color: #73f373; font-weight: bold; }
+table.stepCommands td li { font-size: 10pt; }
+table.stepCommands td.readable { min-width: 40em; }
+
+table.listing { border: 3px outset silver; }
+table.listing th,
+table.listing td { border: 1px inset silver;
+	background-color: white; padding: 0.2em; }
+
+tt { font-family: monospace; border: 1px dashed silver;
+			padding: 1em; display: block; width: 40em; }
+
+
+p { padding: 0.2em 0.2em; margin: 0.2em; 0.2em; }
+
+table.stepCommands td.readable {
+			min-width: 25em; width: 39em; overflow: hidden; }
+
+table.stepCommands td code { width: 40em; overflow: auto; }
+
+
+
+
+#ec2toc	{	float: right; 	width: 12em;	border: 2px outset silver;	padding: 0.5em 1em;  margin: 0.2em 0.2em 0.2em 2em;}
+#ec2toc h5 {  	margin: 0; }
+#ec2toc ul {  padding: 0.1em 1em; margin: 0.2em; }
+
+code.file { border: 3px outset silver; margin: 1em 4em; width: 40em; background-color: #003050; }
+code .comment { color: #999999; }
+
+.addthis_toolbox { font-size: 9pt; }
+#starboard .addthis_toolbox { margin: 0;  }
+
+
+
