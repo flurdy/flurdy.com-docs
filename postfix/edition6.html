@@ -1,0 +1,4238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>How to set up a mail server on a GNU / Linux system</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta name="keywords" content="ivar,postfix,ubuntu,mandrake,mysql,courier,imap,amavisd,spam,virus,anti,spamassassin,mail,email,server,clamav,abrahamsen,eray,electric,ray,howto,how,to,postgrey,guide" />
+	<meta name="description" content="A Howto on setting up Postfix on Ubuntu creating a powerfull linux based email server including anti-virus anti-spam unlimted domains and users backup webmail secure encryption etc." />
+	<link href="edition4/postfix.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<a name="top"></a>
+<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img 
+	src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+	title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+<a href="http://flurdy.com"><img 
+	src="/images/flurdy-small.png" alt="flurdy" height="23"
+	title="Made by flurdy" border="0" align="right" /></a><br />
+<h1>How to set up a mail server on a GNU / Linux system</h1>
+<a name=""></a><h3>Step by step guide to install Postfix</h3>
+<h3>
+		Ubuntu + Postfix + Courier IMAP + MySQL 
+		+ Amavisd-new + SpamAssassin + ClamAV 
+		+ SASL + TLS + SquirrelMail + Postgrey 
+</h3>
+<h4>
+	<p>
+		Easy to follow howto on setting up a mail server 
+		with unlimited users and domains,
+		with IMAP/Pop access, anti-spam, anti-virus,
+		secure authentication, encrypted traffic,
+		web mail interface and more.
+	</p>
+	<p>
+		Based on an Ubuntu distribution platform, 
+		but instructions are distro generic.
+	</p>
+</h4>
+
+<a href="http://www.postfix.org"><img 
+		src="http://www.postfix.org/mysza.gif"
+		alt="postfix" align="right" border="0"
+		title="Postfix, the MTA." class=""	/></a>
+<h4><a href="#editions">6th edition</a></h4>
+<h4>
+	Author <a href="http://flurdy.com">Ivar Abrahamsen</a>
+</h4>
+<h4>
+	License: 
+	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
+<!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
+</h4>	
+<h4>Last Update: 2006-11-27</h4>
+<h5> 
+	<a href="#contact">Contact</a> /
+	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a>
+	
+</h5>
+
+
+<h2>Notice</h2>
+<div class="section">
+
+	<h4>
+		This document has been superseeded by a more <a href="index.html">up to date howto</a>.
+	</h4>	
+</div>
+
+
+<h2>Contents</h2>
+<div class="section">
+	<ul>
+		<li>
+			<h4><a href="#editions">Editions</a></h4>
+			<h5>List of different versions of this document.</h5>
+		</li>
+		<li>
+			<h4><a href="#intro">Introduction</a></h4>
+			<h5>Brief description of this document.</h5>
+			<ul>
+				<li><h5><a href="#intro_aim">Aim</a></h5></li>
+				<li><h5><a href="#intro_reqs">Requirements</a></h5></li>
+				<li><h5><a href="#intro_research">Research</a></h5></li>
+				<li><h5><a href="#intro_auth">Author</a></h5></li>
+			</ul>
+		</li>
+		<li>
+			<h4><a href="#soft">Software</a></h4>
+			<h5>Which software is used for the different elements and why.</h5>
+		</li>
+		<li>
+			<h4><a href="#install">Install</a></h4>
+			<h5>How to install the required software.</h5>
+			<ul>
+				<li><h5><a href="#install_distro">Distro</a></h5></li>
+				<li><h5><a href="#install_base">Base</a></h5></li>
+				<li><h5><a href="#install_repos">Repositories</a></h5></li>
+				<li><h5><a href="#install_pack">Packages</a></h5></li>
+				<li><h5><a href="#install_proc">Procedure</a></h5></li>
+			</ul>
+		</li>
+		<li>
+			<h4><a href="#conf">Configure</a></h4>
+			<h5>
+				Post install, what to configure for each section, 
+				with full command examples.
+			</h5>
+			<ul>
+				<li><h5><a href="#conf_os">OS (Ubuntu)</a></h5></li>
+				<li><h5><a href="#conf_mta">MTA (Postfix)</a></h5></li>
+				<li><h5><a href="#conf_data">Database (MySQL)</a></h5></li>
+				<li><h5><a href="#conf_imap">IMAP (Courier)</a></h5></li>
+				<li>
+					<h5><a href="#conf_cont">Content Checks (amavisd-new)</a></h5>
+					<ul>
+						<li><h5><a href="#conf_cont_virus">Anti Virus (ClamAV)</a></h5></li>
+						<li><h5><a href="#conf_cont_spam">Anti Spam (SpamAssassin)</a></h5></li>
+					</ul>
+				</li>
+				<li><h5><a href="#conf_grey">Policy (Postgrey)</a></h5></li>
+				<li><h5><a href="#conf_auth">Authentication (SASL)</a></h5></li>
+				<li><h5><a href="#conf_encryption">Encryption (TLS)</a></h5></li>
+				<li><h5><a href="#conf_web">Webmail (SquirrelMail)</a></h5></li>
+				<li><h5><a href="#conf_admin">Admin (phpMyAdmin)</a></h5></li>
+				<li><h5><a href="#conf_dns">DNS</a></h5></li>
+			</ul>
+		</li>
+		<li>
+			<h4><a href="#data">Data</a></h4>
+			<h5>
+				Creating the basic stub of data,
+				and how to add your own.
+			</h5>
+			<ul>
+				<li><h5><a href="#data_add">Add users and domains</a></h5></li>
+				<li><h5><a href="#data_common">Common SQL</a></h5></li>
+			</ul>
+		</li>
+		<li>
+			<h4><a href="#test">Test</a></h4>
+			<h5>Testing and troubleshooting each element.</h5>
+		</li>
+		<li>
+			<h4><a href="#extend">Extend</a></h4>
+			<h5>
+				Post working system, 
+				detailed instructions on optional features to add.
+			</h5>
+			<ul>
+					<li><h5><a href="#ext_mx">Remote MX mail backup</a></h5></li>
+					<li><h5><a href="#ext_back">Local file backup</a></h5></li>
+					<li><h5><a href="#ext_spf">Sender ID &amp; SPF</a></h5></li>
+					<li><h5><a href="#ext_pyzor">Spam Reporting</a></h5></li>
+					<li><h5><a href="#ext_list">White/Black lists</a></h5></li>
+					<li><h5><a href="#ext_pgp">PGP &amp; S/MIME</a></h5></li>
+					<li><h5><a href="#ext_reloc">Relocation notice</a></h5></li>
+					<li><h5><a href="#ext_pop">Pop-before-SMTP</a></h5></li>
+					<li><h5><a href="#ext_reply">Auto Reply</a></h5></li>
+					<li><h5><a href="#ext_block">Block Addresses</a></h5></li>
+					<li><h5><a href="#ext_throttle">Throttle Output</a></h5></li>
+					<li><h5><a href="#ext_mlist">Mail Lists</a></h5></li>
+					<li><h5><a href="#ext_admin">Admin software</a></h5></li>
+			</ul>
+		</li>
+		<li>
+			<h4><a href="#app">Appendix</a></h4>
+			<ul>
+				<li><h5><a href="#references">References</a></h5></li>
+				<li><h5><a href="#app_links">Software Links</a></h5></li>
+				<li><h5><a href="#app_dif">Difference between Ubuntu versions</a></h5></li>
+				<li><h5><a href="#download">Downloads</a></h5></li>
+				<li><h5><a href="#contact">Contact</a></h5></li>
+				<li><h5><a href="#app_todo">Todo</a></h5></li>
+				<li><h5><a href="#app_log">Change Log</a></h5></li>
+			</ul>
+		</li>
+	</ul>
+</div>	
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+<a name="editions"></a>
+<h2>Editions</h2>
+
+<div class="section">
+	
+	<table border="1" class="editions" cellpadding="5" cellspacing="0">
+		<tr>
+			<th colspan="1">Edition</th>
+			<th colspan="1">State</th>
+			<th colspan="1">Started</th>
+			<th colspan="1">Updated</th>
+			<th colspan="1">Description</th>
+		</tr>	
+		<tr>
+			<td colspan="1" nowrap><a href="edition1.html">1st</a></td>
+			<td colspan="1" nowrap>Released (outdated)</td>
+			<td colspan="1" nowrap>2004-01</td>
+			<td colspan="1" nowrap>2004-02</td>
+			<td colspan="1" class="desc">
+				Based on Mandrake 9.1.	
+			</td>
+		</tr>	
+		<tr>
+			<td colspan="1" nowrap><a href="edition2.html">2nd</a></td>
+			<td colspan="1" nowrap>Released (outdated)</td>
+			<td colspan="1" nowrap>2004-02</td>
+			<td colspan="1" nowrap>2004-07</td>
+			<td colspan="1" class="desc">
+				Based on Mandrake 10.x, but valid for all distributions. 
+				Very thorough. Includes package description, where to get the sources and binaries, 
+				how to build them or which RPMs to use, includes many refrences, etc etc. 
+				Starts off with a basic working server, then advances, extends and tightens it in stages.
+			</td>
+		</tr>	
+		<tr>
+			<td colspan="1" nowrap><a href="edition3.html">3rd</a> </td>
+			<td colspan="1" nowrap>Released</td>
+			<td colspan="1" nowrap>2005-05</td>
+			<td colspan="1" nowrap>2005-11</td>
+			<td colspan="1" class="desc">
+				Based on Ubuntu 5.04, Hoary Hedgehog. 
+				More concise simplified guide to get an advanced server working quickly. 
+				Now includes SASL &amp; TLS integration.
+			</td>
+		</tr>	
+		<tr>
+			<td colspan="1" nowrap><a href="edition4.html">4th</a></td>
+			<td colspan="1">
+				Released
+			</td>
+			<td colspan="1" nowrap>2005-10</td>
+			<td colspan="1" nowrap>2005-12</td>
+			<td colspan="1" class="desc">
+				Based on Breezy Badger, Ubuntu 5.10.
+				Includes Postgrey
+			</td>
+		</tr>	
+		<tr>
+			<td colspan="1" nowrap><a href="edition5.html">5th</a></td>
+			<td colspan="1">
+				Released
+			</td>
+			<td colspan="1" nowrap>2006-05</td>
+			<td colspan="1" nowrap>2006-11</td>
+			<td colspan="1" class="desc">
+				Based on Dapper Drake, Ubuntu 6.06 LTS.
+			</td>
+		</tr>	
+		<tr>
+			<td colspan="1" nowrap><a href="edition6.html">6th</a> (this)</td>
+			<td colspan="1">
+				In developement
+			</td>
+			<td colspan="1" nowrap>2006-11</td>
+			<td colspan="1" nowrap>2006-11</td>
+			<td colspan="1" class="desc">
+				Will be based on Edgy Eft, Ubuntu 6.10.
+				Or may wait for 7.04.
+				May include Domain Key signing.
+				May include my mail admin or my catchall aliases admin.
+			</td>
+	</table>
+	
+	<h5>
+		Further details available in the <a href="#app_log">change log</a> and below in the <a href="#intro">introduction</a>.
+	</h5>
+</div>	
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+<h2>Notice</h2>
+<div class="section">
+
+	<h4>
+		In early development,
+		please use <a href="edition5.html">5th edition</a> instead.
+	</h4>
+	<!-- 
+	<h4>
+		This document evolves with every ubuntu release.
+		It may have some old incorrect references. 
+		if you encounter any, <a href="#contact">please let me know</a>.
+	</h4>	
+	<h4>
+		There may still be some breezy/dapper differences to iron out. <br />
+		Please bare with me this for a few weeks post Dapper release. <br />
+		If you notice any, <a href="#contact">please let me know</a>.
+	</h4>	
+	<h4>
+		The main difference for dapper is that amavisd-new now uses several conf files.<br />
+		A quick work around is to put this howto's changes into /etc/amavis/conf.d/50-user.<br />
+		Thanks for all the emails so far. 
+			Thanks to Donald Goodman for the 50-user tip.<br />
+			More information in <a href="https://wiki.ubuntu.com/PostfixAmavisNew">the wiki</a><br />
+		More testing to be done though. 
+	</h4>
+	 -->
+</div>
+
+<a name="intro"></a>
+<h2>Introduction</h2>
+<div class="section">
+	<div id="amazon" class="ads">
+		<iframe src="http://rcm-uk.amazon.co.uk/e/cm?t=ivarssite-21&o=2&p=14&l=st1&mode=books-uk&search=postfix&fc1=&=1&lc1=&lt1=&f=ifr&bg1=" 
+				marginwidth="0" marginheight="0" width="160" height="600" 
+				border="0" frameborder="0" style="border:none;" 
+				scrolling="no"></iframe>
+		</div>			
+
+	<ul>
+		<li><h5><a href="#intro_aim">Aim</a></h5></li>
+		<li><h5><a href="#intro_reqs">Requirements</a></h5></li>
+		<li><h5><a href="#intro_research">Research</a></h5></li>
+		<li><h5><a href="#intro_auth">Author</a></h5></li>
+	</ul>
+
+	<a name="intro_aim"></a>
+	<h3>Aim</h3>	
+	<h4>
+		<p>
+			This is a step by step howto guide to set 
+			up a mail server on a GNU / Linux system. 
+			It is easy to follow, but you
+			end up with a powerfull secure mail server.
+		</p>
+		<p>
+			The server accepts unlimited domains and users,
+			and all mail can be read via your favourite clients,
+			or via web mail.		
+		</p>
+		<p>
+			It is secure, traffic can encrypted
+			and it will block virtually all spam and viruses.
+		</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="intro_reqs"></a>
+	<h3>Requirements</h3>
+	<h4>
+		<p>
+			Hardware:
+			A computer to be the server.			
+			Processor and memory requirements are low.
+			Disk space is relevant to what mail you expect to keep,
+			Range between &lt;1Gb to 200GB.			
+			Need network acces direct to the outside world or
+			ports forwarded through to it.
+		</p>
+		<p>
+			Software:
+			None, apart from an ubuntu cd or a pre installed system.
+		</p>
+		<p>
+			Skills:
+			You do not need to be a guru, as it is not advanced.
+			However some linux skills is desired,
+			and knowledge of the risks of leaving ports
+			exposed to the outside world.
+		</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="intro_research"></a>
+	<h3>Research</h3>
+	<h4>
+		<p>
+			Dont take my word for it!
+			Research others opinions and methods.
+			Look at my <a href="reference">references</a>,
+			look at <a href="http://www.postfix.org/docs.html"
+				>Postfix.org's howtos</a>,
+			read the excellent books available 
+			(E.g. Kyle's or Hildebrandt's),
+			search the web or read the proper
+			<a href="http://www.postfix.org/docs.html">documentation</a>.
+		</p>
+		<p>
+			If you refer to this howto in your own document,
+			or find usefull links, then 
+			<a href="#contact">let me know</a>.
+		</p>
+	</h4>
+
+	<a name="intro_auth"></a>
+	<h3>Author</h3>
+	<h4>
+		<p>
+			I am <a href="http://flurdy.com">Ivar Abrahamsen</a>,
+			a 29 year old software engineer from Norway, but based
+			in Manchester.
+			I use Linux a lot, though I am not a guru. 
+			My general intrests are sports, technology 
+			and my better half.
+		</p>
+		<p>
+		 	Why have I written this how to? 
+			I set up my mail server in 2003, 
+			and then did the same for a few friends and collegues. 
+			Soon I was getting more request, 
+			and being a lazy programmer, I thought.. 
+			"Why don't I write a howto and let them do it themselves..." 
+			Soon it was listed on postfix.org 
+			and I was getting thousends of hits and 
+			lots of emails. (blessing in disguise)	
+		</p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick" />
+<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" 
+border="0" name="submit" alt="PayPal" align="right" />
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----
+MIIHNwYJKoZIhvcNAQcEoIIHKDCCByQCAQExggEwMIIBLAIBADCBlDCBjjELMAkG
+A1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQw
+EgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UE
+AxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJ
+KoZIhvcNAQEBBQAEgYCgEfxd9glNwwnRA2oazEVXN7IYJF6P+QZxucKi5GPIhDVC
+ygZb0mkY/iPHV0FvVCWlBySIpthS62N6sKETS873pydUZDy/3GpkBCgm8Kf+9Joh
+ZnixaRsy/h8mnt+BH8WcxgvSyad09l7mxQe6K1gWd0KoJUQTWXBxpjZgQOjQFjEL
+MAkGBSsOAwIaBQAwgbQGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQI2JfMa1Ko95qA
+gZCxorYhC1DDzc3L7tSe0Dab4/7dAiy9GN5Kjmizd6gS2gsL2SEw2J3P+HbHC7QB
+IR5dOLfZ+Z9wdqX7vbJduCn8SllC4Jqv1AgbiRXVggWnJyJlam4eqJE0qGFstAiH
+6Rkwq7ESZTSi6Wr7TFiHqC2d8nHW2VX8GmL3Ux/FviFyP/1qu+V0CF9UmnWbqNks
+UNygggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UE
+BhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYD
+VQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQI
+bGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEz
+MTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgT
+AkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5j
+LjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkq
+hkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ
+AoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALS
+csTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNp
+JeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgesw
+HQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaf
+fLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UE
+CBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJ
+bmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoG
+CSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqG
+SIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK/
+/Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiS
+ojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIB
+mjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UE
+BxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsU
+CmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1y
+ZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZI
+hvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDAzMTYxNTA3MjhaMCMGCSqGSIb3DQEJ
+BDEWBBTbFddl3wwdQ0MTuJUSk4S8P3vPYDANBgkqhkiG9w0BAQEFAASBgGMa41i6
+fyK4TnKfops9ao3lQBVaxQ4tQi02mzVPNQ3H/rA41uHhdosuDnsFXjifbYbzmFuq
+2KsqMY4RazjlOjSz/sAmz3rxJ+19N0jJbT282t1lFiPI08F1+EIq6bK2qFtXHJb6
+y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
+-----END PKCS7-----
+" /> 
+</form>
+		<p>
+			See the <a href="#contact">contact</a>
+			section for how to discuss this howto 
+			and how to contact me.
+			Send me a <a href="#contact">note</a> if
+			you found this usefull.
+			If you use this for commercial purposes,
+			then why not donate a few quid?
+			(Remember to respect the licenses involved)
+		</p>
+	</h4>
+
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+<a name="soft"></a>
+<h2>Software</h2>
+<div class="section">
+	<div style="float: right;">
+		<a href="http://www.ubuntu.com"><img 
+			src="edition3/images/ubuntu-Logo-small.png" 
+			alt="Ubuntu" title="Ubuntu Linix OS"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.postfix.org"><img 
+			src="edition3/images/mysza.gif" 
+			alt="postfix" title="Postfix MTA"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.courier-mta.org/imap/"><img 
+			src="edition3/images/courier-imap.png" 
+			alt="Courier IMAP" title="Courier IMAP"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.mysql.com"><img 
+			src="edition3/images/mysql.png" 
+			alt="MySQL" title="MySQL database lookups"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.ijs.si/software/amavisd/"><img 
+			src="edition3/images/amavis-small.png" 
+			alt="amavisd-new" title="amavisd-new content checks"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.clamav.net"><img
+			src="edition3/images/clam.png" 
+			alt="ClamAV" title="ClamAV anti-virus"
+			width="120" class="postfix" /></a><br />
+		<a href="http://spamassassin.apache.org"><img 
+			src="edition3/images/spam-small.png" 
+			alt="SpamAssassin" title="SpamAssassin anti-spam"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.squirrelmail.org"><img 
+			src="edition3/images/squirrel-small.jpg" 
+			alt="SquirrelMail" title="SquirrelMail webmail"
+			width="120" class="postfix" /></a><br />
+		<a href="http://www.phpmyadmin.net"><img 
+			src="edition3/images/phpmyadmin.gif" 
+			alt="admin" title="phpMyAdmin"
+			width="45" height="45" class="postfix" /></a>
+		<a href="http://spf.pobox.com"><img 
+			src="edition3/images/spfsmtp-small.png" 
+			alt="SPF" title="SPF Sender ID"
+			width="45" height="45" class="postfix" /></a><br />
+		<a href="http://www.gnupg.org"><img 
+			src="edition3/images/gnupg-small.png" 
+			alt="GnuPG" title="GnuPG encryption"
+			width="45" height="45" class="postfix" /></a>
+		<a href="http://asg.web.cmu.edu/sasl/"><img 
+			src="edition3/images/cyrus-sasl-small.jpg" 
+			alt="SASL" title="Cyrus-SASL authentication"
+			width="45" height="45" class="postfix" /></a><br />
+	</div>
+
+	<h4>
+		What software packages have/will I use and why.
+	</h4>
+	<ul>
+		<li>
+			<h4>OS: <b>Ubuntu Linux</b></h4>
+			<h6><a href="http://www.ubuntu.com">www.ubuntu.com</a></h6>
+			<h4>
+				Ah the age old distro argument...
+				Thankfully this set up should work on most distros.
+				I used to base this howto on Mandrake(now Mandriva),
+				and I started this new edition on a Gentoo box.
+				But I don't have the patience for Gentoo, 
+				nor the money to stay with Mandriva Power editions.
+				Why Ubuntu? Its free, simple and slick.
+				As Ubuntu is derived from debian the installations 
+				used here will be apt-get based. 
+				Please refer to my other editions for details on RPM 
+				or source based installations.
+			</h4>
+		</li>
+		<li>
+			<h4>MTA: <b>Postfix</b></h4>
+			<h6><a href="http://www.postfix.org">www.postfix.org</a></h6>
+			<h4>
+				Simple, free and slick. 
+				Yup I am a sucker for anything that works easily.	
+				Postfix is powerfull, well established, 
+				but not too bloated,
+				and is security concious from the start.
+			</h4>
+		</li>
+		<li>
+			<h4>Pop/IMAP: <b>Courier IMAP</b></h4>
+			<h6><a href="http://www.courier-mta.org/imap/">www.courier-mta.org/imap/</a></h6>
+			<h4>
+				My first mail server installtion was with Courier.
+				I have not found a reason to change this as again
+				it is simple, and free.
+			</h4>
+		</li>
+		<li>
+			<h4>Database: <b>MySQL</b></h4>
+			<h6><a href="http://www.mysql.com">www.mysql.com</a></h6>
+			<h4>
+				Although I use Firebird for my application development, 
+				(or Hibernate/C-JDBC hybrids),
+				MySQL is well supported for the sort of lookups required
+				in a mail server.
+			</h4>
+		</li>
+		<li>
+			<h4>Content Check: <b>Amavisd-new</b></h4>
+			<h6><a href="http://www.ijs.si/software/amavisd/">www.ijs.si/software/amavisd/</a></h6>
+			<h4>
+				Easy plug in solution for spam, virus checking etc.	
+			</h4>
+		</li>
+		<li>
+			<h4>Anti-Spam: <b>SpamAssassin</b></h4>
+			<h6><a href="http://spamassassin.apache.org">spamassassin.apache.org</a></h6>
+			<h4>
+				Powerfull renowned spam fighting tool.
+			</h4>
+		</li>
+		<li>
+			<h4>Anti-Virus: <b>ClamAV</b></h4>
+			<h6><a href="http://www.clamav.net">www.clamav.net</a></h6>
+			<h4>
+				Free virus scanner that can be trusted and includes update daemon.
+			</h4>
+		</li>
+		<li>
+			<h4>Authentication: <b>Cyrus SASL</b></h4>
+			<h6><a href="http://www.imc.org/ietf-sasl/">www.imc.org/ietf-sasl/</a></h6>
+			<h4>
+				Secure and trusted crypthography technology
+				for authentication of SMTP traffic.
+			</h4>
+		</li>
+		<li>
+			<h4>PostGrey</h4>
+			<h6><a href="http://isg.ee.ethz.ch/tools/postgrey/">isg.ee.ethz.ch/tools/postgrey/</a></h6>
+			<h4>
+				Postgrey is an excellent little script to stop 99% of all spam.
+				All it does is on first contact for specific from-to combinations, 
+				tells the sender server to try again in a little while, 
+				which most spammers cant afford to do. 
+				When proper servers try again after a few minutes it lets it through.
+		</li>
+		<li>
+			<h4>Encryption: <b>TLS</b></h4>
+			<h6><a href="http://www.ietf.org/html.charters/tls-charter.html">www.ietf.org/html.charters/tls-charter.html</a></h6>
+			<h4>
+				Secure and trusted crypthography technology
+				for encryption of SMTP traffic.
+				Not too be confused with client encryption technology 
+				like GnuPG and S/MIME. They are covered in the 
+				<a href="#extend">extend</a> section.
+				Formerly referenced as SSL.
+			</h4>
+		</li>
+		<li>
+			<h4>WebMail: <b>SquirrelMail</b></h4>
+			<h6><a href="http://www.squirrelmail.org">www.squirrelmail.org</a></h6>
+			<h4>
+				Easy to set up php based web mail client.
+			</h4>
+		</li>
+	</ul>
+	<h4>
+		<p>
+			Please see <a href="#app_links">software links appendix</a> for further information
+			about these software packages. In that section there is more links to 
+			documentation or forums, and viable alternatives, downloadable packages, versions details etc.
+		</p><p>
+			Further software and tweaks are discussed in the 
+			<a href="#extend">extension section</a>.
+		</p><p>
+			Also review other peoples opinion on these packages via my <a href="#references">references</a>.
+			</p>
+		</h4>
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+<a name="install"></a>
+<h2>Install</h2>
+<div class="section">
+	<!-- <h4>
+		<p><i>
+		</i></p>
+	</h4> -->
+	<ul>
+		<li><h5><a href="#install_distro">Distro</a></h5></li>
+		<li><h5><a href="#install_base">Base</a></h5></li>
+		<li><h5><a href="#install_repos">Repositories</a></h5></li>
+		<li><h5><a href="#install_pack">Packages</a></h5></li>
+		<li><h5><a href="#install_proc">Procedure</a></h5></li>
+	</ul>
+	<a name="install_distro"></a>
+	<h3>Distro</h3>
+	<h4>
+		<p>
+			This section is different for every distribution and for every version.
+		</p>
+		<p>
+			This howto is based on Ubuntu and its base of debian which uses apt-get.
+			Therefor this section uses apt packages to its fullest.
+		</p>
+		<p>
+			For other installation method please refer to the 
+			<a href="#soft">software</a> and the 
+			<a href="#app">software links</a>
+			and your own distribution
+			for the documention for other ways of installing.
+			My <a href="edition2.html">2nd edition</a>(outdated) has instructions
+			for Mandriva, general RPM and tarball compiling. 
+		</p>
+		<p>
+			To follow the rest of this howto, you need to ensure all your 
+			packages have been installed with the same modules, 
+			E.g MySQL lookup on postfix and sasl, php in apache etc.
+		</p>
+		<p>
+			I have set up mail servers using the 32bit and 64bit x86 platforms,
+			however if all the packages are available then other, 
+			E.g. Mac platforms should work too.
+		</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="install_base"></a>
+	<h3>Base</h3>
+	<h4>
+		<p>
+			Upon installing Ubuntu you have a choice of which base system to install.
+		</p>
+		<p>
+			The default, ie the one chosen when you just hit enter when promted 
+			right at the start, is the basic desktop flavour.			
+		</p>
+		<p>
+			Another useful one is the server base. 
+			It only includes the absolute minimum of packages,
+			so is quite usefull if you are only to use it remotely.
+			Since Breezy it also available as a smaller iso download,
+			or by using the normal cd	by hitting F1 instead of enter 
+			and writing server on the prompt.
+		</p>
+		<p>
+			This howto have been used with both bases,
+			the server base will need some more dependancy packages thats all.
+		</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="install_repos"></a>
+	<h3>Repositories</h3>
+	<h4>
+		<p>
+			When the base system is up and running you need to check your
+			package repositories, ie where the system retrieves new software.
+		</p>
+		<p>
+			The install procedure usually leaves you with a 
+			<i>/etc/apt/sources.list</i> that includes the cd and
+			the main and restricted and updates repositories.
+		</p>
+		<p>
+			That is fine for the absolute core packages involved in this
+			mail server, however a full install requires the universal,
+			and you might as well also include the multiverse 
+			and backports as well.					
+		</p>
+		<p>
+			I also tend to disable the cd option, but that is up to you.
+		</p>
+		<p>
+			You will have to find a repository mirror close to your location from the
+			<a href="http://wiki.ubuntu.com/archives">archives</a>,
+			replace mine <i>gb.archive.ubuntu.com</i> with your choice.
+		</p>
+	</h4>
+<code><span class="comment">#deb cdrom:[Ubuntu 6.06 _Dapper Drake_ - Release i386 (20060601)]/ dapper main restricted</span>
+
+deb http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper main restricted multiverse universe
+deb-src http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper main restricted multiverse universe
+
+deb http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper-updates main restricted multiverse universe
+deb-src http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper-updates main restricted multiverse universe
+
+deb http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper-security main restricted multiverse universe
+deb-src http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper-security main restricted multiverse universe
+
+deb http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper-backports main restricted multiverse universe
+deb-src http://<i>gb.archive.ubuntu.com</i>/ubuntu dapper-backports main restricted multiverse universe
+
+<span class="comment">## EXTRAS
+#deb http://ubuntu-backports.mirrormax.net/ dapper-extras main universe multiverse restricted contrib
+
+## MARILLAT
+#deb ftp://ftp.nerim.net/debian-marillat unstable main</span></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="install_pack"></a>
+	<h3>Packages</h3>
+	<h4>
+		<p>
+			Here is a list of packages needed, and what they provide.
+			Some are required by several of the software,
+			some might not be needed if you are not fully
+			following this howto. 
+			Please note the <a href="#extend">extended section</a> require
+			further packages.
+		</p>
+		<p><b>OS</b></p>
+		<ul>	
+			<li><h5>shorewall</h5></li>
+			<li><h5>openssh-client</h5></li>
+			<li><h5>openssh-server</h5></li>
+		</ul>
+		<p>
+			Ive included the Shorewall firewall.
+			A firewall is not required, but recommended.
+			Obviously you can use another firewall, 
+			but Ill assume you have chosen Shorewall.
+			A SSH server is not required either, 	but essential 
+			if you need to administer or test 	the server remotely.
+		</p>
+		<p><b>MySQL</b></p>
+		<ul>	
+			<li><h5>mysql-common</h5></li>
+			<li><h5>mysql-client</h5></li>
+			<li><h5>mysql-server</h5></li>
+			<li><h5>libmysqlclient12</h5></li>
+		</ul>	
+		<p>
+			MySQL 4 is required by many of the packages,
+			so install it first.
+		</p>
+		<p><b>TLS</b></p>
+		<ul>
+			<li><h5>openssl</h5></li>
+		</ul>
+		<p>
+		</p>
+		<p><b>SASL</b></p>
+		<ul>	
+			<li><h5>libsasl2</h5></li>
+			<li><h5>libsasl2-modules</h5></li>
+			<li><h5>libsasl2-modules-sql</h5></li>
+			<li><h5>libauthen-sasl-cyrus-perl</h5></li>
+			<li><h5>libauthen-sasl-perl</h5></li>
+			<li><h5>libgsasl7</h5></li> 
+		<!--	<li><h5>libsasl-modules-plain*</h5></li> -->
+		</ul>
+		<p>
+			The SASL packages have changed for Breezy.
+			Im investigating the differences.
+			The * packages I have from hoary repositories.
+		</p>
+		<p><b>Postfix</b></p>
+		<ul>	
+			<li><h5>postfix</h5></li>
+			<li><h5>postfix-tls</h5></li>
+			<li><h5>postfix-mysql</h5></li> 
+		</ul>	
+		<p>
+			postfix-tls is as of breezy part of the postfix package,
+			however if you are not using breezy then you must
+			install postfix with included tls features.
+		</p>
+		<p><b>Courier-IMAP</b></p>
+		<ul>	
+			<li><h5>courier-base</h5></li>
+			<li><h5>courier-authdaemon</h5></li>
+			<li><h5>courier-authmysql</h5></li>
+			<li><h5>courier-imap</h5></li>
+			<li><h5>courier-imap-ssl</h5></li>
+			<li><h5>courier-ssl</h5></li>
+		</ul>	
+		<p>
+			If you require pop access then you'd want
+			to install the pop packages as well.
+		</p>
+		<p><b>amavis-new</b></p>
+		<ul>	
+			<li><h5>amavisd-new</h5></li>
+		</ul>	
+		<p><b>Spam Assassin</b></p>
+		<ul>	
+			<li><h5>spamassassin</h5></li>
+			<li><h5>spamc</h5></li>
+		</ul>	
+		<p><b>ClamAV</b></p>
+		<ul>	
+			<li><h5>clamav-base</h5></li>
+			<li><h5>libclamav1</h5></li>
+			<li><h5>clamav-daemon</h5></li>
+			<li><h5>clamav-freshclam</h5></li>
+		</ul>	
+		<p><b>Postgrey</b></p>
+		<ul>	
+			<li><h5>postgrey</h5></li>
+		</ul>	
+		<p>
+			There is also a postfix-gld
+			however I am using the postgrey one till I fully tested the other.
+		</p>
+		<p><b>SquirrelMail</b></p>
+		<ul>	
+			<li><h5>squirrelmail</h5></li>
+			<li><h5>squirrelmail-locales</h5></li>
+			<li><h5>apache2</h5></li>
+			<li><h5>libapache2-mod-php4</h5></li>
+			<li><h5>php4-mysql</h5></li>
+			<li><h5>php4-pear</h5></li>
+			<li><h5>php4-cli</h5></li>
+		</ul>	
+		<p>
+			SquirrelMail webmail require 
+			a working apache web server, 
+			with php with mysql support.
+			Note these web packages uses PHP4.
+		</p>
+		<p><b>phpMyAdmin</b></p>
+		<ul>	
+			<li><h5>phpmyadmin</h5></li>
+		</ul>	
+		<p>
+			Like SquirrelMail, phpMyAdmin require a working apache server.
+		</p>
+		<!--
+		<p><b></b></p>
+		<ul>
+			<li><h5></h5></li>
+		<ul>
+		<p>
+		</p>
+		-->
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="install_proc"></a>
+	<h3>Procedure</h3>
+	<h4>
+		<p>
+			Now you might not want to install all the packages in one go,
+			perhaps better to group them by each software or a few together.
+		</p>
+		<p>
+			If you want to find additional packages,
+			you can do a quick command line search for packages, 
+			by useing this command:
+		</p>
+		<p>
+			Please note you should run most of these commands via <i>sudo</i>.
+			I just havent prepended all the commands with it.
+		</p>
+	</h4>
+<code>apt-cache search <i>postfix</i></code>
+	<h4>
+		<p>
+			To find out what you might already have installed:
+		</p>
+	</h4>
+<code>dpkg --list | grep <i>postfix</i></code>
+	<h4>
+		<p>
+			Then when you have the package list do this to install
+		</p>
+	</h4>
+<code><span class="comment"># add -s to do a test run</span>
+<span class="comment"># or -d if you just want to download the packages and do the install later</span>
+apt-get install <i>package-name, another-package-name, etc</i>
+</code>
+	<h4>
+	<p>
+		Some of the package installations will prompt you for input,
+	</p>
+	<p>
+		Postfix will ask you what type of server to create.
+		I just say "Internet Site" as we will be changing most configs anyway.
+		It will also ask for the fully qualified name of your server.
+		The clamav installation may ask whether to create directories etc.
+		Courier will ask to install web admin, which I dont't need,
+		and that it will install TLS encryption which is good.
+	</p>
+	<p>
+		Many of the packages also require further dependant packages.
+		So the final package list is quite large.
+	</p>
+	<p></p>
+	</h4>
+
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+<a name="conf"></a>
+<h2>Configure</h2>
+
+<div class="section">
+	
+	<h4>
+		<p>
+			Now everything is installed it is time to 
+			configure each of the core applications used.
+		</p>
+	</h4>
+
+	<ul>
+		<li><h5><a href="#conf_os">OS (Ubuntu)</a></h5></li>
+		<li><h5><a href="#conf_mta">MTA (Postfix)</a></h5></li>
+		<li><h5><a href="#conf_data">Database (MySQL)</a></h5></li>
+		<li><h5><a href="#conf_imap">IMAP (Courier)</a></h5></li>
+		<li>
+			<h5><a href="#conf_cont">Content Checks (amavisd-new)</a></h5>
+			<ul>
+				<li><h5><a href="#conf_cont_virus">Anti Virus (ClamAV)</a></h5></li>
+				<li><h5><a href="#conf_cont_spam">Anti Spam (SpamAssassin)</a></h5></li>
+			</ul>
+		</li>
+		<li><h5><a href="#conf_grey">Policy (Postgrey)</a></h5></li>
+		<li><h5><a href="#conf_auth">Authentication (SASL)</a></h5></li>
+		<li><h5><a href="#conf_encryption">Encryption (TLS)</a></h5></li>
+		<li><h5><a href="#conf_web">Webmail (SquirrelMail)</a></h5></li>
+		<li><h5><a href="#conf_admin">Admin (phpMyAdmin)</a></h5></li>
+		<li><h5><a href="#conf_dns">DNS</a></h5></li>
+	</ul>
+	
+	<a name="conf_os"></a>
+	<h3>OS: Ubuntu</h3>		
+
+	<h4>
+		The most important setting, security wise,
+		is to configure the firewall.
+		This off course varies between firewalls, 
+		your usage.
+		Shorewall main config files in /etc/shorewall
+		that we are concerned with, are 
+		interfaces, hosts, zones, policy and rules.
+	</h4>
+
+	<h4>Here is a typical basic zones file</h4>
+	<code><span class="comment">#zone	display	comment</span>
+loc	Local	Local network
+net	Net	Tinternet</code>
+	
+	<h4>Here is a typical interfaces file</h4>
+	<code>net	eth0	detect</code>
+	
+	<h4>Here is a typical hosts file</h4>
+	<code>loc	eth0:192.168.0.0/24</code>
+	
+	<h4>Here is a typical policy file</h4>
+	<code>fw	loc	ACCEPT
+fw	net	ACCEPT
+loc	all	DROP	info
+net	all	DROP	info
+all	all	REJECT	info</code>
+	
+	<h4>Here is a typical rules file for a mail server</h4>
+	<code>AllowPing	loc	fw
+AllowSSH	loc	fw
+<span class="comment">#AllowSMTP	loc	fw
+#ACCEPT		loc	fw	tcp	465,587	-
+#AllowIMAP	loc	fw</span>
+
+<span class="comment">#AllowPing	net	fw
+#AllowSSH	loc	fw
+#AllowSMTP	net	fw
+#ACCEPT		net	fw	tcp	465,587	-
+#AllowIMAP	net	fw</span></code>
+
+	<h4>
+		<p>
+			SMTP access from everywhere is commented out,
+			untill we are confident everything is working
+			and secure.
+			Also commented out for now is IMAP
+			and TLS SMTP traffic untill we need it.
+			You might enable SSH from the tinternet if you want.
+		</p>
+	</h4>
+
+
+	<h4>Then edit /etc/default/shorewall and turn it on.</h4>
+
+	<code>startup=1</code>
+
+	<code><span class="comment">#restart shorewall with</span>
+/etc/init.d/shorewall restart</code>
+
+	<h4>
+		For more details on IP Tables and Shorewall,
+		look up its <a href="http://www.shorewall.net">website</a>.
+	</h4>
+<h6><a href="#top">Return to top</a>.</h6>
+
+	<div id="google" class="ads" style="float:none; width:470px;">
+		<script type="text/javascript"><!--
+		google_ad_client = "pub-7805345644641760";
+		google_ad_width = 468;
+		google_ad_height = 60;
+		google_ad_format = "468x60_as";
+		google_ad_type = "text_image";
+		google_ad_channel ="2011072480";
+		google_color_border = "CCCCCC";
+		google_color_bg = "FFFFFF";
+		google_color_link = "000000";
+		google_color_url = "666666";
+		google_color_text = "333333";
+		//--></script>
+		<script type="text/javascript"
+		  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+	  </script>
+	  </div>
+
+	<a name="conf_mta"></a>
+	<h3>MTA: Postfix</h3>		
+
+	<h4>
+		Postfix resides in /etc/postfix.	
+		Postfix is by default set up in a chroot jail.
+		This is a security procedure and is very good feature.
+	</h4>
+
+	<h4>		
+		However when setting up the server the chroot may be
+		a problem, so keep it in mind if someting don't work.
+		In master.cf there is a column which decides
+		which modules are run within the jail restrictions.
+		Hopefully you don't have to change these settings.
+	</h4>
+
+	<h4>
+		In main.cf you define how Postfix shall operate.
+		Each distribution have different defaults for these settings,
+		however most are similar, so you should not need to worry, but be aware of it.
+		These default are defined in the postfix installation folder,
+		which probably is somewhere in /usr. 
+		Most distributions also set up some suggested defaults in
+		the main.cf. Edit this file, note the suggestions 
+		and then comment them out.
+	</h4>		
+
+	<h4>
+		First set your server name, 
+		this must match what you put in your domains DNS MX records.
+	</h4>
+	
+	<code>myhostname =  <i>server.yourdomain.com</i></code>		
+
+	<h4>
+		Then decide what the greeting text will be.
+		Enough info so it is usefull,
+		but not divelge everything to potential hackers.
+	</h4>
+	
+	<code>smtpd_banner = $myhostname ESMTP $mail_name</code>
+	
+	<h4>
+		Next you need to decide whether to send
+		all outgoing mail via another SMTP server,
+		or send them yourself.
+		I send via my ISP's server,
+		so it has to worry about the queing etc.
+		If you send it yourself then you are not reliant
+		on 3rd party server. 
+		But you may risk more exposure and 
+		accidentally be blocked by spam blockers.
+		And it is more work for your server.
+		Also many servers block dynamic dns hosts,
+		so you may find your server gets rejected.
+		However choose whichever you are confortable with.
+	</h4>
+
+	<code><span class="comment"># leave blank to do it yourself</span>
+relayhost = 
+<span class="comment"># or put it an accessible smtp server</span>
+relayhost = <i>smtp.yourisp.com</i></code>
+
+	<h4>
+		Next is network details.
+		You will accept connection from anywhere,
+		and you only trust this machine
+	</h4>
+
+	<code>inet_interfaces = all
+mynetworks_style = host</code>
+
+	<h4>
+		Next you can masquerade some outgoing addresses.
+		Say your machine's name is "mail.domain.com".
+		You may not want outgoing mail to come from 
+		<i>username</i>@mail.domain.com, as you'd prefer
+		<i>username</i>@domain.com.
+		You can also state which domain not to masquerade.
+		E.g. if you use a dynamic dns service,
+		then your server address will be a subdomain.
+		You can also specify which users not to masquerade.
+	</h4>
+
+	<code>masquerade_domains = <i>sub.domain.com !sub.dyndomain.com</i>
+masquerade_exceptions = root</code>
+
+	<h4>
+		As we will be using virtual domains, these need to be empty.
+	</h4>
+
+	<code>local_recipient_maps = 
+mydestination =</code>
+
+	<h4>
+		Then will set a few numbers.
+	</h4>
+
+	<code><span class="comment"># how long if undelivered before sending warning update to sender		</span>
+delay_warning_time = 4h 
+<span class="comment"># will it be a permanent error or temporary</span>
+unknown_local_recipient_reject_code = 450 
+<span class="comment"># how long to keep message on queue before return as failed.</span>
+<span class="comment"># some have 3 days, I have 16 days as I am backup server for some people</span>
+<span class="comment"># whom go on holiday with their server switched off.</span>
+maximal_queue_lifetime = 7d 
+<span class="comment"># max and min time in seconds between retries if connection failed</span>
+minimal_backoff_time = 1000s 
+maximal_backoff_time = 8000s 
+<span class="comment"># how long to wait when servers connect before receiving rest of data</span>
+smtp_helo_timeout = 60s 
+<span class="comment"># how many address can be used in one message.</span>
+<span class="comment"># effective stopper to mass spammers, accidental copy in whole address list</span>
+<span class="comment"># but may restrict intentional mail shots.</span>
+smtpd_recipient_limit = 16 
+<span class="comment"># how many error before back off.</span>
+smtpd_soft_error_limit = 3 
+<span class="comment"># how many max errors before blocking it.</span>
+smtpd_hard_error_limit = 12</code>
+
+	<h4>
+		Now we can specify some restrictions.
+		Be carefull that each setting is on one line only.
+	</h4>
+
+	<code><span class="comment"># Requirements for the HELO statement</span>
+smtpd_helo_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_hostname, 
+		reject_invalid_hostname, permit
+<span class="comment"># Requirements for the sender details</span>
+smtpd_sender_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_sender, 
+		reject_unknown_sender_domain, reject_unauth_pipelining, permit
+<span class="comment"># Requirements for the connecting server </span>
+smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org, 
+		reject_rbl_client relays.ordb.org, reject_rbl_client blackholes.easynet.nl, 
+		reject_rbl_client dnsbl.njabl.org 
+<span class="comment"># Requirement for the recipient address</span>
+smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, 
+		reject_non_fqdn_recipient, reject_unknown_recipient_domain, 
+		reject_unauth_destination, permit</code>
+
+	<h4>
+		In my client restrictions I specify some spam detection servers.
+		These are call RBL: Real-time blackhole list.
+		They check if the connecting server is a known open relay used by spammers.
+		Some argue these should not be used in the postfix configuration,
+		as there are some false positives. 
+		And SpamAssassin uses rbl checking, 
+		but as part of its scoring system, so it is not all black and white.
+		I added som <i>warn_if_reject</i> parameters. 
+		They basically dont reject the email but warm if they would normally have.
+		Which makes it a nice way to test features.
+	</h4>
+	
+	<h4>
+		Further restrictions:
+	</h4>
+	
+	<code><span class="comment"># require proper helo at connections </span>
+smtpd_helo_required = yes
+<span class="comment"># waste spammers time before rejecting them</span>
+smtpd_delay_reject = yes
+disable_vrfy_command = yes</code>
+
+	<h4>
+		Next we need to set some maps and lookups for the virtual domains.
+	</h4>
+
+	<code><span class="comment"># not sure of the difference of the next two</span>
+<span class="comment"># but they are needed for local aliasing</span>
+alias_maps = hash:/etc/postfix/aliases
+alias_database = hash:/etc/postfix/aliases
+<span class="comment"># this specifies where the virtual mailbox folders will be located</span>
+virtual_mailbox_base = /var/spool/mail/virtual
+<span class="comment"># this is for the mailbox location for each user</span>
+virtual_mailbox_maps = mysql:/etc/postfix/mysql_mailbox.cf
+<span class="comment"># and their user id</span>
+virtual_uid_maps = mysql:/etc/postfix/mysql_uid.cf
+<span class="comment"># and group id</span>
+virtual_gid_maps =  mysql:/etc/postfix/mysql_gid.cf
+<span class="comment"># and this is for aliases</span>
+virtual_alias_maps = mysql:/etc/postfix/mysql_alias.cf
+<span class="comment"># and this is for domain lookups</span>
+virtual_mailbox_domains = mysql:/etc/postfix/mysql_domains.cf
+<span class="comment"># this is how to connect to the domains (all virtual, but the option is there)</span>
+<span class="comment"># not used yet
+# transport_maps = mysql:/etc/postfix/mysql_transport.cf</span></code>
+
+
+	<h4>
+		You need to set up an alias file.
+		This is only used locally, 
+		and not by your own mail domains.
+	</h4>
+
+	<code>cp /etc/aliases /etc/postfix/aliases
+# may want to view the file to check if ok.
+# especially that the final alias, eg root goes
+# to a real person
+postalias /etc/postfix/aliases</code>
+	
+	<h4>
+		Next you need to set up the folder
+		where the virtual mail will be stored.
+		This may have already been done by the apt-get.
+		And also create the user whom will own the folders.
+	</h4>
+
+	<code><span class="comment"># to add if there is not a virtual user</span>
+mkdir /var/spool/mail/virtual
+groupadd virtual -g 5000
+useradd virtual -u 5000 -g 5000
+chown -R virtual:virtual /var/spool/mail/virtual</code>
+	<code><span class="comment"># to modify if a virtual user is already set</span>
+groupmod -g 5000 virtual		
+usermod -g virtual -u 5000 virtual
+chown -R virtual:virtual /var/spool/mail/virtual</code>		
+
+	<h4>
+		Next we need to set up the files to access the lookups via the database. 
+		We will only set up a few now, and the rest later when/if needed:
+	</h4>
+
+	<h4>Edit(create) /etc/postfix/mysql_mailbox.cf</h4>
+
+	<code>user=mail
+password=<i>apassword</i>
+dbname=maildb
+table=users
+select_field=maildir
+where_field=id
+hosts=127.0.0.1
+additional_conditions = and enabled = 1</code>
+
+<h4>Edit /etc/postfix/mysql_uid.cf</h4>
+
+	<code>user=mail
+password=<i>apassword</i>
+dbname=maildb
+table=users
+select_field=uid
+where_field=id
+hosts=127.0.0.1</code>
+
+	<h4>Edit /etc/postfix/mysql_gid.cf</h4>
+
+	<code>user=mail
+password=<i>apassword</i>
+dbname=maildb
+table=users
+select_field=gid
+where_field=id
+hosts=127.0.0.1</code>
+
+	<h4>Edit /etc/postfix/mysql_alias.cf</h4>
+
+	<code>user=mail
+password=<i>apassword</i>
+dbname=maildb
+table=aliases
+select_field=destination
+where_field=mail
+hosts=127.0.0.1
+additional_conditions = and enabled = 1</code>
+
+	<h4>Edit /etc/postfix/mysql_domains.cf</h4>
+
+	<code>user=mail
+password=<i>apassword</i>
+dbname=maildb
+table=domains
+select_field=domain
+where_field=domain
+hosts=127.0.0.1
+additional_conditions = and enabled = 1</code>
+
+<h4>
+	As you can see the 3 first are very similar,
+	only the select_field changes. 
+	If you specify an ip in hosts, 
+	(as opposed to 'localhost')
+	then it will communicate over tcp 
+	and not the mysql socket. (chroot restriction)
+</h4>
+
+<!-- code><span class="comment"># as a security precaution, 
+# you may restrict whom can read your MySQL password</span>
+chown 640 mysql*.cf.
+However I trust my server, 
+as noone else logs onto it apart from myself.
+</code -->
+
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_data"></a>
+	<h3>Database: MySQL</h3>		
+	
+	<h4>
+		Next we need to setup all those lookups specified before.
+	</h4>
+
+	<h4>
+		First you need to create a user to use in MySQL.
+		Then you need to create the database.
+		And unless you already have done this,
+		make sure you have set a password for the root user!
+	</h4>
+
+	<code><span class="comment"># If not already done...</span>
+mysqladmin -u root password <i>new_password</i>
+<span class="comment"># log in as root</span>
+mysql -u root -p
+<span class="comment"># then enter password for the root account when prompted</span>
+<span class="reply">Enter password:</span>
+<span class="comment"># then we create the mail database</span>
+create database maildb;
+<span class="comment"># then we create a new user: "mail"</span>
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+ON maildb.* TO 'mail'@'localhost' IDENTIFIED by '<i>apassword</i>';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+ON maildb.* TO 'mail'@'%' IDENTIFIED by '<i>apassword</i>';
+exit;</code>
+	
+	<h4>
+		You need to create these tables:
+		<ul>
+			<li>aliases</li>
+			<!-- li>backups</li -->
+			<li>domains</li>
+			<!-- li>relocated</li -->
+			<li>users</li>
+			<!-- li>address</li>
+			<li>userprefs</li -->
+		</ul>
+		We will create more later on for further extensions,
+		but only these are relevant now.
+	</h4>
+
+	<code><span class="comment"># log in to mysql as the new mail user</span>
+mysql -u mail -p maildb	
+<span class="comment"># enter the newly created password</span>
+<span class="reply">Enter password:</span>
+<span class="comment">#then run this commands to create the tables;</span>
+CREATE TABLE `aliases` (
+`pkid` smallint(3) NOT NULL auto_increment,
+`mail` varchar(120) NOT NULL default '',
+`destination` varchar(120) NOT NULL default '',
+`enabled` tinyint(1) NOT NULL default '1',
+PRIMARY KEY  (`pkid`),
+UNIQUE KEY `mail` (`mail`)
+) ;
+
+CREATE TABLE `domains` (
+`pkid` smallint(6) NOT NULL auto_increment,
+`domain` varchar(120) NOT NULL default '',
+`transport` varchar(120) NOT NULL default 'virtual:',
+`enabled` tinyint(1) NOT NULL default '1',
+PRIMARY KEY  (`pkid`)
+) ;
+
+CREATE TABLE `users` (
+`id` varchar(128) NOT NULL default '',
+`name` varchar(128) NOT NULL default '',
+`uid` smallint(5) unsigned NOT NULL default '5000',
+`gid` smallint(5) unsigned NOT NULL default '5000',
+`home` varchar(255) NOT NULL default '/var/spool/mail/virtual',
+`maildir` varchar(255) NOT NULL default 'blah/',
+`enabled` tinyint(3) unsigned NOT NULL default '1',
+`change_password` tinyint(3) unsigned NOT NULL default '1',
+`clear` varchar(128) NOT NULL default 'ChangeMe',
+`crypt` varchar(128) NOT NULL default 'sdtrusfX0Jj66',
+`quota` varchar(255) NOT NULL default '',
+`procmailrc` varchar(128) NOT NULL default '',
+`spamassassinrc` varchar(128) NOT NULL default '',
+PRIMARY KEY  (`id`),
+UNIQUE KEY `id` (`id`)
+) ;</code>
+
+	<h4>
+		The last few fields are not required, 
+		but usefull if you extend later.
+	</h4>
+	
+	<h4>Next is to edit the my.cnf file.
+In Ubuntu/debian this is created by default.
+In Mandrake I had to manually create a blank one in /etc.
+In ubuntu edit /etc/mysql/my.cnf</h4>
+
+	<code><span class="comment">## In Hoary you needed to comment out this line
+#skip-networking
+## however in breezy this has changed to</span>
+bind-address            = 127.0.0.1
+<span class="comment">## which is fine</span> 
+<span class="comment">## Make sure this is set</span>
+log             = /var/log/mysql/mysql.log
+<span class="comment">## Then in a few weeks comment it out 
+## when everything is working, as it slows mysql down</span></code>
+	
+	<h4>
+		By this you have enable net access to MySQL,
+		but you still control whom connects to it
+		with your firewall and user settings in MySQL.
+		You may be able to just connect straight to the socket which is more secure.
+	</h4>
+
+	<code><span class="comment"># restart MySQL to make sure 
+# its picking up the new settings.</span>
+sudo /etc/init.d/mysql restart</code>
+	
+
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_imap"></a>
+	<h3>Pop/IMAP: Courier IMAP</h3>		
+	
+	<h4>
+		Edit /etc/courier/authdaemonrc, 
+		and change the module line to this:
+	</h4>
+
+	<code>authmodulelist="authmysql"</code>
+	
+	<h4>
+		Edit authmysqlrc and make sure 
+		these setting lines are set correctly.
+		Empty spaces at the end of lines are a common mistake.
+	</h4>
+
+	<code>MYSQL_SERVER		localhost
+MYSQL_USERNAME		mail
+MYSQL_PASSWORD		<i>apassword</i>
+MYSQL_PORT		0
+MYSQL_OPT		0
+MYSQL_DATABASE		maildb
+MYSQL_USER_TABLE	users
+<span class="comment"># comment out this field,
+# as I now longer use the encrypted pw options
+#MYSQL_CRYPT_PWFIELD	crypt</span>
+MYSQL_CLEAR_PWFIELD	clear
+MYSQL_UID_FIELD		uid
+MYSQL_GID_FIELD		gid
+MYSQL_LOGIN_FIELD	id
+MYSQL_HOME_FIELD	home
+MYSQL_NAME_FIELD	name
+MYSQL_MAILDIR_FIELD	concat(home,'/',maildir)
+MYSQL_WHERE_CLAUSE	enabled=1</code>
+	
+	<h4>Edit imapd</h4>
+
+	<code><span class="comment"># set how many connections to use per person.
+Easy to underestimate if you have 6 mailboxes set up.</span>
+MAXPERIP=20
+<span class="comment"># high debug to start with</span>
+DEBUG_LOGIN=2
+IMAPDSTART=YES</code>
+	
+	<h4>
+		Then edit the same in the 
+		pop and ssl options,
+		if you are going to use them.
+	</h4>
+
+	<h4>
+		If you have followed these steps properly,
+		you should now have a working mail server.
+		You can skip down to the 
+		<a href="#data">data</a> and then 
+		<a href="#test">test</a> stage 
+		to see if your server works as intended.
+		It is not secure and is suceptable to spam,
+		so do follow the other steps soon,
+		but it is nice to find out that it works!
+	</h4>
+	
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_cont"></a>
+	<h3>Content Checks: Amavisd-new</h3>		
+	
+	<h4>
+		As of dapper release this is now seperated across several config files in </i>/etc/amavis/conf.d</i>.
+		If you have an old setup, rename <i>/etc/amavis/amavis.conf</i> to eg <i>amavis.conf.disabled</i>
+		Quick edit is to add your changes to a <i>50user</i> file within <i>/etc/amavis/conf.d</i>.
+		Thanks to Donald Goodman for the 50-user tip.
+		More information in <a href="https://wiki.ubuntu.com/PostfixAmavisNew">the wiki</a><br />
+		The important configurations are:		
+	</h4>
+
+	<code>$mydomain '<i>yourdomain.com</i>';
+$daemon_user= 'virtual';		
+$daemon_group= 'virtual';		
+@local_domains_acl = qw(.);
+$inet_socket_port = 10024;
+$forward_method = 'smtp:127.0.0.1:10025';
+<span class="comment"># @bypass_virus_checks_acl  = qw( . );
+# @bypass_spam_checks_acl  = qw( . );</span></code>
+
+<code><span class="comment"># I also change these</span>
+$TEMPBASE = "$MYHOME/tmp";
+<span class="comment"># Whilst debugging</span>
+$log_level = 2; 
+$warnbannedrecip = 1;
+$warn_offsite = 1; 
+$warnvirusrecip = 1;
+$spam_quarantine_to = "spam-quarantine\@$mydomain";
+$virus_quarantine_to = "virus-quarantine\@$mydomain";
+$sa_local_tests_only = 0;</code>
+
+	<h4>
+		Then in av_scanner section you enable/disable 
+		the virus scanners you are going to use.
+		We will be using ClamAV,
+		so comment out all lines between @av_scanners(
+		and its closing bracket.
+		Do the same for @av_scanners_backup.
+		Then in @av_scanner uncomment Clam lines,
+		(maybe lines 1232 to 1235).
+	</h4>
+
+	<h4>
+		Then you need to check that the $TEMPBASE
+		folder exists and is ownder by the $daemon_user.
+		The same goes for the virusfolder.			
+	</h4>
+	
+	<code><span class="comment"># You may have to do this</span>
+cd /var/lib/amavis
+mkdir tmp
+chown virtual:virtual tmp
+chown virtual:virtual virusmails
+<span class="comment">#  and maybe this</span>
+chown -R virtual:virtual /var/run/amavis</code>	
+
+	<h4>
+		The init script for amavis insist on the ownership
+		of these being the "proper" amavis user and group.
+		As we need it to be the virtual pair, 
+		we need to edit the /etc/init.d/amavis script.
+		(Unless someone has a sweeter, more correct way.)
+	</h4>
+	
+	<code><span class="comment">#edit about line 31</span>
+<span class="comment">#chown -c -h "$1:$2" "$4"</span>
+chown -c -h "virtual:virtual" "$4"</code>
+
+	<h4>
+		Next thing is to specify how to connect to the content check plugin.
+	</h4>
+
+	<h4>
+		Edit master.cf in /etc/postfix, 
+		The changes I have made from the default master.cf is
+		modifying two lines then addding three more services.
+		(Please note lines starting with -o needs to be either tabbed or 
+		double spaced as they belong to line above it. )
+	</h4>
+
+	<code><span class="comment">#smtp      inet  n       -       n       -       -       smtpd</span>
+<!-- span class="comment">#	-o content_filter=smtp-amavis:[127.0.0.1]:10024</span -->
+smtp      inet  n       -       -       -       -       smtpd
+	-o cleanup_service_name=pre-cleanup
+	
+<span class="comment">#cleanup   unix  n       -       -       -       0       cleanup</span>
+cleanup   unix  n       -       -       -       0       cleanup
+	-o mime_header_checks=
+	-o nested_header_checks=
+	-o body_checks=
+	-o header_checks=
+
+amavis unix        -       -       -       -       2       smtp
+	-o smtp_data_done_timeout=1200
+	-o smtp_send_xforward_command=yes
+
+127.0.0.1:10025 inet    n       -       -       -       -       smtpd
+	-o content_filter=
+	-o local_recipient_maps=
+	-o relay_recipient_maps=
+	-o smtpd_restriction_classes=
+	-o smtpd_client_restrictions=
+	-o smtpd_helo_restrictions=
+	-o smtpd_sender_restrictions=
+	-o smtpd_recipient_restrictions=permit_mynetworks,reject
+	-o strict_rfc821_envelopes=yes
+	-o mynetworks=127.0.0.0/8
+	-o smtpd_error_sleep_time=0
+	-o smtpd_soft_error_limit=1001
+	-o smtpd_hard_error_limit=1001
+
+pre-cleanup unix n - - - 0 cleanup
+	-o virtual_alias_maps=
+	-o canonical_maps=
+	-o sender_canonical_maps=
+	-o recipient_canonical_maps=
+	-o masquerade_domains=</code>
+
+	<h4>
+		Then edit main.cf in /etc/postfix and add these lines.	
+	</h4>
+
+	<code>content_filter = amavis:[127.0.0.1]:10024
+<span class="comment">#receieve_override_options = no_address_mappings</span></code>
+
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_cont_virus"></a>
+	<h3>Anti-Virus: ClamAV</h3>		
+	
+	<h4>
+		ClamAV do not need a lot of setting up.
+		You need to make sure it is run by the same user as the amavisd-new.
+		And then you may configure the fresclam option, 
+		which makes sure you have the latest virus definitions.	
+	</h4>
+
+	<h4>
+		Edit /etc/clamav/clamd.conf and change the user to the amavisd-new user or
+		the other way round.	
+	</h4>
+	<code><span class="comment"># User clamav</span>
+User virtual</code>
+
+	<h4>Then change ownership of its runtime folder</h4>
+
+	<code>chown virtual:virtual /var/run/clamav</code>
+	
+	<h4>
+		Edit freshclam.conf			
+	</h4>
+	<code><span class="comment"># how frequent per day. default is once an hourwhich is a bit excesive.
+# once per day should do.</span>
+Checks 1</code>
+<h6><a href="#top">Return to top</a>.</h6>
+	
+
+	<a name="conf_cont_spam"></a>
+	<h3>Anti-Spam: Spamassassin</h3>		
+	
+	<h4>
+		<p>
+			SpamAssassin's default settings were fine, 
+			but you can tweak them at /etc/spamassassin/local.cf
+			and review the defauls at /usr/share/spamassassin/.
+			E.g. you can in/decrease the levels needed before emails are
+			marked as spam and before rejections.
+		</p>
+		<p>
+			Here is an example of my local.cf.
+		</p>
+	</h4>
+
+	<code>skip_rbl_checks         0
+use_razor2              0
+use_dcc                 0
+use_pyzor               0
+use_bayes               1
+bayes_path 		/etc/spamassassin/bayes
+bayes_file_mode    	0770</code>
+	
+	<h4>
+		<p>
+			Once you have a collection of spam and non spam (200+ of each),
+			you can train the Bayes filter in SpamAssassin with these emails.
+			<a href="http://wiki.apache.org/spamassassin/BayesInSpamAssassin">Review this</a> on the SpamAssassin web site.
+		</p>			
+	</h4>
+	<code><span class="comment"># E.g. like this</span>
+sa-learn --showdots -C /etc/spamassassin --spam /var/spool/mail/virtual/<i>quarantine/.spam</i>/*
+sa-learn --showdots -C /etc/spamassassin --ham /var/spool/mail/virtual/<i>mine/cur</i>/*</code>
+
+	<h4>
+		<p>
+			If you notice too much spam is being let through,
+			then do more tweaking. If you get too many false postives,
+			ie real emails marked as spam, loosen the set up slightly.
+			A properly configured SpamAssassin should catch 97% of all spam.
+			With probably 1 in 1000 false positives.
+		</p>
+		<p>
+			The <a href="http://spamassassin.apache.org">SpamAssassin</a>
+			site has a lot of information on setting it up. 
+			It is worth a good read through. 
+			Some usefull tips are automatic learning, 
+			cronjobs to learn user marked spam and ham, etc.
+		</p>
+	</h4>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_grey"></a>
+	<h3>PostGrey</h3>
+	<h4>
+			<p>
+				Adding Postgrey to this mail set up is a breeze.
+				Thanks for the emails I got on postgreys benefits and integration.
+			</p>
+			<p>
+				Ubuntu's extended repositories has a postgrey module, 
+				which installs the scripts and sets up a /etc/postgrey whitelist configuration.
+				You can edit these files, but I don't bother.
+				You may want to any back up mx server you use, if you do.
+			</p>
+			<p>
+				You do however need to edit <i>main.cf</i> to add reciepient restrictions:
+			</p>
+		</h4>
+	<code><span class="comment">#adding the postgrey policy:</span>
+smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, 
+		reject_non_fqdn_recipient, reject_unknown_recipient_domain, reject_unauth_destination,  
+		check_policy_service inet:127.0.0.1:60000, permit</code>
+		<h4>
+			You can modify the default time before a server can try again.
+			The default is 300 seconds, ie 5 minutes.
+			I have mine set to 1 minute.
+			Edit <i>/etc/default/postgrey</i>
+		</h4>
+	<code>POSTGREY_OPTS="--inet=127.0.0.1:60000 --delay=60"
+<span class="comment">#POSTGREY_TEXT="Your customized rejection message here"</span></code>
+		<h6><a href="#top">Return to top</a>.</h6>
+		
+		<h4>
+			<p>
+			If the postgrey method becomes very popular, 
+			perhaps spammers will start to comply with it.
+			However that will be years untill they do, if ever.
+			</p>
+			<p>
+			Meanwhile enjoy a spamless existence.
+			</p>
+		</h4>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_auth"></a>
+	<h3>Authentication</h3>		
+
+	<h4>
+		<p>
+			Cyrus SASL provide a secure method of authenticating users.
+			This type of authentication is required by two methods,
+			one is by postfix when sending email 
+			and the other is by Courier when reading emails.		
+		</p>
+		<p>
+			First we wil will deal with postfix.
+			Add these lines to main.cf
+		</p>
+	</h4>
+
+	<code><span class="comment"># modify the existing smtpd_recipient_restrictions</span>
+smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, 
+		permit_sasl_authenticated, reject_non_fqdn_recipient,
+		reject_unauth_destination, check_policy_service inet:127.0.0.1:60000,
+		permit
+<span class="comment"># modify the existing smtpd_sender_restrictions</span>
+smtpd_sender_restrictions = permit_sasl_authenticated, permit_mynetworks, 
+		reject_non_fqdn_sender, reject_unknown_sender_domain, 
+		reject_unauth_pipelining, permit
+<span class="comment"># then add these</span>
+smtpd_sasl_auth_enable = yes
+broken_sasl_auth_clients = yes
+smtpd_sasl_path = /etc/postfix/sasl:/usr/lib/sasl2
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = </code>
+
+	<h4>Then we need to create the sasl configuration</h4>
+
+	<code><span class="comment"># May already exist</span>
+mkdir /etc/postfix/sasl
+<span class="comment"># Then create the conf file.</span>
+vi /etc/postfix/sasl/smtpd.conf</code>
+	
+	<code>pwcheck_method: auxprop
+auxprop_plugin: sql
+mech_list: plain login cram-md5 digest-md5
+sql_engine: mysql
+sql_hostnames: 127.0.0.1
+sql_user: mail
+sql_passwd: <i>apasswd</i>
+sql_database: maildb
+sql_select: select clear from users where id='%u@%r' and enabled = 1</code>
+
+	<h4>
+		<p>
+			That is all that should be required for sending email.
+		</p>
+		<p>
+			Next is to configure Courier to authenticate via SASL as well.
+		</p>
+		<p>
+			In Ubuntu all this was preset so the only line I needed to modify / confirm 
+			in /etc/courier/imapd is:
+		</p>
+	</h4>
+
+	<code>IMAP_CAPABILITY="IMAP4rev1 UIDPLUS CHILDREN NAMESPACE 
+THREAD=ORDEREDSUBJECT THREAD=REFERENCES SORT QUOTA 
+AUTH=CRAM-MD5 AUTH=CRAM-SHA1 IDLE"</code>
+
+<h4>If you need Pop, modify the pop file as well.</h4>
+	
+<h6><a href="#top">Return to top</a>.</h6>
+	
+
+	<a name="conf_encryption"></a>
+	<h3>Encryption</h3>		
+
+	<h4>
+		SASL is secure authentication, but all the traffic is still in plain text.
+		Enter encryption and TLS. TLS, an evolution of SSL, encrypts the traffic
+		between the server and your email client for sending via postfix
+		and reading via courier.
+	</h4>
+
+	<h4>
+		TLS is not client encryption, 
+		ie encrypting the content all the way 
+		between sender and recipient.
+		For this type look up GNuPG and S/MIME in 
+		<a href="#ext_pgp">extensions</a>.
+	</h4>
+
+	<h4>
+		First you need to create a certificate for postfix and one for courier.
+		In postfix you need to do this for 3 year certificate:
+	</h4>
+
+	<code>cd /etc/postfix
+openssl req -new -outform PEM -out \
+		<i>postfix.cert</i> -newkey rsa:2048 -nodes -keyout \
+		<i>postfix.key</i> -keyform PEM -days 999 -x509</code>
+
+	<h4>
+		Then you need to add these to /etc/postfix/main.cf
+	</h4>
+
+	<code>smtpd_use_tls = yes
+smtpd_tls_cert_file = <i>/etc/postfix/postfix.cert</i>
+smtpd_tls_key_file = <i>/etc/postfix/postfix.key</i> 
+smtpd_data_restrictions = reject_unauth_pipelining</code>		
+
+	<h4>
+		Followed by adding or making sure these are in master.cf:	
+	</h4>
+
+<code><span class="comment"># these may already be present in your file,
+# however I usually have to add them
+# also, this specific line used to use fifo, it now needs to use unix type</span>
+tlsmgr   unix  -  -  n  300   1  tlsmgr
+smtps    inet  n  -  n  -  -  smtpd -o smtpd_tls_wrappermode=yes -o smtpd_sasl_auth_enable=yes
+587  inet  n  -  n  -  -  smtpd -o smtpd_enforce_tls=yes -o smtpd_sasl_auth_enable=yes</code>
+
+	<h4>
+		<p>
+			These ports are required for clients not able to use 
+			the STARTTLS option on plain port 25.
+			Port 465 (the smtps line) is an unofficial workaround, 
+			so clients E.g. Novel Evolution,
+			uses it untill they fix their software to work with STARTTLS.
+		</p>
+		<p>
+		The debian packages in Ubuntu creates certificate for courier for you.
+		Otherwise do this (in case server name is not same as machine name):
+		</p>
+	</h4>
+	
+	<code>openssl req -x509 -newkey rsa:1024 -keyout <i>imapd.pem</i> -out \
+<i>imapd.pem</i> -nodes -days 999</code>
+
+	<h4>
+		Then edit /etc/courier/imapd-ssl 
+		and make sure this is path to the certificate.
+	</h4>
+
+	<code>TLS_CERTFILE=/etc/courier/imapd.pem</code>
+
+	<h4>
+		<p>
+		This will enable secure traffic of emails via your clients
+		and the server.
+		As these are not signed certificates,
+		some may be prompted to accept license.
+		You could get people to import your certificates,
+		if only a few is accessing you imap/smtp server,
+		or purchase a signed one if you have a large number of users,
+		especially if corporate.
+		Outlook is known as stuburn to accept the certificates.
+		</p>
+		<!-- p>
+			Ps. I allow either unencrypted traffic with SASL 
+			authentication, or encrypted TLS traffic without SASL
+			authentication. 
+			There seems little need for SASL if the traffic is 
+			encrypted anyway, and I haven't got that to work anyway.... :)
+		</p -->
+		<p>
+			There are some issues with using SALS and TLS at the same time.
+			Since all the traffic is encrypted with TLS,
+			then the need for SASL is less when enforcing TLS.
+		</p>
+	</h4>
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="conf_web"></a>
+	<h3>Webmail: SquirrelMail</h3>		
+	
+	<h4> 
+		The squirrel is php module from sourceforge.
+		Once installed in a web root somewhere
+		go to its parent folder.
+		E.g. /var/www/.
+		In Ubuntu it is installed in /usr/share, so do this first.
+	</h4>
+
+	<code>ln -s /usr/share/squirrelmail /var/www/squirrelmail</code>
+
+	<h4>
+		Next thing is to set up a url to access squirrel mail.
+		You can either have it as a subfolder in an existing web site,
+		or as I prefer as virtual host for itself.
+		Edit wherever your specify virtual hosts on your system, 
+		( e.g. /etc/httpd/conf/vhosts/ ).
+		In Ubuntu edit this file: /etc/apache2/sites-available/webmail
+	</h4>
+
+	<code><span class="comment"></span>&lt;VirtualHost *&gt;
+ServerAdmin <i>webmaster@yourdomian.com</i>
+ServerName <i>webmail.yourdomain.com</i>
+DocumentRoot /var/www/squirrelmail
+&lt;Directory /var/www/squirrelmail&gt;
+	Options Indexes FollowSymLinks MultiViews
+	AllowOverride AuthConfig
+	Order allow,deny
+	allow from all
+&lt;/Directory&gt;
+ErrorLog /var/log/apache2/error-webmail.log
+LogLevel warn
+CustomLog /var/log/apache2/access-webmail.log combined
+ServerSignature On
+&lt;/VirtualHost&gt;</code>
+	
+	<h4>
+		Then will enable and activate it.
+	</h4>
+
+	<code>ln -s /etc/apache2/sites-available/webmail /etc/apache2/sites-enabled/810-webmail
+<span class="comment"># or as Florent recommends, use:</span>
+a2ensite webmail
+<span class="comment"># then activate the changes</span>
+/etc/init.d/apache2 reload</code>
+	
+	<h4>
+		<p>
+			The config folder is actually symblinked to
+			<i>/etc/squirrelmail</i> so if you run several instances of 
+			squirrelmail you might want to create copies of it.
+		</p>
+		<p>
+			SquirrelMail is configured with 3 config files.
+			<i>config_default.php</i> is well commented and 
+			is sets up the default values. Do not edit it.
+		</p>
+		<p>
+			<i>config.php</i> overrides the defaults.
+			Do not edit this one either as it is created by 
+			the <i>conf.pl</i> perl script.
+		</p>
+		<p>
+			Finally <i>conf_local.php</i> can be edited
+			and it overrides the others.
+		</p>
+		<p>
+			To configure squirrelmail, run the perl script.
+		</p>
+	</h4>
+
+	<code>/var/www/squirrelmail/config/conf.pl</code>
+	
+	<h4>
+			It is menu driven, and powerfull so be carefull.
+			Also make sure there are no extra spaces before or
+			after any settings.
+			Chose option 9 from the menu, the database option.
+			Then 1 to edit the dns for address book.
+	</h4>
+
+	<code><span class="comment"># Enter this</span>
+mysql://<i>username</i>:<i>password</i>@127.0.0.1/<i>database</i></code>
+	
+	<h4>
+			Then choose 3 for the preferences and enter the same.
+	</h4>
+
+	<code>mysql://<i>username</i>:<i>password</i>@127.0.0.1/<i>database</i></code>
+	
+	<h4>
+		<p>
+			There is also a global address option if you choose to use it.
+			Press s to save the settings, and r to return to main menu.
+			Press q to exit.
+		</p>
+		<p>
+			Here is copy of my <i>config_local.php</i>.	
+			Read the default file for explanations.
+		</p>
+	</h4>
+
+	<code><span class="comment"></span>$org_name = "flurdy webmail";
+$org_logo = 'http://flurdy.com/images/flurdy.gif';
+$org_logo_width = '212';
+$org_logo_height = '108';
+$org_title = "webmail by flurdy";
+$provider_name = 'flurdy';
+$provider_uri = 'http://www.flurdy.com/';
+$smtp_auth_mech = 'none';
+$default_use_javascript_addr_book = true;
+$hide_sm_attributions = true;
+
+$edit_identity = false;
+$edit_name = true;
+
+$imap_server_type = 'courier';
+$default_folder_prefix = 'INBOX.';
+$trash_folder                   = 'Trash';
+$sent_folder                    = 'Sent';
+$draft_folder                   = 'Drafts';
+$show_prefix_option             = false;
+$default_sub_of_inbox           = false;
+$show_contain_subfolders_option = false;
+$delete_folder                  = true;
+$optional_delimiter     = '.';
+$force_username_lowercase = true;
+
+$allow_thread_sort = true;
+$allow_server_sort = true;
+
+$addrbook_dsn = 'mysql://<i>username</i>:<i>password</i>@localhost/<i>database</i>';
+$prefs_dsn = 'mysql://<i>username</i>:<i>password</i>@localhost/<i>database</i>';
+$addrbook_global_dsn = 'mysql://<i>username</i>:<i>password</i>@localhost/<i>database</i>';
+$addrbook_global_writeable = false;
+$addrbook_global_listing = false;
+
+$theme_default = 18;
+$theme_css = '/themes/css/verdana-10.css';</code>
+
+	<h4>
+		<p>
+			Then you need to create these database tables, 
+			My previous editions included the squirrelmail specific
+			tables in the main mail database. 
+			However I believe a cleaner setup is to have seperate 
+			squirrel user and database for its settings.
+		</p>
+		<p>
+			First create a new squirrel database user,
+			or reuse the mail user. 
+			See the <a href="conf_mysql">MySQL</a> section
+			for user creation details.
+		</p>
+		<p>
+			Then create a squirrel database 
+			or reuse the mail database.
+			Make sure the user created above 
+			has usage access to this database.
+			Again refer to the <a href="conf_mysql">MySQL</a> section.
+		</p>
+		<p>
+			Modify the <i>config.php</i> files to reflect this.
+		</p>
+		<p>
+			Then log into mysql to start creating these tables.
+		</p>
+	</h4>
+
+	<code>mysql -u <i>username</i> -p <i>database</i>
+<span class="comment"># Then enter the password</span></code>
+	
+	<code>CREATE TABLE `address` (
+	`owner` varchar(128) NOT NULL default '',
+	`nickname` varchar(16) NOT NULL default '',
+	`firstname` varchar(128) NOT NULL default '',
+	`lastname` varchar(128) NOT NULL default '',
+	`email` varchar(128) NOT NULL default '',
+	`label` varchar(255) default NULL,
+	PRIMARY KEY  (`owner`,`nickname`),
+	KEY `firstname` (`firstname`,`lastname`)
+) ;
+CREATE TABLE `userprefs` (
+	`user` varchar(128) NOT NULL default '',
+	`prefkey` varchar(50) NOT NULL default '',
+	`prefval` varchar(255) default NULL,
+	`modified` timestamp(14) NOT NULL,
+	PRIMARY KEY  (`user`,`prefkey`)
+) ;	
+CREATE TABLE `global_abook` (
+	`owner` varchar(128) NOT NULL default '',
+	`nickname` varchar(16) NOT NULL default '',
+	`firstname` varchar(128) NOT NULL default '',
+	`lastname` varchar(128) NOT NULL default '',
+	`email` varchar(128) NOT NULL default '',
+	`label` varchar(255) default NULL,
+	PRIMARY KEY  (`owner`,`nickname`),
+	KEY `firstname` (`firstname`,`lastname`)
+);</code>
+	
+	<h4>
+		Right then, as the squirrelmail suggested,
+			you can try of this works later on by going
+			to
+			http://your-squirrelmail-location/src/configtest.php
+			( Please note you may not have any data or mail to test it with yet.
+			so perhaps wait till test section. )	
+		</h4>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+		
+
+		<a name="conf_admin"></a>
+		<h3>phpMyAdmin</h3>		
+		
+		<h4>
+			PhpMyAdmin is an excellent MySQL administration gui.
+			I use it to manage my mail settings,
+			and can be used when setting up the MySQL database as well.
+		</h4>
+
+		<code><span class="comment"># cd into web root where phpMyAdmin is installed,  e.g. /var/www </span>
+<span class="comment"># Again in Ubuntu a soft link is needed to /usr/share</span>
+<span class="comment"># this time however the apt-get has done it for you. (check though)</span>
+<span class="comment"># If the folder contains the version in its name.
+# do this for ease of access and if later upgrading</span>
+ln -s phpMyAdmin<i>1.6.2</i> phpMyAdmin</code>
+
+
+		<h4>
+			First of all once you have installed phpMyAdmin
+			is the create a .htaccess file in its folder.
+			Otherwise every Tom, Dick and Harry can mess your system up.
+		</h4>
+		
+		<code><span class="comment"># either reuse an old .htpasswd file</span>
+<span class="comment"># or as below , create one when you add the first user</span>
+htpasswd2 -c <i>/path/to/htpasswd/file/outside/www/.htpasswd</i> <i>ausername</i>
+<span class="comment"># then enter desired passwd</span></code>
+
+	<h4>
+		Next you need to either create a .htaccess file 
+		or modify one, as Ubuntu comes with one included.
+		I add these settings to my apache virtual host config file,
+		but that is not neccessary.
+		Make sure the apache config for this host has
+		<i>AllowOverrid All</i> in its settings.
+		Add these to 
+		<i>/path/to/phpmyadmin/.htaccess</i>.
+		You may need to comment out some existing settings as well,
+		but see which causes errors.
+	</h4>	
+	
+<code>AuthType Basic
+AuthName "A Bit Hush and all that"
+AuthUserFile "<i>/path/to/htpasswd/file/outside/www/.htpasswd</i>"
+require valid-user</code>
+
+		<h4>
+			Next is to edit <i>/path/to/phpmyadmin</i>/config.inc.php.
+			Set the $cfg['PmaAbsoluteUri'] to whatever address and path
+			your phpMyAdmin is.			
+			Then set up what servers to connect to.
+			You can add the root user for easy admin of the whole system,
+			but that is a bit insecure.
+			Adding a different user with full access is a better solution,
+			if you require full admin through the gui.
+			However for the mail admin, neither is required,
+			all you need to add is the mail user.
+		</h4>
+
+		<code>$cfg['Servers'][$i]['host']          = 'localhost';
+$cfg['Servers'][$i]['user']          = 'mail';
+$cfg['Servers'][$i]['password']      = '<i>apassword</i>';
+$cfg['Servers'][$i]['only_db']       = 'maildb';</code>
+
+		<a name="conf_dns"></a>
+		<h3>DNS</h3>		
+		
+		<h4>
+			For a mail server to be used, 
+			people/machines will have to know how and where 
+			to connect to deliver mail for your domains.
+		</h4>
+
+		<h4>
+			You need to edit the MX records of your domains DNS.
+			Whether you run your owm DNS server, 
+			or use a free DNS service.
+			they mostly act the same, 
+			even though some has been fluffed up with a nice GUI.
+		</h4>
+
+		<code><i>domain.tld</i>	IN	MX	10	<i>your.mailserver.name.tld</i></code>
+		
+	</div>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+<a name="data"></a>
+<h2>Data</h2>
+<div class="section">
+		
+	<ul>
+		<li><h5><a href="#data_add">Add users and domains</a></h5></li>
+		<li><h5><a href="#data_common">Common SQL</a></h5></li>
+	</ul>
+	
+		<a name="data_add"></a>
+		<h3>Add users and domains</h3>
+		<h4>
+			<p>
+				So we got a fully set up mail server...
+				Well no, there is no users, domains, no nothing!
+			</p>
+			<p>
+				Okay, first you need add some default data, 
+				some which are required, some which make sense.
+			</p>
+			<p>
+				Then we'll add your own users and domains.
+			</p>
+		</h4>
+
+		<h4>First the required domains for local mail</h4>
+		
+		<code><span class="comment"># Use phpMyAdmin or command line mysql</span>
+INSERT INTO domains (domain) VALUES
+('localhost'),
+('localhost.localdomain');</code>
+		
+		<h4>
+			Then some default aliases.
+			Some people say these are not needed, but I'd include them.
+		</h4>
+		
+		<code>INSERT INTO aliases (mail,destination) VALUES
+('postmaster@localhost','root@localhost'),
+('sysadmin@localhost','root@localhost'),
+('webmaster@localhost','root@localhost'),
+('abuse@localhost','root@localhost'),
+('root@localhost','root@localhost'),
+('@localhost','root@localhost'),
+('@localhost.localdomain','@localhost');</code>
+
+		<h4>Then a root user.</h4>
+				
+		<code>INSERT INTO users (id,name,maildir,clear) VALUES 
+('root@localhost','root','root/','<i>apassword</i>');</code>
+		
+		<h4>
+			Now lets add some proper data.
+			Say you want this machine to handle data for the fictional domains
+			of "blobber.org", "whopper.nu" and "lala.com". 
+			Then say this machine's name is "mail.blobber.org".
+			You also have two users called "Xandros" and "Vivita".
+			You want all mail for whooper to go to xandros.
+			There is also a "Karl" user, but he does want all mail forwarded
+			to an external account.
+		</h4>
+		
+		<code>INSERT INTO domains (domain) VALUES
+('blobber.org'),
+('whopper.nu'),
+('lala.com');
+INSERT INTO aliases (mail,destination) VALUES
+('xandros@blobber.org','xandros@blobber.org'),
+('vivita@blobber.org','vivita@blobber.org'),
+('karl@blobber.org','karl.vovianda@gmail.com'),
+('@whopper.nu','xandros@blobber.org'),
+('@lala.com','@blobber.org'),
+('postmaster@whopper.nu','postmaster@localhost'),
+('abuse@whopper.nu','abuse@localhost'),
+('postmaster@blobber.org','postmaster@localhost'),
+('abuse@blobber.org','abuse@localhost');
+INSERT INTO users (id,name,maildir,clear) VALUES 
+('xandros@blobber.org','xandros','xandros/','<i>apassword</i>'),
+('vivita@blobber.org','vivita','vivita/','<i>anotherpassword</i>');</code>
+		
+		<h4>
+			<p>
+			So what does each of these lines do?
+			Well the domains are pretty straight forward.
+			The users are as well, it requires four fields.
+			ID is the email address of the user, and also its username
+			when loggin in, described later on.
+			NAME is optional description of the user.
+			MAILDIR is the name of the folder inside /var/spool/mail/virtual.
+			It must end in a /, otherwise it wont be used as a unix maildir format.
+			CLEAR is the clear text password to use.
+			</p>
+			<p>
+			The alises are the interesting part.
+			Lets start from a top down view. 
+			Say an email arrives addressed to "john@whopper.nu". 
+			Postfix looks up aliases and searches for a row where the mail 
+			field matches "john@whopper.nu". 
+			None does so it next searches for "@whopper.nu", 
+			which is the way to specify catch all others for that domain.
+			It finds one row and its destination is "xandros@blobber.org".
+			It then searches for "xandros@blobber.org" 
+			and finds one, which destination is the same as the mail,
+			therefor it is the final destination. 
+			It then tries to deliver this mail. The look up says blobber.org
+			is a local mail so it looks up users for a matching id and delivers it
+			to its maildir.
+			</p>
+			<p>
+				Lets try "julian.whippit@lala.com". 
+				First lookup does not find this user,
+				but the next finds the catchall "@lala.com".
+				But its destination is another catchall, "@blobber.org". 
+				This means Postfix will look for "julian.whippit@blobber.org".
+				This address is not found either, nor is a catchall for blobber.org.
+				Therefor this address is not valid and the message will be bounced.
+			</p>
+			<p>
+				Any mail arriving for "karl@blobber.org" or "karl@lala.com",
+				gets forward to an external address of "karl.vovianda@gmail.com".				
+				So forwarding is simple. I tend to use a subdomain for all my friends
+				addresses as easily I forget what their real addresses
+				are, and I use different email clients all the time.
+			</p>
+			<p>
+				I also added the required aliases of postmaster and abuse to 
+				blobber.org and whopper.nu. The catchall for lala.com 
+				means they are not required for that domain. 
+				You can add them though if you do not want xandros 
+				to get the admin emails. 
+				Another usefull alias to add is root, 
+				as often you get admin mail from e.g cron jobs within
+				those domains etc.
+				Other often used aliases are info, sysadmin, support, sales,
+				webmaster, mail, contact and all.
+				But they are also honeypots for spam, 
+				so just include the ones you think you will need.
+			</p>
+		</h4>
+
+		<h4>
+			So to add a new domain to the system, You do this:	
+		</h4>
+		
+		<code>INSERT INTO domains (domain) VALUES ('<i>domain.tld</i>');
+INSERT INTO aliases (mail,destination) VALUES
+('<i>@domain.tld</i>','<i>email@address</i>'),
+('<i>postmaster@domain.tld</i>','<i>email@address</i>'),
+('<i>abuse@domain.tld</i>','<i>email@address</i>');</code>
+
+		<h4>
+			And to add a new user to the system, do this:	
+		</h4>
+		
+		<code>INSERT INTO users (id,name,maildir,clear) VALUES
+('<i>email@address</i>','<i>short description</i>','<i>foldername/</i>','<i>password</i>');
+INSERT INTO aliases (mail,destination) VALUES
+('<i>email@address</i>','<i>email@address</i>');</code>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="data_common"></a>
+	<h3>Common SQL</h3>
+	<h4>
+		A selection of useful sql statements, if you are not using an admin/manager program to
+		maintain your email domains and users.
+	</h4>
+	<h4>Find domains without a catchall</h4>	
+<code><span class="comment">#Remember some might be disabled</span>
+SELECT dom.domain 
+FROM domains dom
+LEFT JOIN aliases al
+	ON CONCAT( '@', dom.domain ) = al.mail
+WHERE al.mail is null
+OR al.enabled = 0
+ORDER BY dom.domain ASC
+</code>
+	<h4>Find aliases for an invalid domain</h4>	
+<code>SELECT al.*
+FROM aliases al
+LEFT JOIN domains dom
+	ON dom.domain = SUBSTRING(al.mail,LOCATE('@',al.mail)+1)
+WHERE dom.domain is null
+OR dom.enabled = 0
+ORDER BY al.mail ASC
+</code>
+	<h4>Find all non local destination aliases</h4>	
+<code>SELECT al.*
+FROM aliases al
+LEFT JOIN domains dom
+	ON dom.domain = SUBSTRING(al.destination,LOCATE('@',al.destination)+1)
+WHERE dom.domain is null
+ORDER BY al.enabled, al.destination ASC, al.mail ASC
+</code>
+	<h4>Find all aliases for a certain domain</h4>	
+<code>SELECT al.*
+FROM aliases al
+WHERE SUBSTRING(al.mail,LOCATE('@',al.mail)+1) = 'domain.tld'
+ORDER BY al.enabled, al.mail ASC
+</code>
+	
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+
+
+<a name="test"></a>
+<h2>Test</h2>
+<div class="section">
+	
+		<h4>
+		<p>	
+			This is a small and simple section,
+			but this will be the one you spend the longest on!
+		</p>
+		<p>
+			There will be spelling errors(by you and me), difference in setups,
+			external factors etc, so this server is guaranteed not to work first time.
+			Great eh? 
+		</p>	
+		<p>	
+			But don't worry, we can quickly track down which section is at fault,
+			and solve the issues one by one.
+		</p>	
+		</h4>
+			
+		<h4>
+			<p>
+			I hope you blocked external acces to your SMTP port (25) 
+			in your firewall setting.
+			Otherwise you might have become an open relay for spammers.
+			(Okay unlikely unless you have been running exposed for a few weeks).
+			You will have to unblock it soon, but not yet.
+			Lets first be 100% sure the system works, so only local access
+			to SMTP should be allowed for now.
+			</p>
+			<p>
+				We will test each section bit by bit to black box certify each bit.
+				First test that postfix delivery works 
+				(by exluding content checks and ignoring courier).
+				We will check if it can connect to MySQL for its lookups,
+				if maildir are created and if it can send messages.
+				Then we'll re-enable content checks to see if they work.
+				Then we start testing courier, 
+				see if it can access MySQL and if it shows the right mailboxes.
+			</p>
+			<p>
+				The easiest way to do the testing is with telnet.
+				Turn on full debuggon, tail a few logs a lets get started.
+			</p>
+		</h4>
+
+		<code><span class="comment"># Making sure nothing is running</span>
+/etc/init.d/courier stop
+/etc/init.d/postfix stop
+/etc/init.d/amavisd stop
+/etc/init.d/spamassassin stop
+/etc/init.d/clamav stop
+/etc/init.d/mysqld stop
+<span class="comment"># Then to check if they really stopped</span>
+ps aux
+netstat -tnp</code>
+
+		<h4>
+			Then we'll disable content cheks.
+			In /etc/postfix/master.cf uncomment/comment these lines like this:
+		</h4>
+
+		<code>smtp      inet  n       -       n       -       -       smtpd
+<span class="comment">#smtp      inet  n       -       -       -       -       smtpd
+#	-o cleanup_service_name=pre-cleanup</span>
+
+cleanup   unix  n       -       -       -       0       cleanup
+<span class="comment">#cleanup   unix  n       -       -       -       0       cleanup
+# 	-o mime_header_checks=
+#	-o nested_header_checks=
+#	-o body_checks=
+#	-o header_checks=</span></code>
+
+		<h4>Then in main.cf comment out this line:</h4>
+
+		<code><span class="comment">#content_filter = amavis:[127.0.0.1]:10024</span></code>
+
+		<h4>
+			Then we'll tail the mysql and postfix logs.  (Paths might differ).
+			It helps being in X windows, 
+			or ssh in from another machine, if no X server.
+			Or just using different sessions (ctrl+alt+f1-6),
+			as we will be tailling and editing in many sessions at once.
+		</h4>
+
+		<code><span class="comment"># In one window do this</span>
+tail -f /var/log/mysql/mysql.log
+<span class="comment"># then in another</span>
+tail -f /var/log/maillog.info
+/etc/init.d/mysqld start
+<span class="comment"># then</span>
+/etc/init.d/postfix start
+<span class="comment"># then check if postfix is listening on 25 and mysql on 3306</span>
+netstat -tnp</code>
+		
+		<h4>
+			<p>
+				Okay up and running (hopefully).
+			</p>
+			<p>
+				First we will telnet in and try and send a message to a local user.
+			</p>
+			<p>
+				Then we will try and send to an external user via postfix.
+			</p>
+		</h4>
+
+		<code><span class="comment"># Lets try and send a message to xandros@lala.com</span>
+<span class="comment"># (replace with your own user in this setup, or use postmaster@localhost)</span>
+telnet localhost 25
+<span class="comment"># reponse back:</span>
+<span class="reply">&gt;</span>
+<span class="reply">&gt;</span>
+<span class="reply">&gt;</span>
+<span class="comment"># then open the hand shake with ehlo and the server name you are connecting from...</span>
+EHLO <i>mail.domain.tld</i>
+<span class="reply">&gt;</span>
+<span class="reply">&gt;</span>
+<span class="reply">&gt;</span>
+<span class="comment"># then say who is the sender of this email</span>
+MAIL FROM: <i>&lt;your@address.com&gt;</i>
+<span class="reply">&gt; 250 Ok</span>
+<span class="comment"># then say who the mail is for</span>
+RCPT TO: &lt;<i>xandros@lala.com</i>&gt;
+<span class="reply">&gt; 250 Ok</span>
+data
+<span class="reply">&gt; 354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;&lt;/LF&gt;&lt;/CR&gt;&lt;/LF&gt;&lt;/CR&gt;</span>
+<span class="comment"># enter message bodyand end with a line with only a full stop.</span>
+blah blah blah
+more blah
+.
+<span class="reply">&gt; 250 Ok; queued as QWKJDKASAS</span>
+<span class="comment"># end the connection with</span>
+quit
+<span class="reply">&gt; 221 BYE</span></code>
+
+		<h4>
+			<p>
+				The postfix log should then start showing up what is happening.
+				If something happens in the mysql log,
+				it means that connection if working.
+			</p>
+		</h4>
+
+		<code></code>
+		
+		<h4>Possible problems and solution can be:</h4>
+		<ul>
+			<!--
+			<li>
+				<h5>
+				</h5>
+				<h5>
+				</h5>
+				<ul>
+					<li><h5></h5></li>
+				</ul>
+			</li>
+			-->
+			<li>
+				<h5>
+					Nothing happens when trying to connect via telnet.
+				</h5>
+				<h5>
+					Ports are not listening.
+				</h5>
+				<ul>
+					<li><h5>Check with "netstat -ptn" if postfix is listening.</h5></li>
+					<li><h5>Firewall blocks all smtp traffic.</h5></li>
+					<li><h5>You are testing from a different machine which cant reach the server.</h5></li>
+				</ul>
+			</li>
+			<li>
+				<h5>
+					Sender domain not accepted.
+				</h5>
+				<h5>
+					You must use a valid domain name and address when connecting via telnet.
+				</h5>
+				<ul>
+					<li><h5>Change the EHLO and MAIL FROM details when telneting.</h5></li>
+					<li><h5>DNS resolution might not work from server. check if it can ping google.com etc.</h5></li>
+				</ul>
+			</li>
+			<li>
+				<h5>
+					Postfix queue says it has received the message.
+					But noithing happens in the Mysql log.
+				</h5>
+				<h5>
+					Mysql connection is not working.
+				</h5>
+				<ul>
+					<li><h5>Check file permission in postfix folder</h5></li>
+					<li><h5>Chroot problem, set all services in master.cf to n in chroot column</h5></li>
+					<li><h5>Check if mysql socket exists</h5></li>
+					<li><h5>Try changing host in the postfix mysql files between localhost, 127.0.0.1 and real ip. This will result in it trying socket and tcp alternatively.</h5></li>
+					<li><h5>Spelling mistake in postfix mysql files. (Extra spaces?)</h5></li>
+				</ul>
+			</li>
+		</ul>	
+
+		
+		<h4>
+			When all these test are working fine, re-enable the content checks 
+			and try them all the tests again.
+			This time you might have to tail the syslog as well.
+			Possible problems can be:
+		</h4>
+		
+		<ul>
+			<li>
+				<h5>
+					User access problem.
+				</h5>
+				<h5>
+					Make sure its the same user which runs amavisd-new and ClamAV.
+				</h5>
+			</li>
+			<li>
+				<h5>
+					Can connect via postfix to amavisd-new.
+				</h5>
+				<ul>
+					<li><h5>Check ports settins in amavisd-new file and master.cf</h5></li>
+				</ul>
+			</li>
+			<li>
+				<h5>Not sure if SpamAssassin is working</h5>
+				<ul>
+					<li><h5>
+						Try the test
+						<a href="http://wiki.apache.org/spamassassin/TestingInstallation">specified here</a>.
+					</h5></li>
+				</ul>
+			</li>
+		</ul>	
+		<h4>
+			<p>
+				Then the next step is to test Courier-IMAP.
+			</p>
+			<p>
+				Again tail the maillog, syslog and mysql log.
+				Turn on DEBULEVEL in /etc/courier/imap  to 2.
+			</p>
+		</h4>
+
+		<code>telnet localhost 143
+<span class="reply">&gt;</span>
+<span class="reply">&gt;</span>
+<span class="reply">&gt;</span>
+</code>
+		
+		<h4>
+		</h4>
+
+		<code>telnet 127.0.0.1 10024
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+220 [127.0.0.1] ESMTP amavisd-new service ready</code>
+		
+		<h4>
+			If a response then all is well.
+			Otherwise check ownership of /var/run/amavisd.
+			Perhaps change /etc/init.d/amavisd to make 
+			sure it chown to virtual:virtual
+		</h4>
+		
+	<code>debug_peer_list = 127.0.0.1</code>
+		
+		<br />
+		<br />
+		<br />
+		<h4>
+			Now if all okay internally, then you need to edit the firewall rules
+			and re-enable smtp access from the net.
+			Test from an external server if you have ssh access. 
+			Proper telnet testing will let you know quickly if something is wrong.
+			When that process works okay, it is time to test with proper emails.
+			Either use an external webmail service, e.g. gmail,
+			or forward via external mail forwarding services.
+		</h4>
+		<br />
+		<br />
+		<h4>
+			<p>
+				Doing a full reboot to test if everything comes up as desired
+				is probably a good idea as well. 
+			</p>	
+			<p>
+				Congratulations, you have a working mail server!
+				Now send me a note to let me know about it.
+			</p>
+		
+	</h4>
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+<a name="test2"></a>
+<h2>Test</h2>
+<div class="section">
+	
+	<h4><i>
+		New test section in development, please use <a href="test">other</a>.
+	</i></h4>
+	
+	<ul>
+		<li><h5><a href="#test_start">Start</a></h5></li> 
+		<li><h5><a href="#test_fw">Firewall (Shorewall)</a></h5></li> 
+		<li><h5><a href="#test_mysql">Database (MySQL)</a></h5></li> 
+		<li><h5><a href="#test_mta">Plain MTA (Postfix)</a></h5></li> 
+		<li><h5><a href="#test_courier">IMAP (Courier)</a></h5></li> 
+		<li><h5><a href="#test_postgrey">Policy (Postgrey)</a></h5></li> 
+		<li><h5><a href="#test_amavis">Content Checks (Amavisd-new)</a></h5></li> 
+		<li><h5><a href="#test_sasl">Authentication (SASL)</a></h5></li> 
+		<li><h5><a href="#test_tls">Encryption (TLS)</a></h5></li> 
+		<li><h5><a href="#test_squir">WebMail (SquirrelMail)</a></h5></li> 
+		<li><h5><a href="#test_common">Common Problems</a></h5></li> 
+		<!--
+		<li><h5><a href="test_"></a></h5></li> 
+		-->
+	</ul>
+
+	<a name="test_start"></a>
+	<h3>Start</h3>
+	<h4>
+		<p>
+			Testing eh, it is virtually guaranteed no project 
+			works on the first go.
+			But we need to box it off and 
+			find out if each section works one by one.
+		</p>
+		<p>
+			So first we stop everything, 
+			to then bring it up one by one as each test passes.
+		</p>
+		<p>
+			In theory nothing should be running,
+			but some of the install packages might be 
+			started automatically.
+		</p>
+	</h4>
+	
+<code><span class="comment"></span>/etc/init.d/apache2 stop
+/etc/init.d/courier-imap-ssl stop
+/etc/init.d/courier-imap stop
+/etc/init.d/courier-authdaemon stop
+/etc/init.d/courier stop
+/etc/init.d/postfix stop
+/etc/init.d/postgrey stop
+/etc/init.d/amavisd stop
+/etc/init.d/spamassassin stop
+/etc/init.d/clamav-daemon stop
+/etc/init.d/clamav-freshclam stop
+/etc/init.d/mysql stop</code>
+
+	<h4>Check if any process above is still lingering and kill it.</h4>
+
+	<code>ps aux | more</code>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_fw"></a>
+	<h3>Firewall (Shorewall)</h3>
+	<h4>
+		<p>
+			If you setup the firewall as I advised in the 
+			<a href="#conf">configure chapter</a>,
+			then your box is pretty blocked off from the outside.
+			If not then you might have been an open relay for spammers,
+			but hopefully not.
+		</p>
+		<p>
+			Now we need to open up access the local network so you can test 
+			locally and remotely. 
+			However it is not ready for net access yet.
+		</p>
+	</h4>
+	
+	<code><span class="comment"># uncomment these lines</span>
+AllowPing	loc	fw
+AllowSMTP	loc	fw
+ACCEPT		loc	fw	tcp	465,587		-
+AllowIMAP	loc	fw
+AllowWeb	loc	fw</code>
+
+	<h4>
+		Then restart shorewall
+	</h4>
+
+	<code>shorewall restart</code>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_mysql"></a>
+	<h3>Database (MySQL)</h3>
+	<h4>
+		<p>
+			MySQL should work fine after installation and configuration.
+		</p>
+		<p>
+			However as we go through the other sections, 
+			it is very usefull to tail the mysql query log file
+			throught all the tests.
+			This is an easy way to see if each application
+			has its database settins configured correctly.
+		</p>
+	</h4>
+	<code>/etc/init.d/mysql start
+tail -f /var/log/mysql/mysql.log</code>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	
+	<a name="test_mta"></a>
+	<h3>Plain MTA (Postfix)</h3>
+	
+	<h4>
+		<p>
+			The full configured Postfix is overstuffed with features.
+			We need to disable all this to test the basics.
+		</p>
+		<p>
+			You should are already tailing the mysql log in one window,
+			but now we need to tail the mail log file as well.
+		</p>
+	</h4>
+	
+	<code>tail -f /var/log/mail.log</code>
+	
+	<h4>
+		<p>
+			Basically we are reversing to the postfix config from
+			the <a href="#conf_mta">config section</a> before we added
+			the content checks, encryption etc.
+		</p>
+		<p>
+			I am not modifying <i>/etc/postfix/master.cf</i>,
+			however you can comment out the lines we added in there as well.
+		</p>
+		<p>
+			However in main.cf:
+		</p>
+	</h4>
+
+	<code><span class="comment">## comment out this line 
+# content_filter = amavis:[127.0.0.1]:10024
+
+## then replace these lines 
+#smtpd_helo_restrictions = permit_mynetworks, 
+#		warn_if_reject reject_non_fqdn_hostname, reject_invalid_hostname, permit
+#smtpd_sender_restrictions = permit_sasl_authenticated, permit_mynetworks, 
+#		reject_non_fqdn_sender, reject_unknown_sender_domain, 
+#		reject_unauth_pipelining, permit
+#smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org, 
+#		reject_rbl_client relays.ordb.org, reject_rbl_client blackholes.easynet.nl, 
+#		reject_rbl_client dnsbl.njabl.org
+#smtpd_recipient_restrictions = reject_unauth_pipelining, 
+#		permit_mynetworks, permit_sasl_authenticated, reject_non_fqdn_recipient, 
+#		reject_unknown_recipient_domain, reject_unauth_destination, 
+#		check_policy_service inet:127.0.0.1:60000, permit
+## with these </span>
+smtpd_helo_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_hostname, 
+		reject_invalid_hostname, permit
+smtpd_sender_restrictions = permit_mynetworks, reject_non_fqdn_sender, 
+		reject_unknown_sender_domain, reject_unauth_pipelining, permit
+smtpd_client_restrictions = 
+smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, 
+		reject_non_fqdn_recipient, reject_unknown_recipient_domain, 
+		reject_unauth_destination, permit
+
+<span class="comment">## comment out these lines
+#broken_sasl_auth_clients = yes
+#smtpd_sasl_auth_enable = yes
+#smtpd_sasl_path = /etc/postfix/sasl:/usr/lib/sasl2
+#smtpd_sasl_security_options = noanonymous
+#smtpd_sasl_local_domain =
+
+#smtp_use_tls = yes
+#smtp_tls_cert_file = /etc/postfix/postfix.cert
+#smtp_tls_key_file = /etc/postfix/postfix.key
+#smtpd_use_tls = yes
+#smtpd_tls_cert_file = /etc/postfix/postfix.cert
+#smtpd_tls_key_file = /etc/postfix/postfix.key
+#smtpd_data_restrictions = reject_unauth_pipelining</span></code>
+		
+	<h4>	
+
+		<p>
+		</p>
+	</h4>
+	
+	<code></code>
+	
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_imap"></a>
+	<h3>IMAP (Courier)</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_postgrey"></a>
+	<h3>Policy (PostGrey)</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_amavis"></a>
+	<h3>Content Check (amavisd-new)</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_sasl"></a>
+	<h3>Authentication (SASL)</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="test_tls"></a>
+	<h3>Encryption (TLS)</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="test_squir"></a>
+	<h3>Webmail (SquirrelMail)</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	<a name="test_common"></a>
+	<h3>Common Problems</h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+	<ul>
+		<li></li>
+	</ul>
+	<code></code>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+	
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+
+<a name="extend"></a>
+<h2>Extend</h2>
+<div class="section">
+	<h4>
+		By now you should have a fully working system.
+		No point extending and complicating it untill then.
+		What next?
+		There are many ways to extend the server,
+		to create your own powerfull customized version.
+	</h4>
+	<ul>
+		<li><h5><a href="#ext_mx">Remote MX mail backup</a></h5></li>
+		<li><h5><a href="#ext_back">Local file backup</a></h5></li>
+		<li><h5><a href="#ext_spf">Sender ID &amp; SPF</a></h5></li>
+		<li><h5><a href="#ext_pyzor">Spam reporting</a></h5></li>
+		<li><h5><a href="#ext_list">White/Black lists</a></h5></li>
+		<li><h5><a href="#ext_pgp">PGP &amp; S/MIME</a></h5></li>
+		<li><h5><a href="#ext_reloc">Relocation notice</a></h5></li>
+		<li><h5><a href="#ext_pop">Pop-before-SMTP</a></h5></li>
+		<li><h5><a href="#ext_admin">Admnin Software</a></h5></li>
+		<li><h5><a href="#ext_reply">Auto Reply</a></h5></li>
+		<li><h5><a href="#ext_block">Block Addresses</a></h5></li>
+		<li><h5><a href="#ext_throttle">Throttle Output</a></h5></li>
+		<li><h5><a href="#ext_mlist">Mail Lists</a></h5></li>
+		<li><h5><a href="#ext_sug">Sugesstions?</a></h5></li>
+	</ul>
+
+	<h4>
+		Some of these sections can be brief as they 
+		are not core to this howto.
+	</h4>
+
+	<a name="ext_mx"></a>
+	<h3>Remote MX mail backup</h3>
+	<h4>
+		<p>
+		With MX backup loosing emails are unlikely.
+		</p>
+		<p>
+		Normally if someone sends an email destined for you,
+		their server will try and connect to your server.	
+		If it can't reach your server for whatever reason
+		( it is down, dns issues, there is network problems, or just too busy ),
+		the other server will back off and try again in a bit.
+		How many and for how long it will try again is determined
+		by the sending server. Some of them are not very patience,
+		and it will report undelivered after only a few attempts.
+		So you would have lost that email.
+		</p>
+		<p>
+			If you had specified a backup MX, 
+			this email may not have been lost.
+			Upon first failure to connect to your server,
+			the sender would see if there is any alternative server
+			to send to. So it connects to your backup mx server.
+			This server spools and queues your message 
+			and will try at intervals to send the message to you.
+			It too will though eventually give up.
+		</p>
+		<p>
+			What is the difference?
+			Simple, you (or whoever controls the backup mx )
+			is in control how long and often to try connecting 
+			to your machine. 
+			So if you have a reasonable values and your server
+			is not down for weeks, no mail is lost.
+		</p>
+		<p>
+			How to implement it?
+			First edit the DNS records again,
+			and add a backup mx with a higher value.
+		</p>		
+	</h4>
+	
+	<code><span class="comment"># your server details</span>
+<i>domain.tld</i>	IN	MX	10	<i>your.mailserver.name.tld</i>
+<span class="comment"># new backup server</span>
+<i>domain.tld</i>	IN	MX	20	<i>your.backupserver.name.tld</i></code>
+	
+	<h4>
+		Now presuming the other backup mx is a postfix
+		server identical to this, or you are backuing up someone else's
+		server;
+		Go into mysql and create this tables:
+	</h4>
+
+	<code>CREATE TABLE `backups` (
+	`pkid` smallint(6) NOT NULL auto_increment,
+	`domain` varchar(128) NOT NULL default '',
+	`transport` varchar(128) NOT NULL default ':[]',
+	`enabled` smallint(6) NOT NULL default '1',
+	PRIMARY KEY  (`pkid`),
+	UNIQUE KEY `domain` (`domain`)
+);</code> 
+	
+	<h4>
+		Then still on the backup server,
+		edit main.cf and add these:
+	</h4>
+	
+	<code>relay_domains = mysql:/etc/postfix/mysql_backups.cf
+transport_maps = mysql:/etc/postfix/mysql_transport.cf</code>
+
+	<h4>
+		You may choose to have this as the last line in the file,
+		as you may use small cron jobs to modify this ip address,
+		if you don't have a permanent static address.
+		It should contain your IP addres, hence if you do not 
+		have a very static IP address, that you need to
+		automatic editing if the postfix file.
+	</h4>
+
+	<code>proxy_interfaces = <i>1.2.3.4</i></code>
+
+	<h4>
+		<p>
+			If someone comes with a better way, 
+			<a href="#contact">then let me know</a>.
+		</p>	
+		<p>
+			Next create this file /etc/postfix/mysql_backups.cf
+		</p>	
+	</h4>
+
+	<code>user=mail
+password=<i>apassword</i>			
+dbname=maildb
+table=backups		
+select_field=domain
+where_field=domain
+hosts=127.0.0.1
+additional_conditions = and enabled = 1</code>
+	
+	<h4>Next create this file /etc/postfix/mysql_transport.cf</h4>
+	
+	<code>user=mail
+password=<i>apassword</i>			
+dbname=maildb
+table=backups		
+select_field=transport
+where_field=domain
+hosts=127.0.0.1
+additional_conditions = and enabled = 1</code>
+	
+	<h4>
+		<p>
+		You noticed I added a transport lookup.
+		This is a field in both the domain and the backup tables.
+		In domains it is used to determine how to deliver 
+		the email, ie either virtual (correct) or local 
+		(not used in this howto).
+		When backing up servers, your also need to specify
+		in the transport field how to connect to the correct servers.
+		</p>
+		<p>
+		Say you are backiup for a friends server, mail.friend.com,
+		for the domains of friend1.com and friend2.com.
+			So you should insert this into your backup table.
+		</p>
+	</h4>
+
+	<code>INSERT INTO backups (domain,transport)
+VALUES ('<i>friend1.com</i>' , ':[<i>mail.friend.com</i>]' ),
+('<i>friend2.com</i>' , ':[<i>mail.friend.com</i>]' );</code>
+
+	<h4>
+		<p>
+		The :[] tells to connect directly to this server,
+		not doing any more look ups for valid MX servers.
+		</p>
+		<p>
+			This shouls now work fine.
+			Further tweaking of the queue values,
+			review these and modify as appropiate.
+			Shorter warning times are good for the sender,
+			so that they realise the email has not arrived yet,
+			but may also be annoying. Tradeoffs..
+			Look in the first <a href="#config_mta">main.cf configurations</a>
+			for ways to do so.
+		</p>
+	</h4>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+
+	<a name="ext_back"></a>
+	<h3>Local file backup</h3>
+	<h4>
+		Here is rough backup script to backup your configurations
+		and mail folders.
+		You may want to backup the folders seperatly 
+		as they can quickly grow to GBs.
+		Adding this to a cronjob automates this process.
+		Be aware that you should 
+		stop postfix and courier while backing up the 
+		mail folders. And that if they have grown large,
+		that this may take some time.
+	</h4>
+	
+<code>tar czf mail-config.xxxxx.tgz /etc/postfic /etc/courier /etc/spamassassin /etc/clamav /etc/amavis /etc/mysql/my.cnf
+tar czf mail-fold.xxxx.tgz /var/spool/mail/virtual
+mysqldump -u mail -p<i>apassword</i> -t maildb &gt; data.sql
+mysqldump -u mail -p<i>apassword</i> -d maildb &gt; schema.sql
+tar czf mail-data.xxx.tgz schema.sql data.sql
+tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
+
+	<h4>
+		You may combine a full backup
+		with a intermediate update of what has changed recently only.
+	</h4>
+	
+	<code>tar --newer-mtime "2005-01-01"</code>
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	<a name="ext_spf"></a>
+	<h3>Sender ID &amp; SPF</h3>
+	<h6 class="red">todo</h6>	
+	<h4>
+		Further security features is using Microsoft's
+		Sender ID or Pobox's SPF. I'd use SPF as 
+		there is much argument over Sender ID.
+	</h4>
+	<h4>
+		<p><a href="http://spf.pobox.com/">spf.pobox.com/</a></p>
+		<p><a href="http://www.microsoft.com/mscorp/safety/technologies/senderid/">www.microsoft.com/mscorp/safety/technologies/senderid/</a></p>
+	</h4>
+
+	<h4>
+		<p>
+		While SPF should limit who can send mail on behalf of your domains,
+		( so basically less spoofed spam addresses ),
+		I do have some technical issues with SPF as 
+		the design of it is a bit iffy.
+		That is because of the limitation of DNS and that it
+		has to fit inside the limited TEXT part.
+		No nice XML config file....
+		</p>
+		<p>
+			While Microsoft is not always entirely evil, 
+			as sometimes they do nice things 
+			and make some usefull software,
+			I would prefer not to be locked into 
+			their Sender ID technology.
+		</p>
+	</h4>
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+
+	<a name="ext_pyzor"></a>
+	<h3>Spam reporting</h3>
+	<h6 class="red">todo</h6>	
+	<h4>
+		<p>
+			Reporting spam to Pyzor, Razor and SpamCop, 
+			for collaboration in spam fighting.
+		</p><p>
+			More detail on <a href="http://www.spamcop.net/">SpamCop is here</a>.
+		</p><p>
+			http://pyzor.sourceforge.net/
+		</p><p>
+			http://razor.sourceforge.net/
+		</p>
+	</h4>
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_list"></a>
+	<h3>White/Black Lists</h3>
+	<h6 class="red">todo</h6>	
+	<h4>
+		<p>
+			You can implement white and black lists
+			to explicitly allow or block domains and users.
+		</p>
+		<p>
+			You have already visited the option
+			of a <a href="#config_mta">blackhole list of known open relays</a> 
+			in the postfix configuration.
+		</p>
+		<p>
+			You can implement further lists inside Postfix or SpamAssassin.
+			Amavisd-new already has a few well known white/black listed items
+			in its config files.
+			SpamAssissin also as a feture to automaticly learn white lists.
+		</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_pgp"></a>
+	<h3>PGP &amp; S/MIME</h3>
+	<h4>
+		<p>
+			Adding support for GnuPG and S/MIME increases
+			indiviual security.
+		</p>
+		<p>
+			This is not implemented on the postfix server side,
+			as this totally a client side option.
+		</p>
+		<p>
+			However SquirrelMail has a GnuPG option.
+			It is a plugin that can be downloaded from their website.
+			Which can then be enabled via SquirrelMail's
+			config script.
+		</p>
+	</h4>
+
+		
+	<h4>
+		<p>
+			Here is how to create a GnuPG key pair.
+		</p>
+	</h4>
+
+	<code><span class="comment"># check you have not already got a key</span>
+gpg --list-keys
+<span class="comment"># then create one</span>
+gpg --gen-key</code>
+	
+	<h4>
+		<p>
+			To import GnuPG into Evolution;
+			in your settings/preferences
+			edit your account settings and 
+			add you private key under the security tab.
+			The private key is found via listing the GnuPG
+			keys as above, then it is the 8 characters
+			after the "sub 1024g/" bit of you key.
+		</p>
+		<p>
+			To use GnuPG with	Thunderbird
+			you need to install 
+			<a href="http://www.mozdev.org">EnigMail</a>.
+		</p>
+		<p>
+			S/MIME is another way to encrypt and/or sign messages.
+			You can create you own certificate
+			or use known organizations like 
+			<a href="http://www.thawte.com">Thawte</a>.
+			(Thawte was originally set up by the Ubuntu founder)
+		</p>
+	</h4>	
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_reloc"></a>
+	<h3>Relocation notice</h3>
+	<h4>
+		If people change addresses,
+		a bounced message stating so
+		if people send email to the old address
+		is quite usefull.
+		To implement this in postfix, 
+		frst create a lookup table in the database.
+	</h4>
+	<code>CREATE TABLE `relocated` (
+`pkid` smallint(6) NOT NULL auto_increment,
+`oldadr` varchar(128) NOT NULL default '',
+`newadr` varchar(128) NOT NULL default '',
+`enabled` tinyint(1) NOT NULL default '1',
+PRIMARY KEY  (`pkid`),
+UNIQUE KEY `oldadr` (`oldadr`)
+) ;</code>
+	
+	<h4>Then add this to /etc/postfix/main.cf</h4>
+
+	<code>relocated_maps = mysql:/etc/postfix/mysql_relocated.cf</code>
+	
+	<h4>The create this file /etc/postfix/mysql_relocated.cf</h4>
+	
+	<code>user=mail
+password=<i>apassword</i>			
+dbname=maildb
+table=relocated		
+select_field=newadr
+where_field=oldadr
+hosts=127.0.0.1</code>
+
+	<h4>
+			Then if pete@domain1.com has changed address to 
+			pete.jones@another.org:
+	</h4>
+
+	<code>INSERT INTO relocated (oldadr,newadr)VALUES
+('<i>pete@domain1.com</i>','<i>pete.jones@another.org</i>');</code>
+	
+	<h4>
+		If anyone sends an email to pete@domain.com,
+		they will get a message back stating he has changed address
+		to pete.jones@another.org.
+	</h4>
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_pop"></a>
+	<h3>Pop-before-SMTP</h3>
+	<h4>
+		If SASL didn't work, or you are using clients which
+		dont support it, the Pop-Before-SMTP is an easy way
+		around that issue, so that people externally can
+		still securly send mail via your server.
+	</h4>
+	<h4>
+		Refer to my 
+		<a href="edition2.html#send">2nd edition</a>
+		on Pop-before-SMTP	setup.
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_admin"></a>
+	<h3>Admin software</h3>
+	<h6 class="red">todo</h6>	
+	<h4>
+		<p>
+		Trying out a few admin software might make you life
+		easier, if phpMyAdmin gets to crude.
+		<a href="http://www.google.com/search?q=postfix+admin">Quick search</a>
+		</p>
+		<p>More to come later.</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+	
+	
+	<a name="ext_reply"></a>
+	<h3>Auto Reply</h3>
+	<h6 class="red">todo</h6>	
+	<h4>
+		<p>
+			Postfix have now features to auto reply to an email,
+			while still delivering it to its alias.
+		</p>
+		<p>
+			
+		</p>
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_block"></a>
+	<h3>Block Addresses</h3>
+	<h4>
+		<p>
+		If you use catch alls, 
+		which are usefull for some domains,
+		then eventually some addresses will be target for spam.
+		You can then either stop the catch all,
+		or stop indivdual addresses.
+		</p>
+		<p>
+			By implementing a lookup 
+			and adding this restriction to smtpd_recipient_restrictions
+			accomplises this.
+		</p>	
+	 check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf,
+	</h4>
+	
+	<code>smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, \
+	check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf, \
+	reject_non_fqdn_recipient, reject_unauth_destination, \
+	check_relay_domains</code>
+		
+	<h4><p>
+		Beware of the order is important here, if any options says ok before check_recipient_access it will ignore it.
+		</p>
+		<p>
+			Next create mysql_block_recip.cf to lookup addresses.
+			Either create a another table, 
+			or add a blocked field to aliases table.
+		</p>
+	</h4>
+		
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_throttle"></a>
+	<h3>Throttle Output</h3>
+	<h6 class="red">todo</h6>	
+	<h4>
+		For some users with restrictions on bandwidth,
+		you may wish to control how much mail is sendt out.
+		Postfix has long refused to implement these features,
+		out of ideolocial beliefs that mail servers should
+		not be restricted.
+		However there are some ways around this.
+		More to come later.
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_mlist"></a>
+	<h3>Mail Lists</h3>
+	<h4>
+		<p>	
+			Rich Brown has written a howto on adding Mailman,
+			a mail list program, to my howto.			
+			<a href="http://freemars.org/howto/mailman.html">Click here</a> to read it.
+		</p>	
+		<p>	
+			Do note it is not part of my howto,
+			so do not contact me regarding it.
+			And although I think it is fine,
+			I can't guarantee it will work.
+		</p>	
+		<p>
+			If you do need assistance or need to talk about it,
+			contact Rich via 
+			 <a href="http://freemars.org/howto/mailman.html">his howto</a>
+			 or use the 
+			<a href="#contact">forums</a> 
+			for this howto.
+		</p>	
+	</h4>
+	<h4>
+		<p>	
+			If you want a simple mailling list,
+			it can be implemented 
+			by simply seperating aliases in the
+			destination field in the aliases table with a comma.
+		</p>					
+	</h4>
+
+	<code>INSERT INTO aliases (mail,destination) VALUES
+( 'listof@domain.com' , 'john@ppp.com,vic@domain.com,jj@somewhere.tld' );</code>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_sug"></a>
+	<h3>Suggestions?</h3>
+	<h4>
+		If you have any suggestions to other ways of extending
+		a postfix server, then fire off a mail to me via
+		the <a href="#contact">contact form</a> further down.
+	</h4>
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+<a name="app"></a>
+<h2>Appendix</h2>
+
+<div class="section">
+
+		<ul>
+			<li><h5><a href="#references">References</a></h5></li>
+			<li><h5><a href="#app_links">Software Links</a></h5></li>
+			<li><h5><a href="#app_dif">Difference between Ubuntu versions</a></h5></li>
+			<li><h5><a href="#download">Download</a></h5></li>
+			<li><h5><a href="#contact">Contact</a></h5></li>
+			<li><h5><a href="#app_todo">Todo</a></h5></li>
+			<li><h5><a href="#app_log">Change Log</a></h5></li>
+		</ul>
+
+		<a name="references"></a>
+		<h3>References</h3>
+
+		<ul>
+			<li><h5><a href="http://www.postfix.org/docs.html">Postfix howtos</a></h5></li>
+			<li><h5><a href="http://www.amazon.co.uk/exec/obidos/redirect?tag=ivarssite-21&creative=3914&camp=526&link_code=st1&path=tg/sim-explorer/explore-items/-/0596002122/0">Kyle's book</a></h5></li>
+			<li><h5><a href="http://techrepublic.com.com/5171-22-5030268.html">John Locke on TechRepublic</a></h5></li>
+			<li><h5><a href="http://www.amazon.co.uk/exec/obidos/redirect?tag=ivarssite-21&creative=3930&camp=526&link_code=st1&path=tg/sim-explorer/explore-items/-/1593270011/0">Hildebrandt's book</a></h5></li>
+			<li><h5><a href="http://sbserv.stahl.bau.tu-bs.de/~hildeb/postfix/">Hildebrandt's website</a></h5></li>
+			<li><h5><a href="http://www.marlow.dk/postfix/">List-Petersen</a></h5></li>
+			<li><h5><a href="http://genco.gen.tc/postfix_virtual.php">Genco Yilmaz</a></h5></li>
+			<li><h5><a href="http://workaround.org/articles/ispmail-sarge/">Christop Haas</a></h5></li>
+			<li><h5><a href="http://kirb.insanegenius.net/postfix.html">Nenzel &amp; Peet</a></h5></li>
+			<li><h5><a href="http://postfixwiki.org/index.php?title=Virtual_Users_and_Domains_with_Courier-IMAP_and_MySQL">Peters</a></h5></li>
+			<li><h5><a href="http://www.sweeney.demon.co.uk/pfix_imap_virtual.html">Matthews</a></h5></li>
+			<li><h5><a href="http://www.phparchitecture.com/howto_show.php?id=2">Stepanov</a></h5></li>
+			<li><h5><a href="http://www.besy.co.uk/projects/debian/woody_mail_server_howto.htm">Andy "Besy"</a></h5></li>
+			<li><h5><a href="http://www.metaconsultancy.com/whitepapers/smtp.htm">Meta Consultancy</a></h5></li>
+		<!--
+			<li><h5><a href=""></a></h5></li>
+		-->
+		</ul>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+		<a name="app_links"></a>
+		<h3>Software Links</h3>
+		
+			<ul>
+				<li>
+					<h4>MTA</h4>
+					<ul>
+						<li>
+							<h5>Postfix</h5>
+							<ul>
+								<li><h6><a href="http://www.postfix.org">Main website</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>QMail</h5>
+							<ul>
+								<li><h6><a href=""></a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>MS Exchange</h5>
+							<ul>
+								<li><h6><a href=""></a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>Courier-MTA</h5>
+							<ul>
+								<li><h6><a href="http://www.courier-mta.org">Main Website</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>Exim</h5>
+							<ul>
+								<li><h6><a href=""></a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>Sendmail</h5>
+							<ul>
+								<li><h6><a href=""></a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<h4>Pop/IMAP</h4>
+					<ul>
+						<li>
+							<h5>Courier IMAP</h5>
+							<ul>
+								<li><h6><a href="http://www.courier-mta.org/imap">Main Website</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>Cyrus IMAP</h5>
+							<ul>
+								<li><h6><a href=""></a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<h4>Content Checking</h4>
+					<ul>
+						<li>
+							<h5>amavisd-new</h5>
+							<ul>
+								<li><h6><a href="http://www.ijs.si/software/amavisd/">Main website</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>amavis</h5>
+							<ul>
+								<li><h6><a href="http://www.amavis.org/">Main website</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>ClamAV</h5>
+							<ul>
+								<li><h6><a href="http://www.clamav.net/">Main website</a></h6></li>
+								<li><h6><a href="http://www.clamwin.com/">Windows version</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>SpamAssassin</h5>
+							<ul>
+								<li><h6><a href="http://spamassassin.apache.org/">Main website</a></h6></li>
+								<li><h6><a href="http://savannah.nongnu.org/projects/spamass-milt/">Milter Plugin</a></h6></li>
+								<li><h6><a href="http://razor.sourceforge.net">Vipul's Razor</a></h6></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<h4>Lookups</h4>
+					<ul>
+						<li>
+							<h5>MySQL</h5>
+							<ul>
+								<li><h6><a href="http://www.mysql.com">Main Website</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>Firebird</h5>
+							<ul>
+								<li><h6><a href="http://firebird.sourceforge.net">Main website</a></h6></li>
+								<li><h6><a href="http://www.ibphoenix.com">IBPhoenix</a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>LDAP</h5>
+							<ul>
+								<li><h6><a href="http://www.openldap.org">Open LDAP</a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>Postgres</h5>
+							<ul>
+								<li><h6><a href=""></a></h6></li>
+								<li><h6><a href=""></a></h6></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<h4>Crypthography</h4>
+					<ul>
+						<li>
+							<h5>SASL</h5>
+							<ul>
+								<li><h6><a href="http://www.org"></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>TLS</h5>
+							<ul>
+								<li><h6><a href="http://www.org"></a></h6></li>
+							</ul>
+						</li>
+						<li>
+							<h5>PGP</h5>
+							<ul>
+								<li><h6><a href="http://www.gnupg.org">GnuPG</a></h6></li>
+								<li><h6><a href="http://www.openpgp.org">OpenPGP</a></h6></li>
+								<li><h6><a href="http://www.pgp.com">PGP</a></h6></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<!--
+				<li>
+					<h4></h4>
+					<ul>
+						<li>
+							<h5></h5>
+							<ul>
+								<li><h6><a href="http://www.org"></a></h6></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				-->
+			</ul>
+	<h6><a href="#top">Return to top</a>.</h6>
+		
+
+	<a name="app_dif"></a>
+	<h3>Difference between Ubuntu versions</h3>
+	<h4>
+		<p>
+			Here are the differences for this howto if you are using Ubuntu 5.04, 5.10 or 6.04.
+			(Hoary, Breezy or Dapper)
+		</p>
+		<p>
+			Mainly this will be package names, and some changes in defaults.
+		</p>
+		<p>
+			This edition is based on Hoary while in development, 
+			however will be based on Breezy when finished.
+		</p>
+		<p>
+			Also some packages might not be available in 64bit or other platforms.
+		</p>
+	</h4>
+	<h4>
+		<p>Changes for Ubuntu 5.04, Hoary Hedgehog:</p>
+		<p>
+			The repositories used are hoary and not breezy.
+			Version has changed, otherwise the same.
+		</p>
+	</h4>
+
+	<h4>
+		<p>Changes for Ubuntu 5.10, Breezy Badger</p>
+		<p>All amavis configurations are in /etc/amavis/amavisd.conf</p>
+	</h4>
+	
+	<h4>
+		<p>Changes for Ubuntu 6.06, Dapper Drake</p>
+		<p>All amavis configurations are in several files in /etc/amavis/conf.d/</p>
+	</h4>
+
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="download"></a>
+	<h3>Downloads</h3>
+
+	<h4>
+		Here is a list of config files to assist you and some 
+		batch shell scripts to try and do the install steps for you.			
+	</h4>
+
+	<h5>
+		None at this moment.
+	</h5>
+
+	<ul>
+		<!-- li><h5><a href="">Postfix config</a></h5></li>
+		<li><h5><a href="">Courier config</a></h5></li>
+		<li><h5><a href="">Content Checks</a></h5></li>
+		<li><h5><a href="">Mysql tables</a></h5></li>
+		<li><h5><a href="">Mysql stub data</a></h5></li>
+		<li><h5><a href="">Sasl</a></h5></li -->
+		<!-- 
+		<li><h5><a href="edition3/install.tgz">Install scripts</a></h5></li>
+		<li><h5><a href="edition3/conf-shorewall.tgz">Firewall configurations</a></h5></li>
+		<li><h5><a href="edition3/create_tables.sql">MySQL Database schema</a></h5></li>
+		<li><h5><a href="edition3/postfix.tgz">Postfix configurations</a></h5></li>
+		-->
+		<!--
+		<li><h5><a href="edition3/"></a></h5></li>
+		-->
+	</ul>
+
+	<h4>
+		Please note, they are not guaranteed to work.
+		You should review them to make sure they will work for you,
+		and that I am not doing something bad, or misspelt or forgot something,
+		and so that you understand how they work.
+	</h4>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="contact"></a>
+	<h3>Contact</h3>
+
+	<h4>
+		<p>
+			If you problems, questions, comments regarding 
+			this howto, postfix or mail servers in general
+			use either one of these forum threads:			
+		</p>
+		<ul>
+			<li><a href="http://www.ubuntuforums.org/showthread.php?t=185913">Dapper</a></li>
+			<li><a href="http://www.ubuntuforums.org/showthread.php?t=97600"
+				>Breezy</a></li>
+			<li><a href="http://www.ubuntuforums.org/showthread.php?t=40047"
+				>Hoary</a></li>
+		</ul>
+		<p>
+			They are threads on 
+			<a href="http://www.ubuntuforums.org/">Ubuntu forums web site</a>. 
+		<br />
+			You have a high chance of a reply and a proper discussion
+			about it if you post there as many people can answer.
+		<br />
+			The threads also include helpful many tips and previous answers.
+		</p>
+		<br />
+		<p>					
+			If you have written extensions or can recommend links then 
+			I would like to hear from you.
+		<br />
+			I also do like to hear from people who are happy with this howto.
+			Please then use the form below.
+		</p>
+		<br />
+		<p>	
+			It is nice to hear from people, however I only check that mailbox once a month, if that,
+			<br />so please dont't expect a reply, especially not a very quick reply.
+		</p>
+		<br />
+		<p>	
+			( Remember, if it is a technical question,
+		&nbsp;&nbsp;	then post in the <a href="http://www.ubuntuforums.org/showthread.php?t=185913">forums</a>.<br />
+			If you send questions directly to me via the form, email or pm, 
+			they will unfortunetly mostly be ignored. )
+		</p>
+		
+		<p>
+			If you really felt this howto was usefull,
+			then here is my wish list: 
+			<a href="http://wishlist.sourceforge.net/users/flurdy/">wishlist.sf.net/users/flurdy/</a>.
+			<br />
+			Or use the Paypal donation button in the <a href="#intro">introduction</a>.
+			<br />
+			Please note this document is free, as in beer and speech, 
+			using an open source <a href="http://flurdy.com/docs/license/respect">license</a>,
+			and I am not expecting many, if any, donations.
+		</p>
+	</h4>
+
+	<table border="0" cellpadding="2" cellspacing="2">
+		<tr>
+			<td>
+				<i>
+				Form removed due to too much spam,
+				and people ignoring my request to ask
+				question in the forum and not by mail.
+				</i>
+				<br />
+				<i>
+					It may be reinstated once I've implemented a better form spam catcher.
+				</i>
+				<br />
+				<i>
+					Use <a href="/contact/">this form</a> if you have to,
+					but questions will still be ignored...
+					:)
+				</i>
+			</td>	
+		</tr>
+		
+	<!--
+	<form action="/contact/blurb/mmex.php" method="post">
+		<input type="hidden" name="settings" 
+			value="/home/ivar/code/conf/phpmail/flurdy_contact.stg" />
+		<input type="hidden" name="location" value="postfix howto" />
+		<tr>
+			<td><h4>Your Name</h4></td>
+			<td><input type="text" name="msgname" value="" size="24"/></td>
+		</tr>
+		<tr>
+			<td><h4>Email Address</h4></td>
+			<td><input type="text" name="msgemail" value="ad@dom.com" size="24"/></td>
+		</tr>
+		<tr>
+			<td><h4>Subject</h4></td>
+			<td><input type="text" name="msgsubject" value="Postfix howto: " size="24"/></td>
+		<tr>	
+			<td colspan="2"><h4>Message</h4></td>
+		</tr>
+		<tr>
+			<td colspan="2">	
+				<textarea name="msgcomment" cols="50" rows="6"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="1"><input type="submit" value="Send" /></td>
+			<td colspan="1">
+				<h4>Please use the <a href="http://www.ubuntuforums.org/showthread.php?t=185913">forums</a> to ask questions.<h4>
+			</td>
+		</tr>
+	</form>
+	-->
+	</table>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+	<a name="app_todo"></a>
+	<h3>Todo</h3>
+	<h4>
+		<p>
+			Task that needs to be done for this howto.
+			And what state they are at.
+		</p>
+		<p>
+			Typically for everyone I complete,
+			3 more are added to the list...
+		</p>
+	</h4>
+
+	<!--
+		<li><h5><b>High</b>: </h5></li>
+		<li><h5><b>Med</b>: </h5></li>
+		<li><h5><b>Low</b>: </h5></li>
+	-->
+
+	<h4>Outstanding</h4>
+	<ul>
+		<li><h5><b>High</b>: 
+			find out if/why catchalls are sometimes not resolved 
+			untill after content checks.
+			which is too late as cant reject non existant users.
+		</h5></li>
+		<li><h5><b>Med</b>: 
+				Split install and extend sections into:
+				core, extended and further, by moving webmail to extended
+				and half from extended into further.
+		</h5></li>
+		<li><h5><b>High</b>: 	resolve breezy bug:<br />
+			/etc/init.d/clamav-daemon: line 60: log_daemon_msg: command not found,br />
+			/etc/init.d/clamav-freshclam: line 151: log_daemon_msg: command not found
+
+		</h5></li>
+		<li><h5>
+				<b>Med</b>: Backup MX alias mirroring<br />
+				To stop back servers storing mail for non existant users.
+		</h5></li>
+		<li><h5><b>Med</b>: Explain backup MX risks</h5></li>
+		<li><h5><b>Med</b>: Modify masquerade domains text<br />
+			As its not quite correct.
+		</h5></li>
+		<li><h5><b>Low</b>: Split command and properties code style sheets</h5></li>
+		<li><h5><b>Low</b>: Self certification disadvantages</h5></li>
+		<li><h5><b>Low</b>: Expand SPF section and explain concequenses</h5></li>
+		<li><h5><b>Low</b>: Check /etc/mailname</h5></li>
+		<li><h5><b>Low</b>: Sending email tips</h5></li>
+		<li><h5><b>Low</b>: Server migration tips</h5></li>
+		<li><h5><b>Low</b>: add <a href="http://www.mneylon.com/blog/archives/2005/10/07/postgrey-greylisting-in-postfix-on-ubuntu-debian/">mneylon</a>'s blog to references		</h5></li>
+
+		<li><h5><b>Low</b>: Get re-listed on postfix.org</h5></li>
+	</ul>	
+	
+	<h4>Started</h4>
+	<ul>
+		<li><h5><b>Med</b>: Test smtp SASL tls from evolution</h5></li>
+		<li><h5><b>Low</b>: Auto reply section</h5></li>
+	</ul>	
+	
+	<h4>Partly done</h4>
+	<ul>
+		<li><h5><b>Low</b>: Upgrade section from hoary to breezy to dapper</h5></li>
+		<li><h5><b>Low</b>: Extend reporting section</h5></li>
+		<li><h5><b>Low</b>: Extend links section</h5></li>
+		<li><h5><b>Low</b>: Throttle section</h5></li>
+		<li><h5><b>Low</b>: Admin section</h5></li>
+		<li><h5><b>Low</b>: White lists</h5></li>
+	</ul>	
+	
+	<h4>Nearly done</h4>
+	<ul>
+		<li><h5><b>Low</b>: 64bit details</h5></li>
+		<li><h5><b>High</b>: Test section</h5></li>
+	</ul>	
+	
+	<h4>Done recently</h4>
+	<ul>
+			<li><h5><b>Low</b>: Add license section</h5></li>
+	</ul>	
+	
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+
+
+	<a name="app_log"></a>
+	<h3>Change Log</h3>
+
+	<ul>
+	<!--
+		<li>
+			<h5></h5>
+			<h6></h6>
+		</li>
+	-->	
+		<li>
+			<h5>2006-06-17</h5>
+			<h6>
+				Added cc by-sa image.
+			</h6>
+		</li>
+		<li>
+			<h5>2006-06-07</h5>
+			<h6>
+				More tweaks from peoples comments mostly.
+			</h6>
+		</li>
+		<li>
+			<h5>2006-06-05</h5>
+			<h6>
+				Removed some more breezy references.
+				added license.
+			</h6>
+		</li>
+		<li>
+			<h5>2006-06-01</h5>
+			<h6>Started new dapper thread in ubuntu forums</h6>
+		</li>
+		<li>
+			<h5>2006-05-25</h5>
+			<h6>
+				Started edition5. 
+				<a href="edition4.html#app_log">Previous log</a>
+			</h6>
+		</li>
+		<li>
+			<h5>2004-02</h5>
+			<h6>Started <a href="edition1.html">edition 1</a></h6>
+		</li>
+</ul>	
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+<!--
+
+<a name=""></a>
+<h2></h2>
+<div class="section">
+	<a name=""></a>
+	<h3></h3>
+	<h4>
+		<p>
+		</p>
+	</h4>
+<code><span class="comment">#</span>
+</code>
+	<h6><a href="#top">Return to top</a>.</h6>
+</div>
+<h6><a href="#top">Return to top</a>.</h6>
+
+-->
+
+
+<h2>Plans</h2>
+<div class="section">
+	<pre>
+	more links to admin programs
+	may include my mail web app
+	may include more quota details
+	may include simple setup script
+	weed out breezy references
+	to wiki it or not.
+<!-- 
+
+		+ shared 
+		+ others can fix bugs
+		+ others can add sections
+		+ easy link to related material
+		+ less emails
+		+
+		- may not set up the server as i would
+		- not my template
+		- editorial differences
+		- more chance bugs by others
+		- less hits 
+		- less pagerank 	
+ -->				
+	</pre>	
+</div>
+
+<!--Creative Commons License--><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" border="0" src="http://creativecommons.org/images/public/somerights20.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 License</a>.<!--/Creative Commons License--><!-- <rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<Work rdf:about="">
+		<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.5/" />
+	<dc:type rdf:resource="http://purl.org/dc/dcmitype/Text" />
+	</Work>
+	<License rdf:about="http://creativecommons.org/licenses/by-sa/2.5/"><permits rdf:resource="http://web.resource.org/cc/Reproduction"/><permits rdf:resource="http://web.resource.org/cc/Distribution"/><requires rdf:resource="http://web.resource.org/cc/Notice"/><requires rdf:resource="http://web.resource.org/cc/Attribution"/><permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/><requires rdf:resource="http://web.resource.org/cc/ShareAlike"/></License></rdf:RDF> -->
+
+<h5><a href="http://flurdy.com"><img 
+	src="/images/flurdy-small.png" alt="flurdy" 
+	title="Made by flurdy" border="0" align="right" /></a>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-281408-1";
+urchinTracker();
+</script>
+</body>
+<!-- iea 2k6 -->
+</html>
+

@@ -1,0 +1,87 @@
+			body{
+				font-family: Sans, "Luxi Sans", "Tahoma", "Trebuchet", "Comic Sans", Arial;
+				background-color: white;
+				color: black;
+				border: 15px outset gray;
+				margin: 0px;
+				padding: 10px;
+			}
+			h1{
+				font-size: 18pt;
+				font-weight: 600;
+			}
+			h2{
+				font-size: 16pt;
+				font-weight: 600;
+			}
+			h3{
+				border-top: 1px solid black;
+				padding-top: 10px;
+				font-size: 14pt;
+				font-weight: 600;
+			}
+			h4{
+				font-size: 11pt;
+				font-weight: 600;
+			}
+			h5{
+				font-size: 10pt;
+				font-weight: 100;
+			}
+			pre{
+				font-size: 9pt;
+				font-weight: 100;
+				background-color: lightblue;
+				color: black;
+				border: 2px outset black;
+				padding: 5px;
+				padding-left: 10px;
+				margin-left: 20px;
+				margin-right: 40px;
+				width: 530px;
+			}
+			i{
+				color: 004400;
+			}
+			div{
+				font-size: 9pt;
+				font-weight: 100;
+				background-color: #ffcccc;
+				color: black;
+				border: 2px outset black;
+				padding: 5px;
+				padding: 5px 20px 5px 20px;
+				margin-right: 40px;
+				width: 530px;
+			}
+		.nobold{
+			font-weight: 100;
+		}
+		.googleads{
+			margin:1px;
+			padding:1px;
+			float:right;
+			display:inline;
+			width:163px;
+			background-color: white;
+			border: 0px solid white;
+		} 
+		#eraygroup{
+			border: 0px solid white;
+			background-color: white;
+			margin: 0xp;
+			padding: 0px;
+			 color: white; 
+			width: 0px;
+			height: 0px
+			overflow: hide;
+			font-size: 4pt;
+			float: right;
+		}
+		#eraygroup a,#eraygroup a:visited{
+			color: white;
+		}
+		.note{
+	color: red;
+	font-style: italic;
+		}	

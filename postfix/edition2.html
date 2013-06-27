@@ -1,0 +1,2275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>How to set up a mail server on a GNU / Linux system.</title>
+		<link rel="shortcut icon" href="http://www.electricray.org/images/favray.ico">
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta name="keywords" content="ivar,postfix,mandrake,mysql,courier,imap,amavisd,spam,virus,anti,spamassassin,mail,email,server,clamav,abrahamsen,eray,electric,ray,howto,guide">
+		<meta name="description" content="A Howto on setting up Postfix on Mandrake creating a powerfull linux based email server">
+		<link href="edition2/docs.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		
+		<h6 align=right>Ivar @ eRay, Manc, 17/1/2K5</h6>
+		<h1><a name="top"></a>How to set up a mail server on a GNU / Linux system.</h1>
+		<h2>Step by step guide, to install Postfix on a Mandrake server.</h2>
+		<h5>
+			Postfix + MySQL + Courier + Pop-before-SMTP +
+			Amavisd-new + SpamAssassin + ClamAV
+		</h5>
+		<h3><a name="intro">Intro</a></h3>
+		<h4 class="nobold">
+			<p>
+				This an easy step by step guide for computer literates, but not quite gurus.
+				Initial steps will be to get a server up, before (over) extending it.
+				And then starting to tighten it down for security and convenience purposes.
+			</p>
+			<p>
+				You should follow each step, to get an understanding so that you could tweak
+				it to your needs. 
+			</p>
+			<p>
+				All software used are Open Source and free (as in beer). Most are <i>GPL</i>ed.
+			</p>
+			
+	<p> Feel free to link to this from any related websites. Please reference back 
+		any work based on this <i>Howto</i>. </p>
+	<p><a href="edition1.html">Old Mandrake 9.x Guide</a></p>
+	<h3><a href="edition3.html">Click here for the new Ubuntu based howto, which has replaced this guide.</a></h3>
+	<!-- p>
+		
+		<strike><a href="http://flurdy.com/docs/postfix/index.html">
+			New howto to come for MDK 10.1 and Gentoo.</a></strike>
+	</p -->
+		</h4>
+		<div id="eraygroup">
+			electric ray group:
+			<ul>
+				<li><a href="http://www.electricray.org">electric ray</a></li>
+				<li><a href="http://www.bionichouse.com">Bionic House</a></li>
+				<li><a href="http://www.anyview.org">Any View</a></li>
+				<li><a href="http://www.mytreo.co.uk">My Treo</a></li>
+			</ul>
+		</div>
+		<h3><a name="author">Author</a></h3>
+		<h5>
+			
+	<p> Written by <a href="mailto:infoRemThisBit@AndThisBiteray.co.uk">Ivar Abrahamsen</a> 
+		of <a href="http://www.electricray.org">electric ray</a>. Initial draft 
+		of this <i>Howto</i> started on the 22nd Februay 2004. Last modification 
+		was on 17th January 2005. Ivar is norwegian software engineer based in England. 
+	</p>
+			<p>
+				<a href="#comment">Comments</a> to
+				<a href="http://flurdy.com/contact/">me</a>
+				are welcome. Including bug reports, spelling mistakes, tweaks,
+				questions, job offers or just plain comments.
+			</p>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----
+MIIHNwYJKoZIhvcNAQcEoIIHKDCCByQCAQExggEwMIIBLAIBADCBlDCBjjELMAkG
+A1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQw
+EgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UE
+AxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJ
+KoZIhvcNAQEBBQAEgYCgEfxd9glNwwnRA2oazEVXN7IYJF6P+QZxucKi5GPIhDVC
+ygZb0mkY/iPHV0FvVCWlBySIpthS62N6sKETS873pydUZDy/3GpkBCgm8Kf+9Joh
+ZnixaRsy/h8mnt+BH8WcxgvSyad09l7mxQe6K1gWd0KoJUQTWXBxpjZgQOjQFjEL
+MAkGBSsOAwIaBQAwgbQGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQI2JfMa1Ko95qA
+gZCxorYhC1DDzc3L7tSe0Dab4/7dAiy9GN5Kjmizd6gS2gsL2SEw2J3P+HbHC7QB
+IR5dOLfZ+Z9wdqX7vbJduCn8SllC4Jqv1AgbiRXVggWnJyJlam4eqJE0qGFstAiH
+6Rkwq7ESZTSi6Wr7TFiHqC2d8nHW2VX8GmL3Ux/FviFyP/1qu+V0CF9UmnWbqNks
+UNygggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UE
+BhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYD
+VQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQI
+bGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEz
+MTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgT
+AkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5j
+LjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkq
+hkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ
+AoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALS
+csTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNp
+JeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgesw
+HQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaf
+fLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UE
+CBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJ
+bmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoG
+CSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqG
+SIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK/
+/Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiS
+ojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIB
+mjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UE
+BxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsU
+CmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1y
+ZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZI
+hvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDAzMTYxNTA3MjhaMCMGCSqGSIb3DQEJ
+BDEWBBTbFddl3wwdQ0MTuJUSk4S8P3vPYDANBgkqhkiG9w0BAQEFAASBgGMa41i6
+fyK4TnKfops9ao3lQBVaxQ4tQi02mzVPNQ3H/rA41uHhdosuDnsFXjifbYbzmFuq
+2KsqMY4RazjlOjSz/sAmz3rxJ+19N0jJbT282t1lFiPI08F1+EIq6bK2qFtXHJb6
+y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
+-----END PKCS7-----
+"> If you find this guide usefull, then any donatation of a few quid (or more) will be much appreciated.
+</form>
+		</h5>
+
+		<h3><a name="contents">Contents</a></h3>
+		<h5>
+			<div class="googleads">
+			<script type="text/javascript"><!--
+google_ad_client = "pub-7805345644641760";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_channel ="2011072480";
+google_ad_type = "text";
+google_color_border = "CCCCCC";
+google_color_bg = "FFFFFF";
+google_color_link = "000000";
+google_color_url = "666666";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+			<ol type="I">
+				<li><a href="#intro">Intro</a></li>
+				<li><a href="#author">Author</a></li>
+				<li> <a href="#contents">Contents</a></li>
+			</ol><ol type="1">
+				<li><a href="#sw">Software</a></li>
+				<li><a href="#build">Building</a></li>
+				<li><a href="#basic">Basic Server</a>
+					<ul>
+						<li><a href="#basic_post">Postfix</a></li>
+						<li><a href="#basic_sql">MySQL</a></li>
+						<li><a href="#basic_imap">Courier IMAP</a></li>
+					</ul>
+				</li>
+				<li><a href="#advanced">Advanced Server</a>
+					<ul>
+						<li><a href="#adv_domain">Domains</a></li>
+						<li><a href="#adv_alias">Aliases</a></li>
+						<li><a href="#adv_fwd">Forwarding</a></li>
+						<li><a href="#adv_mask">Masquerading</a></li>
+						<li><a href="#adv_back">Backup MX</a></li>
+					</ul>
+				</li>
+				<li><a href="#tight">Tighter</a>
+					<ul>
+						<li><a href="#tight_error">Error Limits</a></li>
+						<li><a href="#tight_head">Proper Headers</a></li>
+						<li><a href="#tight_list">Blacklists</a></li>
+						<li><a href="#tight_chroot">Chroot</a></li>
+					</ul>
+				</li>
+				<li><a href="#webmail">WebMail</a></li>
+				<li><a href="#send">Send Mail</a></li>
+				<li><a href="#content">Content Checks</a>
+					<ul>
+						<li><a href="#content_amavis">Amavisd-new</a></li>
+						<li><a href="#content_spam">SpamAssassin</a></li>
+						<li><a href="#content_virus">ClamAV</a></li>
+					</ul>
+				</li>
+				<li><a href="#ext">Further Extensions</a>
+					<ul>
+						<li><a href="#ext_squi">SquirrelMail</a></li>
+						<li><a href="#ext_cont">Content Checks</a></li>
+						<li><a href="#ext_clam">ClamAV</a></li>
+						<li><a href="#ext_post">PostFix</a></li>
+						<li><a href="#ext_web">Web Admin</a></li>
+					</ul>
+				</li>
+			</ol><ol type="A">
+				<li>
+					<a href="#quick">Quick Setup</a>
+					<ul>
+						<li><a href="#quick_basic">Basic</a></li>
+						<li><a href="#quick_adv">Advanced</a></li>
+						<li><a href="#quick_tight">Tighter</a></li>
+						<li><a href="#quick_comp">Complete</a></li>
+					</ul>
+				</li>
+
+				<li><a href="#links">Software Links</a></li>
+				<li><a href="#refer">References</a></li>
+				<li><a href="#pre">Pre-Requisites</a></li>
+				<li><a href="#comment">Comments</a></li>
+				<li><a href="#client">Mail Clients</a></li>
+				<li><a href="#proxy">Automating Proxy Interfaces</a></li>
+				<li><a href="#init">Startup Scripts</a></li>
+				<li><a href="#backup">Mail Backup</a></li>
+				<li><a href="#source">Sources</a></li>
+				<!-- <li><a href="#"></a></li> -->
+			</ol>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h3><a name="sw">2: Software</a></h3>
+		<h5>
+			<p>
+				Here is brief rundown of the software packages I use in this set up.
+				Links and discussion on alternative software can be found in <a href="#links">Appendix A</a>.
+			</p></h5>
+			<h4>OS: Mandrake Linux</h4>
+			<h5>
+	<p> The OS this tutorial is run on is a Mandrake Linux distribution. This is 
+		my chosen distribution, however with minor tweaking the guide should be 
+		compatible with other distribution, I just dont have access to a system 
+		with them on.</p>
+	<p>This was originally written based upon Mandrake 9.1, then update for 9.2 
+		and now is based Mandrake 10 Official.</p>
+	<p>Any further future releases should be compatible with this tutorial with 
+		a few tweaks.</p>
+</h5>
+			<h4>MTA: Postfix</h4>
+			<h5><p>
+				Sendmail is the most famous MTA, email server, for *nix flavours.
+				However it is a monster, which is where Postfix come in.
+				It is designed as a capable but easier to use MTA.
+			</p></h5>
+			<h4>Database: MySQL</h4>
+			<h5><p>
+				A database is not essential for a mail server of this kind,
+				but it does make it easier to maintaina and scale.
+			</p></h5>
+			<h4>Pop/Imap: Courier IMAP</h4>
+			<h5><p>
+				A stable Imap/Pop server that is often used with Postfix.
+				Handles SSL as well and is easy to configure.
+			</p></h5>
+			<h4>WebMail: SquirrelMail</h4>
+			<h5><p>
+				Also a well supported application that is easy to configure.
+				PHP based and sits in your web directory.
+			</p></h5>
+			<h4>SMTP Authentication: Pop-Before-SMTP</h4>
+			<h5><p>
+				If you need outsiders to send email via your server, you need to authenticate them some how.
+				Pop-Before-SMTP is an easy way to do this, an requires no user configuration.
+			</p></h5>
+			<!-- h4>SMTP Authentication: SASL</h4><p></p -->
+			<h4>Content Check Interface: Amavisda-new </h4>
+			<h5><p>
+				Amavisd-new a fork off Amavisd is an interface with several easy plug ins for content checking.
+				Well supported, extensive configuration options.
+			</p></h5>
+			<h4>AntiSpam: SpamAssassin</h4>
+			<h5><p>
+				A well know spam detector. Often achieves 99% detection.
+				Uses several techiniques: Signatures, blacklists and now Bayesian filters.
+			</p></h5>
+			<h4>AntiVirus: ClamAV</h4>
+			<h5><p>
+				A mature scanner with frequent signatures updates.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="build">1: Building</a></h3>
+<div class="googleads">
+<script type="text/javascript"><!--
+/*
+google_ad_client = "pub-7805345644641760";
+google_ad_width = 120;
+google_ad_height = 240;
+google_ad_format = "120x240_as";
+google_ad_channel ="2011072480";
+google_color_border = ["336699","B4D0DC"];
+google_color_bg = ["FFFFFF","ECF8FF"];
+google_color_link = ["0000FF","0000CC"];
+google_color_url = "008000";
+google_color_text = ["000000","6F6F6F"];
+*/
+//--></script>
+<!-- script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script --></div>
+		<h5>
+			
+	<p> Thankfully <i>Mandrake 10 </i>comes with most of the packages as binary 
+		RPMs on the CDs. Some later ones you have to download tar files, but none 
+		require compiling. </p>
+			<p>Make sure you have the pre-requisites in <a href="#pre">Appendix C</a>.</p>
+			<p>
+				Fetch the source/binary of the <a href="#links">S/W</a> we are going to use.
+				<i>Mandrake</i> comes with several of the S/W used as RPMs,
+				the others must be fetched from the links in <a href="#links">Appendix A</a>.
+			</p>
+			
+	<p> I recommened always get the latest stable versions and keep yourselves 
+		up to date. However this tutorial may not be fully compatible with future 
+		versions, so maybe use the ones mentione here then upgrade after you got 
+		it working. </p>
+			
+	<p>If your distribution , does not come with a pre built Postfix, or in the 
+		case of <i>Mandrake 9.x</i> the prebuilt RPM does not include MySQL support, 
+		then you need to uninstall, rebuild the RPM and reinstall the rebuilt RPM. 
+		( <a href="#links">Appendix A</a> has a link to a <i>Mandrake 9.1</i> Postfix 
+		RPM with MySQL support. ) <br />
+	</p>
+			<p><pre>rpm --rebuild --with mysql postfix.xxxx.SRPM.</pre></p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+		<h3><a name="basic"></a>Basic server</h3>
+		<h5>
+			<p>
+				Initial steps is to get a server up and running.
+				For that we will install only Postfix, MySQL and Courier.
+				Ive included the database, but you can have an even more basic server without it.
+				I have included it as my further steps depend on it.
+			</p>
+		</h5>
+
+			<h4><a name="basic_post">Postfix</a></h4>
+		<h5>
+			<p>
+				Install the Postfix RPM with MySQL support.
+				If you are using Mandrake 10, you need to Postfix RPM and the Postfix-MySQL RPM( and their dependancies).
+				This will do a lot of the neccessary step for you.
+				It should create the user and groups required.
+				It will create the init script for you and create the folder /etc/postfix
+				where all the configuration files will be kept.
+			</p>
+			<p>
+				Make sure the rpm has created the correct users and groups.
+				Postfix use a <i>postfix</i> user and a <i>postdrop</i> group.
+			</p>
+			<p>
+				You need to create the folder where the mails will be spooled to.
+				This in my setup is <i>/var/mail/virtual</i>.
+				And an owner to own the emails and the directory.
+				Create this directory and change owner to <i>virtual</i>:
+<pre>
+adduser -M -u 5000 virtual
+mkdir /var/mail/virtual
+chown virtual /var/mail/virtual
+</pre>
+			</p>
+			
+	<p> You may need to edit the aliases file, and towards the bottom replace a 
+		user (yours>?) with the dummy one <i>user</i> , so that all email to root 
+		goes to you. This may already have been set for you so this step may not 
+		be neccessary. But do it anyway and then create a hash of it with this command: 
+	</p>
+			<p>
+<pre>postalias aliases</pre>
+			</p>
+			<p>
+				Create backup copies of the <i>main.cf</i> and <i>master.cf</i>,
+				and keep doing so throughout this tutorial for safety sake.
+			</p>
+			
+	<p> Postfix have a great security feature of running everything in <i>chroot</i>. 
+		This restricts all files that anyone can access through it to within <i>/etc/postfix</i> 
+		only. </p>
+	<p>However this is restrictive when you need to access other parts, and we 
+		may need to initially disable this options. Remember this step: First change 
+		nothing, only view your <i>master.cf</i> and notice what state each section 
+		onder chroot column is set to. If virtual is set to <strong>y</strong>, 
+		change this to <strong>n</strong>.</p>
+	<p>If some stages dont work, it often is the chroot step that is restricting 
+		it. You may often finding yourself turning the whole <i>chroot</i> column 
+		to n to test if it is the problem, then setting them back to y, where applicable.</p>
+	<p> (
+	It is important you change these back to <strong>y</strong> later, once 
+		you can test if they are the source of problems or not. Otherwise you wont 
+		be utilising the chroot jail facility of <i>Postfix</i>.)</p>
+			
+	<p>Set up a clean and basic <i>main.cf</i>. Mdk 10, comes with a basic main.cf 
+		that you can base your upon. These are example settings:<br />
+		<span class="note">Review</span> 
+	<pre>
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+daemon_directory = /usr/lib/postfix
+mail_owner = postfix
+unknown_local_recipient_reject_code = 450
+alias_maps = hash:/etc/postfix/aliases
+mail_spool_directory = /var/spool/mail
+mailbox_command = /usr/bin/procmail -Y -a $DOMAIN
+debug_peer_level = 2
+debugger_command =
+	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+	 xxgdb $daemon_directory/$process_name $process_id & sleep 5
+delay_warning_time = 4
+sendmail_path = /usr/sbin/sendmail.postfix
+newaliases_path = /usr/bin/newaliases.postfix
+mailq_path = /usr/bin/mailq.postfix
+setgid_group = postdrop
+manpage_directory = /usr/share/man
+sample_directory = /usr/share/doc/postfix-2.0.6/samples
+readme_directory = /usr/share/doc/postfix-2.0.6/README_FILES
+alias_database = hash:/etc/postfix/aliases
+smtpd_banner = $myhostname ESMTP $mail_name (Mandrake Linux)
+inet_interfaces = all
+smtpd_recipient_restrictions = reject_unauth_pipelining, \
+reject_unknown_recipient_domain, permit_mynetworks, \
+reject_unauth_destination
+smtpd_sender_restrictions = reject_non_fqdn_sender, \
+reject_unknown_sender_domain
+</pre>
+			</p>
+			
+	<p> Next add you ISPs smtp server or whichever SMTP server you normally use 
+		for sending emails through. You can once you have firewalls, dns and all 
+		settings tested leave this as blank, so that your server acts as the relayhost 
+		on its own. You are then in more control of the queues, although I feel 
+		more secure relaying through my ISPs smtp server.</p>
+<pre>
+relayhost=smtp.yourisp.tld
+</pre>
+			<p>
+				Add the name of you server.
+				Postfix is clever and may work it out anyway,
+				but it is better to specify it.
+				Postfix will workout domain name from it.
+			</p>
+<pre>
+myhostname=server.domain.tld
+</pre>
+			
+	<p> Next we need to tell Postfix we wont be using local users, but instead 
+		a database based virtual users. </p>
+	<p class="note">Review </p>
+<pre>local_recipient_maps =
+mydestination =
+virtual_mailbox_base = /var/mail/virtual
+virtual_mailbox_maps = mysql:/etc/postfix/mysql_mailbox.cf
+virtual_uid_maps = mysql:/etc/postfix/mysql_uid.cf
+virtual_gid_maps = mysql:/etc/postfix/mysql_gid.cf
+virtual_mailbox_domains = localhost.$mydomain $mydomain $myhostname
+</pre>
+			<p>Next we need to create the files Postfix will use to query the MySQL database.</p>
+			<p>Create these three files in the postfix directory:</p>
+			<p>mysql_mailbox.cf</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=users
+select_field=maildir
+where_field=id
+hosts=localhost
+</pre>
+			<p>mysql_uid.cf</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=users
+select_field=uid
+where_field=id
+hosts=localhost
+</pre>
+			<p>mysql_gid.cf</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=users
+select_field=gid
+where_field=id
+hosts=localhost
+</pre>
+			<p>
+				Obviusly, change the fields where applicable.
+				If your mail database (<i>dbname</i>)/
+				MySQL username (<i>user</i>)/
+				MySQL password (<i>password</i>) or
+				database server (<i>hosts</i>)
+				is not correct change it it to your setup.
+				However if you keep to my setup exactly only
+				the password field needs adjusting.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+			<h4><a name="basic_sql">MySQL</a></h4>
+		<h5>
+			
+	<p>MySQL is now a quite renowned database and was an easy choice. <br />
+		( <a href="http://firebird.sf.net">Firebird</a> would have been the ideal 
+		choice, but is not supported by any of the apps we will use for this mail 
+		server. )</p>
+			
+	<p> If it is not installed already, follow the instructions in <a href="#pre">Appendix: 
+		Pre-Requisites</a>. </p>
+			<p>Create a mail user and set its password as well.</p>
+<pre>mysql -u root -p**** mysql
+GRANT ALL PRIVILEGES ON *.* TO 'mail'@'localhost'
+	IDENTIFIED BY '****' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'mail'@'%'
+	IDENTIFIED BY '****' WITH GRANT OPTION;
+quit;
+mysql -u mail -p****
+</pre>
+			<p>
+				If you mess up and lock yourselves out of MySQL, dont panic.
+				There are several ways to recreate your users,
+				look up in Google for ways to start MySQL without grant tables.
+				Or if you dont have any data in other databases, reinstall it!
+			</p>
+			<p>Create the mail database</p>
+<pre>
+create database maildb;
+use maildb;
+</pre>
+			<p>Create the tables required for Postfix.</p>
+<pre>CREATE TABLE `users` (
+  `id` varchar(128) NOT NULL default '',
+  `crypt` varchar(128) NOT NULL default 'sdtrusfX0Jj66',
+  `name` varchar(128) NOT NULL default '',
+  `uid` smallint(5) unsigned NOT NULL default '5000',
+  `gid` smallint(5) unsigned NOT NULL default '5000',
+  `home` varchar(255) NOT NULL default '/var/mail/virtual/',
+  `maildir` varchar(255) NOT NULL default 'spam/',
+  `quota` varchar(255) NOT NULL default '',
+  `enabled` tinyint(3) unsigned NOT NULL default '1',
+  `change_password` tinyint(3) unsigned NOT NULL default '1',
+  `procmailrc` varchar(128) NOT NULL default '',
+  `spamassassinrc` varchar(128) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id` (`id`)
+);
+</pre>
+			<p>
+				<i>id</i> is the email field, a complete address which is the ids people use.
+				<i>crypt</i> is the password field, encrypted with Unix Crypt(), and not MySQL's version.
+				Its default password is <i>ChangeMe</i>. Obviously change these later.
+				<i>home</i> is the path to where the folders are kept,
+				and <i>maildir</i> is the directory where this users mail are kept.
+				Multiple rows with same <i>maildir</i> will share emails.
+				If <i>maildir</i> ends on a <i>/</i>, then Postfix will use the
+				maildir mail spooling option and not the mail file spooling.
+				I think Courier require maildir format.
+				Ignore the other fields for now.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="basic_imap">Courier IMAP</a></h4>
+		<h5>
+			<p>
+				Pop3 and IMAP server is of course required. Otherwise getting access to mail is tricker.
+				Courier has support for MySQL authenticaton among others
+				and are used in many Postfix+MySQL+Courier setups.
+			</p>
+			<p>Again the require RPMs are available on Mandrake's CDs</p>
+<pre>
+rpm -i courier-imap-1.7.0-3mdk courier-imap-pop-1.7.0-3mdk \
+courier-imap-mysql-1.7.0-3mdk courier-imap-utils-1.7.0-3mdk
+</pre>
+			<p>
+				Configuration files are in <i>/etc/courier</i>.
+				Edit <i>authdaemonrc</i> and modify this line to:
+			</p>
+<pre>authmodulelist="authmysql authpam"</pre>
+			<p>Edit <i>authmysqlrc:</i></p>
+<pre>MYSQL_SERVER         localhost
+MYSQL_USERNAME       mail
+MYSQL_PASSWORD       ****
+MYSQL_PORT           0
+MYSQL_DATABASE       maildb
+MYSQL_USER_TABLE     users
+MYSQL_CRYPT_PWFIELD  crypt
+MYSQL_UID_FIELD      uid
+MYSQL_GID_FIELD      gid
+MYSQL_LOGIN_FIELD    id
+MYSQL_HOME_FIELD     home
+MYSQL_NAME_FIELD     name
+MYSQL_MAILDIR_FIELD CONCAT(home,'/',maildir)
+MYSQL_WHERE_CLAUSE      enabled=1
+</pre>
+			
+	<p>The last setting is optional, if you want to be able to disable accounts.</p>
+	<p>Edit <i>imapd</i> and set this to 2 then change to 0 later when working:</p>
+<pre>DEBUG_LOGIN=2</pre>
+			<p>
+				Then edit <i>imapd</i> again edit this line to <i>YES</i>
+			</p>
+<pre>IMAPDSTART=YES</pre>
+			 <p>Depending on what you want running you can turn the others, <i>pop3</i>,</p>
+<pre>POP3DSTART=YES</pre>
+			<p><i>imapd-ssl</i> and/or <i>pop3-ssl</i>  on as well:</p>
+			<p>If you plan to have many connections per client, ie. perhaps you want to login to 20 mailboxes at once,then you need to increase the connections limit in the different files. E.g in imapd</p>
+<pre>MAXPERIP=24</pre>
+		</h5>
+
+		<h6><a href="#top">Go to top.</a></h6>
+
+			<h4>Data</h4>
+		<h5>
+			<p>
+				Not many systems are any good without any data in them.
+				You need to comply to some RFC by adding <i>abuse and postmaster</i>
+				as valid email addresses. Also a <i>root</i> user is a good idea.
+				In MySQL insert these statements
+			</p>
+<pre>INSERT INTO users (id,maildir) VALUES
+('abuse@yourdomain.tld','post/'),
+('postmaster@yourdomain.tld','post/'),
+('root@yourdomain.tld','post/'),
+('root@server.yourdomain.tld','post/'),
+('root@localhost','post/'),
+('root@localhost.localdomain','post/');
+</pre>
+			<p>
+				You need to insert the users you require on top of this.
+				Naturally start with one and add more when working ok.
+			</p>
+<pre>INSERT INTO users (id,maildir) VALUES \
+('yourname@yourdomain.tld','yourname/');
+</pre>
+	<p>Addresses such as info, support and sales are very common addresses and 
+		you may find them usefull, however they will also fill up with junk mail 
+		quite quickly.</p>
+		</h5>
+			<h4>Test it</h4>
+		<h5>
+			<p>
+				The basic server is now configured.
+				Remember to turn all debugging on.
+				Start/Restart the servers:
+			</p>
+<pre>/etc/init.d/mysql start
+/etc/init.d/courier-imap start
+/etc/init.d/postfix start
+</pre>
+			<p>
+				Send an email to one of the users configured.
+				Watch the <i>/var/log/syslog</i> for any activity.
+				Now set up an email client to read the email.
+				Read Appendix E: for a some examples.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+  <h3><a name="advanced">Advanced Server</a></h3>
+		<h5>
+			<p>When you have the basic server up and running it is worth extending it into an advanced server. This adds a few usefull options, and makes maintaining it simpler as well.</p>
+		</h5>
+			<h4><a name="adv_domain">Domains</a></h4>
+		<h5>
+			<p>
+				In the basic setup, domains are hardcoded into <i>main.cf</i>.
+				To be more flexible, you can use the database to supply the domains
+				used.
+			</p>
+			<p>Modify the virtual_mailbox_domains line:</p>
+<pre>virtual_mailbox_domains = mysql:/etc/postfix/mysql_domains.cf</pre>
+			<p>Create a new file in postfix folder: <i>mysql_domains.cf</i></p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=domains
+select_field=domain
+where_field=domain
+hosts=localhost
+</pre>
+			<p>Create the table in MySQL:</p>
+<pre>CREATE TABLE domains (
+pkid smallint(6) NOT NULL auto_increment,
+domain varchar(120) NOT NULL default '',
+transport varchar(120) NOT NULL default 'virtual:',
+PRIMARY KEY  (pkid)
+);
+</pre>
+			<p>Populate the table</p>
+<pre>insert into domains (domain) values
+('localhost'),('localhost.localdomain'),
+('server.domain.tld'),('domain.tld');
+</pre>
+			<p>
+				Now next time you want the mail server to receive mail
+				from a domain, just insert it into this table.
+				Apperently you need to have <i>local:</i> for at the real domain
+				name of the server. However I can not verify this.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="adv_alias">Aliases</a></h4>
+		<h5>
+			<p>
+				Instead of creating loads of records in the <i>users</i> table,
+				you could implement Aliases. This means you can forward loads
+				of accounts to one address.
+				Handy if you have multiple of domains.
+				It also makes it easier to manage the <i>users</i> table,
+				and controlling who can access and who receives what.
+			</p>
+			<p>Append this line to <i>main.cf</i>:</p>
+<pre>virtual_alias_maps =mysql:/etc/postfix/mysql_alias.cf</pre>
+			<p>Create this file: <i>mysql_alias.cf</i></p>
+
+<pre>user=mail
+password=****
+dbname=maildb
+table=aliases
+select_field=destination
+where_field=mail
+hosts=localhost
+</pre>
+			<p>Then import this into MySQL:</p>
+<pre>CREATE TABLE aliases (
+pkid smallint(3) NOT NULL auto_increment,
+mail varchar(120) NOT NULL default '',
+destination varchar(120) NOT NULL default '',
+PRIMARY KEY  (pkid),
+UNIQUE KEY mail (mail)
+);
+</pre>
+			<p>
+				Populate the table, remember you need to alias the
+				aliased address to itself as well.
+			</p>
+<pre>insert into aliases (mail,destination) values
+('abuse@otherdomain.tld','abuse@domain.tld'),
+('you@domain.tld','you@domain.tld'),
+('you@otherdomain.tld','you@domain.tld');
+</pre>
+			<p>
+				If you add a <i>@domain.tld</i> as <i>mail</i> field,
+				then all mails not matching others for that domain
+				will go that destination. Handy sometimes, spamfest other times.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="adv_fwd">Forwarding</a></h4>
+		<h5>
+			<p>
+				Another advantage of using the <i>aliases</i> option,
+				is that you can then forward email outside your domains.
+				E.g:
+			</p>
+<pre>insert into aliases (mail,destination) values
+('abuse@thisdomain.tld','person@notyourdomain.tld');
+</pre>
+			<p>
+				This will now forward that email to that persons other
+				address not hosted by you.
+				Handy for friends who want an email address,
+				but prefer to use other email servers.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="adv_mask">Masquerading</a></h4>
+		<h5>
+			<p>
+				Another feature to avoid email addresses like this:
+				<i>name@server.domain.tld</i>, you can masquerade it into:
+				<i>name@domain.tld</i>.
+				Append these lines to <i>main.cf</i>.
+				</p>
+<pre>
+masquerade_domains = server.domain.tld !notlocalname.domain.tld
+masquerade_exceptions = root
+</pre>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="adv_back">Backup MX</a></h4>
+		<h5>
+			<p>
+				Emails are today an important tool of communication.
+				And loosing emails can be very annoying and
+				with significant implications sometimes.
+				So when your server goes down (which mine does every night!),
+				you dont want to loose any emails.
+				Luckily by default most email servers will keep trying to send
+				to your server for ~ 5 days. But you can not be sure of this.
+			</p>
+			<p>
+				Postfix can work as a backup server.
+				If the <i>primary MX</i> server is down, and this server is the <i>secondary</i>,
+				Postfix will spool all emails for that domain.
+				It will try at intervals if the <i>primary</i> is up again and
+				if so forward the backed up emails to it.
+				This gives you the confidence that fewer emails will be lost.
+			</p>
+			<p>
+				But the flipside is that you may want people to be notified
+				if the urgent email they sent has been delayed?
+				It is a choice you have to make.
+			</p>
+			<p>
+				To enable back up, of you own domain you dont do anything,
+				however to enable backup on your server of other's domain emails
+				append this to Postfix's <i>main.cf</i></p>
+<pre>proxy_interfaces = 1.2.3.4
+relay_domains = mysql:/etc/postfix/mysql_domains.cf \
+mysql:/etc/postfix/mysql_backups.cf
+transport_maps = mysql:/etc/postfix/mysql_transport.cf
+maximal_queue_lifetime = 16
+minimal_backoff_time = 1000
+maximal_backoff_time = 54000
+</pre>
+			<p>
+				Replace the 1.2.3.4 with your external IP if behind a NAT.
+				This can be tricky if your IP keep changing.
+				See Appendix F for tips on how to automate this.
+				The <i>Queue Lifetime</i> is how many days the server keeps the emails.
+				Default is 5, however 16 should cover a holiday etc.
+			</p>
+			<p>For your server to connect directly to the <i>primary</i> server
+				when it comes online again, you need the transport field.
+				It contains the SMTP server address, wrapped in <i>:[]</i>,
+				which indicate ignore its mx settings, just use it.
+			<p>
+			<p>And replace <i>smtpd_recipient_restrictions</i> with this:</p>
+<pre>smtpd_recipient_restrictions = permit_mynetworks, \
+reject_unauth_destination, check_relay_domains
+</pre>
+			
+	<p> This will generate some errors as <i>check_relay_domains</i> is being faded 
+		out, but I am not 100% <i>reject_unauth_destination</i> works the same when using 
+		back up relays.</p>
+			<p>You need to create this file <i>mysql_backups.cf</i>:</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=backups
+select_field=domain
+where_field=domain
+hosts=localhost
+</pre>
+			<p>and this file as well <i>mysql_transport.cf</i>:</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=backups
+select_field=transport
+where_field=domain
+hosts=localhost
+</pre>
+			<p>And then create this table in the database:</p>
+<pre>
+CREATE TABLE backups (
+  pkid smallint(6) NOT NULL auto_increment,
+  domain varchar(128) NOT NULL default '',
+  transport varchar(128) NOT NULL default ':[]',
+  PRIMARY KEY  (pkid),
+  UNIQUE KEY domain (domain)
+)
+</pre>
+			<p>Then you would insert records like this:</p>
+<pre>
+insert into backups (domain,transport) values
+('matesdomain.tld',':[server.matesdomain.tld]');
+</pre>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="tight">Tighter</a>.</h3>
+		<h5>
+			<p>
+				The next step is restricing who can use your server,
+				to protect it and stop crackers and spammers abusing it.
+				The basic server does restrict where mails can go and
+				where they can send them from.
+				But not much protection beyond that.
+				This step is important, and should be followed.
+			</p>
+		</h5>
+			<h4><a name="tight_error">Error Limits</a></h4>
+		<h5>
+			<p>
+				Error limits stops spammers trying millions of email addresses
+				on your server before it gets fobed off. E.g. john@domain.tld,sue@domain.tld.
+				<i>Recipient Limit</i> will stop spammers CCing 100s of people if they get
+				to your server.
+			</p>
+<pre>
+smtpd_soft_error_limit = 3
+smtpd_hard_error_limit = 12
+smtpd_recipient_limit = 16
+</pre>
+		</h5>
+			<h4><a name="tight_head">Proper Headers</a></h4>
+		<h5>
+			<p>
+				To protect yourselves againts spammers or bad clients.
+				And make sure that the headers it will need has not been corrupted.
+			</p>
+<pre>
+smtpd_helo_required = yes
+</pre>
+			<p>And replace <i>smtpd_recipient_restrictions</i> with this:</p>
+<pre>
+smtpd_recipient_restrictions = permit_mynetworks, \
+reject_unknown_recipient_domain, reject_non_fqdn_recipient, \
+reject_unauth_destination, check_relay_domains
+</pre>
+		</h5>
+			<h4><a name="tight_list">Blacklists</a></h4>
+		<h5>
+			<p>
+				A number of sites keep a list of know open relay server,
+				which are easily abused by spammers.
+				By blocking these you keep a lot of spam out,
+				and also help in convincing people to not have open relays.
+			</p>
+<pre>
+smtpd_client_restrictions =  \
+reject_rbl_client bl.spamcop.net, \
+reject_rbl_client sbl.spamhaus.org, \
+reject_rbl_client relays.ordb.org, \
+reject_rbl_client blackholes.easynet.nl, \
+reject_rbl_client dnsbl.njabl.org, \
+reject_rbl_client cbl.abuseat.org
+</pre>
+			<p>
+				I initially included <i>reject_rbl_client dnsbl.sorbs.net</i> as well.
+				However it blocks my ISPs SMTP server (NTL),
+				which must have been an open relay at some point,
+				but blocking it would be problematic for me!
+			</p>
+		</h5>
+			<h4><a name="tight_chroot">chroot</a></h4>
+		<h5>
+			<p>
+				In Postfix's <i>master.cf</i> we disabled the chroot jail when setting up this server.
+				For security sake it is a good idea to reenable this.
+				However it will be some trial and error to get this working.
+				One issue is that the MySQL socket is outside this <i>jail</i>.
+				This can be overcome with using TCP/IP traffic by setting in your mysql .cf files
+<pre>
+host=server.domain.tld
+</pre>
+				where server.domain.tld is your server name.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+
+		<h3><a name="webmail">Web Mail</a>.</h3>
+		<h5>
+			<p>
+				A webmail is an easy front end to test and to use for all.
+				It does not replace your normal email client usage,
+				but it enables quick access from other locations.
+				It also enables less computer liturate to use email as well.
+			</p>
+			<p>
+				I have chosen <i>SquirrelMail</i> as my webmail package.
+				It is not the prettiest, but it is easy to manage and setup.
+				It is well supported and used, and has many usefull plugins.
+			</p>
+			<p>
+				Make sure you have the correct <a >Pre Requisites</a> installed.
+				If you get a <i>DB.php</i> error, then you have not installed
+				<i>Berkeley DB</i> support that comes with <i>PHP-Pear</i>.
+			</p>
+			<p>
+				See Appendix A on how to get it, and extract it to your web directory.
+				It is all PHP and does not need compiling.
+				Follow the <i>INSTALL</i> direction in its folder,
+				and then run ./config/conf.pl from the folder.
+				Change your settings as required.
+				Dont enable any plug ins at this stage.
+			</p>
+			<p>
+				In the database section change <i>1 . DSN for Address Book</i> to
+			</p>
+<pre>mysql://mail:****@localhost/maildb</pre>
+			<p>
+				Then change <i>3 . DSN for Preferences</i> to
+			</p>
+<pre>mysql://mail:****@localhost/maildb</pre>
+			<p>Then create these tables in MySQL</p>
+   <pre>CREATE TABLE address (
+  owner varchar(128) NOT NULL default '',
+  nickname varchar(16) NOT NULL default '',
+  firstname varchar(128) NOT NULL default '',
+  lastname varchar(128) NOT NULL default '',
+  email varchar(128) NOT NULL default '',
+  label varchar(255) default NULL,
+  PRIMARY KEY  (owner,nickname),
+  KEY firstname (firstname,lastname)
+) ;
+CREATE TABLE userprefs (
+  user varchar(128) NOT NULL default '',
+  prefkey varchar(50) NOT NULL default '',
+  prefval varchar(255) default NULL,
+  modified timestamp(14) NOT NULL,
+  PRIMARY KEY  (user,prefkey)
+);
+</pre>
+			<p>
+				There will be no need for data in these tables.
+				You need to configure your web server to point to <i>SquirrelMail</i>.
+				Either you have addedd SM as folder inside an existing site,
+				or you will be using it as a virtual host, so change webserver's
+				conf ig files if needed.
+				That should be it. Try it.
+				Login name is the id in the users table.
+				A user need to have a mail for the maildirectories to be created before
+				log in so send the user an email first.
+			</p>
+			<p>
+				Further extensions via plugins are discussed in
+				<a href="#ext">Further Extensions</a>.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="send">Send Mail</a>.</h3>
+		<h5>
+			<p>
+				If you have followed my <i>basic-advanced-tighter server</i> setup,
+				your server now is now fairly well configured.
+				However only your local network, or perhaps just the mail server
+				can send emails out via your server.
+				Anyone else whom tries will get a polite fob off message.
+			</p>
+			<p>
+				That is okay if everyone can use their local ISP as mail relay.
+				But not everyone can or want to, and what happens when you are
+				traveling, and not got access to your normal ISP.
+				So you need to allow people the ability
+				to send email via SMTP from anywhere.
+			</p>
+			<p>
+				But simply allowing access to outside world is dangerous,
+				and quite likely will be abused.
+				So we need some way of authenticate the users.
+			</p>
+			<p>
+				<i>SASL</i>, a way of securely authenticate users,
+				is an option many uses, but I dont.
+				The only reason is that I couldnt get it to work.
+				I may add it to the <a href="#ext">extensions</a> section later.
+			</p>
+			<p>
+				<i>Pop-Before-SMTP</i> is my chosen option,
+				and does not actually involve any specific authentication.
+				As the name indicates the server records the IP numbers
+				of people who authenticated okay for Pop or with IMAP.
+				It stores their IP for a brief moment, and if traffic from that
+				address request SMTP shortly afterwards, they will be accepted.
+			</p>
+			<p>
+				<i>Pop-before-SMTP</i> is available as an RPM in Mdk 9.x.
+				However it did not seem to install the config file,
+				so I retrieved the latest tar file instead.
+			<p>
+				Untar it and test its dependencies with this command:
+			</p>
+<pre>./pop-before-smtp --config=./pop-before-smtp-conf.pl \
+--debug --nowrite --reprocess
+</pre>	<p>
+				If okay:
+				copy the binary file to /usr/sbin,
+				copy the init file /etc/rc.d/init.d
+				copy the pl file to /etc
+			</p>
+<pre>cp pop-before-smtp /usr/sbin/
+cp pop-before-smtp.init /etc/rc.d/init.d/pop-before-smtp
+cp pop-before-smtp-conf.pl /etc
+</pre>
+			<p>
+				Modify <i>/etc/pop-before-smtp-conf.pl</i>,
+				file_tail should be like this:
+			</p>
+<pre>$file_tail{'name'} = '/var/log/mail/info';</pre>
+			<p>Also incomment the courier lines.</p>
+			<p>Modif y this line again in Postfix's <i>main.cf</i>:</p>
+<pre>smtpd_recipient_restrictions = permit_mynetworks, \
+reject_non_fqdn_recipient, \
+check_client_access hash:/etc/postfix/pop-before-smtp, \
+reject_unauth_destination, check_relay_domains
+</pre>
+			<p>
+				The limitation of <i>Pop-Before-SMTP</i> is that people
+				have to check mail before sending.
+				Some clients send before read. So some users need to
+				<i>send/receive</i> twice.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="content">Content checks</a></h3>
+		<h5>
+			<p>
+				When you start receiving emails you will notice
+				how much of it is junk. And if you run <i>M$ Windows</i>
+				especially you are vulnarable to computer viruses.
+				Postfix can be adjusted to check the contents of emails
+				whether they are valid and what to do about it.
+			</p>
+		</h5>
+			<h4><a name="content_amavis">Amavisd-new</a></h4>
+		<h5>
+			
+	<p> For this you need a <i>content check interface</i> and that is what <i>amavisd-new</i> 
+		is. It is itself built upon <i>amavisd</i> but is now much more mature and 
+		feature rich than the original. </p>
+	<p>If you are installing this from <i>Mandrake 10.0</i>, be ware MDK ship with 
+		<i>amavisd</i> and <i>amavisd-new</i>, but only <i>amavisd</i> is listed as recommended rpm. As 
+		I prefer <i>amavisd-new</i>, you will have to search for amavisd.</p>
+			The RPM would do all the automatic steps here, but check that they are 
+	all done. 
+	<p> If you are able to, install from RPM (MDK 10.0) or if you desire obtain 
+		the <i>tar.gz</i> file from the site in <a href="#links">Appendix: Software</a> 
+		and extract it. <i>Amavisd-new</i> is <i>Perl</i> based, and dont need compiling, 
+		but do need other modules. If you install from RPMs using e.g. RPMDrake 
+		the dependencies will be automatically installed. Otherwise There should 
+		be <i>INSTALL</i> file to read in the folder. It will contain a list of 
+		modules that you need. They all come with the Mdk CDs so just check if they 
+		exist. They will all be named <i>perl-xxxxxx</i> as they are all <i>Perl</i> 
+		modules. You may do an install like this. </p>
+	<pre>rpm -i perl-Archive-Tar-x.xx \
+perl-Archive-Zip-x.xx perl-Compress-Zlib-x.xx \
+perl-Convert-TNEF-x.xx perl-Convert-UUlib-x.xxx \
+perl-IO-stringy-x.xxx perl-MailTools-x.xx  \
+perl-MIME-Tools-x.xxxx perl-Net-Server-x.xx \
+perl-Unix-Syslog-x.xxx
+</pre>
+			<p>
+				Where as usual you replace the <i>x</i>s with version availble.
+				<i>perl-MIME-Base64</i>, <i>perl-libnet</i>,
+				<i>perl-Time-Hires</i> and <i>perl-Digest-MD5</i>
+				are not RPMs with <i>Mandrake</i>,
+				as they comes with the standard <i>Perl</i> install,
+				so it is not required to install seperatly.
+			</p>
+			<p>
+				Create an user and group to run the daemon.
+				This will be used for antispan & virus as well,
+				so make it a good un.
+				Then create a folder for amavisd-new to use,
+				and the make it owned by the user created.
+			</p>
+<pre>adduser amavis
+mkdir /var/local/amavis
+chown amavis:amavis /var/local/amavis
+chmod 750 /var/local/amavis
+</pre>
+			<p>
+				Copy the amavisd from the source to <i>/use/local/sbin</i>,
+				the conf file to <i>/etc/amavis</i> and
+				the init file to <i>/etc/rc.d/init.d</i>.
+			</p>
+<pre>cp amavisd /usr/local/sbin
+chown root /usr/local/sbin/amavisd
+chmod 755  /usr/local/sbin/amavisd
+mkdir /etc/amavis
+cp amavisd.conf /etc/amavis
+chown root /etc/amavis/amavisd.conf
+chmod 644  /etc/amavis/amavisd.conf
+cp amavisd_init.sh /etc/rc.d/init.d/amavisd
+</pre>
+			<p>
+				Create a folder to store the quarantined emails
+			</p>
+<pre>mkdir /var/local/quarantine
+chown amavis:amavis /var/local/quarantine
+chmd 750 /var/local/quarantine
+</pre>
+			<p>
+				Edit <i>/etc/amavis/amavisd.conf</i>.
+				There are so many settings in there,
+				so it is wise to:
+				<ol type="a">
+					<li>Make a backup</li>
+					<li>Change one thing at a time</li>
+				</ol>
+				But first you need to set these settings:
+			</p>
+<pre>$MYHOME = '/var/local/amavis';
+$mydomain = 'yourdomain.tld';
+$daemon_user  = 'amavis';
+$daemon_group = 'amavis';
+$TEMPBASE = "$MYHOME/tmp";
+$DO_SYSLOG = 1;
+$LOGFILE = "$MYHOME/amavis.log";
+$log_level = 2;
+$QUARANTINEDIR = '/var/local/quarantine';
+$forward_method = 'smtp:127.0.0.1:10025';
+$notify_method = $forward_method;  
+$inet_socket_port = 10024; 
+</pre>
+			<p>
+			Edit <i>/etc/postfix/main.cf</i> and add/modify this line:
+			</p>
+<pre>
+content_filter = smtp-amavis:[127.0.0.1]:10024 
+</pre>			
+			<p>
+				In <i>/etc/postfix/master.cf</i>, make sure this line is there at the top:	
+			</p>
+<pre>
+smtp  inet  n  -  n  -  -  smtpd
+</pre>
+			<p>
+				Then add these line further down:
+			</p>
+<pre>
+smtp-amavis unix        -       -       n       -       2       smtp
+        -o smtp_data_done_timeout=1200
+        -o disable_dns_lookups=yes
+127.0.0.1:10025 inet    n       -       n       -       -       smtpd
+         -o content_filter=
+        -o local_recipient_maps=
+         -o relay_recipient_maps=
+        -o smtpd_restriction_classes=
+        -o smtpd_client_restrictions=
+        -o smtpd_helo_restrictions=
+        -o smtpd_sender_restrictions=
+        -o smtpd_recipient_restrictions=permit_mynetworks,reject
+        -o strict_rfc821_envelopes=yes
+</pre>
+			<p>
+				When everything is working you can set
+				these settings in <i>/etc/amavis/amavisd.conf</i> back to:
+			</p>
+<pre>
+$DO_SYSLOG = 0;
+$log_level = 0;
+</pre>
+			<p>
+				That is the base install of the interface.
+				Next you need to install the anti-spam & anti-virus.
+			</p>
+		</h5>
+			<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="content_spam">Anti Spam: Spam Assassin.</a></h4>
+		<h5>
+			<p>
+				SpamAssassin is possibly the most well known spamdetector available.
+				It can be run as a server or client.
+				The version I use is easy to install, as it is <i>Perl</i> based.
+				To install it, run rpmdrake and pick it or do this:
+			</p>
+<pre>rpm -i perl-Mail-SpamAssassin-x.xx-xmdk</pre>
+			<p>
+				There are furher tools and plugins to choose if you like as well.
+				It creates a file <i>/etc/mail/spamassassin/local.cf</i>
+				which can be tweaked when using it on its own.
+			</p>
+			<p>
+				To edit the options used with <i>Amavisd-new</i>,
+				open the <i>amavisd.conf</i> file again.
+				There is a number of settings to tweak,
+				but the defaults are fine.
+				<i>Amavisd-new</i> recognises <i>SpamAssassin</i> by default.
+			</p>
+		</h5>
+			<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="content_virus">Anti Virus: Clam AV</a></h4>
+		<h5>
+			<p>
+				<i>Amavisd-new</i> has preconfigured options
+				for a range of scanners, and particular this option
+				that you should choose the one(s) you want.
+				<i>ClamAV</i>, a free open source virus scanner,
+				was my chosen product.
+				It has an auto update option, large userbase,
+				and since it is easy to setup, I am sold.
+				If you prefer others, free or commercial then
+				choose the one you trust. McAfee and Norten's
+				command line scanners work fine with <i>Amavisd-new</i>.
+			</p>
+			
+	<p> Once again an RPM for <i>ClamAV</i> is available by Mandrake 9.1, however 
+		was failry outdated, as Anti-Virus software moves quicly on. So I prefered 
+		to get the latest MDK RPM of <i>Rpmfind.net</i>. Install the main, the lib 
+		and the latest virus database. </p>
+	<p class="note">Review </p>
+<pre>rpm -i clamav-x.xx-xmdk \
+libclamav1-x.x-xmdk clamav-db-x.xx-xmdk
+</pre>
+			<p>
+				The conf file <i>/etc/clamav.conf</i>,
+				should be okay, but change it neccessary.
+				<i>Amavisd</i> has support for it to call
+				the daemon and the command line version of clamd.
+				I could not get the daemon to work, but the command
+				line was fine.
+				Edit <i>amavisd</i>'s conf file again and comment
+				out all other virus scanners at the <i>av_scanner,/i> section,
+				and then only leave i>ClamAV</i> in the
+				<i>@av_scanners_backup</i> section.
+			</p>
+<pre>
+@av_scanners = ();
+@av_scanners_backup = (
+  ['Clam Antivirus - clamscan', 'clamscan',
+    '--stdout --disable-summary -r {}', [0], [1],
+    qr/^.*?: (?!Infected Archive)(.*) FOUND$/ ],
+);
+</pre>
+			<p>
+					That should be it for content checking.
+					As there as so many options in the <i>amavisd</i>
+					conf file, you should go through it more throughly.
+			</p>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+
+
+
+
+		<h3><a name="ext">Further Extensions</a></h3>
+		<h4><a name="ext_squi">SquirrelMail</a></h4>
+		<h5>
+			<ul>
+				<li>
+					<h4>Change MySQL Password</h4>
+					<h5>
+						A simple plugin which enables password
+						changes from the web interface.
+						Recommended install,
+						otherwise changing users password has to
+						be done on the command line.
+					</h5>
+				</li>
+				<li>
+					<h4>Compatability</h4>
+					<h5>
+					Required. by some of the plugins to
+					work for several different SM versions.
+					</h5>
+				</li>
+				<li>
+					<h4>GnuPG</h4>
+					<h5>
+					Secure emails.
+					Create keys, encrypt, decrypt messages.
+					</h5>
+				</li>
+				<li>
+					<h4>SpamCop</h4>
+					<h5>
+						Report Spam utility.
+					<h5>
+				</li>
+				<li>
+					<h4>User Interface changes.</h4>
+					<h5>
+						Basic bland looks of SM isnt the best.
+						But can be enhanced with design plugins.
+					</h5>
+				</li>
+			</ul>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h4><a name="ext_cont">Content Checks</a></h4>
+		<h5>
+			<ul>
+				<li>
+					<h4>Multiple Anti Virus</h4>
+					<h5>
+					<p>
+						To further ensure virus safety,
+						using several virus scanners
+						could be a good idea.
+						<i>Amavisd-new</i> certainly supports this
+						and all you need is to install the scanner,
+						then uncomment the relevant scanner section
+						in the <i>amavisd.conf file</i>.
+					</p>
+					</h5>
+				</li>
+				<li>
+					<h4>Train SpamAssassin</h4>
+					<h5>
+					<p>
+						To enable better spam detection,
+						you should train Spam Assassin.
+						It has a <i>bayessian</i> filter which
+						needs data seeds to improve detection.
+						Also SA supports using black and white
+						list for know spam.
+					</p>
+					</h5>
+				</li>
+			</ul>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h4><a name="ext_clam">ClamAV</a></h4>
+		<h5>
+			<ul>
+				<li>
+					<h4>Update</h4>
+					<h5>
+						<p>
+							Enabling auto update daemon,
+							protects you against the latest viruses.
+							Recommended unless you are confident
+							you will manually do it once a week.
+							Append this to the root crontab.
+						</p>
+					</h5>
+<pre>0 */8 * * * /usr/bin/freshclam --quiet</pre>
+				</li>
+				<li>
+					<h4>clamd</h4>
+					<h5><p>Daemon that listens of virus scan requests.</p></h5>
+				</li>
+				<li>
+					<h4>Dazuko &amp; Clamuko</h4>
+					<h5><p>On access client scanning.</p></h5>
+				</li>
+			</ul>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h4><a name="ext_post">Postfix</a></h4>
+			<h5>
+			<ul>
+				<li>
+					<h4>SASL</h4>
+					<h5><p>
+						Secure authentication for sending emails via SMTP.
+						Trickier to implement and link to <i>MySQL</i> passwords.
+						But more complete secure smtp solution than
+						<i>pop-before-smtp</i>.
+					</p></h5>
+				</li>
+				<li>
+					<h4>Relocation</h4>
+					<h5><p>
+						If a user no longer uses the email address,
+						postfix can send email back that goes to that
+						sender with a note that addres no longer is in use
+						and what the new address is.
+						Handy if people changes it often.
+					</p>
+					<p>Append to Postfix's <i>main.cf</i></p>
+<pre>relocated_maps = mysql:/etc/postfix/mysql_relocated.cf</pre>
+					<p>Create this MySQL file</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=relocated
+select_field=newadr
+where_field=oldadr
+hosts=localhost
+</pre>
+					<p>And create this table</p>
+<pre>CREATE TABLE `relocated` (
+  `pkid` smallint(6) NOT NULL auto_increment,
+  `oldadr` varchar(128) NOT NULL default '',
+  `newadr` varchar(128) NOT NULL default '',
+  PRIMARY KEY  (`pkid`),
+  UNIQUE KEY `oldadr` (`oldadr`)
+)
+</pre>
+				</h5></li>
+				<li>
+					<h4>Blacklist table</h4>
+					<h5>
+						<p>
+							I have attempted to import the lists of DNBLs
+							into a <i>MySQL</i> table.
+							However I was not confident it would work.
+							Here is the mods I did to <i>main.cf</i>
+<pre>smtpd_client_restrictions = reject_rbl_client \
+	 mysql:/etc/postfix/mysql_blacklist.cf</pre>
+							<p>
+								Here is the relevant file:
+								<i>/etc/postfix/mysq_blacklist.cf</i>
+							</p>
+<pre>user=mail
+password=****
+dbname=maildb
+table=blacklist
+select_field=server
+hosts=localhost
+</pre>
+						<p>Here is the SQL:</p>
+<pre>CREATE TABLE `blacklist` (
+  `pkid` smallint(6) NOT NULL auto_increment,
+  server varchar(128) NOT NULL default '',
+  PRIMARY KEY  (`pkid`),
+  UNIQUE KEY `domain` (`domain`)
+)
+INSERT INTO `blacklist` ( server ) VALUES \
+(bl.spamcop.net'), ( 'sbl.spamhaus.org'), \
+( 'relays.ordb.org'), ( 'blackholes.easynet.nl'), \
+('dnsbl.njabl.org'), ( 'dnsbl.sorbs.net'), \
+( 'cbl.abuseat.org');
+</pre>
+					</h5>
+				</li>
+			</ul>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h4><a name="ext_web">Web Admin</a></h4>
+<h5>
+			<p>
+				A web  based front end to administer the email server.
+				This simplifies viewing and modifying the email settings.
+				While this mostly targets the email addresses, domain names etc,  and not actual
+				Postfix settings, some can be extended to enabled those to also
+				be administered online.
+			</p>
+			<p>
+				A number of projects already exist which can be used.
+				A quick search of <a href="http://sf.net">Source Forge</a>
+				reveales several such projects. E.g. <i>CourierAdmin,
+				MyPFXAdmin, myWebHosting</i> etc.
+				( All <i>phpMyAdmin</i> inspired names...).
+			</p>
+			<p>
+					But as I am stuborn, I've decided to write my own.
+					It is not ready for public release yet though,
+					as it has few features, needs more debugging
+					and definetly needs someone to do some fluffing over it.
+			</p>
+			<p>
+					Click here to <a href="PostfixAdmin.zip">Download</a> <i>PostfixAdmin</i>.
+					It is simple <i>Java Web Application</i> that I wrote to administer my postfix box.
+					It is not a WAR file, as you need to tweak the <i>WEB-INF/apes.xml</i>
+					and the context if needed.
+			</p>
+			</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="quick">Appendix: Quick Setup</a></h3>
+			<h4><a name="quick_basic">Basic</a> </h4>
+			<h5>
+			<p>Files modified in <a href="#basic">Basic Server</a> setup.</p>
+			<p>Dont finish with this, it is too unsafe.</p>
+			<p>Install Postfix, Courier-IMAP, MySQL.</p>
+			<p>File List:</p>
+<pre>/etc/postfix/main.cf
+etc/postfix/master.cf
+etc/postfix/mysql_uid.cf
+etc/postfix/mysql_gid.cf
+etc/postfix/mysql_mailbox.cf
+etc/courier/imapd
+etc/courier/pop3d
+etc/courier/authdaemonrc
+etc/courier/authmysqlrc
+home/backup/sql/schema.maildb.basic.sql
+home/backup/sql/data.maildb.basic.sql
+usr/local/bin/postfix_basic_setup.sh
+</pre>
+			<p><a ahref="#">Download</a>(Not Available)</p>
+			<p>
+				Read the shell script <i>postfix_basic_setup.sh</i>,
+				verify I am not corrupting your server,
+				tweak anything non standard,
+				and then execute it.
+			</p>
+			</h5>
+			<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="quick_adv">Advanced</a></h4>
+			<h5>
+			<p>Files modified in <a href="#advanced">Advanced Server</a> setup.</p>
+			<p>A powerfull server, but not recommended due to security issues.</p>
+			<p>File List in addition of <i>Basic</i>:</p>
+<pre>etc/postfix/main.cf
+etc/postfix/mysql_domains.cf
+etc/postfix/mysql_aliases.cf
+etc/postfix/mysql_backups.cf
+etc/postfix/mysql_transport.cf
+home/backup/sql/schema.maildb.advanced.sql
+home/backup/sql/data.maildb.advanced.sql
+usr/local/bin/postfix_adv_setup.sh
+</pre>
+			<p> <a ahref=""#>Download</a>(Not Available)</p>
+			<p>
+				Read the shell script <i>postfix_adv_setup.sh</i>,
+				verify I am not corrupting your server,
+				tweak anything non standard,
+				and then execute it.
+			</p>
+			</h5>
+			<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="quick_tight">Tighter</a></h4>
+			<h5>
+			<p>Files modified in <a href="#tight">Tighter Server</a> setup.</p>
+			<p>A reliable solution.</p>
+			<p>File List in addition of <i>Advanced</i>:</p>
+<pre>etc/postfix/main.cf
+etc/postfix/master.cf
+usr/local/bin/postfix_tight_setup.sh
+</pre>
+			<p><a ahref="#">Download</a> (Not Available)</p>
+			<p>
+				Read the shell script <i>postfix_tight_setup.sh</i>,
+				verify I am not corrupting your server,
+				tweak anything non standard,
+				and then execute it.
+			</p></h5>
+			<h6><a href="#top">Go to top.</a></h6>
+
+			<h4><a name="quick_comp">Complete</a></h4>
+			<h5>
+			<p>
+				Files modified in <a href="#webmail">Webmail</a>,
+				<a href="#send">Send mail</a> and
+				<a href="#content">Content Checks</a> setup.
+			</p>
+			<p>Advanced Tight Server with webmail, send support and content check.</p>
+			<p>Install Amavisd-new, SpamAssassin, ClamAV.</p>
+			<p>File List in addition of <i>Tighter</i>:</p>
+<pre>etc/postfix/main.cf
+var/www/html/squirrelmail/config/config.php
+home/backup/sql/schema.maildb.advanced.sql
+etc/pop-before-smtp-conf.pl
+etc/amavis/amavisd.conf
+etc/amavis/amavisd.conf
+etc/clamav.conf
+usr/local/bin/postfix_comp_setup.sh
+</pre>
+			<p><a ahref="">Download</a> (Not Available)</p>
+			<p>
+				Read the shell script <i>postfix_comp_setup.sh</i>,
+				verify I am not corrupting your server,
+				tweak anything non standard,
+				and then execute it.
+			</p>
+			</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+<!--
+		<h3><a name=""></a></h3>
+		<h5><p></p></h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h3><a name=""></a></h3>
+		<h5><p></p></h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		<h3><a name=""></a></h3>
+		<h5><p></p></h5>
+		<h6><a href="#top">Go to top.</a></h6>
+-->
+
+
+		<h3><a name="links"></a>Appendix: Software Links</h3>
+		
+<h5> 
+	<ul>
+		Software Used: 
+		<li>Mandrake 10 Offical 
+			<ul>
+				<li>Website = <a href="http://www.mandrakelinux.com">www.mandrakelinux.com</a></li>
+				<li>Download <a href="http://mirror.ac.uk">ISOs</a> via BitTorrent</li>
+				<li>Buy Powerpack Boxes <a href="http://www.mandrakeshop.com">here</a></li>
+			</ul>
+		</li>
+		<li>Postfix 
+			<ul>
+				<li>Website = <a href="http://www.postfix.org">www.postfix.org</a></li>
+				<li>Download RPMS from CDs.</li>
+				<li>Alternatives: Exim, Sendmail, etc.</li>
+			</ul>
+		</li>
+		<li>Courier-IMAP 
+			<ul>
+				<li>Website = <a href="http://www.inter7.com/courierimap.html">www.inter7.com/courierimap.html</a></li>
+				<li>Download RPMS from CDs.</li>
+				<li>Alternatives: Cyrus</li>
+			</ul>
+		</li>
+		<li>MySQL 
+			<ul>
+				<li>Website = <a href="http://www.mysql.com">www.mysql.com</a></li>
+				<li>Download RPMS from CDs.</li>
+				<li>Alternatives: PostGress, FireBird</li>
+			</ul>
+		</li>
+		<li>SquirrelMail 
+			<ul>
+				<li>Website = <a href="http://squirrelmail.sourceforge.net">squirrelmail.sourceforge.net</a></li>
+				<li>Download tars from site.</li>
+				<li>Alternatives: sqmail</li>
+			</ul>
+		</li>
+		<li>Amavisd-new 
+			<ul>
+				<li>Website =<a href="http://www.ijs.si/software/amavisd/">www.ijs.si/software/amavisd/</a></li>
+				<li>Download tars from site.</li>
+				<li>Install RPM from CDs.</li>
+				<li>Alternatives: amavisd</li>
+			</ul>
+		</li>
+		<li>SpamAssassin 
+			<ul>
+				<li>Website = <a href="http://www.spamassassin.org">www.spamassassin.org</a></li>
+				<li>Install RPM from CDs.</li>
+				<li>Alternatives: Spamdrop</li>
+			</ul>
+		</li>
+		<li>Clam AV 
+			<ul>
+				<li>Website = <a href="http://clamav.sourceforge.net">clamav.sourceforge.net</a></li>
+				<li>Download RPMs from CDs.</li>
+				<li>Alternatives: McAfee, Symantec, Kasperksy, DrWeb, Sophos</li>
+			</ul>
+		</li>
+	</ul>
+</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="refer"></a>Appendix: References</h3>
+		<table border=0>
+		<tr>
+		<td>
+<h5> 
+	<p> My own initial server was based on a set of tutorials by <a href="http://techrepublic.com.com/5171-22-5030268.html">John 
+		Lock</a> on the <a href="http://techrepublic.com.com">TechRepublic</a> web 
+		site. </p>
+	<p> It was then extended with a mixture of <i>HowTos</i> from the <a href="http://www.postfix.org/docs.html">Postfix</a> 
+		website. </p>
+	<p> Among some read were:
+	<ul>
+		<li><a href="http://www.marlow.dk/postfix/">List-Petersen</a></li>
+		<li><a href="http://sbserv.stahl.bau.tu-bs.de/~hildeb/postfix/">Hildebrandt</a></li>
+		<li><a href="http://kirb.insanegenius.net/postfix.html">Menzel & Peet</a></li>
+		<li><a href="http://high5.net/howto/">Peters</a></li>
+		<li><a href="http://www.sweeney.demon.co.uk/pfix_imap_virtual.html">Matthews</a></li>
+		<li><a href="http://workaround.org/articles/ispmail-sarge/">Haas</a></li>
+		<li><a href="http://www.gfxcafe.com/Mail%20Howto.htm">Stepanov</a></li>
+	</ul>
+	<a href="http://www.postfix.org"></p> Postfix.org </a>has now updated their 
+	documentation. So refer to it for commands and set up issues as well. (RTFM). 
+	<p> Other Guides: 
+	<ul>
+		<li><a href="http://www.jennings.homelinux.net/mailserver_config.html">Postfix 
+			Mail server on Mandrake</a></li>
+		<li><a href="http://www.mandrakeuser.org/docs/mdoc/server/service-smtp.html">Postfix 
+			Mail Server</a></li>
+		<li><a href="http://www.mandrakesecure.net/en/docs/postfix-sasl.php">MandrakeSecure: 
+			Enabling SASL support in postfix</a></li>
+	</ul>
+	I also read the <a href="http://www.oreilly.com/catalog/postfix/">Postfix: 
+	The Definitive Guide</a>, and <i>O'Reilly</i> book written by <i>Kyle D. Dent</i>. 
+	Its a thorough book, and worth a read if you want to know every bit of all 
+	the options available with Postfix. </p> </h5>
+<h5><a href="http://www.amazon.co.uk/exec/obidos/redirect?tag=ivarssite-21&creative=3914&camp=526&link_code=st1&path=tg/sim-explorer/explore-items/-/0596002122/0">Buy it here from Amazon UK</a> if you are 
+	in their catchment area.</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+		</td>
+		<td align=right>
+				<iframe width="120" height="476" scrolling="no" frameborder=0 src="http://rcm-uk.amazon.co.uk/e/cm?t=ivarssite-21&l=st1&search=postfix&mode=books-uk&p=10&o=2&f=ifr"> 
+			<table border='0' cellpadding='0' cellspacing='0' width='120' height='476'><tr>
+				<td><A HREF='http://www.amazon.co.uk/exec/obidos/redirect-home/ivarssite-21' target=_blank><img src="http://images-eu.amazon.com/images/G/02/associates/recommends/default_120x476.gif" 
+					width=120 height=476 border="0" access=regular></a></td>
+			</tr></table>
+		</iframe> 
+		</td>
+		</tr>
+		</table>
+
+
+		<h3><a name="pre"></a>Appendix: Pre-Requisites</h3>
+			<h4>OS</h4>
+			<h5>
+			<p>Firstly install the OS. Mandrake is easy to install to what ever you require for it to do.</p>
+			</h5>
+
+			<h4>Firewall</h4>
+			<h5>
+			<p>
+				Enable SMTP, POP3, IMAP, POP3S, IMAPS on your firewall.
+				If you use the MDK's supplied Shorewall simple add this line to
+				<i>/etc/shorewall/rules</i> and restart Shorewall:
+			</p>
+<pre>ACCEPT  net     fw      tcp     25,80,143,443,993,995       -</pre>
+			<p>You may however restrict this to only local net while testing:</p>
+<pre>ACCEPT  net:192.168.0.0/24     fw      tcp     25,80,143,443,993,995       -</pre>
+			</h5>
+
+			<h4>Source Packages</h4>
+			<h5>
+				<p>
+					Aquire all the souce files needed.
+					See <a href="#source">Appendix: Sources</a>,
+					download the ones not on your distribution CD (or URPMI).
+					Then install MySQL and PHP as they are not described
+					anywhere else.
+				</p>
+			</h5>
+
+
+
+
+			<h4>MySQL</h4>
+			<h5><p>
+				Install MySQL with the RPMs that mandrake supplies.
+				Use these commands, or use rpmdrake and search for mysql.
+			</p>
+<pre>
+rpm -i MySQL-x.x.xxx-x.xmdk MySQL-common-x.x.xxx-x.xmdk \
+libmysql12-x.x.xxx-x.xmdk libmysql12-devel-x.x.xxx-x.xmdk \
+MySQL-client-x.x.xxx-x.xmdk
+</pre>
+			<p>Start the server and test it</p>
+<pre>/etc/init.d/mysql start</pre>
+			<p>
+				Debug logging of mysql command is possible by
+			creating <i>/etc/my.cnf</i>:
+			</p>
+
+<pre>[mysqld]
+log=/var/log/mysql/mysql.log
+</pre>
+			<p>Make sure root has a password. Default is not!</p>
+<pre>mysqladmin -u root password ****</pre>
+			</h5>
+
+			<h4>PHP</h4>
+			<h5>
+				<p>PHP is require for webmail and <i>myPHPAdmin</i></p>
+<pre>rpm -i apache2-mod_php-x.x.xx_x.x.x-xmdk \
+libphp_commonxxx-xxx-xx.xmdk php-mysql-x.x.x-xmdk \
+php-pear-x.x.x-xmdk
+</pre>			<h4>MySQL Client</h4>
+				<h5>
+				<p>
+					You need to a client to create and manipulate the database.
+					The default command line client is fine.
+				</p>
+<pre>rpm -i MySQL-client-x.x.xxx-x.xmdk</pre>
+			<p>
+				However a better interface is desirable.
+				<i>phpMyAdmin</i> is a web interface
+				that has become a standard for MySQL administration.
+				Fetch the php tar file from <i>phpmyadmin.sf.net</i>
+				and install into a web folder.
+				Then read <i>INSTALL</i> file.
+			</p>
+			</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+		<h3><a name="comment">Appendix: Comments</a></h3>
+		<h5>
+			<p>Send <a href="http://flurdy.com/contact/">comments to me</a>.</p>
+		<div class="comment">
+			Name: Ivar<br />
+		Date: 2004-03-06<br />
+			Subject: Etiquette<br />
+		I will post comments made by people here. Bux fixes, better tweaks, and 
+		helpfull messages etc. Comments like "You use package A, but package B is 
+		way better, as that is what I use." wont be posted as it is not relevant. 
+		Some of the comments will be parafrased and edited. If you do not want comments 
+		here, then place state so. </div>
+		
+		
+	<div class="comment"> 
+		<p>Name: James<br />
+			Date: 2004-05-17<br />
+			Subject: Postfix Howto<br />
+			First I would like to say &quot;Thank You!&quot; for the guide you put 
+			up at http://home.eray.biz/sites/postfix/. I have not gotten any of it 
+			work quite yet but am trouble shooting as I go. I did notice a couple 
+			of small things so far, that I wanted to point out: First: In the mysql_gid.cf 
+			file you have select_field=uid and I believe it should read select_field=gid 
+		</p>
+		<p>Second: unless I missed it, we never create the DB for the users table. 
+			This is not a big deal to do however, since your how-to is very step 
+			by step, it may be confusing to some. Honestly I have not moved past 
+			the basic setup yet.</p>
+		<p> I am having some permission problems (although Fetchmail grabs the mail 
+			alright, the system is unable to create the /var/mail/virtual/foo/bar/ 
+			dir.) I am sure that this is a small issue perhaps with the way the APT 
+			packages are set up for Debian vs the RPM's you used in Mandrake. Anyway, 
+			although I have used postfix quite a bit in the past, this is the first 
+			time I have used it with MySQL and Courier. The setup you end up with 
+			is pretty much exactly what I want to eventually have so it will be worth 
+			a bit of troubleshooting. </p>
+		<p>Thanks again; James </p>
+	</div>					
+			
+	<p class="note">Review</p>
+	
+		
+	<div> 
+		<p>Name: Bob<br />
+			Date: 2004-06-03<br />
+			Subject: Email Server Setup</p>
+		<p>I followed the techrepublic article on email server setup for postfix,<br>
+			courier-imap and squirrelmail and your article appears to be very similar.<br>
+			I ran into an issue with squirrelmail preferences not working that I<br>
+			finally traced to the mysql userprefs table having user set to only 20<br>
+			characters, while one of my email addresses was slightly longer. This<br>
+			seems like something that would affect quite a few people. I'd suggest<br>
+			changing</p>
+		<p>CREATE TABLE userprefs (<br>
+			user varchar(20) NOT NULL default '',</p>
+		<p>to</p>
+		<p>CREATE TABLE userprefs (<br>
+			user varchar(128) NOT NULL default '',</p>
+		<p>to match the id length given in the users table.</p>
+		<p>The big problem that I have is that I would like to do filtering on the<br>
+			email as it comes in, but procmail is only used for local users and not<br>
+			virtual users as we have set up. I see that the users table has<br>
+			procmailrc as one of the fields, but I don't know how I would use it. 
+			<br>
+			Everything that I find on the internet seems to say that procmail can 
+			not<br>
+			be used with virtual users. Do you know of a way? Squirrelmail has a<br>
+			nice plugin called serversidefilters that I would like to use to configure<br>
+			the user procmailrc, I just haven't figured out how or if it can be done<br>
+			with virtual users.</p>
+		<p>Thanks,<br>
+			Bob</p>
+		</div>
+	<p class="note">Review</p>
+	
+		
+	<div>
+		<p>Name: Bob<br />
+			Date: 2004-06-08<br />
+			Subject: Email Server Setup</p>
+		<p> I installed maildrop and it works great with virtual users as well as 
+			with<br>
+			the serversidefilter plugin in Squirrelmail. Now each user can create<br>
+			filter rules easily from within Squirrelmail using a simple interface. 
+			I<br>
+			would strongly suggest going with maildrop when using virtual users over<br>
+			using procmail if you should ever need per user filtering. </p>
+		<p>Thanks for the reply and providing a great install document.</p>
+		<p>Bob</p>
+	</div>
+	<p class="note">Review</p>
+	
+	<div>
+		<p>Name: Antti<br />
+			Date: 2004-06-07<br />
+			Subject: Postfix</p>
+		<p>Hi,</p>
+		<p>Thank's for your great post system install manual!<br>
+			I have one problem: I cannot login my account. Crypt is problematic. 
+			<br>
+			How it works?<br>
+			When I try to login, I get error that password is wrong.</p>
+		<p>Can you help me, please?</p>
+		<p>(sorry my poor english)</p>
+		<p>- Antti
+		</p>
+	</div>
+	<p class="note">Review</p>
+	
+	<div>
+		<p>Name: Antti<br />
+			Date: 2004-06-12<br />
+			Subject: Postfix
+		</p>
+		<p>Hi,</p>
+		<p>Thank's for help... but I have other problem now.</p>
+		<p>When I send email to my address, email come back and log say:</p>
+		<p>postfix/smtpd[17664]: NOQUEUE: reject: RCPT from <br>
+			xxxx.xxxx.fi[###.###.###.###]: 554 &lt;post@address.here&gt;: Relay access 
+			<br>
+			denied; from=&lt;other.post@address.here&gt; to=&lt;post@address.here&gt; 
+			<br>
+			proto=ESMTP helo=&lt;xxxx.xxxx.fi&gt;</p>
+		<p>Maybe I have to use mynetworks variable in main.cf ?</p>
+		<p>
+			- Antti</p>
+	</div>
+	<p class="note">Review</p>
+	<div>
+		<p>Name: Ken<br />
+			Date: 2004-06-08<br />
+			Subject: Question on your Postfix Tutorial</p>
+		<p>Hi Ivar:</p>
+		<p>I hope this email finds you doing well.</p>
+		<p>I've been following your tutorial on Postfix + Mysql<br>
+			at http://home.eray.biz/sites/postfix/.</p>
+		<p>Thank you for taking the time to outline all of these<br>
+			steps, without your tutorial, I'd be completely lost!</p>
+		<p>I've got postfix working using the basic<br>
+			configuration, where is will accept mail to people<br>
+			listed in the users table in the MySQL database. <br>
+			However, the creation of mail in the virtual directory<br>
+			is failing with a permission denied error. </p>
+		<p>I did a ps, and see that &quot;virtual&quot; is running as the<br>
+			user &quot;postfix&quot; but the /var/mail/virtual directory is<br>
+			owned by virtual, as you instructed. I'm wondering<br>
+			where the virtual account is used, I don't see it in<br>
+			any of your sample config files.</p>
+		<p>Please advise. Thanks again for your tutorial and help!</p>
+		<p>Kindly,<br>
+			Ken</p>
+	</div>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+		<h3><a name="client">Appendix: Mail Clients</a></h3>
+			<h5>
+			<p>
+				Here are some setup tips to read/send email via some familiar email clients.
+			</p>
+			</h5>
+			<h4><a href="http://www.mozilla.org">Mozilla Thunderbird</a></h4>
+			<h5>
+			<p>Adding New Account.</p>
+			<p>
+				Click <i>File/New/Account</i>.
+				Select <i>Email Account</i> and click <i>Next</i>,
+				Enter you name and email address and click <i>Next</i>,
+				Select <i>IMAP</i>(Recommended) or <i>Pop</i> and
+				enter your servername as <i>server</i> and click <i>Next</i>,
+				Enter as <i>username</i> the full email address you insert into the database,
+				into both fields and click <i>Next</i>,
+				Enter an <i>Account</i> name and click <i>Next</i> then <i>Finish</i>.
+			</p>
+			</h5>
+			<h4><a href="http://www.microsoft.com">Outlook</a></h4>
+			<h5>
+	<p><a href="/sites/help/outlook/">Step by Step guide</a>.</p>
+</h5>
+			<h4><a href="http://www.microsoft.com">Outlook Express</a></h4>
+			<h5><p></p></h5>
+			<h4><a href="http://www.ximian.org">Novell Ximian Evolution</a></h4>
+			<h5><p></p></h5>
+			<h4><a href="http://www.kdeorg">KMail</a></h4>
+			<h5><p></p></h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+		<h3><a name="proxy">Appendix:</a> Automating Proxy Interfaces</h3>
+		<h5>
+		<p>
+			<ol type="1">
+			<li>Hardcoded replace: <i>Ian Newby</i> wrote this script to</li>
+			</ol>
+		</p>
+	<p class="note">Review</p>
+	
+<pre>#!/bin/bash
+touch history.ip
+dig  yourserver.domain.tld | grep ^yourserver.domain.tld \
+| awk '{print $5}' > current.ip
+if cmp current.ip history.ip >/dev/null
+then
+	# they are the same
+	stuff='a'
+else
+	cp current.ip history.ip -f
+	date >> current.ip
+	tr '\n' '\t' < current.ip > temp
+	echo >> temp
+	cat temp >> iphistory.txt
+	stuff=`cat history.ip`
+	stuff="proxy_interfaces=$stuff"
+	sed -e "s/^proxy_interfaces=.*$/${stuff}/g" < /etc/postfix/main.cf > temp
+	mv temp /etc/postfix/main.cf -f
+	postfix reload
+fi
+</pre>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+
+		<h3><a name="init">Appendix: Startup Scripts</a></h3>
+		<h5><p>
+				To wrap things up, you need to set the servers up to
+				start automatically.
+				Make sure that in <i>/etc/rc.d/init.d</i>
+				there are: a <i>postfix</i>, <i>courier-imap</i>,
+				<i>spamassassin</i>, <i>amavisd</i>,
+				<i>pop-before-smtp</i> and maybe a <i>clamd</i>.
+				then check that they are linked from rc3, 5 and 6.
+				If not do something like this.
+			</p>
+<pre>cd /etc/rc.d/rc3.d
+ln -s ../init.d/amavisd S79amavisd
+ln -s ../init.d/clamd S77clamd
+ln -s ../init.d/courier-imap S81courier-imap
+ln -s ../init.d/pop-before-smtp S82pop-before-smtp
+ln -s ../init.d/spamassassin S78spamassassin
+ln -s ../init.dpostfix S80postfix
+cd /etc/rc.d/rc5.d
+ln -s ../init.d/amavisd S79amavisd
+ln -s ../init.d/clamd S77clamd
+ln -s ../init.d/courier-imap S81courier-imap
+ln -s ../init.d/pop-before-smtp S82pop-before-smtp
+ln -s ../init.d/spamassassin S78spamassassin
+ln -s ../init.dpostfix S80postfix
+cd /etc/rc.d/rc6.d
+ln -s ../init.d/amavisd K31amavisd
+ln -s ../init.d/clamd K33clamd
+ln -s ../init.d/courier-imap K29courier-imap
+ln -s ../init.d/pop-before-smtp K28pop-before-smtp
+ln -s ../init.d/spamassassin K32spamassassin
+ln -s ../init.dpostfix K30postfix
+cd /etc/rc.d/rc0.d
+ln -s ../init.d/amavisd K31amavisd
+ln -s ../init.d/clamd K33clamd
+ln -s ../init.d/courier-imap K29courier-imap
+ln -s ../init.d/pop-before-smtp K28pop-before-smtp
+ln -s ../init.d/spamassassin K32spamassassin
+ln -s ../init.dpostfix K30postfix
+</pre>
+			<p>
+				This should start the server up every time.
+				Or use <i>chkconfig</i> to set up the links for you.
+			</p></h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+		<h3><a name="backup">Appendix: Mail Backup</a></h3>
+		<h5>
+			<p>
+				Postfix's Maildir type email can be backed up.
+				Limitation are than only delivered mail can be easily backed up.
+				The spool files of queued mails are more tricky.
+				Set up a cronjob to include something like this:
+			</p>
+<pre>tar -czf mail.tgz /var/spool/mail</pre>
+			
+	<p> I would advice a backup plan for the mysql database as well. Utilise the 
+		mysqldump program and backup your mail database.</p>
+<pre>		
+mysqladmin -d -B maildb -u mail -p**** > maildb_schema.sql	
+mysqladmin -n -t -B maildb -u mail -p**** > maildb.data.sql
+</pre>
+		</h5>
+		<h6><a href="#top">Go to top.</a></h6>
+
+
+
+
+			<h3><a name="source">Appendix: Sources</a></h3>
+			<h5>
+				<p>These were the source packages used.</p>
+	<p class="note">Review</p>
+	
+				<p>
+					Use the ones supplied with your distrubution,
+					if not then download these RPMs and Tar files:
+				</p>
+				<ul>
+					
+		<li><a href="http://www.rpmfind.net/BitTorrent/">Mandrake</a> 10.0 official</li>
+					<li>
+
+						<ul>
+								  <li><a href=""></a>Postfix 2.1.0</li>
+							<li><a href="http://home.eray.biz/sites/postfix/postfix-mysql-2.0.6-1mdk.i586.rpm">Postfix</a> 2.0.6</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/SRPMS/postfix-2.0.6-1mdk.src.rpm">SRPM</a> 2.0.6</li>
+						</ul>
+					</li>
+					<li>
+						<ul>								 
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/updates/9.1/RPMS/MySQL-4.0.11a-5.1mdk.i586.rpm">MySQL</a> 4.0.11a</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/updates/9.1/RPMS/MySQL-common-4.0.11a-5.1mdk.i586.rpm">Common</a> 4.0.11a</li>
+						<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/updates/9.1/RPMS/libmysql12-4.0.11a-5.1mdk.i586.rpm">Lib</a> 4.0.11a</li>
+						<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/updates/9.1/RPMS/libmysql12-devel-4.0.11a-5.1mdk.i586.rpm">Lib-devel</a> 4.0.11a</li>
+							</li><a href="ftp://fr.rpmfind.net/linux/Mandrake/updates/9.1/RPMS/MySQL-client-4.0.11a-5.1mdk.i586.rpm">Client</a> 4.0.11a</li>
+						</ul>
+					</li>
+					<li>
+						<ul
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/i586/Mandrake/RPMS/apache2-mod_php-2.0.44_4.3.1-2mdk.i586.rpm">Mod PHP</a> 4.3.1</li>
+						<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/i586/Mandrake/RPMS/php-mysql-4.3.0-2mdk.i586.rpm">MySQL</a> 4.3.0</li>
+						<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/updates/9.1/RPMS/libphp_common430-430-11.1mdk.i586.rpm">Common</a> 4.3.0</li>
+						<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/i586/Mandrake/RPMS/php-pear-4.3.0-3mdk.noarch.rpm">Pear</a> 4.3.0</li>
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<li><a href="http://www.phpmyadmin.net/home_page/">phpMyAdmin</a> 2.5.5</li>
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/contrib/i586/courier-imap-1.7.0-3mdk.i586.rpm">Courier-IMAP</a> 1.7.0</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/contrib/i586/courier-imap-mysql-1.7.0-3mdk.i586.rpm">MySQL</a> 1.7.0</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/contrib/i586/courier-imap-pop-1.7.0-3mdk.i586.rpm">Pop</a> 1.7.0</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/contrib/i586/courier-imap-utils-1.7.0-3mdk.i586.rpm">Utils</a> 1.7.0</li>
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<li><a href="http://squirrelmail.sourceforge.net/countdl.php?fileurl=http%3A%2F%2Fprdownloads.sf.net%2Fsquirrelmail%2Fsquirrelmail-1.4.2.tar.gz">SquirrelMail</a> 1.4.2</li>
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<li><a href="http://www.ijs.si/software/amavisd/amavisd-new-20030616-p7.tar.gz">Amavisd-new</a> 6/16/03-p7</li>
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake/9.1/i586/Mandrake/RPMS/spamassassin-2.44-1mdk.i586.rpm">SpamAssassin</a> 2.44</li>
+						</ul>
+					</li>
+					<li>
+						<ul>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake-devel/contrib/i586/clamav-0.66-0.20031204.1mdk.i586.rpm">ClamAV</a> (used 0.67, can only find 0.66)</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake-devel/contrib/i586/libclamav1-0.66-0.20031204.1mdk.i586.rpm">Lib</a> 0.66</li>
+							<li><a href="ftp://fr.rpmfind.net/linux/Mandrake-devel/contrib/i586/clamav-db-0.66-0.20031204.1mdk.i586.rpm">DB</a> 0.66</li>
+						</ul>
+					</li>
+				</ul
+			></h5>
+			</h4>
+		<h6><a href="#top">Go to top.</a></h6>
+
+		
+<a name="bottom">eRay &copy; 2004</a>. Last Mod: 23/06/2004 - IEA 
+</body>
+</html>
