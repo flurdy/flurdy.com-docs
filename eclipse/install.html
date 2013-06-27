@@ -1,0 +1,349 @@
+<html>
+<head>
+	<title>Eclipse in Ubuntu howto</title>
+	<style>
+		body{
+			font-family: Sans-Serif;
+			margin: 0px;
+			border: 10px solid #ccc;
+			padding: 10px;
+			background-color: #fff;
+			color: #000;
+		}
+		h2{ font-size: 18pt; font-weight: 600;}
+		h3{ 
+			font-size: 14pt;
+			font-weight: bold;
+		}
+		h4{ 
+			font-size: 11pt; 
+			font-weight: normal;
+			}
+		h5{ font-size: 9pt; font-weight: normal;}
+		code{ 
+			font-size: 9pt; 
+			font-weight: bold;
+			background-color: #ddd;
+			border: 1px solid #aaa;
+			display: block;
+		}
+		li h5{ margin: 2px; }
+		.addthis_toolbox { font-size: 9pt; }
+	</style>
+</head>
+<body>
+
+	<h2>How to install Eclipse in Ubuntu.</h2>
+	<h3>Including Web tools, Tomcat, Sun's JDK and icons</h3>
+
+
+	<h5>
+		Author: <a href="http://flurdy.com">Ivar Abrahamsen</a>
+	</h5>
+
+<script type="text/javascript"><!--
+ch_client = "flurdy";
+ch_type = "mpu";
+ch_width = 728;
+ch_height = 90;
+ch_non_contextual = 4;
+ch_vertical ="premium";
+ch_sid = "flurdy eclipe";
+var ch_queries = new Array( );
+var ch_selected=Math.floor((Math.random()*ch_queries.length));
+if ( ch_selected < ch_queries.length ) {
+ch_query = ch_queries[ch_selected];
+}
+//--></script>
+<script  src="http://scripts.chitika.net/eminimalls/amm.js" type="text/javascript">
+</script>
+
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style">
+<a class="addthis_button_email"></a>
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_delicious"></a>
+<span class="addthis_separator">|</span>
+<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=flurdy" class="addthis_button_expanded">More</a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
+<!-- AddThis Button END -->
+
+	<h4>
+		<p>
+			There are many ways to do this.
+			This is only one method, but it works.
+		</p>
+	</h4>
+
+	<h5>
+		<p>
+			I cant take any credit for this set up,
+			as I have mearly gathered information
+			from my references.
+			<br />
+			As the old university excuse goes:
+			Copy from one source is plagiarism,
+			copy from two or more is research.
+		</p>
+	</h5>
+
+	<h5>
+		Ubuntu does come with many eclipse packages in the	
+		universal repositories. 
+		I dont use them as they rely on GCJ compiler,
+		and not the genuine Sun one.			
+		Sun licenses is not compatible with Ubuntu's repositories 
+		and therefor have to seperatly downloaded. 
+		This howto creates a .deb packge from this download.
+	</h5>
+
+
+
+	<h4>
+		<i>
+			I have copied this to the Ubuntu Wiki.
+			
+			<a href="http://wiki.ubuntu.com/EclipseWebTools">wiki.ubuntu.com/EclipseWebTools</a>
+			<br />
+			The wiki is more up to date.
+		</i>
+	</h4>
+
+<div style='float: right; width= 170px;' >
+
+<table border="1" cellpadding="3" cellspacing="1">
+<tr>
+	<td colspan="2"><a 
+		href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3495142"><img border="0"
+		 width="170" alt="wont fix puta" 
+		src="http://image.spreadshirt.com/image-server/image/product/3876780/view/1/type/png/width/280/height/280" title="flurdy shirts (US): NO I wont fix your computer"/></a></td>
+</tr><tr>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/kill-bill-A4672836"><img border="0" width="78" alt="kill bill" 
+		src="http://flurdy.spreadshirt.com/image-server/image/design/3257345/type/png/width/190/height/190" title="flurdy shirts (US): Kill Bill"/></a></td>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/smiley-A3637296/customize/color/5"><img border="0" width="78" alt="devil smile" 
+		src="http://image.spreadshirt.com/image-server/image/product/4016733/view/1/type/png/width/190/height/190" title="flurdy shirts (US): devil smile"/></a></td>
+</tr><tr>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/beast-mode-A3760998/customize/color/4"><img border="0" width="78" alt="beast mode" 
+		src="http://image.spreadshirt.com/image-server/image/product/3903955/view/1/type/png/width/190/height/190" title="flurdy shirts (US): Beast Mode"/></a></td>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3491809"><img border="0" width="78" alt="dumb people" 
+		src="http://image.spreadshirt.com/image-server/image/product/3874699/view/1/type/png/width/280/height/280" title="flurdy shirts (US): I see dumb people"/></a></td>
+</tr>
+<tr>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com/the-prophet-by-be-him-4-van-tribe-I2810099"><img border="0" width="78" alt="prophet" 
+		src="http://image.spreadshirt.com/image-server/image/product/4075238/view/1/type/png/width/190/height/190" title="flurdy shirts (US): The prophet"/></a></td>
+	<td colspan="1"><a 
+		href="http://flurdy.spreadshirt.com//wtf-A3492525"><img border="0" width="78" alt="wtf" 
+		src="http://image.spreadshirt.com/image-server/image/product/3875236/view/2/type/png/width/280/height/280" title="flurdy shirts (US): WTF?"/></a></td>
+</tr>
+<tr>
+	<td colspan="2" align="center"> 
+		<a href="http://shirts.flurdy.com">shirts.flurdy.com</a><br />
+		<a href="http://shirts.flurdy.com/US">us</a>|
+		<a href="http://shirts.flurdy.com/UK">uk</a>|
+		<a href="http://shirts.flurdy.com/EU">eu</a>
+	</td>
+</tr>
+</table>
+
+</div>
+
+			<h3>Download software</h3>
+			
+		<h5>
+			<p>
+				<a href="http://java.sun.com/j2se/1.5.0/download.jsp"
+				>Download</a> the latest JDK from Sun, currenly Tiger, 1.5.<br />
+				Choose the latest jdk update,
+				and then choose the self extracting non rpm file,
+				eg. jdk-1_5_0_06-linux-i586.bin
+			</p>
+				
+			<p>
+				<a href="http://download.eclipse.org/webtools/downloads/"
+				>Download</a> the latest release of web tools from eclipse.<br />
+				I use the full package of release 1.
+				E.g. <a href="	http://www.eclipse.org/downloads/download.php?file=/webtools/downloads/drops/R-1.0.2-200604280245/wtp-all-in-one-sdk-R-1.0.2-200604280245-linux-gtk.tar.gz">wtp-all-in-one-sdk-1.0.2-linux-gtk.tar.gz</a>.<br />
+				(Ps. its about 170Mb so might take awhile depending of bandwidth.)
+			</p>
+
+			<p>
+				<a href="http://tomcat.apache.org/download-55.cgi"
+				>Fetch</a> the latest apache tomcat binary,
+				currently 5.5.15.<br />
+				Choose the core tar.gz file.
+			</p>
+				
+		</h5>
+
+			<h3>Install packages</h3>
+			<h4>First Sun's Java JDK:</h4>
+			<h5>
+				<p>
+					Install fakeroot and java-package to be able to repackage the jdk as a .deb
+					Make sure you have enabled the universe repositories.
+				</p>
+				<code>sudo apt-get install fakeroot java-package</code>
+				<p>Once that is done we create the .deb jdk package.</p>
+				<code>fakeroot make-jpkg jdk-1_5_<i>xxxx</i>-linux-i586.bin</a>
+				<p>Some interaction is required, and there will be the odd permission error etc, but should be fine.</p>
+				<p>Then we install this new package</p>
+				<code>sudo dpkg -i sun-j2sdk1.5<i>xxxx</i>+update<i>xxx</i>_i386.deb</code>
+				<p>Make Sun's Java your java...</p>
+				<code>sudo update-alternatives --config java</code>
+				<p>Choose the Sun JDK</p>
+			</h5>
+			<h4><p>Then Tomcat:</h4>
+			<h5>
+				<p>Untar download and copy to /opt</p>
+				<code>
+					tar xzf apache-tomcat-5.5.15.tar.gz<br />
+					sudo mv apache-tomcat-5.5.15 /opt/<br />
+					cd /opt<br />
+					sudo chown -R root:root apache-tomcat-5.5.15<br />
+					sudo chmod -R +r apache-tomcat-5.5.15 <br />
+					sudo chmod +x `sudo find apache-tomcat-5.5.15 -type d`<br />
+					sudo ln -s apache-tomcat-5.5.15 tomcat
+				</code>
+				<p>Edit tomcat users</p>
+				<code>sudoedit /opt/tomcat/conf/tomcat-users.xml</code>
+				<p>And add an admin and your own?</p>
+				<p>
+				<code>
+					&lt;user name="admin" password="admin" roles="manager,admin" /&gt;<br />
+				   &lt;user name="<i>yourname</i>"   password="<i>blah</i>" roles="manager,admin" /&gt;
+				</code>
+				</p>
+			</h5>
+			<h4>Then Eclipse:</h4>
+			<h5>
+				<p>
+					Extract the eclipse download and move to opt.
+				</p>
+				<code>
+					tar xzf wtp-all-in-one-sdk-1.0-linux-gtk.tar.gz<br />
+					sudo mv eclipse /opt/eclipse
+					cd /opt
+					sudo chown -R root:root eclipse<br />
+					sudo chmod -R +r eclipse<br />
+					sudo chmod +x `sudo find eclipse -type d`<br />
+				</code>
+				<p>
+					Then create an eclipse executable in your path
+				</p>
+				<code>
+					sudo touch /usr/bin/eclipse<br />
+					sudo chmod 755 /usr/bin/eclipse<br />
+					sudoedit /usr/bin/eclipse
+				</code>
+				<p>With this contents</p>
+				<code>
+					#!/bin/sh<br />
+					#export MOZILLA_FIVE_HOME="/usr/lib/mozilla/"<br />
+					export ECLIPSE_HOME="/opt/eclipse"<br />
+					<br />
+					$ECLIPSE_HOME/eclipse $*
+				</code>
+				<p>Then create a gnome menu item</p>
+				<code>sudoedit /usr/share/applications/eclipse.desktop</code>
+				<p>With this contents</p>
+				<code>
+					[Desktop Entry]<br />
+					Encoding=UTF-8<br />
+					Name=Eclipse<br />
+					Comment=Eclipse IDE<br />
+					Exec=eclipse<br />
+					Icon=/opt/eclipse/icon.xpm<br />
+					Terminal=false<br />
+					Type=Application<br />
+					Categories=GNOME;Application;Development;<br />
+					StartupNotify=true
+				</code>
+			</h4>
+			
+	<h3>Configure</h3>
+
+	<h4>
+		<p>
+			You now have a working eclipse.
+			But run this command first to initialise the set up.
+		</p>
+		<code>/opt/eclipse/eclipse -clean</code>
+		<p>Then from here on you can run from the menu item applications/programming/eclipse</p>
+
+	</h4>
+
+	<h3>Add Projects</h3>
+	
+	<h4>
+		<p>
+			<a href="http://www.eclipse.org/webtools/community/tutorials/BuildJ2EEWebApp/BuildJ2EEWebApp.html"
+			>Follow this tutorial</a> to create web projects
+			and to add tomcat as the server for this project
+		</p>	
+		<p>
+			Or <a href="project.html">follow my own alternative way</a>
+			of creating projects compatible with Eclipse.
+		</p>	
+	</h4>
+
+	<br />
+				
+	<h3>References</h3>
+	<ul>
+		<li>
+			<h5><a href="http://java.sun.com">Java</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.eclipse.org">Eclipse</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.eclipse.org/webtools">Web Tools</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://wiki.ubuntu.com/EclipseIDE">Ubuntu Eclipse</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://blogs.sun.com/roller/page/coldrick?entry=java_development_on_ubuntu_part"
+			>coldrick blog</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://tomcat.apache.org">Tomcat</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.eclipse.org/webtools/community/tutorials/BuildJ2EEWebApp/BuildJ2EEWebApp.html">Web Tools Tutorial</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.docuverse.com/blog/donpark/EntryViewPage.aspx?guid=f171bafc-abce-4d2e-a18b-3aba4ad32c52">Don Parks Daily Habit</a></h5>
+		</li>
+		<li>
+			<h5><a href="project.html">How to create generic projects in Eclipse</a></h5>
+		</li>
+		<!--
+		<li>
+			<h5><a href="http://www.com"></a></h5>
+		</li>
+		-->
+	</ul>
+<!--Creative Commons License--><a rel="license" href="http://creativecommons.org/licenses/by/2.0/uk/"><img alt="Creative Commons License" border="0" src="http://creativecommons.org/images/public/somerights20.png"/></a><br/><h5>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/2.0/uk/">Creative Commons Attribution 2.0 England &amp; Wales License</a>.</h5><!--/Creative Commons License-->
+<!-- <rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<Work rdf:about="">
+		<license rdf:resource="http://creativecommons.org/licenses/by/2.0/uk/" />
+	<dc:type rdf:resource="http://purl.org/dc/dcmitype/Text" />
+	</Work>
+	<License rdf:about="http://creativecommons.org/licenses/by/2.0/uk/"><permits rdf:resource="http://web.resource.org/cc/Reproduction"/><permits rdf:resource="http://web.resource.org/cc/Distribution"/><requires rdf:resource="http://web.resource.org/cc/Notice"/><requires rdf:resource="http://web.resource.org/cc/Attribution"/><permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/></License></rdf:RDF> -->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+	</script>
+	<script type="text/javascript">
+	_uacct = "UA-281408-1";
+	urchinTracker();
+	</script>
+</body>
+</html>

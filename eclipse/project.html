@@ -1,0 +1,358 @@
+<html>
+<head>
+	<title>Eclipse Generic Projects</title>
+	<style>
+		body{
+			font-family: Sans-Serif;
+			margin: 0px;
+			border: 10px solid #ccc;
+			padding: 10px;
+			background-color: #fff;
+			color: #000;
+		}
+		h2{ font-size: 18pt; font-weight: 600;}
+		h3{ 
+			font-size: 14pt;
+			font-weight: 600;
+		}
+		h4{ 
+			font-size: 11pt; 
+			font-weight: 100;
+			}
+		h5{ font-size: 9pt; font-weight: 100;}
+		h6{ font-size: 7pt; font-weight: 100;}
+		code{ 
+			font-size: 9pt; 
+			font-weight: 600;
+			background-color: #ddd;
+			border: 1px solid #aaa;
+			display: block;
+		}
+		li h5{ margin: 2px; }
+	</style>
+	<script language='JavaScript' type='text/javascript'>
+		function getModed(){
+			if (Date.parse(document.lastModified) != 0) {
+				this.modDate = new Date(document.lastModified);
+				return this.modDate.getFullYear() +"-" +
+					 zeroPad(this.modDate.getMonth()+1) +"-" +
+					  zeroPad(this.modDate.getDate())  ;
+			} else 
+				return "";			  
+		}
+		function zeroPad(date){
+			return ( date < 10 ) ? "0"+date : date;
+		}
+		function writeModed(pretext){
+			if( getModed()!="")
+				document.write(pretext+getModed());
+		}		
+	</script>
+</head>
+<body>
+
+	<h2>How to create generic projects in Eclipse</h2>
+	<h3>For use with Netbeans, Ant, Tomcat etc.</h3>
+
+	<h5>
+		Author: <a href="http://flurdy.com">Ivar Abrahamsen</a>
+	</h5>
+	
+	<h2>New document location: <a href="project/">click here</a></h2>
+	
+	<h3>This document is not finished yet.</h3>
+
+	<h4>
+		<p>
+			A quick howto document to describe setting 
+			up projects in Eclipse. 
+		</p>
+		<p>
+			These projects will be generic
+			so that they are compatible with Netbeans,
+			generic Ant scripts etc.
+		</p>
+	</h4>
+	
+	<h3>Pre</h3>
+	
+	<h5>
+		<p>
+			This need came about with my own need to have 
+			a slightly different project set up than the
+			default Eclipse WTP one.
+		</p>
+		<p>			
+			I like the integration of Tomcat in Eclipse,
+			But I could not get the grips with which folders was
+			published and which not. 
+			Coming from a Netbeans background, where the 
+			Ant integration seemed better, I grew frustrated quickly.			
+		</p>
+		<p>
+			Even as Eclipse is very configurable and flexible,
+			in certain areas it was not intuative to my needs.
+			So this is a quick way to get Eclipse to follow you Ant scripts
+			on which folder goes where etc.
+		</p>
+		<p>
+			Pre-requiresite is a working Eclipse Web Tools set up.
+			Follow my <a href="install.html">How to install 
+			Eclipse in Ubuntu</a> if needed.
+			I will assume the setup is as in my install,
+			so take care if not.
+		</p>
+		<p>
+		</p>
+	</h5>
+
+	<h3>Structure</h3>
+			
+	<h5>
+		First we need to create a project or use an existing project.
+	</h5>
+	
+	<h5>
+		<p>
+			This is my project structure, 
+			however the need for this doc
+			is the ability to have any project structure,
+			so you dont have to copy it.
+			This is just so you can see where I am comming from.
+			It is similar to the Jakarta project blueprint.
+		</p>
+	</h5>
+	<h6>
+		<ul>
+			<li>
+				<i>projectname</i>/
+				<ul>
+					<li>
+						conf/
+						<!--
+						<ul>
+							<li>
+								META-INF/
+								<ul>
+									<li>context.xml</li>
+									<li>MANIFEST.MF</li>
+								</ul>
+							</li>
+							<li>
+								ant/
+								<ul>
+									<li>common.xml</li>
+									<li>compile.xml</li>
+									<li>data.xml</li>
+									<li>eclipse.xml</li>
+									<li>netbeans.xml</li>
+									<li>remote.xml</li>
+									<li>subversion.xml</li>
+									<li>tomcat.xml</li>
+								</ul>
+							</li>								
+							<li>classes/
+								<ul>
+								</ul>
+							</li>
+							<li>faces/
+								<ul>
+									<li>faces-config.xml</li>
+								</ul>
+							</li>
+							<li>hibernate/
+								<ul>
+									<li>hibernate.cfg.xml</li>
+								</ul>
+							</li>
+							<li>props/
+								<ul>
+									<li>dev.properties</li>
+									<li>live.properties</li>
+									<li>local.properties.example</li>
+									<li>log4j.properties</li>
+									<li>project.properties</li>
+									<li>test.properties</li>
+									<li>text.properties</li>
+								</ul>
+							</li>
+							<li>spring/
+								<ul>
+									<li>spring-servlet.xml</li>
+									<li>applicationContext.xml</li>
+									<li>datasource.xml</li>
+									<li>manager.xml</li>
+									<li>property.xml</li>
+									<li>stub.xml</li>
+								</ul>
+							</li>
+							<li>struts/
+								<ul>
+									<li>struts-config.xml</li>
+								</ul>
+							</li>
+							<li>velocity/
+								<ul>
+									<li>velocity.properties</li>
+									<li>toolbox.xml</li>
+								</ul>
+							</li>
+						</ul>
+						-->
+					</li>
+					<li>lib/</li>
+					<li>
+						src/
+						<!--
+						<ul>
+							<li>
+								<i>projectnamepath/</i>
+								<ul>
+									<li>dao/</li>
+									<li>dao/face/</li>
+									<li>ent/</li>
+									<li>ent/face/</li>
+									<li>mng/</li>
+									<li>mng/face/</li>
+									<li>
+										mvc/
+										<ul>
+											<li>delegate/</li>
+										</ul>
+									</li>
+									<li>ui/</li>
+								</ul>
+							</li>
+						</ul>
+						-->
+					</li>
+					<li>
+						sql/
+						<!--
+						<ul>
+							<li>meta.sql</li>
+						</ul>
+						-->
+					</li>
+					<li>test/
+						<!--
+						<ul>
+							<li>
+								<i>projectnamepath/</i>
+							</li>
+						</ul>
+						-->
+					</li>
+					<li>build.xml</li>
+					<li>
+						web/
+						<!--
+						<ul>
+							<li>style/</li>
+							<li>images/</li>
+							<li>script/</li>
+							<li>
+								WEB-INF/
+								<ul>
+									<li>web.xml</li>
+								</ul>
+							</li>
+							<li>favicon.ico</li>
+						</ul>
+						-->
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</h6>
+
+	<h5>
+		<p>
+			Whether you are creating a proper project from scratch or
+			importing eclipse over one, you have to tell eclipse its a new project.
+		</p>
+		<p>
+			Select File/new/project,
+			Select web/dynamic web project.
+				
+		</p>
+		<p></p>
+	</h5>
+
+	<h3></h3>
+	
+	<!--
+	<h3></h3>
+			
+	<h5>
+		<p>
+		</p>
+	</h5>
+
+	<code></code>
+	-->
+
+	<h5>TODO</h5>
+	<h6><i><pre>	
+		dont add project to tomcat 
+		add path to properties
+		modify server.xml, 
+			add jdni resource
+			modify localhost to enable deployXML to use context.xml
+		deploy once as war to use context.xml for jndi purposes
+		download subclipse
+		create new builder 
+		choose ant
+		set auto build to dev-deploy
+		lib web classes 
+		ant subversion, dev test live 
+		deploy context.xml jndi
+	</i></pre></h6>
+	
+	<h3>References</h3>
+	<ul>
+		<li>
+			<h5><a href="http://java.sun.com">Java</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.eclipse.org">Eclipse</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.eclipse.org/webtools">Web Tools</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://tomcat.apache.org">Tomcat</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://ant.apache.org">Ant</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.netbeans.org">Netbeans</a></h5>
+		</li>
+		<li>
+			<h5><a href="install.html">How to install Eclipse in Ubuntu</a></h5>
+		</li>
+		<li>
+			<h5><a href="http://www.eclipse.org/webtools/community/tutorials/BuildJ2EEWebApp/BuildJ2EEWebApp.html">Web Tools Tutorial</a></h5>
+		</li>
+		<!--
+		<li>
+			<h5><a href="http://www.com"></a></h5>
+		</li>
+		-->
+	</ul>
+
+	<h6>
+				<script language="JavaScript">
+					writeModed("Last modified: ");
+				</script>
+			</span>
+	</h6>		
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+	</script>
+	<script type="text/javascript">
+	_uacct = "UA-281408-1";
+	urchinTracker();
+	</script>
+</body>
+</html>
