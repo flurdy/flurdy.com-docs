@@ -1,0 +1,142 @@
+<html>
+<head>
+	<title>Access Windows NTFS howto</title>
+	<style>
+		body{
+			font-family: Sans-Serif;
+			margin: 0px;
+			border: 10px solid #ccc;
+			font-size: 9pt;
+			padding: 10px;
+			background-color: #fff;
+			color: #000;
+		}
+		h2{ font-size: 18pt; font-weight: 600;}
+		h3{ 
+			font-size: 14pt;
+			font-weight: bold;
+		}
+		h4{ 
+			font-size: 11pt; 
+			font-weight: normal;
+			}
+		h5{ font-size: 9pt; font-weight: normal;}
+		code{ 
+			font-size: 9pt; 
+			font-weight: bold;
+			background-color: #ddd;
+			border: 1px solid #aaa;
+			display: block;
+		}
+		li h5{ margin: 2px; }
+	</style>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<style type="text/css">
+  table {
+    font-size: 1em;
+  }
+  div, address, ol, ul, li, option, select { 
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  p {
+    margin: 0px;
+  }
+  blockquote {padding: 10px; border: 1px #DDDDDD dashed }
+  a img {border: 0}
+  body {
+    line-height: normal;
+  }
+</style>
+</head>
+<body>
+
+<h2>Access Windows NTFS howto</h2>
+
+
+<p>
+	Follow on from <a href="/docs/livecd/index.html">Remote SSH to LiveCD</a> howto.
+</p>
+
+
+<h4>Create ssh tunnel to ssh proxy</h4>
+<i>If needed</i>
+<p>Username is your normal username to this ssh proxy server.</p>
+<code>ssh -vNL 19023:localhost:19022 <u><i>youruser@servername</i></u></code>
+
+<h4>SSH to remote pc</h4>
+<p>Username is the one you created for remote ssh tunnel to ssh proxy server.</p>
+<code>ssh ubuntu@localhost -p 19023</code>
+<p>Accept if prompted to trust the connection</p>
+<p>Enter remote pc password</p>
+
+<h4>Find NTFS partition</h4>
+<p>
+	List partitions available.
+</p>
+<code>ls /dev/hd* /dev/sd*</code>
+<p>The ones enting on a number is the ones to try</p>
+
+<h4>Mount disk</h4>
+<p>
+</p>
+<code>	
+sudo mkdir /mnt/windows<br />
+sudo mount -t ntfs /dev/<i>hda1</i> /mnt/windows
+</code>
+<p>Where <i>hda1</i> was the partition you found, change appropiatly.
+<p>Check if this is the windows partiotion</p>
+<code>ls /mnt/windows</code>
+<p>If not do command below and repeat steps above for another partition</p>
+<code>sudo umount /mnt/windows</code>
+
+<h4>Real work</h4>
+<p>
+	Now do real work on windows NTFS disk. <br />
+	What I needed it for was to fix corrupted windows registry on a family pc.<br />
+	So I followed these guides:
+</p>
+<ul>
+	<li><a href="http://www.kellys-korner-xp.com/xp_sys32.htm">www.kellys-korner-xp.com/xp_sys32.htm</a></li>
+	<li><a href="http://support.microsoft.com/kb/307545">support.microsoft.com/kb/307545</a></li>
+	<li><a href="http://www.easydesksoftware.com/news/news32.htm">www.easydesksoftware.com/news/news32.htm</a></li>
+</ul>
+
+<h4>Finish</h4>
+<p>
+	You need to unmount the disk
+</p>
+<code>
+	sudo umount /mnt/windows<br />
+	sudo rmdir /mnt/windows
+</code>
+<p>Then exit remote pc, and close local tunnel to ssh proxy</p>
+<p>If you did this to a remote pc remember to close remote tunnel, disable ssh passwords on the proxy if used.</p>
+
+
+<br>
+<br>
+Mvh,<br>
+<br>
+Ivar Abrahamsen<br>
+| <a href=http://flurdy.com/ target=_blank>flurdy.com</a> |&nbsp;
+<br />
+<br />
+<!--Creative Commons License--><a rel="license" href="http://creativecommons.org/licenses/by/2.0/uk/"><img alt="Creative Commons License" border="0" src="http://creativecommons.org/images/public/somerights20.png"/></a><br/><h5>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/2.0/uk/">Creative Commons Attribution 2.0 England &amp; Wales License</a>.</h5><!--/Creative Commons License-->
+<!-- <rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<Work rdf:about="">
+		<license rdf:resource="http://creativecommons.org/licenses/by/2.0/uk/" />
+	<dc:type rdf:resource="http://purl.org/dc/dcmitype/Text" />
+	</Work>
+	<License rdf:about="http://creativecommons.org/licenses/by/2.0/uk/"><permits rdf:resource="http://web.resource.org/cc/Reproduction"/><permits rdf:resource="http://web.resource.org/cc/Distribution"/><requires rdf:resource="http://web.resource.org/cc/Notice"/><requires rdf:resource="http://web.resource.org/cc/Attribution"/><permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/></License></rdf:RDF> -->
+
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+	</script>
+	<script type="text/javascript">
+	_uacct = "UA-281408-1";
+	urchinTracker();
+	</script>
+
+</body>
+</html>
