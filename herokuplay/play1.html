@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Play + Heroku</title>
+	<meta name="keyword" content="play,heroku,java,scala,cloud,ubuntu,intellij,idea,git,howto,install,setup"/>
+	<meta name="description" content="Using Play framework with Heroku cloud offering. Develop quickly and deploy easily to the Cloud. With Ubuntu, IntelliJ IDEA and Git."/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		img.flurdySmall{ height: 1em; width: 2.7em; margin-top: 0.33em; }
+		.indent { margin-left: 2em; }	
+		.indent2nd { margin-left: 4.5em; margin-top: 1em; }		
+		.starboard { float: right; width: 11em; padding: 2em 0.2em; }
+		#starboard { width: 13em; padding: 2em 0.2em;  }
+		#starboard iframe { border: 0; }
+		.shirt { border: 1px dashed silver; text-align: center; 
+			margin: 0.5em 0.5em 0.5em 1em; padding: 0.5em 0.2em; font-size: 0.6em; } 
+		#starboard .shirt { margin-bottom: 5em; } 
+		#starboard > ol { border: 1px dashed silver; text-align: right; margin-bottom: 5em; }
+		#starboard > ol li { text-align: left; }
+		#starboard > ol li ul { padding-left: 0.5em;  }
+		#logos img { width: 8em; }
+		#cargo{ padding-top: 4em; }
+		body { padding: 2em 1em 3em 3em; min-width: 50em; max-width: 70em; }
+		h3 { margin-top: 2.5em; }
+		h4 { font-size: 11pt; }
+		code{ width: 45em; font-weight: bold; }
+	</style>
+	<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-281408-1']);
+  _gaq.push(['_trackPageview']);
+
+   (function() {
+   if(location.host!='localhost'){
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+ 	}
+  })();  
+</script>
+<script type="text/javascript">
+    var addthis_config = {"data_track_clickback":true};
+</script>
+<script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid=flurdy"></script>
+</head>
+<body>	
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img 
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+	
+	<h1>Play! + Heroku</h1>
+	<div id="logos" class="starboard">
+		<a href="http://www.playframework.org/"><img src="/images/playframework.png" alt="Play framework"/></a><br/>
+		<a href="http://heroku.com/"><img src="/images/heroku.png" alt="Heroku"/></a>
+	</div>
+	<h2 class="indent">Develop quickly &amp; deploy easily to the Cloud<h2>
+	<h3 class="indent2nd">(Ubuntu + Git + IntelliJ + Apache + Java <s>or Scala</s>)</h3>
+	
+	<ul class="horizontal">
+		<li>by <a href="http://flurdy.com">flurdy</a> |</li>
+		<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+		<li><a href="http://blog.flurdy.com">blog</a> |</li>
+		<li><a href="/docs">more docs</a> |</li>
+		<li><a href="#feedback">feedback</a> |</li>
+		<!-- <li><a href="http://www.eray.co.uk/">hire me</a> |</li> -->
+		<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+	</ul>
+
+	<br/>
+	
+<script type="text/javascript"><!--
+if(location.host!='localhost'){
+	google_ad_client = "ca-pub-7805345644641760";
+/* flurdy heroku doc top */
+	google_ad_slot = "2167071525"; 
+}
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+	<div id="starboard">
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style ">
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_google_plusone" g:plusone:count="false"></a>
+<a class="addthis_button_delicious"></a>
+<a class="addthis_button_email"></a>
+<a class="addthis_button_pdfonline"></a>
+<a class="addthis_button_preferred_1"></a>
+<a class="addthis_button_preferred_2"></a>
+<a class="addthis_button_compact"></a>
+</div>
+<!-- AddThis Button END -->
+
+		<h4>Contents</h4>
+		<ol>
+			<li><a href="#aim">Aim</a></li>
+			<li><a href="#why">Why</a></li>
+			<li><a href="#require">Pre-requisites</a></li>
+			<li><a href="#install-play">Install Play</a></li>
+			<li><a href="#install-idea">Install IntelliJ</a></li>
+			<li><a href="#install-heroku">Install Heroku</a></li>
+
+			<li><a href="#project">Create project</a></li>
+			<li>
+				<a href="#develop">Develop application</a>
+				<ul>
+					<li><a href="#pages">Front &amp; about page</a></li>
+					<li><a href="#order-page">Pizza order form</a></li>
+					<li><a href="#send-mail">Send email</a></li>
+					<li><a href="#error">Error pages</a></li>
+				</ul>
+			</li>
+			<li><a href="#deploy">Deploy to Heroku</a></li>
+			<li><a href="#addons">Add ons</a></li>
+			<li><a href="#apache">Load balancing with Apache&nbsp;httpd</a></li>
+			<li><a href="#scala">Scala &amp; Play 2.x</a></li>
+			<li><a href="#extension">Extensions</a></li>
+			<li><a href="#references">References</a></li>
+			<li><a href="#help">Help</a></li>
+			<li><a href="#feedback">Feedback</a></li>
+			<li><a href="#revision">Revision</a></li>
+		</ol>
+
+
+		<div class="shirt">
+			<a href="http://shirts.flurdy.com/us/no-i-wont-fix-your-computer.html"><img 
+				width="160" title="I will not fix your computer" alt="wont fix t-shirt" 
+				src="http://image.spreadshirt.com/image-server/image/product/3876780/view/1/type/png/width/190/height/190" 
+				onmouseout="this.src='http://image.spreadshirt.com/image-server/image/product/3876780/view/1/type/png/width/190/height/190'" 
+				onmouseover="this.src='http://image.spreadshirt.com/image-server/image/design/3120666/type/png/width/190/height/190'"/></a>
+				<br/><a href="http://shirts.flurdy.com">shirts.flurdy.com</a>
+		</div>
+
+<script type="text/javascript"><!--
+if(location.host!='localhost'){
+	google_ad_client = "ca-pub-7805345644641760";
+/* flurdy heroku doc side */
+	google_ad_slot = "7161458566";
+}	
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+	</div>
+
+
+	<div id="cargo">
+<!--
+		<div id="draft">
+			<p>				
+				(<i>
+				This document has just been published.
+				There may still be many typos and code errors.
+				Please <a href="#feedback">let me know</a>.
+				</i>)
+			</p>
+		</div>
+-->
+
+		<p>
+			<i>For Play! 2.x &amp; Scala, please <a href="play2.html">read my Play! 2.x guide</a></i>.
+		</p>
+
+		<h3>Aim</h3>
+		<ul>
+			<li>To install the <a href="http://www.playframework.org/">Play! framework</a> on an <a href="http://ubuntu.com">Ubuntu</a> machine</li>
+			<li>To create a basic <a href="http://java.com/">Java</a> web application using Play 1.x</li>
+			<li>To develop the application using <a href="http://www.jetbrains.com/idea/">IntelliJ IDEA</a></li>
+			<li>Keep version control using <a href="http://git-scm.com/">Git</a></li>
+			<li>Deploy the application to <a href="http://www.heroku.com/">Heroku</a>, a cloud application plaform</li>
+			<li>Configure <a href="http://httpd.apache.org/">Apache</a> as a http load balancer, and for smooth rollout staging</li>
+			<li>As an <a href="play2.html">alternative show how to use Scala with Play 2.x</a></li>
+		</ul>
+
+		<a name="why"></a>
+		<h3>Why</h3>
+		<ul>
+			<li>Play! framework because it makes web app development so quick and easy</li>
+			<li>Heroku as it makes deployment so easy. And is free if low volume</li>
+			<li>Ubuntu as it is my OS of choice</li>
+			<li>IntelliJ as it is the most productive IDE</li>
+			<li>Git. There is no way back once you have gone git</li>
+			<li>Java because it works</li>
+			<li>Scala because it is "better" (but more complicated)</li>
+		</ul>
+		<h4>What is Play</h4>
+		<p>
+			The <a href="http://www.playframework.org/">Play! framework</a>
+			is a web application framework that can be used with Java or Scala.
+			And it makes it easy, quick but also powerful.
+			By purposfully not adhering to the <a href="http://java.sun.com/j2ee/1.4/docs/">outdated j2ee spec</a>,
+			Play's api is much cleaner and RESTful.
+			Its feature of dynamic class reloading makes development very quick.
+		</p>
+		<h4>What is Heroku</h4>
+		<p>
+			<a href="http://www.heroku.com/">Heroku</a> is a cloud based application platform or <a href="http://en.wikipedia.org/wiki/Platform_as_a_service">PAAS (Platform as a Service)</a>. Or a "Polyglot Cloud Application Platform" according to <a href="#references">James Ward</a>.
+			It runs on top of <a href="http://aws.amazon.com/ec2">Amazon AWS ec2</a>,
+			but you do not need to know anything about that.
+			The interface is so easy and quick to use which is why I like it.
+			The big bonus is that if you only run one "web server" 
+			(<a href="http://devcenter.heroku.com/articles/dynos">dyno</a>)
+			per application it is free. 
+			Only when you need to scale or add special features do you need to pay anything.
+			And then it is mostly pay as you go, so not locked in for the year.
+			Another neat feature of Heroku is the use of <a href="http://git-scm.com">Git</a> as deployment tool.
+		</p>
+
+		<a name="require"></a>
+		<h3>Pre-requisites</h3>	
+		<h4>Ubuntu</h4>
+		<p>
+			This guide will assume <a href="http://ubuntu.com">Ubuntu</a> is your OS. 
+			However any Linux distro will be fine, 
+			Mac OSX will also be quite similar. 
+			Windows will be different but with similar steps.
+		</p>
+		<h4>Java</h4>
+		<p>
+			Since <a href="http://oracle.com">Oracle</a> decided to 
+			<a href="http://www.omgubuntu.co.uk/2011/12/java-to-be-removed-from-ubuntu-uninstalled-from-user-machines/">disallow security updates 
+			for Java 6 on Ubuntu</a>, I will assume OpenJDK 7.
+		</p>
+		<code>sudo aptitude install openjdk-7-jdk</code>
+
+		<p>
+			You can alternatively <a href="http://www.webupd8.org/2012/01/install-oracle-java-jdk-7-in-ubuntu-via.html">install Oracle Java 7 via a PPA</a>.
+		</p>
+
+		<h4>Git</h4>
+		<p>
+			Heroku's deployment model uses Git so while you don't need
+			to be a git guro, you do need to use it. 
+		</p>
+		<code>sudo aptitude install git gitk</code>
+		
+		<a name="install-play"></a>
+		<h3>Install Play!</h3>
+		<p>
+			The <a href="http://www.lunatech-labs.com/open-source/debian-play-module">Debian Play module</a> seems outdated,
+			and I have not been able to find a good <a href="https://help.launchpad.net/Packaging/PPA">PPA</a>,
+			so there is no	.deb packge to install. 
+			However installing manually is easy. You will have to upgrade it manully in the future however.
+		</p>
+		<p>
+			Download the latest 1.x version from 
+			<a href="http://www.playframework.org/download">www.playframework.org/download</a>
+			(currently 1.2.4)
+		</p>
+		<code>wget http://download.playframework.org/releases/play-<i>1.2.4</i>.zip</code>
+		<p>
+			Unzip and move to a library position
+		</p>
+		<code>
+			unzip play-<i>1.2.4</i>.zip;<br/>
+			sudo mv play-<i>1.2.4</i> /usr/local/lib/;<br/>
+			cd /usr/local/lib;<br/>
+			sudo ln -s play-<i>1.2.4</i> play;
+		</code>
+		<p>
+			Add play to your path by editing <b>/etc/environment</b>
+		</p>
+		<code>sudo vi /etc/environment</code>
+		<p>
+			Append play path to the <v>PATH</b> property
+		</p>
+		<code class="file">PATH="/usr/local/<i>....</i>/usr/games:/usr/local/lib/play"</code>
+		<p>To delay relogging in to activate the <b>/etc/environment</b> changes</p>
+		<code>export PATH="$PATH:/usr/local/lib/play"</code>
+		<p>To test if it works</p>
+		<code>play version</code>
+
+		<a name="install-idea"></a>
+		<h3>Install IntelliJ</h3>
+		<p>
+			If you can afford the Ultimate edition (or get work to pay for it) 
+			then great as it has from version 11 built in support for
+			Play. However I can not afford it so I will describe the Community edition.
+		</p>
+		<p>
+			Download IntelliJ from <a href="http://www.jetbrains.com/idea/download/">www.jetbrains.com/idea/download/</a>
+		</p>
+		<p>Unpack it and move to an appliation location</p>
+		<code>
+			tar xzf ideaIC-<i>11</i>.tar.gz;<br/>
+			sudo mkdir -p /opt/jetbrains;<br/>
+			sudo mv idea-IC-<i>111.69</i> /opt/jetbrains/;<br/>
+			cd /opt/jetbrains;<br/>
+			sudo ln -s idea-IC-<i>111.69</i> idea
+		</code>
+		<p>You can now start IntelliJ with:</p>
+		<code>/opt/jetbrains/idea/bin/idea.sh</code>
+		<p>
+			Or add <b>/opt/jetbrains/idea/bin</b> folder to your <b>PATH</b> variable 
+			like we did with Play,
+			or create a  <a href="http://unity.ubuntu.com/">Unity</a> launcher.
+		</p>
+	
+
+		<a name="install-heroku"></a>
+		<h3>Install Heroku</h3>
+		<p>
+			Basically we are following step 1-3 of the
+			<a href="http://devcenter.heroku.com/articles/quickstart">Heroku quickstart article</a>
+		</p>
+		<h4>Register</h4>
+		<p>
+			First <a href="https://api.heroku.com/signup"> sign up to Heroku</a>.
+		</p>
+		<h4>Install toolbelt</h4>
+		<p>
+			To use Heroku's command line tool called <b>Toolbelt</b> 
+			you need to add a PPA repository (<b>toolbelt.herokuapp.com/ubuntu</b>) and install <b>heroku-toolbelt</b>.
+			Either do it via Ubuntu Software Center, Synaptic or by the commands below:
+		</p>
+		<code>			
+			sudo apt-add-repository 'deb http://toolbelt.herokuapp.com/ubuntu ./';<br/>
+			curl http://toolbelt.herokuapp.com/apt/release.key | sudo apt-key add -;<br/>
+			sudo aptitude update;<br/>
+			sudo aptitude install heroku-toolbelt;
+		</code>
+		
+		<h4>Log into Heroku</h4>
+		<p>
+			On initial login it will ask you to upload a 
+			<a href="http://en.wikipedia.org/wiki/Secure_Shell">SSH public key</a>.
+			If you have one already you can reuse it,
+			or you can manually create one before hand,
+			or Heroku will create one for you.	
+		</p>
+		<code>heroku auth:login</code>
+
+
+		<a name="project"></a>
+		<h3>Create project</h3>
+		<p>
+			As detailed in 
+			<a href="http://www.playframework.org/documentation/1.2.4/guide1#aProjectcreationa">Plays tutorial</a>
+		</p>
+		<code>play new <i>pizzeria</i></code>
+		<p>
+			Then set up version control.
+		</p>
+		<code>
+			cd <i>pizzeria</i>;<br/>
+			git init;<br/>
+			git add .;<br/>
+			git commit -m "Initial"
+		</code>
+		<p>
+			Create an IntelliJ project.
+		</p>
+		<code>play idealize</code>
+		<p>
+			Now you can open the project in IntelliJ IDEA. 
+			(You probably want to add <b>*.iml</b>, <b>*.ipr</b> and <b>.idea</b> to the .gitignore file)
+		</p>
+
+		<a name="develop"></a>
+		<h3>Develop application</h3>
+		<p>
+			As Play continously reloads classes while in development mode,
+			we start the Play application first.
+			(again similar to 
+			<a href="http://www.playframework.org/documentation/1.2.4/guide1#aRunningtheapplicationa">Play's tutorial</a>)
+		</p>
+		<code>play run</code>
+		<p>
+			If you go to <a href="http://localhost:9000">localhost:9000</a>
+			you will see the initial page for your application.
+		</p>
+		
+		<a name="pages"></a>
+		<h4>Front &amp; about pages</h4>		
+		<p>Next we will then set up a controller and some views</p>		
+		<p>
+			In your IDEA open <b>app/controllers/Application.java</b>.			
+			Notice the index method:
+		</p>
+		<code class="file">			
+			<i>...</i><br/>
+		    &nbsp;&nbsp;public static void index() {<br/>
+		    &nbsp;&nbsp;&nbsp;&nbsp;render();<br/>
+		    &nbsp;&nbsp;}<br/>
+		    <i>...</i>
+		</code>
+		<p>
+			Since this controller method just calls render() without parameters 
+			it will render the view <b>app/views/Application/index.html</b>.
+			If you open this file:
+		</p>
+		<code class="file">	
+			#{extends 'main.html' /}<br/>
+			#{set title:'Home' /}<br/>
+			<br/>
+			#{welcome /}<br/>
+		</code>
+		<p>
+			First line tells you this is a subset of another template <b>main.html</b>.
+			Then sets the title of the page.
+			The <b>#{welcome /}</b> shows a custom tag which is all the welcome blahbla you
+			see on the front page. Modify this file to:
+		</p>
+		<code class="file">	
+			#{extends 'main.html' /}<br/>
+			#{set title:'Pizzeria' /}<br/>
+			<br/>
+			&lt;h1&gt;Pizzeria&lt;/h1&gt;<br/>
+			&lt;ul&gt;<br/>
+				&nbsp;&nbsp;&lt;li&gt;&lt;a href="@{Application.about}"&gt;About&lt;/a&gt;&lt;/li&gt;<br/>
+			&lt;/ul&gt;
+		</code>
+		<p>
+			If you refresh your browser window (<a href="http://localhost:9000">localhost:9000</a>), you will now get an error.
+			This is because the URL in the list above is not yet implemented.
+		</p>
+		<p>
+			Open <b>app/controllers/Application.java</b>. Add this method:
+		</p>
+		<code class="file">
+			<i>...</i><br/>
+		    &nbsp;&nbsp;public static void about() {<br/>
+		    &nbsp;&nbsp;&nbsp;&nbsp;render();<br/>
+		    &nbsp;&nbsp;}<br/>
+		    <i>...</i>
+		</code>
+		<p>
+			Again a very simple method, and you need to create the view at
+			<b>app/views/Application/about.html</b>.
+		</p>
+		<code class="file">	
+			#{extends 'main.html' /}<br/>
+			#{set title:'About the Pizzeria' /}<br/>
+			<br/>
+			&lt;h1&gt;About the Pizzeria&lt;/h1&gt;<br/>
+			&lt;p&gt;<br/>
+			&nbsp;&nbsp;Lorem ipsum dolor sit amet, arcu et leo lacinia etiam<br/>
+			&nbsp;&nbsp;viverra fames, facilisi inceptos ultricies vitae tristique<br/>
+			&nbsp;&nbsp;phasellus, leo ut proin cum dictumst ultricies ultricies<br/>
+			&lt;/p&gt;
+		</code>
+		<p>
+			You can now reload the front page, and even click on the about page link.
+		</p>
+		<h5>Routes</h5>
+		<p>
+			The url shown and in the links are not so "tidy", and to 
+			make them more <a href="http://microformats.org/wiki/rest/urls">RESTlike</a> you need to edit the <b>conf/routes</b> file.
+			Modify it so it is similar to:
+		</p>
+		<code class="file">	
+			<i>...</i><br/>
+			# Home page<br/>
+			GET&nbsp;&nbsp;&nbsp;&nbsp;/
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Application.index<br/>
+			GET&nbsp;&nbsp;&nbsp;&nbsp;/index.html
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Application.index<br/>
+			GET&nbsp;&nbsp;&nbsp;&nbsp;/about.html
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Application.about<br/>
+			<i>...</i>
+		</code>
+		<p>
+			You can read more about 
+			<a href="http://www.playframework.org/documentation/1.2.4/controllers">controllers</a>,
+			<a href="http://www.playframework.org/documentation/1.2.4/templates">template views</a> and 
+			<a href="http://www.playframework.org/documentation/1.2.4/routes">routes</a>
+			in the 			
+			<a href="http://www.playframework.org/documentation/1.2.4/home">play documentation</a>.
+		</p>
+
+		
+		<a name="order-page"></a>
+		<h4>Pizza order form</h4>
+		<p>
+			More interesting than the above mostly static templates are 
+			<a href="http://www.playframework.org/documentation/1.2.4/controllers#binding">forms and binding to objects within Play</a>.
+			We will create a pizza order form, 
+			and relevant controllers for dealing with the order.
+			(You may apply <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> for this development
+			using <a href="http://www.playframework.org/documentation/1.2.4/test">Play's built in testing support</a>).
+		</p>
+		<p>
+			Create a new controller at <b>app/controllers/PizzaOrder.java</b>.
+		</p>
+		<code class="file">
+			package controllers;<br/>
+			import play.mvc.Controller;<br/>
+			import play.Logger;<br/>
+			<br/>
+			public class PizzaOrder extends Controller {<br/>
+			&nbsp;&nbsp;public void showOrderForm(){<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;render("PizzaOrder/orderform.html");<br/>
+			&nbsp;&nbsp;}<br/>
+			}</br>
+		</code>
+		<p>
+			The <b>showOrderForm</b> method is a simple template redirection to show the form. 
+			This time we are actually specifying the template name.
+		</p>
+		<p>
+			Create the template <b>app/views/PizzaOrder/orderform.html</b>
+		</p>
+		<code class="file">
+			&lt;h1&gt;Pizza order&lt;/h1&gt;<br/>
+			#{form @PizzaOrder.orderPizza()}<br/>
+			&nbsp;&nbsp;&lt;fieldset&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend&gt;Choose pizza&lt;/legend&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;#{select 'pizzaType', value:'pepperoni'}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{option 'margherita'}Margherita{/option}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{option 'hawaiian'}Hawaiian{/option}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{option 'pepperoni'}Pepperoni{/option}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{option 'quattroformaggi'}Quattro formaggi{/option}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;#{/select}<br/>
+			&nbsp;&nbsp;&lt;/fieldset&gt;<br/>
+			&nbsp;&nbsp;&lt;fieldset&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend&gt;Size&lt;/legend&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;input type="radio" name="size" id="sizeMedium"<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value="Medium" checked="checked" /&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;label for="sizeMedium"&gt;Medium&lt;/label&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;br/&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;input type="radio" name="size" id="sizeLarge"<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="Large" /&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;label for="sizeLarge"&gt;Large&lt;/label&gt;<br/>
+			&nbsp;&nbsp;&lt;/fieldset&gt;<br/>
+			&nbsp;&nbsp;&lt;fieldset&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend&gt;Delivery address&lt;/legend&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;input type="text" name="address" /&gt;<br/>
+			&nbsp;&nbsp;&lt;/fieldset&gt;<br/>
+			&nbsp;&nbsp;&lt;button type="submit"&gt;Order pizza&lt;button&gt;<br/>
+			#{/form}<br/>
+		</code>
+		<p>
+			(We are using Play 1.x's <a href="http://groovy.codehaus.org/">Groovy</a> based 
+			templated <a href="http://www.playframework.org/documentation/1.2.4/tags">script and tagging</a> to simplefy the form generation).
+		</p>
+		<p>
+			Modify <b>app/controllers/PizzaOrder.java</b> by adding two methods:
+		</p>
+		<code class="file">
+			<i>...</i><br/>
+			&nbsp;&nbsp;public void orderPizza(<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String pizzaType, String size, String address){<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;Logger.info("Ordering pizza: " pizzaType);<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;// business order logic<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;pizzaOrdered(pizzaType);<br/>
+			&nbsp;&nbsp;}<br/>
+			<br/>
+			&nbsp;&nbsp;public void pizzaOrdered(String pizzaType){<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;render(pizzaType);<br/>
+			&nbsp;&nbsp;}<br/>
+			<i>...</i>
+		</code>		
+		<p>
+			The <b>orderPizza</b> method is the real business logic method. 
+			It receives form data, binds it to java objects and processes this.
+			(Actually we mostly ignore the data, but a real application would obviously not).
+			Then it calls the <b>pizzaOrdered</b> method for showing a confirmation template.
+			Play will detect this and issue a HTTP redirect to this method,
+			so that you are protected against multiple accidental orders.
+		</p>
+		<p>
+			Create the template <b>app/views/PizzaOrder/pizzaOrdered.html</b>
+		</p>
+		<code class="file">
+			&lt;h1&gt;Pizza ordered&lt;/h1&gt;<br/>
+			&lt;p&gt;<br/>
+			&nbsp;&nbsp;The ${pizzaType} pizza will arrive within 40 minuttes!<br/>
+			&lt;/p&gt;
+		</code>
+		<p>
+			We need to tidy up the URLs.
+			We need one (and perhaps two aliases) to show the form,
+			a POST handler for receiving the form,
+			and a confirmation page.
+			Open <b>conf/routes</b>:
+		</p>
+		<code class="file">
+			<i>...</i><br/>
+			GET     /order/ 
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				PizzaOrder.showOrderForm<br/>
+			GET     /order/index.html &nbsp;&nbsp;&nbsp;&nbsp;
+				PizzaOrder.showOrderForm<br/>
+			GET     /order/new.html &nbsp;&nbsp;&nbsp;&nbsp;
+				PizzaOrder.showOrderForm<br/>
+			POST     /order/ 
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				PizzaOrder.orderPizza<br/>
+			GET     /pizzaOrdered.html &nbsp;&nbsp;&nbsp;&nbsp;
+				PizzaOrder.pizzaOrdered<br/>
+			<i>...</i>
+		</code>
+		<p>
+			Ps. A cleaner way when the form expands is to create a 
+			<a href="http://www.playframework.org/documentation/1.2.4/controllers#pojo">POJO binding</a>
+			instead of individual method parameters.
+		</p>
+		<p>
+			Ps2. We could also have applied 
+			<a href="http://www.playframework.org/documentation/1.2.4/validation">validation</a>.
+		</p>
+
+		
+		<a name="send-mail"></a>
+		<h4>Send email</h4>
+		<p>
+			A more usefull order flow is perhaps if we are notified of the order!
+			Play provides an easy way of <a href="http://www.playframework.org/documentation/1.2.4/emails">sending email</a>.
+			And enables a mocking class for email in development mode.
+		</p>
+		<p>			
+			Open <b>conf/application.properties</b>.
+			We will keep the mock feature enabled,
+			but set production mode to connect to relay via <a href="http://gmail.com">GMail</a>.
+		</p>
+		<code class="file">	
+			<i>...</i><br/>
+			# Mail configuration<br/>
+			# ~~~~~ <br/>
+			# Default is to use a mock Mailer<br/>
+			mail.smtp=mock<br/>
+			<br/>
+			%prod.mail.smtp.host=smtp.gmail.com<br/>
+			%prod.mail.smtp.user=<i>yourusername</i>@gmail.com<br/>
+			%prod.mail.smtp.pass=<i>yourpassword</i><br/>
+			%prod.mail.smtp.channel=ssl<br/>
+			<i>...</i>
+		</code>
+		<p>
+			Open <b>app/controllers/PizzaOrder.java</b>, modify the <b>orderPizza</b> method
+			and add a call to PizzaOrderMailer.
+		</p>
+		<code class="file">	
+			<i>...</i><br/>
+			&nbsp;&nbsp;public void orderPizza(<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String pizzaType, String size, String address){<br/>
+			<i>...</i><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;PizzaOrderMailer.sendOrder(pizzaType, size, address);<br/>			
+			<i>...</i><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;pizzaOrdered(pizzaType);<br/>
+			&nbsp;&nbsp;}<br/>
+			<i>...</i>
+		</code>
+		<p>
+			Create <b>app/notifiers/PizzaOrderMailer.java</b>.
+		</p>
+		<code class="file">	
+		package notifiers;<br/>
+		import play.mvc.Mailer;<br/>
+		<br/>
+		public class PizzaOrderMailer extends Mailer {<br/>	
+		&nbsp;&nbsp;public static void sendOrder(<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String pizzaType, String size, String address){<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;setSubject("Pizza order");<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;addRecipient("<i>pizzaorder@example.com</i>");<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;setFrom("<i>Pizzeria Website</i> &lt;<i>website@example.com</i>&gt;");<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;send(pizzaType, size, address);<br/>
+		&nbsp;&nbsp;}<br/>
+		}
+		</code>
+		<p>
+			The actual email sent can be plain text but in our case it will be html based. 
+			Like normal pages it is a template.
+			Open <b>app/views/PizzaOrderMailer/sendOrder.html</b>:
+		</p>
+		<code class="file">
+			&lt;html&gt;<br/>
+			&lt;body&gt;<br/>
+			&nbsp;&nbsp;&lt;pre&gt;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;Pizza order<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;Pizza type: ${pizzaType}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;Pizza size: ${size}<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;Delivery address: ${address}<br/>
+			&nbsp;&nbsp;&lt;pre&gt;<br/>
+			&lt;/body&gt;<br/>
+			&lt;/html&gt;<br/>
+		</code>
+		
+		<a name="error"></a>
+		<h4>Error pages</h4>
+		<p>
+			You can customise the error pages (404 &amp; 500 only).
+			Simply edit the files in <b>app/views/errors</b>.
+			For further fine grained errors (410, 403, 302, etc) 
+			you will need an <a href="#apache">Apache server in front</a>.
+		</p>
+
+		<div class="starboard">
+			<div class="shirt">
+				<a href="http://shirts.flurdy.com/eu/something-went-wrong-evolution-shirt.html"><img 
+						width="160" title="terribly wrong evoution" alt="evolution shirt" 
+					src="http://image.spreadshirt.net/image-server/image/product/8601636/view/1/type/png/width/190/height/190/wrong-evolution.png"
+					onmouseout="this.src='http://image.spreadshirt.net/image-server/image/product/8601636/view/1/type/png/width/190/height/190/wrong-evolution.png'" 
+					onmouseover="this.src='http://image.spreadshirt.net/image-server/image/composition/8601636/view/1/producttypecolor/130/type/png/width/190/height/190/wrong-evolution_design.png'"/></a>
+				<br/><a href="http://shirts.flurdy.com">shirts.flurdy.com</a>
+			</div>
+		</div>
+
+		<a name="deploy"></a>
+		<h3>Deploy to Heroku</h3>
+		<p>
+			To create a <b><a href="http://devcenter.heroku.com/articles/dynos">dyno</a></b> for this application:
+		</p>
+		<code>heroku create -s cedar</code>
+		<p>
+			This will create a server for you to deploy to.
+			It will respond with a domain name that your application
+			will run on. Something like <i>blue-moon-123</i>.herokuapp.com.
+		</p>
+		<br/>
+		<p>
+			Previously you needed to create a <a href="http://devcenter.heroku.com/articles/procfile">Procfile</a>, 
+			to describe launch parameters, such as port number etc.
+			This is no longer needed, unless you need to customise this.
+		</p>
+		<p>
+			Make sure everything is added and commited to git:
+		</p>
+		<code>git commit -am "kitchen sink commit"</code>
+		<p>
+			Then to deploy your appliction to the dyno created by Heroku:
+		</p>
+		<code>git push heroku master</code>
+
+		<br/>
+		<p>
+			Now either open a browser and type in the dyno's domain name or execute:
+		</p>
+		<code>heroku open</code>
+		
+		<br/>
+		<br/>
+		<p>Voila!</p>
+
+
+
+
+		<a name="addons"></a>
+		<h3>Add ons</h3>
+		<p>
+			Heroku offers a range of <a href="http://addons.heroku.com/">add-ons</a> to add to your application.
+			Most are free or at least free initially 
+			and only start to charge once 
+			you application requires heavy load or further scaling.
+		</p>
+		<h4>Custom domain name</h4>
+		<p>
+			The URL <i>blue-moon-123</i>.herokuapp.com is fine to use
+			while testing and developing.
+			But in many production situation it is not ideal.
+			So you can add the <a href="http://addons.heroku.com/custom_domains">domain name add-on</a>,
+			which will listen to requests of that name
+			if the dns aliases to <i>blue-moon-123</i>.herokuapp.com.
+		</p>
+		<p>
+			More practically in my situation is that this enables 
+			the Play application 
+			to know it is listening to your real domain name.
+			And so that you can put an Apache httpd server infront
+			as a load balancer while still proxying to <i>blue-moon-123...</i>.
+		</p>
+		<code>heroku domains:add <i>myapp.example.com</i></code>
+		<p>
+			(Note Heroku now includes Custom domain addon by default).
+		</p>
+		<p>
+			(Note2 in Play's <b>conf/application.conf</b> you can also 
+			hard code the production domain name under <b>%prod.application.baseUrl</b>).
+		</p>
+
+		<h4>Send email</h4>
+		<p>
+			If you need more customisation than <a href="#send-mail">the mentioned
+			integration with GMail</a>, like not involving Google for example, 
+			among several choices is 
+			<a href="http://addons.heroku.com/sendgrid">SendGrid add-on</a>.
+		</p>
+		<h4>Logging</h4>
+		<p>
+			Several choices including the plain <a href="http://addons.heroku.com/logging">Logging add-on</a>.
+		</p>
+		<h4>Database</h4>
+		<p>
+			There are multiple databases available as add-ons.
+			From standard RDBMS like PostgreSQL and MySQL 
+			(with Amazon RDS as an option as well)
+			to NoSQL DBs like MongoDB, Redis and CouchDB
+			to in memory caching solutions like Memcache.
+		</p>
+		<p><a href="http://addons.heroku.com/">And many more</a>.</p>
+
+
+		<a name="apache"></a>
+		<h3>Apache httpd in front of Play applications</h3>
+		<p>
+			You do not need to have an <a href="http://httpd.apache.org/">Apache Httpd server</a>
+			in front your Play application(s).
+			Especially if you have added the <a href="http://addons.heroku.com/custom_domains">Custom&nbsp;Domain&nbsp;add-on</a>.
+		</p>
+		<p>
+			However I do so that I can switch between Heroku and applications
+			hosted elsewhere. And enable smooth load balancing especially
+			during rollout staging. 
+			The fact I already run a httpd server means no increased cost for me.
+		</p>
+		<p>
+			Play also document <a href="http://www.playframework.org/documentation/1.2.4/production">how to configure lighthttpd</a>
+			as proxy infront of Play, I will however use Apache.
+		</p>
+
+		<h4>Reverse proxy</h4>
+		<p>
+			As part of <a href="/docs/ec2/">my AWS ec2 guides</a> 
+			I detail how to relay traffic from between 
+			<a href="/docs/ec2/apache_tomcat/index.html#twoServers">Apache Httpd and Tomcat servers</a>. 
+			And in this situation we need to do the same.
+		</p>
+		<p>
+			I am asuming you already have an Apache server up and running. 
+			If not, follow <a href="/docs/ec2/">my AWS ec2</a> <a href="/docs/ec2/apache_tomcat/index.html#twoServers">Apache Httpd and Tomcat servers</a> guide. In that I detail how to set up the servers. 
+			I also describe how to relay traffic from between 
+			Apache Httpd and Tomcat servers and in this situation we need to do something similar.
+		</p>
+		<p>
+			You need to install and enable the <a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy.html">Reverse proxy module</a>.
+		</p>
+		<code>
+			sudo aptitude install libapache2-mod-proxy-html;<br/>
+			sudo a2enmod proxy_html
+		</code>
+		<p>
+			Ensure you are not exposing your server as a normal proxy,
+			by stating <b>ProxyRequests Off</b>.
+		</p>
+		<code>sudo vi /etc/apache2/mods-enabled/proxy.conf</code>
+		<code class="file">
+			...<br/>
+			ProxyRequests Off<br/>
+			...<br/>
+		</code>
+		<p>
+			Open you virtual host and modify to something like these proxy lines
+		</p>
+		<code>sudo vi /etc/apache2/sites-available/<i>example.com</i></code>
+		<code class="file">
+			<VirtualHost *:80><br/>
+				ServerName <i>www.example.com</i><br/>
+				<i>...</i>br/>
+				&lt;IfModule mod_proxy.c&gt;<br/>
+				&nbsp;&nbsp;ProxyPreserveHost On<br/>
+				&nbsp;&nbsp;ProxyPass /<i>pagenottoproxy.html</i> !<br/>
+				&nbsp;&nbsp;ProxyPass / http://<i>blue-moon-123</i>.herokuapp.com/<br/>
+				&nbsp;&nbsp;ProxyPassReverse / http://<i>blue-moon-123</i>.herokuapp.com/<br/>
+				&lt;/IfModule mod_proxy.c&gt;<br/>
+				<i>...</i><br/>
+				&lt;/VirtualHost&gt;			
+		</code>
+		<p>Activate changes with</p>
+		<code>
+			sudo apachectl -t;<br/>
+			sudo service apache2 reload
+		</code>
+
+		<h4>Load balancing with Apache httpd</h4>
+		<p>
+			The main benefit with having a httpd server in front of Play applications
+			is the ability to load balance smoothly.
+		</p>
+		<p>
+			Enable the <a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy_balancer.html">balancer module</a>.
+		</p>
+		<code>
+			sudo a2enmod proxy_balancer
+		</code>
+		<p>
+			Modify your virtual host file similar to this:
+		</p>
+		<code>sudo vi /etc/apache2/sites-available/<i>example.com</i></code>
+		<code class="file">
+			<VirtualHost *:80><br/>
+				ServerName <i>www.example.com</i><br/>
+				<i>...</i><br/>
+				&lt;Location /balancer-manager&gt;<br/>
+				&nbsp;&nbsp;SetHandler balancer-manager<br/>
+ 				&nbsp;&nbsp;Order Deny,Allow<br/>
+ 				&nbsp;&nbsp;Deny from all<br/>
+				&lt;/Location&gt;<br/>
+				&lt;IfModule mod_proxy.c&gt;<br/>
+				&nbsp;&nbsp;ProxyPreserveHost On<br/>
+				&nbsp;&nbsp;ProxyPass /<i>pagenottoproxy.html</i> !<br/>
+				&nbsp;&nbsp;&lt;Proxy balancer://mycluster&gt;<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;BalancerMember http://<i>blue-moon-123</i>.herokuapp.com<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;BalancerMember http://<i>apps.example.com:9000</i> status=+H<br/>
+				&nbsp;&nbsp;&lt;/Proxy&gt;<br/>
+				&nbsp;&nbsp;ProxyPass / balancer://mycluster/<br/>
+				&nbsp;&nbsp;ProxyPassReverse / http://<i>blue-moon-123</i>.herokuapp.com/<br/>
+				&nbsp;&nbsp;ProxyPassReverse / http://<i>apps.example.com:9000</i>/<br/>
+				&lt;/IfModule mod_proxy.c&gt;<br/>
+				<i>...</i><br/>
+			&lt;/VirtualHost&gt;
+		</code>
+		<p>
+			In this example we use Heroku but also the application is deployed to a different server 
+			on port <i>9000</i>.
+		</p>
+		<p>
+			The <b>stats=+H</b> of the second balancer member
+			indicate that this member will only be used when no other can be reached.
+			So this configuration is a fail-over load balancer.
+		</p>
+		<p>					
+			Do remember Heroku will do load balancing for you.
+			But this configuration is nice for staging rollout,
+			and for simple switchover to alternative hosting.
+		</p>
+
+		<h4>Rollout staging</h4>
+		<p>
+			For a smooth rollout you can use Heroku and load balancing.
+			Note when deploying Play it will initially be unvailable
+			due to when running in <b>Production</b> mode it will pre-compile all classes,
+			so a smooth rollout makes a difference.
+		</p>
+		<ol>
+			<li>
+				<a href="#deploy">Deploy</a> your current version to a 2nd Heroku server,
+				e.g. <i>young-nebula-123</i>.herokuapp.com
+			</li>
+			<li>Test 2nd server is up and running by goin to <i>young-nebula-123</i>...</li>
+			<li>Configure your Apache server to load balance as detailed above
+				<ol>
+					<li>
+						Replace <i>apps.example.com:9000</i> with <i>young-nebula-123</i>.herokuapp.com/
+					</li>
+					<li>Make the 2nd server the default (not the <b>+H</b> one)</li>
+					<li>Test all okay</li>
+				</ol>
+			</li>
+			<li>Upgrade the 1st server by pushing new code</li>
+			<li>Test upgraded version is up and running (by going directly to <i>blue-moon-123</i>.herokuapp.com)</li>
+			<li>Make the 1st server the default balancer member again</li>
+			<li>Remove the 2nd server from load balancer</li>
+			<li>Shutdown the 2nd Heroku server</li>
+		</ol>	
+		<p>
+			With Heroku's pricing model you only need to pay for those few
+			minuttes the second server is running. 
+		</p>
+
+
+		<a name="scala"></a>
+		<h3>Scala &amp; Play 2.x</h3>
+
+		<p>
+			I have a seperate <a href="play2.html">document for Play1 2.0 + Scala + Heroku</a>
+		</p>
+
+
+
+
+
+		<br/><br/><br/><br/>
+
+		<a name="extension"></a>
+		<h3>Extensions</h3>
+		<p>
+			Next possible steps could be:
+		</p>
+		<ul>
+			<li>Integrate <a href="http://zeroturnaround.com/jrebel/">JRebel</a> for even more instant changes</li>
+			<li>Add database persistance, see <a href="http://www.jamesward.com/2011/12/11/tutorial-play-framework-jpa-json-jquery-heroku">James Ward post</a></li></li>
+			<li>Add <a href="http://jquery.com/">jQuery</a> to UI, see <a href="http://www.jamesward.com/2011/12/11/tutorial-play-framework-jpa-json-jquery-heroku">James Ward post</a></li>
+			<li>Try <a href="http://nodejs.org/">Node.js</a> on <a href="http://devcenter.heroku.com/articles/node-js">Heroku</a></li>
+			<li>Use browser based IDE <a href="http://c9.io">Cloud9</a> directly on Heroku</li>
+		</ul>
+
+		<a name="references"></a>
+		<h3>References</h3>
+		<ul>
+			<li><a href="http://www.playframework.org/">Play! framework</a></li>
+			<li><a href="http://www.playframework.org/documentation/">Play 1.x documentation</a></li>
+			<li><a href="https://github.com/playframework/Play20/wiki">Play 2.x documentation</a></li>
+			<li><a href="http://www.heroku.com/">Heroku</a></li>
+			<li><a href="http://blog.heroku.com/archives/2011/8/25/java/">Heroku for Java</li>		
+			<li><a href="http://devcenter.heroku.com/articles/play">Play documentation</a> by Heroku</li>
+			<li><a href="https://github.com/playframework/Play20/wiki/ProductionHeroku">Heroku documentation</a> by Play</li>
+			<li><a href="http://devcenter.heroku.com/articles/quickstart">Getting Started with Heroku</a></li>
+			<li><a href="http://www.jamesward.com/2011/08/29/getting-started-with-play-framework-on-heroku">Getting Started with Play Framework on Heroku</a> by <a href="http://www.jamesward.com/">James Ward</a></li>
+			<li><a href="http://www.jamesward.com/2011/12/11/tutorial-play-framework-jpa-json-jquery-heroku">Play, JPA, JSON, JQuery &amp; Heroku</a> by James Ward</li>
+			<li><a href="https://github.com/heroku/java-workbook">Heroku for Java Workbook</a> by James Ward</li>
+			<li><a href="http://ubuntu.com">Ubuntu</a></li>
+			<li><a href="http://www.jetbrains.com/idea/">IntelliJ IDEA</a></li>
+			<li><a href="http://git-scm.com/">Git</a></li>
+			<li><a href="http://github.com/">GitHub</a></li>
+			<li><a href="http://httpd.apache.org/">Apache</a></li>
+			<li><a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy.html">Apache Mod Proxy</a></li>
+			<li><a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy_balancer.html">Apache Mod Balancer</a></li>
+			<li><a href="http://java.com/en/">Java</a></li>
+			<li><a href="http://www.scala-lang.org/">Scala</a></li>
+			<li><a href="http://www.typesafe.com/">Typesafe</a></li>
+			<li><a href="http://lesscss.org/">Less</a></li>
+			<li><a href="http://coffeescript.org/">CoffeeScript</a></li>
+			<li><a href="http://bodil.tv/coffeescript-at-javazone">Bodil Stokke's CoffeeScript at JavaZone</a></li>
+		</ul>
+
+
+
+		<div class="starboard">
+			<div class="shirt">
+				<a href="http://shirts.flurdy.com/us/no-i-wont-fix-your-computer-hoodie.html"><img 
+						width="160" title="refuse to be everyones IT support" 
+						alt="I wont fix your computer" 
+					src="http://image.spreadshirt.com/image-server/image/product/17446562/view/1/type/png/width/280/height/280/no-i-will-not-fix-your-computer-185.png"
+					onmouseout="this.src='http://image.spreadshirt.com/image-server/image/product/17446562/view/1/type/png/width/280/height/280/no-i-will-not-fix-your-computer-185.png'" 
+					onmouseover="this.src='http://image.spreadshirt.com/image-server/image/composition/17446562/view/1/producttypecolor/2/type/png/width/280/height/280/no-i-will-not-fix-your-computer_design.png'"/></a>
+			</div>
+			<div class="shirt">
+				<a href="http://shirts.flurdy.com/us/i-see-dumb-people-shirt.html"><img 
+						width="160" title="dumb people are everywhere" 
+						alt="I see dumb people" 
+					src="http://image.spreadshirt.com/image-server/image/product/4136811/view/1/type/png/width/280/height/280/i-see-dumb-people-181.png"
+					onmouseout="this.src='http://image.spreadshirt.com/image-server/image/product/4136811/view/1/type/png/width/280/height/280/i-see-dumb-people-181.png'" 
+					onmouseover="this.src='http://image.spreadshirt.com/image-server/image/composition/4136811/view/1/producttypecolor/2/type/png/width/280/height/280/i-see-dumb-people_design.png'"/></a>
+				<br/><a href="http://shirts.flurdy.com">shirts.flurdy.com</a>
+			</div>
+		</div>	
+
+
+
+		<a name="help"></a>
+		<h3>Help</h3>
+		<p>
+			If you need assistance, please use these channels:
+		</p>
+		<ul>
+			<li><a href="http://groups.google.com/group/play-framework">Play's Google group</a></li>
+			<li><a href="http://stackoverflow.com/tags/playframework">Play on Stack Overflow</a></li>
+			<li><a href="http://stackoverflow.com/questions/tagged/heroku">Heroku on Stack Overflow</a></li>			
+			<li><a href="http://serverfault.com/">Server Fault</a></li>
+			<li><a href="http://www.ubuntuforums.org">Ubuntu forums</a></li>
+			<li><a href="http://support.heroku.com">Heroku support</a></li>
+		</ul>
+		<p>
+			Or <a href="http://www.eray.co.uk/contact/">hire me</a>
+			(<a href="http://www.eray.co.uk/">www.eray.co.uk</a>) for:
+		</p>
+		<ul>
+			<li><a href="http://www.eray.co.uk/quote/consultancy.html">Advice &amp; consultancy</a></li>
+			<li><a href="http://www.eray.co.uk/service/additional.html">Training classes</a></li>
+			<li><a href="http://www.eray.co.uk/service/additional.html">Play &amp; Heroku support</a></li>
+			<li><a href="http://www.eray.co.uk/quote/application.html">Application development</a></li>
+			<li><a href="http://www.eray.co.uk/quote/consultancy.html">Contractor</a></li>
+		</ul>
+
+		<a name="feedback"></a>
+		<h3>Feedback</h3>
+		<ul>
+			<li>If you find any elements are missing, please <a href="/contact/">let me know</a>.</li>
+			<li>If you spot any errors, please <a href="/contact/">let me know</a>.</li>
+			<li>If you found this helpfull, why not buy a <a href="http://shirts.flurdy.com">t-shirt</a> from my shop?</li>
+			<li>
+				If you write/find similar howto, or even one based on this one, 
+				please <a href="/contact/">let me know</a> so I can link to it!
+			</li>
+		</ul>
+
+		<a name="revision"></a>
+		<h3>Revision</h3>
+		<ul>
+			<li>Desember 2011: Initial draft created</li>
+			<li>Desember 2011: finale draft published</li>
+			<!--
+			<li>January 2012: Released as finished</li>
+			<li>February 2012: Updated</li>
+			<li>February 2012: Completed Scala section</li>
+			-->
+		</ul>
+
+		<ul class="horizontal">
+			<li><a href="http://flurdy.com">flurdy</a> |</li>
+			<li><a href="http://twitter.com/flurdy">@flurdy</a> |</li>
+			<li><a href="http://blog.flurdy.com">blog</a> |</li>
+			<li><a href="/docs">more docs</a> |</li>
+			<li><a href="#feedback">feedback</a> |</li>
+			<li><a href="http://www.eray.co.uk/">hire me</a> |</li>
+			<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+		</ul>
+	<div>	
+</body>
+</html>
