@@ -1,0 +1,51 @@
+html {
+}
+body{
+	padding: 0.2em 0.5em;
+	background-color: #ddd;
+	color: black;
+	font-family: Arial, Sans, sans-serif, serif;
+}
+#ship, #starboard {
+	background-color: #fff;
+	border: 1px outset black;
+	margin: 1em;
+	padding: 1em;
+}
+#ship {
+	min-width: 30em;
+	max-width: 40em;
+	float: left;
+}
+#starboard {
+	width: 10em;
+	float: left;
+	min-height: 30em;
+}
+ul.horizontal { }
+ul.horizontal li {  list-style: none; display: inline; }
+img.flurdySmall{ height: 1em; width: 2.7em; margin-top: 0.33em; }
+code{
+	background-color: black;
+	border: 1px inset silver;
+	color: white;
+	display: block;
+	font-size: 9pt;
+	font-family: monospace;
+	font-weight: bold;
+	padding: 0.3em 0.5em;
+	white-space: nowrap;
+	width: 45em;
+}
+code i { color: #339333; }
+.addthis_toolbox { float: right; }
+h1 { font-size: 22pt; }
+h2 { font-size: 18pt; }
+h3 { font-size: 14pt; margin: 1.5em 0.5em 0.5em 0.1em; }
+h4 { font-size: 12pt; margin: 1.5em 0.5em 0.5em 0.1em; }
+h5 { font-size: 10pt; font-weight: bold; }
+li { font-size: 10pt; }
+p { font-size: 10pt; }
+p { padding: 0.2em 0.2em; margin: 0.2em; 0.2em; }
+
+.shirt { text-align: center;margin-top: 1em; font-size: 0.6em; }
