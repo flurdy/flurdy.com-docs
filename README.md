@@ -7,7 +7,7 @@ Static HTML pages within http://flurdy.com/docs
 Includes popular HOWTOs such as
 * http://flurdy.com/docs/postfix
 * http://flurdy.com/docs/ec2
-* http://flurdy.com/docs/playheroku/play2.html
+* http://flurdy.com/docs/herokuplay/play2.html
 
 
 ### Contribute
