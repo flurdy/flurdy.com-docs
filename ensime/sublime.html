@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scala development in Sublime Text using Ensime</title>
+	<meta http-equiv="keywords" content="sublime,text,2,scala,ensime,sbt,editor,ide,plugin,howto,documentation,tups,play,framework,cucumber,gherkin,git,flurdy"/>
+	<meta http-equiv="description" content="Scala development in Sublime Text using Ensime. How to install Sublime Text 2, Ensime for SBT and sublime-ensime in OSX and Ubuntu Linux. Which gives you highighting, navigation and compilation errors inside Sublime. And other plugins such as cucumber, play! framework, repl, git etc."/>
+	<base href="http://flurdy.com/" />
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		#toc{ float: right; padding: 0.5em 1em; }
+		code{ margin: 1em; padding: 0.8em; min-width: 60em; }
+		section{ margin: 2em 1em; }
+		body{ min-width: 50em; }
+		code.sbt { background-color: #004400; }
+	</style>
+	<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-281408-1']);
+  _gaq.push(['_trackPageview']);
+
+   (function() {
+   if(location.host!='localhost'){
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+ 	}
+  })();
+</script>
+</head>
+<body>
+
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+
+	<header>
+		<h1>Scala development in Sublime Text using Ensime</h1>
+	</header>
+
+	<navigation>
+		<ul class="horizontal">
+			<li><a href="http://flurdy.com">flurdy</a></li>
+			<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+			<li><a href="http://blog.flurdy.com">blog</a></li>
+			<li><a href="/docs/">more docs</a></li>
+			<li><a href="#contact">feedback</a></li>
+			<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+		</ul>
+	</navigation>
+
+
+	<a name="toc"></a>
+	<section id="toc">
+		<h3>Table of contents</h3>
+		<ol>
+			<li><a href="#intro">Introduction</a></li>
+			<li><a href="#sublime">Install Sublime Text</a></li>
+			<li><a href="#ensime">Install Ensime within SBT</a></li>
+			<li><a href="#sublime-ensime">Install Sublime-ensime</a></li>
+			<li><a href="#server">Install Ensime-server</a></li>
+			<li><a href="#start">Start Ensime</a></li>
+			<li><a href="#plugins">More plugins</a></li>
+			<li><a href="#refernces">References</a></li>
+			<li><a href="#contact">Feedback</a></li>
+		</ol>
+	</section>
+
+
+	<a name="intro"></a>
+	<section>
+		<!-- <h3>Introduction</h3> -->
+		<p>
+			I love <a href="">Sublime Text 2</a>, and whilst I do use <a href="http://jetbrains.com/idea">IntelliJ</a> for some of my <a href="http://scala-lang.org">Scala</a> development,
+			I do find myself using Sublime more and more. And with that it is nice to have proper syntax highlighting and even compilation errors inside Sublime.
+		</p>
+		<p>
+			Enter <a href="https://github.com/aemoncannon/ensime">Ensime</a>, the <i><strong>EN</strong>hanced <strong>S</strong>cala <strong>I</strong>nteraction <strong>M</strong>ode for <strong>E</strong>macs</i>, except I use it with Sublime.
+			Sprinkle some other helpful plugins and we have a lightweight but powerful development environment.
+		</p>
+	</section>
+
+
+	<a name="sublime"></a>
+	<section>
+		<h3>Install Sublime Text 2</h3>
+		<p>Sublime Text 3 is (at the time of writing) just been released in beta mode. Until it matures a little, or rather until 3rd party plugins migrates I will stick to version 2.</p>
+
+		<p>
+			You probably already have Sublime installed, but if not go to <a href="http://www.sublimetext.com">Sublime Text's website</a> and <a href="http://www.sublimetext.com/2">download</a> the appropriate version.
+		</p>
+		<p>
+			Install it via your normal OS installation method.
+		</p>
+
+		<p>Note: Sublime Text is not open source nor free, whilst you can keep using it for free it will nag you to purchase the full version.</p>
+	</section>
+
+
+
+
+	<a name="ensime"></a>
+	<section>
+		<h3>Install Ensime within SBT</h3>
+
+		<p>
+			Go to the plugin folder of SBT and add the <a href="https://github.com/aemoncannon/ensime">Ensime plugin</a>:
+		</p>
+		<p>
+			Open or create <i>~/.sbt/plugins/plugins.sbt</i> and append <i>addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.1")</i>.
+		</p>
+		<code>
+			mkdir -p ~/.sbt/plugins;<br/>
+			echo "addSbtPlugin(\"org.ensime\" % \"ensime-sbt-cmd\" % \"0.1.1\")" &gt;&gt; ~/.sbt/plugins/plugins.sbt
+		</code>
+		<p>
+			For more up-to-date version numbers, check <a href="https://github.com/aemoncannon/ensime-sbt-cmd">github.com/aemoncannon/ensime-sbt-cmd</a>.
+		</p>
+
+		<p>
+			Go to your <a href="https://github.com/n8han/giter8">project folder</a> and let Ensime generate its configuration files:
+		</p>
+		<code>
+			cd <i>~/Code/myproject</i>;<br/>
+			sbt
+		</code>
+		<code class="sbt">
+			&nbsp;&nbsp;ensime generate
+		</code>
+
+	</section>
+
+
+	<a name="sublime-ensime"></a>
+	<section>
+		<h3>Install sublime-ensime</h3>
+
+		<p>
+			Go to the packages folder of Sublime:
+		</p>
+		<p>
+			For OSX:
+		</p>
+		<code>
+			cd ~/Library/Application\ Support/Sublime\ Text\ 2/Packages
+		</code>
+		<p>
+			For Linux:
+		</p>
+		<code>
+			cd ~/.config/sublime-text-2/Packages<br/>
+		</code>
+		<p>
+			And clone the <a href="https://github.com/sublimescala/sublime-ensime">Sublime-Ensime plugin</a> into this folder as <i>Ensime</i>:
+		</p>
+		<code>
+			git clone https://github.com/sublimescala/sublime-ensime.git Ensime
+		</code>
+	</section>
+
+
+	<a name="server"></a>
+	<section>
+		<h3>Install Ensime server</h3>
+		<p>
+			Next you need to install the server into this Sublime Ensime folder.
+			The <a href="http://download.sublimescala.org/">sublime scala project</a> has a <a href="https://www.dropbox.com/sh/ryd981hq08swyqr/V9o9rDvxkS/ENSIME%20Releases">list of suitable downloads</a>.
+			Assuming you are within "Sublime Text 2/Packages" folder still,
+			extract the latest server with:
+		</p>
+		<code>
+			cd Ensime;<br/>
+			tar xzf ~/Downloads/ensime_*;</br>
+			mv ensime_* Ensime-server
+		</code>
+	</section>
+
+
+
+
+	<a name="start"></a>
+	<section>
+		<h3>Start Ensime</h3>
+		<p>
+			Start Sublime, then start Ensime by either right click and choose <strong>Ensime/Maintenance/Startup</strong>.
+		</p>
+		<p>
+			This is usually the point you realise you <a href="http://devopsreactions.tumblr.com">missed a step or typoed</a> somewhere...
+		</p>
+
+		<h4>Use Ensime</h3>
+		<p>
+			Ensime will now highlight compilation errors.
+		</p>
+		<p>
+			If you right click a method/variable and right click <strong>Ensime/Development/Go to definition</strong>, you can navigate your code as an IDE.
+			Keyboard shortcuts make this quicker.
+		</p>
+	</section>
+
+
+
+
+	<a name="plugins"></a>
+	<section>
+		<h3>More plugins</h3>
+		<h4>Play! 2</h4>
+		<p>
+			If you use <a href="http://www.playframework.org">Play! framework</a>, then <a href="https://github.com/guillaumebort/play2-sublimetext2">Guillaume Bort's excellent Sublime package</a> is usefull for syntax and error highlighting, even in templates.
+		</p>
+		<h4>REPL</h4>
+		<p>
+			For a scala REPL inside Sublime have a look at <a href="https://github.com/laughedelic/SublimeREPL">github.com/laughedelic/SublimeREPL</a>.
+		</p>
+		<h4>Git</h4>
+		<p>
+			For simple interaction with Git have a look at <a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a>.
+			I use <a href="https://github.com/jisaacks/GitGutter">GitGutter</a> which marks changes in the left margin (and then the excellent <a href="http://www.sourcetreeapp.com/">SourceTree</a> for Git interactions).
+		</p>
+		<h4>Gherkin</h4>
+		<p>
+			For simple Cucumber and Gherkin highlighting have a look at <a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a>.
+		</p>
+	</section>
+
+
+	<a name="references"></a>
+	<section>
+		<h3>References</h3>
+		<ul>
+			<li><a href="http://www.sublimetext.com">www.sublimetext.com</a></li>
+			<li><a href="http://jetbrains.com/idea">jetbrains.com/idea</a></li>
+			<li><a href="http://www.scala-lang.org">www.scala-lang.org</a></li>
+			<li><a href="https://github.com/n8han/giter8">github.com/n8han/giter8</a>
+			<li><a href="https://github.com/aemoncannon/ensime-sbt-cmd">github.com/aemoncannon/ensime-sbt-cmd</a></li>
+			<li><a href="https://github.com/aemoncannon/ensime">github.com/aemoncannon/ensime</a></li>
+			<li><a href="https://github.com/sublimescala/sublime-ensime">github.com/sublimescala/sublime-ensime</a></li>
+			<li><a href="http://nexus.zteo.com/blog/sublimetext-as-a-minimal-ide-for-scala/">nexus.zteo.com/blog/sublimetext-as-a-minimal-ide-for-scala/</a></li>
+			<li><a href="http://blog.hugeaim.com/2012/03/22/use-sublime-text-2-for-scala-development/">blog.hugeaim.com/2012/03/22/use-sublime-text-2-for-scala-development/</a></li>
+			<li><a href="https://github.com/guillaumebort/play2-sublimetext2">github.com/guillaumebort/play2-sublimetext2</a></li>
+			<li><a href="http://www.playframework.org">www.playframework.org</a></li>
+			<li><a href="http://engineering.panaxiom.co.uk/post/34631917299/sublime-text-2-with-sbt-and-play-2">engineering.panaxiom.co.uk/post/34631917299/sublime-text-2-with-sbt-and-play-2</a></li>
+			<li><a href="https://www.dropbox.com/sh/ryd981hq08swyqr/V9o9rDvxkS/ENSIME%20Releases">www.dropbox.com/sh/ryd981hq08swyqr/V9o9rDvxkS/ENSIME%20Releases</a></li>
+			<li><a href="https://tutsplus.com/lesson/sublime-and-markdown-with-marked/">tutsplus.com/lesson/sublime-and-markdown-with-marked/</a></li>
+			<li><a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a></li>
+			<li><a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a></li>
+			<li><a href="http://git-scm.com">git-scm.com</a></li>
+			<li><a href="http://thechangelog.com/get-git-all-up-in-your-gutter-with-git-gutter/">thechangelog.com/get-git-all-up-in-your-gutter-with-git-gutter/</a></li>
+			<li><a href="https://github.com/jisaacks/GitGutter">github.com/jisaacks/GitGutter</a></li>
+			<li><a href="http://www.sourcetreeapp.com/">www.sourcetreeapp.com</a></li>
+			<li><a href="http://devopsreactions.tumblr.com">devopsreactions.tumblr.com</a></li>
+		</ul>
+	</section>
+
+
+	<a name="contact"></a>
+	<section>
+		<h3>feedback</h3>
+		<ul>
+			<li><a href="http://www.eray.co.uk/contact">Hire me</a></li>
+			<li><a href="https://github.com/flurdy/flurdy.com-docs">Correct me</a></li>
+			<li><a href="/contact">Contact me</a></li>
+		</ul>
+	</section>
+
+
+
+	<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+		src="/images/cc-by-sa-small.png" alt="cc by-sa" height="25"
+		title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+	<a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+
+	<navigation>
+		<ul class="horizontal">
+			<li><a href="http://flurdy.com">flurdy</a></li>
+			<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+			<li><a href="http://blog.flurdy.com">blog</a></li>
+			<li><a href="/docs/">more docs</a></li>
+			<li><a href="#contact">feedback</a></li>
+			<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+		</ul>
+	</navigation>
+
+</body>
+</html>
+
