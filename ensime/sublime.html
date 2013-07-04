@@ -59,8 +59,9 @@
 			<li><a href="#sublime">Install Sublime Text</a></li>
 			<li><a href="#ensime">Install Ensime within SBT</a></li>
 			<li><a href="#sublime-ensime">Install Sublime-ensime</a></li>
-			<li><a href="#server">Install Ensime-server</a></li>
+			<li><a href="#server">Install Ensime server</a></li>
 			<li><a href="#start">Start Ensime</a></li>
+			<li><a href="#start">Use Ensime</a></li>
 			<li><a href="#plugins">More plugins</a></li>
 			<li><a href="#refernces">References</a></li>
 			<li><a href="#contact">Feedback</a></li>
@@ -72,7 +73,7 @@
 	<section>
 		<!-- <h3>Introduction</h3> -->
 		<p>
-			I love <a href="">Sublime Text 2</a>, and whilst I do use <a href="http://jetbrains.com/idea">IntelliJ</a> for some of my <a href="http://scala-lang.org">Scala</a> development,
+			I love <a href="">Sublime Text 2</a>, and whilst I do use <a href="http://www.jetbrains.com/idea">IntelliJ</a> for some of my <a href="http://scala-lang.org">Scala</a> development,
 			I do find myself using Sublime more and more. And with that it is nice to have proper syntax highlighting and even compilation errors inside Sublime.
 		</p>
 		<p>
@@ -85,7 +86,7 @@
 	<a name="sublime"></a>
 	<section>
 		<h3>Install Sublime Text 2</h3>
-		<p>Sublime Text 3 is (at the time of writing) just been released in beta mode. Until it matures a little, or rather until 3rd party plugins migrates I will stick to version 2.</p>
+		<p><a href="http://www.sublimetext.com/3">Sublime Text 3</a> is (at the time of writing) just been released in beta mode. Until it matures a little, or rather until 3rd party plugins migrates I will stick to version 2.</p>
 
 		<p>
 			You probably already have Sublime installed, but if not go to <a href="http://www.sublimetext.com">Sublime Text's website</a> and <a href="http://www.sublimetext.com/2">download</a> the appropriate version.
@@ -104,6 +105,9 @@
 	<section>
 		<h3>Install Ensime within SBT</h3>
 
+		<p>
+			This assumes you already have Scala and <a href="https://github.com/sbt/sbt">SBT</a> installed.
+		</p>
 		<p>
 			Go to the plugin folder of SBT and add the <a href="https://github.com/aemoncannon/ensime">Ensime plugin</a>:
 		</p>
@@ -170,9 +174,8 @@
 			extract the latest server with:
 		</p>
 		<code>
-			cd Ensime;<br/>
 			tar xzf ~/Downloads/ensime_*;</br>
-			mv ensime_* Ensime-server
+			mv ensime_* Ensime/server
 		</code>
 	</section>
 
@@ -230,25 +233,26 @@
 		<h3>References</h3>
 		<ul>
 			<li><a href="http://www.sublimetext.com">www.sublimetext.com</a></li>
-			<li><a href="http://jetbrains.com/idea">jetbrains.com/idea</a></li>
 			<li><a href="http://www.scala-lang.org">www.scala-lang.org</a></li>
-			<li><a href="https://github.com/n8han/giter8">github.com/n8han/giter8</a>
+			<li><a href="https://github.com/sbt/sbt">github.com/sbt/sbt</a></li>
 			<li><a href="https://github.com/aemoncannon/ensime-sbt-cmd">github.com/aemoncannon/ensime-sbt-cmd</a></li>
 			<li><a href="https://github.com/aemoncannon/ensime">github.com/aemoncannon/ensime</a></li>
 			<li><a href="https://github.com/sublimescala/sublime-ensime">github.com/sublimescala/sublime-ensime</a></li>
+			<li><a href="https://github.com/n8han/giter8">github.com/n8han/giter8</a>
+			<li><a href="https://github.com/guillaumebort/play2-sublimetext2">github.com/guillaumebort/play2-sublimetext2</a></li>
+			<li><a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a></li>
+			<li><a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a></li>
+			<li><a href="https://github.com/jisaacks/GitGutter">github.com/jisaacks/GitGutter</a></li>
 			<li><a href="http://nexus.zteo.com/blog/sublimetext-as-a-minimal-ide-for-scala/">nexus.zteo.com/blog/sublimetext-as-a-minimal-ide-for-scala/</a></li>
 			<li><a href="http://blog.hugeaim.com/2012/03/22/use-sublime-text-2-for-scala-development/">blog.hugeaim.com/2012/03/22/use-sublime-text-2-for-scala-development/</a></li>
-			<li><a href="https://github.com/guillaumebort/play2-sublimetext2">github.com/guillaumebort/play2-sublimetext2</a></li>
 			<li><a href="http://www.playframework.org">www.playframework.org</a></li>
 			<li><a href="http://engineering.panaxiom.co.uk/post/34631917299/sublime-text-2-with-sbt-and-play-2">engineering.panaxiom.co.uk/post/34631917299/sublime-text-2-with-sbt-and-play-2</a></li>
 			<li><a href="https://www.dropbox.com/sh/ryd981hq08swyqr/V9o9rDvxkS/ENSIME%20Releases">www.dropbox.com/sh/ryd981hq08swyqr/V9o9rDvxkS/ENSIME%20Releases</a></li>
 			<li><a href="https://tutsplus.com/lesson/sublime-and-markdown-with-marked/">tutsplus.com/lesson/sublime-and-markdown-with-marked/</a></li>
-			<li><a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a></li>
-			<li><a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a></li>
-			<li><a href="http://git-scm.com">git-scm.com</a></li>
 			<li><a href="http://thechangelog.com/get-git-all-up-in-your-gutter-with-git-gutter/">thechangelog.com/get-git-all-up-in-your-gutter-with-git-gutter/</a></li>
-			<li><a href="https://github.com/jisaacks/GitGutter">github.com/jisaacks/GitGutter</a></li>
+			<li><a href="http://git-scm.com">git-scm.com</a></li>
 			<li><a href="http://www.sourcetreeapp.com/">www.sourcetreeapp.com</a></li>
+			<li><a href="http://www.jetbrains.com/idea">www.jetbrains.com/idea</a></li>
 			<li><a href="http://devopsreactions.tumblr.com">devopsreactions.tumblr.com</a></li>
 		</ul>
 	</section>
