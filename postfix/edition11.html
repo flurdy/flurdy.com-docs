@@ -1481,8 +1481,7 @@ smtpd_sender_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_se
 		reject_unknown_sender_domain, reject_unauth_pipelining, permit
 <span class="comment"># Requirements for the connecting server </span>
 smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org,
-		reject_rbl_client blackholes.easynet.nl,
-		reject_rbl_client dnsbl.njabl.org
+		reject_rbl_client blackholes.easynet.nl
 <span class="comment"># Requirement for the recipient address</span>
 smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks,
 		reject_non_fqdn_recipient, reject_unknown_recipient_domain,
