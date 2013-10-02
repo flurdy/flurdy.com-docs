@@ -2620,7 +2620,7 @@ INSERT INTO domains (domain) VALUES
 		<p>Then a root user.</p>
 
 		<code>INSERT INTO users (id,name,maildir,crypt) VALUES
-	('root@localhost','root','root/',encrypt('<i>apassword</i>') );</code>
+	('root@localhost','root','root/',encrypt('<i>apassword</i>', CONCAT('$5$', MD5(RAND()))) );</code>
 
 
 
@@ -2665,8 +2665,8 @@ INSERT INTO aliases (mail,destination) VALUES
 			You also have two users called <i>"Xandros"</i> and <i>"Vivita"</i>.
 		</p>
 		<code>INSERT INTO users (id,name,maildir,crypt) VALUES
-	('xandros@blobber.org','xandros','xandros/',encrypt('<i>apassword</i>') ),
-	('vivita@blobber.org','vivita','vivita/', encrypt('<i>anotherpassword</i>') );
+	('xandros@blobber.org','xandros','xandros/',encrypt('<i>apassword</i>', CONCAT('$5$', MD5(RAND()))) ),
+	('vivita@blobber.org','vivita','vivita/', encrypt('<i>anotherpassword</i>', CONCAT('$5$', MD5(RAND()))) );
 
 INSERT INTO aliases (mail,destination) VALUES
 	('xandros@blobber.org','xandros@blobber.org'),
@@ -2789,7 +2789,7 @@ INSERT INTO aliases (mail,destination) VALUES
 		</p>
 
 		<code>INSERT INTO users (id,name,maildir,crypt) VALUES
-	('<i>email@address</i>','<i>short description</i>','<i>foldername/</i>',encrypt('<i>password</i>') );
+	('<i>email@address</i>','<i>short description</i>','<i>foldername/</i>',encrypt('<i>password</i>', CONCAT('$5$', MD5(RAND()))) );
 INSERT INTO aliases (mail,destination) VALUES
 	('<i>email@address</i>','<i>email@address</i>');</code>
 
@@ -4248,7 +4248,7 @@ insert into aliases (mail,destination) values
 		('<i>joe@bloggs.com</i>','<i>joe@bloggs.com</i>'),
 		('<i>mary@bloggs.com</i>','<i>mary@bloggs.com</i>');
 insert into users (id,name,maildir,crypt) values
-		('<i>mary@bloggs.com</i>','<i>mary</i>','<i>bloggs.com/mary</i>',encrypt('<i>maryspassword</i>') );</code>
+		('<i>mary@bloggs.com</i>','<i>mary</i>','<i>bloggs.com/mary</i>',encrypt('<i>maryspassword</i>', CONCAT('$5$', MD5(RAND()))) );</code>
 
 		The domains insert is the interesting one.
 		The transport map lookup checks recursively for an alias match and will first look
