@@ -2622,7 +2622,17 @@ INSERT INTO domains (domain) VALUES
 		<code>INSERT INTO users (id,name,maildir,crypt) VALUES
 	('root@localhost','root','root/',encrypt('<i>apassword</i>', CONCAT('$5$', MD5(RAND()))) );</code>
 
-
+		<p>
+			Note: this uses the encrypt function with a <a href="https://en.wikipedia.org/wiki/Salt_%28cryptography%29">random salt</a> per user and prefixed with <a href="http://manpages.courier-mta.org/htmlman3/crypt.3.html">$5$</a> which instructs it to use <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> encryption hashing.
+		</p>
+		<p>
+			You can alternatively use the plain encrypt('apassword') function,
+			however it is then unsalted and only considers the first 8 character of the password.
+			<br/>
+			This may be required if you use other software that
+			needs to interact with the users authentication.
+			However most will support the SHA-256 crypt() call.
+		</p>
 
 	<div class="tees">
 			<a href="http://flurdy.spreadshirt.com/us/US/Shop/Article/Index/article/I-see-dumb-people-3764115"><img
