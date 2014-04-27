@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Start and stop a Scala application in production</title>
+	<meta name="keyword" content="scala,init.d,daemon,service,akka,spray,linux,debian,ubuntu,play,heroku,java,cloud,howto,setup,jcvs"/>
+	<meta name="description" content="How do you stop and start an application written in Scala when in a production or a staging environment"/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<style>
+		body {
+			min-width: 40em;
+			max-width: 60em;
+		}
+		#toprighter img{
+			height: 16px;
+			margin: 0 0.5em;
+		}
+		code {
+			margin: 0.5em;
+			font-family: monospace;
+			max-width: 60em;
+		}
+		code.large {
+			white-space: pre;
+			margin: 2em 0.5em;
+		}
+		code.tiny {
+			display: inline;
+		}
+		footer {
+			margin-top: 2em;
+		}
+		h3 {
+			margin-top: 3em;
+		}
+		.tshirt {
+			float: right;
+			clear: right;
+		}
+		.tshirt img {
+			margin: 3em 1em;
+			height: 180px;
+		}
+		#contents {
+			margin: 1em;
+			padding: 0.4em 1em;
+			border: 1px dashed silver;
+			float: right;
+		}
+		#contents ol {
+			padding-left: 1em;
+		}
+	</style>
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-281408-1']);
+	  _gaq.push(['_trackPageview']);
+
+	   (function() {
+	   if(location.host!='localhost'){
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 	}
+	  })();
+	</script>
+</head>
+<body>
+
+	<div id="toprighter">
+		<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+			src="/images/cc-by-sa-small.png" alt="cc by-sa"
+			title="Creative Commons Attributions-ShareAlike"
+			border="0" align="right" /></a>
+		<a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+	</div>
+
+	<header>
+		<h1>Start and stop a Scala application in production</h1>
+
+		<h3>
+			How do you stop and start an application written in
+			<a href="http://scala-lang.org">Scala</a>
+			<br/>
+			when in a production or a staging environment?
+		</h3>
+
+	</header>
+
+
+	<navigation>
+		<ul class="horizontal">
+			<li><a href="http://flurdy.com">flurdy</a></li>
+			<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+			<li><a href="http://blog.flurdy.com">blog</a></li>
+			<li><a href="/docs/">more docs</a></li>
+			<li><a href="#contact">feedback</a></li>
+			<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+		</ul>
+	</navigation>
+
+
+	<a name="problem"></a>
+	<h3>Problem</h3>
+	<p>
+		When you develop a Scala application you mostly use <a href="http://scala-sbt.org">SBT</a>, <a href="http://gradle.org">Gradle</a> or <a href="http://maven.apache.org">Maven</a> or similar build tools to build, test and run you application locally.
+		Whether is is a <a href="http://www.playframework.com">Play! framework</a>, <a href="http://spray.io">Spray</a>, <a href="http://akka.io">Akka</a>, etc. application, I certainly mostly depend on SBT.
+	</p>
+	<p>
+		Stopping and starting in SBT is easy, simply execute: <code class="tiny">run</code> (or  if using <a href="https://github.com/spray/sbt-revolver">Revolver</a>: <code class="tiny">re-start</code> ).
+	</p>
+	<p>
+		But in a production environment and staging environments in between you cannot do the same. You have to package up a binary that somehow gets deployed and run on the servers. They must also be able to be stopped and started easily and automated.
+	</p>
+
+	<p>
+		(I <a href="http://stackoverflow.com/questions/15360623/deploying-starting-and-stopping-scala-applications-on-a-remote-server/22479968">answered a Stack Overflow question</a> recently that is the basis of this document).
+	</p>
+
+	<div id="contents">
+		<h5>Contents</h5>
+		<ol>
+			<li><a href="#problem">Problem</a></li>
+			<li><a href="#tldr">TL;DR</a></li>
+			<li><a href="#assumptions">Assumptions</a></li>
+			<li><a href="#hammer">The&nbsp;hammer</a>
+				<ol type="a">
+					<li><a href="#daemon">Daemon</a></li>
+					<li><a href="#init">Init.d&nbsp;script</a></li>
+					<li><a href="#logging">Logging</a></li>
+				</ol>
+			</li>
+			<li><a href="#extensions">Extensions</a></li>
+			<li><a href="#todo">To&nbsp;do</a></li>
+			<li><a href="#alternatives">Alternatives</a></li>
+			<li><a href="#contact">Feedback</a></li>
+		</ol>
+	</div>
+
+
+	<a name="tldr"></a>
+	<h3>TL;DR</h3>
+
+	<ul>
+		<li>Add a daemon class to your application</li>
+		<li>Add a comprehensive init.d script</li>
+	</ul>
+
+
+	<a name="assumptions"></a>
+	<h3>Assumptions</h3>
+
+	<ul>
+		<li>
+			<h5>Debian Linux servers</h5>
+			<p>
+				This assumes your environment servers are <a href="https://en.wikipedia.org/wiki/Linux">Linux</a> based.
+				It also assumes it is based on <a href="http://debian.org">Debian</a> or its derivatives e.g. <a href="http://ubuntu.com">Ubuntu</a>.
+				Transplanting to any other Linux distribution and/or different service management should however be relatively easy.
+			</p>
+		</li>
+		<li>
+			<h5>Packaged as fat binary</h5>
+			<p>
+				This assumes you have one jar file with all libraries needed,
+				so that it can be deployed as a stand alone application.
+			</p>
+			<p>
+				This is easily achieved by using the <a href="https://github.com/sbt/sbt-assembly">SBT assembly</a> plugin for SBT.
+				For a Play! application you achieve the same with the <i>dist</i> build command.
+				Keep an eye especially if using Maven that if any of your dependencies' scope are not set as <a href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope">provided</a> as they won't be included.
+
+			</p>
+		</li>
+		<li>
+			<div class="tshirt">
+				<a href="http://shirts.flurdy.com/us/no-i-wont-fix-your-computer.html"><img src="http://image.spreadshirt.com/image-server/v1/products/4064502/views/1,width=280,height=280.png/kill-bill-351.png" alt="Kill Bill" title="Kill Bill"/></a>
+			</div>
+			<h5>Software pre-installed</h5>
+			<ul>
+				<li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a>. It may be Scala but we still use the JVM to run the application.</li>
+				<li><a href="http://commons.apache.org/proper/commons-daemon/jsvc.html">JCVS</a>. A common way to run Java as a service daemon.</li>
+			</ul>
+		</li>
+	</ul>
+
+
+
+	<a name="hammer"></a>
+	<h3>The hammer</h3>
+
+	<p>
+		This solution consists of two parts.
+	</p>
+	<p>
+		One is to make a <a href="https://en.wikipedia.org/wiki/Daemon_(computer_software)">daemon</a> class in the application that handles bootstrapping the application itself inside the JVM, and to gracefully shutdown inside the JVM as well.
+	</p>
+	<p>
+		The other is to create an init.d script so that it can be stopped
+		and started as a service.
+	</p>
+
+	<a name="daemon"></a>
+	<h4>
+		Daemon
+	</h4>
+	<p>
+		You application and especially its frameworks may already supply a similar type of class so you may not need this.
+	</p>
+	<p>
+		In my example the application is a <a href="http://spray.io">Spray</a> web service that sits on top of <a href="http://akka.io">Akka</a>. Spray does supply its own example <a href="https://github.com/spray/spray/blob/master/examples/spray-servlet/simple-spray-servlet-server/src/main/scala/spray/examples/Boot.scala">Boot</a> class to stop and start the application. However it is not sufficient enough for my needs.
+	</p>
+
+	<p>
+		This solution does create a number of objects, classes, abstract classes and traits.
+		This is so it is clear what does what and
+		follows the conventions of small class and methods that do one thing.
+		And allows further reuse and extension with more complexities.
+	</p>
+
+	<h5>Standard daemon classes</h5>
+
+	<p>
+		First we create a number of standard classes that can be shared between applications so maybe suitable as a library.
+	</p>
+
+	<p>
+		This daemon utilises the <a href="http://commons.apache.org/proper/commons-daemon/">Apache Commons Daemon</a>.
+	</p>
+
+
+	<code class="large">package <i>com.example.myapplication.server</i>
+
+import org.apache.commons.daemon._
+
+
+trait ApplicationLifecycle {
+  def start(): Unit
+  def stop(): Unit
+}
+
+
+abstract class AbstractApplicationDaemon extends Daemon {
+  def application: ApplicationLifecycle
+
+  def init(daemonContext: DaemonContext) {}
+
+  def start() = application.start()
+
+  def stop() = application.stop()
+
+  def destroy() = application.stop()
+}
+
+
+class ApplicationDaemon() extends AbstractApplicationDaemon {
+  def application = new Application
+}
+
+
+object ServiceApplication extends App {
+
+  val application = createApplication()
+
+  def createApplication() = new ApplicationDaemon
+
+  private[this] var cleanupAlreadyRun: Boolean = false
+
+  def cleanup(){
+    val previouslyRun = cleanupAlreadyRun
+    cleanupAlreadyRun = true
+    if (!previouslyRun) application.stop()
+  }
+
+  Runtime.getRuntime.addShutdownHook(new Thread(new Runnable {
+    def run() {
+      cleanup()
+    }
+  }))
+
+  application.start()
+}</code>
+
+	<h5>Bespoke application daemon class</h5>
+
+	<p>
+		The actual composition and custom logic of the application is in the Application class below. If using Spray the Boot class can be removed or rather move the logic part of it into parts of the new daemon class.
+	</p>
+
+	<code class="large">package <i>com.example.myapplication.server</i>
+
+import akka.actor.{Props, ActorSystem}
+import spray.can.Http
+import akka.io.IO
+import <i>com.example.myapplication.api.MyServiceActor</i>
+
+
+class Application() extends ApplicationLifecycle with Logging {
+
+  private[this] var started: Boolean = false
+
+  private val applicationName = "<i>MyApplication</i>"
+
+  implicit val actorSystem = ActorSystem(s"$applicationName-system")
+
+  def start() {
+    logger.info(s"Starting $applicationName Service")
+
+    if (!started) {
+      started = true
+
+      <i>val myService = actorSystem.actorOf(Props[MyServiceActor], "my-service")</i>
+
+      <i>IO(Http) ! Http.Bind(myService, interface = "0.0.0.0", port = 8280)</i>
+
+    }
+  }
+
+  def stop() {
+    logger.info(s"Stopping $applicationName Service")
+
+    if (started) {
+      started = false
+      actorSystem.shutdown()
+    }
+  }
+
+}</code>
+
+	<p>
+		The green section in the middle of the Application class above are the specifics for this application and will of course be different for each application. E.g. initialisers, orchestration etc
+	</p>
+	<p>
+		E.g. an Akka application would create its core orchestrating actors here.
+		Spray does the same and as detailed above it also binds its http
+		service to the desired port.
+		If using <a href="http://jonasboner.com/2008/10/06/real-world-scala-dependency-injection-di/">cake pattern</a> you could create the specific registry context here.
+	</p>
+
+	<a name="init"></a>
+	<h4>
+		Init.d script
+	</h4>
+
+	<p>
+		Now that your application is able to respond to daemon
+		we need to set up the side that interacts with it outside of the JVM.
+		In our case that is a standard Linux <a href="http://en.wikipedia.org/wiki/Init">init.d</a> script.
+	</p>
+
+	<p>
+		For this purpose we will use the tried and tested <a href="http://commons.apache.org/proper/commons-daemon/jsvc.html">JSVC</a> from the Apache commons-daemon.
+	</p>
+
+	<p>Create a file as /etc/init.d/<i>myapplication</i>:</p>
+
+	<code class="large">#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          <i>myapplication</i>
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Control <i>myapplication</i>
+# Description:       Control the <i>myapplication</i> daemon.
+### END INIT INFO
+
+set -e
+
+if [ -z "${JAVA_HOME}" ]; then
+        JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::")
+fi
+JAVA_OPTS="<i>-Xms512m -Xmx1024m</i>"
+
+APP=<i>myapplication</i>
+
+PID=/var/run/${APP}.pid
+OUT_LOG=/var/log/${APP}/${APP}_out.log
+ERR_LOG=/var/log/${APP}/${APP}_err.log
+
+DAEMON_USER=<i>yourserviceuser</i>
+
+APP_LOG_CONFIG=/etc/<i>mycompany</i>/${APP}_logback.xml
+APP_CONFIG=/etc/<i>mycompany</i>/${APP}.conf
+APP_HOME=/opt/${APP}
+APP_CLASSPATH=$APP_HOME/${APP}.jar
+APP_CLASS=<i>com.example.myapplication.server</i>.ApplicationDaemon
+
+if [ -n "$APP_LOG_CONFIG}" ]; then
+        JAVA_OPTS="<i>-Dlogback.configurationFile=${APP_LOG_CONFIG}</i> ${JAVA_OPTS}"
+fi
+
+DAEMON_ARGS="-home ${JAVA_HOME} <i>-Dconfig.file=${APP_CONFIG}</i> ${JAVA_OPTS} -pidfile ${PID}"
+DAEMON_ARGS="$DAEMON_ARGS -user ${DAEMON_USER} -outfile ${OUT_LOG} -errfile ${ERR_LOG}"
+DAEMON_ARGS="$DAEMON_ARGS -cp ${APP_CLASSPATH} ${APP_CLASS}"
+
+. /lib/lsb/init-functions
+
+case "$1" in
+        start)
+                log_daemon_msg "Starting ${APP}"
+                cd ${APP_HOME} && jsvc ${DAEMON_ARGS}
+                log_end_msg 0
+                ;;
+        stop)
+                log_daemon_msg "Stopping ${APP}"
+                cd ${APP_HOME} && jsvc -stop ${DAEMON_ARGS}
+                log_end_msg 0
+                ;;
+        *)
+                log_success_msg "Usage:  {start|stop}"
+                echo "Usage:  {start|stop}"
+                exit 1
+                ;;
+esac
+
+exit 0</code>
+
+	<p>
+		Note the <i>DAEMON_ARGS</i> could be on one line,
+		it was split up to fit better on this page.
+	</p>
+
+	<p>
+		You will need to make sure you have a suitable service user instead of <i>myserviceuser</i>.
+		Also the following folders need to exist:
+	</p>
+	<ul>
+		<li>/opt/<i>myapplication</i></li>
+		<li>/etc/<i>mycompany</i></li>
+		<li>/var/log/<i>myapplication</i></li>
+	</ul>
+
+	<p>
+		If you do not use <a href="http://logback.qos.ch/">Logback</a> or do not have an external configuration file you can remove <i>APP_LOG_CONFIG</i> and/or <i>APP_CONFIG</i>.
+		Otherwise you should also have these files present:
+	</p>
+	<ul>
+		<li>/etc/<i>mycompany</i>/<i>myapplication</i>.conf</li>
+		<li>/etc/<i>mycompany</i>/<i>myapplication</i>_logback.xml</li>
+	</ul>
+
+	<h5>Stop and start</h5>
+
+	<p>
+		First make the init script executable:
+		<code>
+			sudo chmod +x /etc/init.d/<i>myapplication</i>
+		</code>
+		You can then start the application with:
+		<code>
+			sudo service <i>myapplication</i> start
+		</code>
+		and stop the application with:
+		<code>
+			sudo service <i>myapplication</i> stop
+		</code>
+	</p>
+
+	<h5>Start on boot</h5>
+
+	<p>
+		For this application to automatically start on boot up in case of restarts etc, add the init script to the correct run level:
+		<code>
+			sudo update-rc.d <i>myapplication</i> defaults
+		</code>
+		Note this command changes dependant on your Linux distrobution.
+	</p>
+
+	<a name="logging"></a>
+	<h4>Logging</h4>
+
+	<p>
+		You can monitor the logs and most likely initial typo errors at:
+	</p>
+	<ul>
+		<li>/var/log/<i>myapplication</i>/<i>myapplication</i>_out.log</li>
+		<li>/var/log/<i>myapplication</i>/<i>myapplication</i>_err.log</li>
+	</ul>
+
+	<p>
+		That is basically it.
+		You can now start and stop
+		a Scala application as a service
+		on your production or staging environments.
+	</p>
+
+
+	<a name="extensions"></a>
+	<h3>Extensions</h3>
+
+	<p>
+		Naturally you will extend this set up to suit your needs.
+	</p>
+
+	<h4>Scripts and configuration version control</h4>
+
+	<p>
+		You probably want to add your init script to
+		some sort of version control.
+		I add mine to the same configuration repository
+		that I also add the external configuration and
+		logback configuration per environment.
+	</p>
+
+	<h4>Configuration management</h4>
+
+	<p>
+		Your servers might already be configured via <a href="http://puppetlabs.com/">Puppet</a>, <a href="http://www.getchef.com/chef/">Chef</a>, etc.
+		So an obvious extension is to add the above configuration and scripts to the these configurations as well.
+	</p>
+
+	<h4>Daemon library</h4>
+
+	<p>
+		The daemon classes that are common between your applications
+		can easily be extracted to a shared library.
+	</p>
+
+
+
+	<a name="alternatives"></a>
+	<h3>Alternatives</h3>
+	<p>
+		There are other ways to run a Scala application on a remote server. There are different benefits and trade off with each though.
+	</p>
+	<ul>
+		<li>
+			<h5>JEE Application Server</h5>
+			<p>
+				You will need to deploy a <i>Skinny war/jar</i> instead of full fat jar,
+				or worse somewhere in between.
+				This is because your app server may supply some of the libraries
+				or even randomly override a few of your included libraries.
+				You can achieve this with a <a href="http://blog.flurdy.com/2010/07/skinny-war-assembly-in-maven.html">heavy customisation</a> of your	Maven dependencies.
+			</p>
+		</li>
+		<li>
+			<h5>SBT on server</h5>
+			<p>
+				You can run sbt directly on the server.
+				But this is very fragile and not what it intended for.
+				It also brakes the <a href="http://programmer.97things.oreilly.com/wiki/index.php/One_Binary">one binary for all environments</a> rule.
+			</p>
+		</li>
+		<li>
+			<h5>Java nohup</h5>
+			<p>
+				A quick and simple way is to run your application
+				directly with java from the command line.
+				By wrapping it with <a href="https://en.wikipedia.org/wiki/Nohup">nohup</a> the application
+				is not killed when your terminal session ends.
+				<code class="">
+					nohup java -jar <i>mypath</i>/<i>myapp</i>.jar &amp;
+				</code>
+				Of course there is no restarts,
+				or start if server is rebooted.
+				Stopping it is only possible via something like <code class="tiny">kill -9 <i>myprocesspid</i></code>
+			</p>
+		</li>
+		<li>
+			<h5>Simple init.d</h5>
+			<p>
+				You can extend the nohup command into a simple <a href="http://en.wikipedia.org/wiki/Init">init.d</a> script.
+				This will allow you full control to stop and start the application manually and automatic.
+				It is in fact a very simplified version of what I suggest below.
+			</p>
+		</li>
+		<li>
+			<h5>SBT start script</h5>
+			<p>
+				There is a <a href="https://github.com/sbt/sbt-start-script">SBT plugin</a> that creates a init.d script for you that uses SBT's target/start commands.
+			</p>
+		</li>
+		<li>
+			<h5>Native package</h5>
+			<p>
+				There are <a href="https://github.com/sbt/sbt-native-packager">plugins available</a> to SBT that
+				will automatically build a native package for you,
+				such as <a href="https://wiki.debian.org/Apt">.apt</a> if Debian based.
+				It does seem not quite robust enough to rely on yet however.
+			</p>
+		</li>
+		<li>
+			<h5>PAAS</h5>
+			<p>
+				If you host your application via a <a href="https://en.wikipedia.org/wiki/Platform_as_a_service">PAAS</a>, e.g. <a href="http://heroku.com">Heroku</a>, this is usually all taken care for you.
+				However if you use a <a href="https://en.wikipedia.org/wiki/Infrastructure_as_a_service#Infrastructure_as_a_service_.28IaaS.29">IAAS</a>, e.g. <a href="http://aws.amazon.com/ec2">Amazon AWS ec2</a> you do have to do this manually.
+			</p>
+		</li>
+		<li>
+			<h5>Java Service Wrapper</h5>
+			<p>
+				You can follow my suggestion and tweak it slightly by using <a href="http://wrapper.tanukisoftware.com/">Java Service Wrapper</a> instead of JSVC.
+			</p>
+		</li>
+		<!--
+		<li>
+			<h5>AWS image bundle</h5>
+			<p>
+			</p>
+		</li>
+		-->
+	</ul>
+
+
+
+
+	<a name="todo"></a>
+	<h3>To do</h3>
+
+	<h4>systemd</h4>
+
+	<p>
+		Describe how to make the init script compatible with <a href="http://freedesktop.org/wiki/Software/systemd/">systemd</a>.
+	</p>
+
+
+
+	<a name="contact"></a>
+	<h3>Feedback &amp; Contact</h3>
+
+	<p>
+		For typos and minor change suggestions,
+		please clone this document repository at: <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a>,
+		and send a <a href="https://help.github.com/articles/using-pull-requests">pull request</a>.
+	</p>
+
+	<p>
+		And/or alternatively please enhance the <a href="http://stackoverflow.com/questions/15360623/deploying-starting-and-stopping-scala-applications-on-a-remote-server/22479968">initial Stack Overflow answer</a>.
+	</p>
+
+	<p>
+		For large changes perhaps create your own article and <a href="http://flurdy.com/contact/">send me the link afterwards</a>.
+	</p>
+
+
+	<p>
+		To hire me as a consultant / contractor contact me via <a href="http://www.eray.co.uk/contact/">www.eray.co.uk</a>.
+	</p>
+
+	<p>
+		Or contact me via <a href="http://flurdy.com/contact/">flurdy.com/contact</a>.
+	</p>
+
+	<footer>
+		<p>
+			First draft: April 2014. Last update: April 2014.
+		</p>
+
+		<ul class="horizontal">
+			<li><a href="http://flurdy.com">flurdy</a></li>
+			<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+			<li><a href="http://blog.flurdy.com">blog</a></li>
+			<li><a href="/docs/">more docs</a></li>
+			<li><a href="#contact">feedback</a></li>
+			<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+		</ul>
+	</footer>
+
+</body>
+</html>
