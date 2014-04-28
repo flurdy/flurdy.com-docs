@@ -99,6 +99,16 @@
 		</ul>
 	</navigation>
 
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- scala init leaderboard -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-7805345644641760"
+     data-ad-slot="6907501288"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 
 	<a name="problem"></a>
 	<h3>Problem</h3>
@@ -221,11 +231,15 @@
 	<h5>Standard daemon classes</h5>
 
 	<p>
-		First we create a number of standard classes that can be shared between applications so maybe suitable as a library.
+		This daemon utilises the <a href="http://commons.apache.org/proper/commons-daemon/">Apache Commons Daemon</a>.
+		Add this dependency to your build.sbt, Build.scala, pom.xml or whatever is relevant:
+		<code class="">
+			"commons-daemon" % "commons-daemon" % "1.0.15"
+		</code>
 	</p>
 
 	<p>
-		This daemon utilises the <a href="http://commons.apache.org/proper/commons-daemon/">Apache Commons Daemon</a>.
+		Then we create a number of standard classes that can be shared between applications so it may be suitable as a library.
 	</p>
 
 
