@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Staging environments and pipeline promotion with Heroku</title>
+   <meta name="keyword" content="heroku,commands,play,promote,pipeline,release,environment,staging,deploy"/>
+   <meta name="description" content="How to create staging and production environments for you Heroku applications. Then use Heroku's pipeline feature to promote releases through these environments"/>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+   <style>
+      body {
+         min-width: 40em;
+         max-width: 60em;
+      }
+      #toprighter img{
+         height: 16px;
+         margin: 0 0.5em;
+      }
+      code {
+         margin: 0.5em;
+         font-family: monospace;
+         max-width: 60em;
+      }
+      code.large {
+         white-space: pre;
+         margin: 2em 0.5em;
+      }
+      code.tiny {
+         display: inline;
+      }
+      footer {
+         margin-top: 2em;
+      }
+      h3 {
+         margin-top: 3em;
+      }
+      .tshirt {
+         float: right;
+         clear: right;
+      }
+      .tshirt img {
+         margin: 3em 1em;
+         height: 180px;
+      }
+      #contents {
+         margin: 1em;
+         padding: 0.4em 1em;
+         border: 1px dashed silver;
+         float: right;
+      }
+      #contents ol {
+         padding-left: 1em;
+      }
+   </style>
+   <script type="text/javascript">
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-281408-1']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+      if(location.host!='localhost'){
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      }
+     })();
+   </script>
+</head>
+<body>
+
+   <div id="toprighter">
+      <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+         src="/images/cc-by-sa-small.png" alt="cc by-sa"
+         title="Creative Commons Attributions-ShareAlike"
+         border="0" align="right" /></a>
+      <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+   </div>
+
+   <header>
+
+      <h1>Staging environments and pipeline promotion with Heroku</h1>
+
+   </header>
+
+   <navigation>
+      <ul class="horizontal">
+         <li><a href="http://flurdy.com">flurdy</a></li>
+         <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+         <li><a href="http://blog.flurdy.com">blog</a></li>
+         <li><a href="/docs/">more docs</a></li>
+         <li><a href="#contact">feedback</a></li>
+         <li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+      </ul>
+   </navigation>
+
+   <h4>
+      How to create staging and production environments for you <a href="http://heroku.com">Heroku</a> applications.
+
+      Then use Heroku's <a href="https://devcenter.heroku.com/articles/labs-pipelines">pipeline feature</a> to promote releases through these environments
+   </h4>
+
+   <!-- p>
+
+      This extends my <a href="tips.html">Heroku tips</a>, and can be used with my <a href="/docs/herokuplay/play2.html">Play 2.0 + Scala + Heroku</a> howto.
+
+   </p -->
+
+
+   <h3>
+      Sign up &amp; install
+   </h3>
+
+   <p>
+      If you have not already signed up with Heroku and installed the <a href="https://toolbelt.heroku.com">Heroku Toolbelt</a>,
+      follow my <a href="tips.html">Heroku tips</a>'s sign up and install sections.
+   </p>
+
+
+   <h3>
+      Application
+   </h3>
+
+   <p>
+      You will off course need an application to promote and deploy.
+      There is a <a href="https://devcenter.heroku.com">whole set of technology stacks</a> that Heroku supports.
+      For an example you can read my <a href="/docs/herokuplay/play2.html">Play 2.0 + Scala + Heroku</a> howto.
+   </p>
+
+
+   <h3>
+      Environments
+   </h3>
+
+   <p>
+
+      Your application and company may require several
+      <a href="http://en.wikipedia.org/wiki/Development_environment_(software_development_process)">development and staging environments</a>.
+
+      For this example we will use a development, a staging and a production environment.
+
+   </p>
+
+   <p>
+      Lets create a development environment application:
+   </p>
+
+   <code>
+      heroku create <i>myapp</i>-dev --remote dev --region <i>eu</i>;<br/>
+   </code>
+
+   <p>
+      Replace <i>myapp</i> with your unique application name.
+      Valid regions are EU and US. US is default so then the whole parameter can be omitted.
+   </p>
+
+   <p>
+      You can now add <a href="https://addons.heroku.com">add-ons</a> and <a href="https://devcenter.heroku.com/articles/config-vars">configure environment properties</a>,
+      as detailed in <a href="tips.html">Heroku tips</a>.
+   </p>
+
+
+   <h3>
+      Development deploy
+   </h3>
+
+   <p>
+      When you application is ready to start testing you can deploy it to the development environment with git.
+   </p>
+
+   <code>
+      git push dev master ;<br/>
+      heroku open --remote dev &amp;&amp; heroku logs -t --remote dev
+   </code>
+
+
+   <h3>
+      Fork
+   </h3>
+
+   <p>
+      When the development environment is configured well enough you can copy it as a template for the other environments using Heroku's <a href="https://devcenter.heroku.com/articles/fork-app">fork feature</a>.
+   </p>
+   <p>
+      Create a staging environment:
+   </p>
+
+   <code>
+      heroku fork -a <i>myname</i>-dev <i>myname</i>-staging --region <i>us</i>
+   </code>
+   <p>
+      And a production environment:
+   </p>
+
+   <code>
+      heroku fork -a <i>myname</i>-dev <i>myname</i>-live<br/>
+   </code>
+
+   <p>
+      There will be some customisation for each environment afterwards, but the forking copies across the most useful features including add-ons.
+   </p>
+
+
+   <h3>
+      Pipeline
+   </h3>
+
+   <p>
+      Whilst still in beta mode the <a href="https://devcenter.heroku.com/articles/labs-pipelines">pipeline feature</a> by Heroku is really useful to stream line the release process.
+      It allows you to specify which application(environment) your application can be promoted to once that environment have been signed off.
+   </p>
+
+   <p>
+      Configure the pipelining with enabling the feature.
+   </p>
+
+   <code>
+      heroku labs:enable pipelines
+   </code>
+
+   <p>
+      Then install pipeline into your local Heroku toolbelt.
+   </p>
+
+   <code>
+      heroku plugins:install git://github.com/heroku/heroku-pipeline.git
+   </code>
+
+   <p>
+      And set the promotion target for the development environment to be staging.
+   </p>
+
+   <code>
+      heroku pipeline:add <i>myapp</i>-staging --remote dev
+   </code>
+
+   <p>
+      And for staging the pipeline environment is production.
+   </p>
+
+   <code>
+      heroku pipeline:add <i>myapp</i>-live --remote staging
+   </code>
+
+
+   <p>
+      You can then verify the pipeline.
+   </p>
+
+   <code>
+      heroku pipeline --remote dev;<br/>
+      heroku pipeline --remote staging;<br/>
+      heroku pipeline --remote live
+   </code>
+
+
+   <h3>
+      Release process with promotion
+   </h3>
+
+   <p>
+      Now we have an application to deploy, 3 environments to stage via and a pipeline feature to assist with promotion.
+   </p>
+
+   <p>
+      You have deployed your initial version via git to the development environment.
+      If you want to see if different versions are on development and staging, there is a diff feature.
+   </p>
+
+   <code>
+      heroku pipeline:diff --remote dev
+   </code>
+
+   <p>
+      Note, you will need to have an initial version on the environment for this to make sense.
+   </p>
+
+   <p>
+      If you want to promote this to the staging environment, simply promote it.
+   </p>
+
+   <code>
+      heroku pipeline:promote --remote dev ;<br/>
+      heroku open --remote staging &amp;&amp; heroku logs -t --remote staging
+   </code>
+
+   <p>
+      If you want to release this to production.
+   </p>
+
+   <code>
+      heroku pipeline:promote --remote staging ;<br/>
+      heroku open --remote live &amp;&amp; heroku logs -t --remote live
+   </code>
+
+
+   <h3>
+      Audit
+   </h3>
+
+   <p>
+      If you want a log of when releases where promoted there is a release log per environment
+   </p>
+
+   <code>
+      heroku releases --remote live
+   </code>
+
+
+   <h3>
+      Rollback
+   </h3>
+
+   <p>
+      If an bad release has been rolled out your can easily rollback to the previous release entry.
+   </p>
+
+   <code>
+      heroku rollback --remote live
+   </code>
+
+
+   <h3>
+      One binary
+   </h3>
+
+   <p>
+      One thing missing from the pipeline feature and in general Heroku's git push workflow is the lack of one binary for all environments.
+      Experience has taught us that different binaries in different environments may introduce unexpected bugs.
+   </p>
+
+   <p>
+      Heroku have announced some Enterprise support for continous integration tools that have build pack plugins to assist with this.
+      Other add-on providers also supply binary promotion. Hopefully this will become more streamlined soon.
+   </p>
+
+   <!--p>
+      Heroku do have a feature for companies to upload build packs, which is their equivalent of a binary, directly to environments.
+      This is not really an alternative for small to non commercial organisations, however it is worth investigating if you
+      are investing heavily in Heroku infrastructure.
+   </p-->
+
+
+
+
+
+
+   <a name="contact"></a>
+   <h3>Feedback &amp; Contact</h3>
+
+   <p>
+      For typos and minor change suggestions,
+      please clone this document repository at: <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a>,
+      and send a <a href="https://help.github.com/articles/using-pull-requests">pull request</a>.
+   </p>
+
+   <p>
+      To hire me as a consultant / contractor contact me via <a href="http://www.eray.co.uk/contact/">www.eray.co.uk</a>.
+   </p>
+
+   <p>
+      Or contact me via <a href="http://flurdy.com/contact/">flurdy.com/contact</a>.
+   </p>
+
+   <footer>
+      <p>
+         First draft: May 2014. Last update: May 2014.
+      </p>
+
+      <ul class="horizontal">
+         <li><a href="http://flurdy.com">flurdy</a></li>
+         <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+         <li><a href="http://blog.flurdy.com">blog</a></li>
+         <li><a href="/docs/">more docs</a></li>
+         <li><a href="#contact">feedback</a></li>
+         <li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+      </ul>
+   </footer>
+
+</body>
+</html>
