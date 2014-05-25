@@ -179,19 +179,39 @@
    <p>
       When the development environment is configured well enough you can copy it as a template for the other environments using Heroku's <a href="https://devcenter.heroku.com/articles/fork-app">fork feature</a>.
    </p>
+
    <p>
-      Create a staging environment:
+      Create a staging environment.
    </p>
 
    <code>
       heroku fork -a <i>myname</i>-dev <i>myname</i>-staging --region <i>us</i>
    </code>
+
    <p>
-      And a production environment:
+      Forking does not automatically add it as a remote to your local git repository.
    </p>
 
    <code>
-      heroku fork -a <i>myname</i>-dev <i>myname</i>-live<br/>
+      heroku info -a <i>myname</i>-staging
+   </code>
+
+   <p>
+      Copy the "git@heroku.com:<i>myapp</i>-staging.git" url and add it as a remote.
+   </p>
+
+   <code>
+      git remote add staging git@heroku.com:<i>myapp</i>-staging.git
+   </code>
+
+
+   <p>
+      And a production environment.
+   </p>
+
+   <code>
+      heroku fork -a <i>myname</i>-dev <i>myname</i>-live ;<br/>
+      git remote add live git@heroku.com:<i>myapp</i>-live.git
    </code>
 
    <p>
@@ -310,7 +330,7 @@
    </h3>
 
    <p>
-      If an bad release has been rolled out your can easily rollback to the previous release entry.
+      If a bad release has been rolled out your can easily rollback to the previous release entry.
    </p>
 
    <code>
@@ -323,21 +343,18 @@
    </h3>
 
    <p>
-      One thing missing from the pipeline feature and in general Heroku's git push workflow is the lack of one binary for all environments.
+      One thing missing from the general Heroku's git push workflow is the lack of one binary for all environments.
       Experience has taught us that different binaries in different environments may introduce unexpected bugs.
    </p>
 
    <p>
-      Heroku have announced some Enterprise support for continous integration tools that have build pack plugins to assist with this.
-      Other add-on providers also supply binary promotion. Hopefully this will become more streamlined soon.
+      With pipeline promotion of builds you are mimicking the one binary pattern.
    </p>
 
-   <!--p>
-      Heroku do have a feature for companies to upload build packs, which is their equivalent of a binary, directly to environments.
-      This is not really an alternative for small to non commercial organisations, however it is worth investigating if you
-      are investing heavily in Heroku infrastructure.
-   </p-->
-
+   <p>
+      Heroku have also announced some Enterprise support for continous integration tools that have build pack plugins to assist with building one binary before any deployment to Heroku.
+      Other add-on providers also supply binary promotion. Hopefully this will become more streamlined soon.
+   </p>
 
 
 
