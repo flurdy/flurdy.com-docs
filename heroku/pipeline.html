@@ -38,7 +38,7 @@
          clear: right;
       }
       .tshirt img {
-         margin: 3em 1em;
+         margin: 1em 1em;
          height: 180px;
       }
       #contents {
@@ -98,12 +98,6 @@
       Then use Heroku's <a href="https://devcenter.heroku.com/articles/labs-pipelines">pipeline feature</a> to promote releases through these environments
    </h4>
 
-   <!-- p>
-
-      This extends my <a href="tips.html">Heroku tips</a>, and can be used with my <a href="/docs/herokuplay/play2.html">Play 2.0 + Scala + Heroku</a> howto.
-
-   </p -->
-
 
    <h3>
       Sign up &amp; install
@@ -118,6 +112,10 @@
    <h3>
       Application
    </h3>
+
+   <div class="tshirt">
+      <a href="http://shirts.flurdy.com/us/kill-bill.html"><img src="http://image.spreadshirt.com/image-server/v1/products/4064502/views/1,width=280,height=280.png/kill-bill-351.png" alt="Kill Bill" title="Kill Bill"/></a>
+   </div>
 
    <p>
       You will off course need an application to promote and deploy.
@@ -352,8 +350,12 @@
    </p>
 
    <p>
-      Heroku have also announced some Enterprise support for continous integration tools that have build pack plugins to assist with building one binary before any deployment to Heroku.
-      Other add-on providers also supply binary promotion. Hopefully this will become more streamlined soon.
+      Heroku have also announced some Enterprise support for continuous integration tools that have <a href="https://devcenter.heroku.com/articles/buildpacks">build pack</a> plugins to assist with building one binary (<a href="https://devcenter.heroku.com/articles/slug-compiler">slugs</a>) before any deployment to Heroku.
+      Some of this support is included with the new <a href="https://devcenter.heroku.com/categories/platform-api">Platform API</a>.
+   </p>
+
+   <p>
+      Other add-on providers also supply binary promotion, such as <a href="https://addons.heroku.com/codeship">Codeship</a>.
    </p>
 
 
