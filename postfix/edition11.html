@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2013-06-30</h6>
+<h6>Last Update: 2014-05-31</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -399,10 +399,22 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				Released
 			</td>
 			<td colspan="1" nowrap>2012-11</td>
-			<td colspan="1" nowrap>2013-06</td>
+			<td colspan="1" nowrap>2014-05</td>
 			<td colspan="1" class="desc">
 				Based on Ubuntu 12.04 (precise). Tested with 12.10 (quantal) and 13.04 (raring)
 			</td>
+		</tr>
+		<tr>
+			<td colspan="1" nowrap>12th</td>
+			<td colspan="1">
+				Draft
+			</td>
+			<td colspan="1" nowrap>2014-05</td>
+			<td colspan="1" nowrap>2014-05</td>
+			<td colspan="1" class="desc">
+				Based on Ubuntu 14.04 (trusty).
+			</td>
+		</tr>
 	</table>
 
 	<h5>
@@ -835,7 +847,7 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 		for Mandriva, general RPM and tarball compiling.
 	</p>
 	<p>
-		To follow the rest of this howto with another distrobution,
+		To follow the rest of this howto with another distribution,
 		you need to ensure all your
 		packages have been installed with the same modules,
 		E.g MySQL lookup on postfix and sasl, php in apache etc.
@@ -1394,7 +1406,7 @@ myorigin=<i>example.com</i></code>
 	<p>
 		Then decide what the greeting text will be.
 		Enough info so it is useful,
-		but not divelge everything to potential hackers.
+		but not divulge everything to potential hackers.
 		<code>smtpd_banner = $myhostname ESMTP $mail_name</code>
 	</p>
 	<p>
@@ -1402,7 +1414,7 @@ myorigin=<i>example.com</i></code>
 		all outgoing mail via another SMTP server,
 		or send them yourself.
 		I send via my ISP's server,
-		so it has to worry about the queing etc.
+		so it has to worry about the queuing etc.
 		If you send it yourself then you are not reliant
 		on 3rd party server.
 		But you may risk more exposure and
@@ -2349,7 +2361,7 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 	<h4>Alternative: SquirrelMail</h4>
 	<p>
 		This howto in previous <a href="#editions">editions</a> used to have <a href="http://www.squirrelmail.org">SquirrelMail</a> as the webmail client. It is more mature with a longer testing record. It has a large library of various plugins.
-		Please read the <a href="#ext_squirrel">SquirrelMail extension</a> further down on how to install it instead if prefered.
+		Please read the <a href="#ext_squirrel">SquirrelMail extension</a> further down on how to install it instead if preferred.
 	</p>
 
 	<a name="ext_round"></a>
@@ -3042,9 +3054,9 @@ order by d.domain,a.mail</code>
 	<p><i><a href="edition5.html#test">previous edition 1</a></i></p>
 	<p><i><a href="edition5.html#test2">previous edition 2</a></i></p>
 	<p>
-		The previous editions has detail on switching services off untill time to test them.
+		The previous editions has detail on switching services off until time to test them.
 		<br/>
-		It also details locking down your server from spammers untill finished testing.
+		It also details locking down your server from spammers until finished testing.
 	</p>
 
 	<h6><a href="#top">Return to top</a>.</h6>
@@ -3756,7 +3768,7 @@ additional_conditions = and enabled = 1</code>
 	<p>
 		Here is rough backup script to backup your configurations
 		and mail folders.
-		You may want to backup the folders seperatly
+		You may want to backup the folders separately
 		as they can quickly grow to GBs.
 		Adding this to a cronjob automates this process.
 		Be aware that you should
@@ -4613,7 +4625,7 @@ sudo service postfix restart;</code>
 		access to your server on top of the firewall.
 		Initially you will need SSH (22) access, quite soon you will need SMTP
 		and IMAP ports opened, 25,143,465,587 and 993, and
-		eventually webserver ports of 80 and 443.
+		eventually web server ports of 80 and 443.
 		<a href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1233&categoryID=100G">Read here</a> for tips on securing AMIs.
 	</p>
 	<p>
@@ -4622,7 +4634,7 @@ sudo service postfix restart;</code>
 		Or backup certain data if you got an image to instantiate from.
 		Back up to S3 or your local machine.
 		Create images only now and then. Backup configurations, database, maildirs
-		more regularily.
+		more regularly.
 	</p>
 	<p>
 		Once launched, follow my <a href="#initialize">Initialize</a> section.
@@ -4634,7 +4646,7 @@ sudo service postfix restart;</code>
 		(Including other people using this howto.)
 		But Spamhaus has a simple web page to remove ips,
 		which they link to in rejection messages.
-		Simple look in your logs, click on the link on follow the instrucions:
+		Simple look in your logs, click on the link on follow the instructions:
 		basically fill in your ip, email and state its for a mail server.
 		Then Spamhaus will remove your IP from their database.
 	</p>
@@ -4648,7 +4660,7 @@ sudo service postfix restart;</code>
 	<p>
 		<b>3rd Note</b>:
 		<a href="http://groups.google.com/group/ec2ubuntu/msg/ea6dc7ee49092cea">This fix needs to applied to the instances</a>
-		buildt on an early 8.04 base. This is not a problem with the later Hammond or any Canonical based images.
+		built on an early 8.04 base. This is not a problem with the later Hammond or any Canonical based images.
 	</p>
 	<p>
 		<b>4th Note</b>:
@@ -4941,10 +4953,11 @@ sudo service postfix restart;</code>
 	<a name="author"></a>
 	<h3>About author</h3>
 	<p>
-		<a href="http://www.ivar.co.uk">Ivar Abrahamsen</a>, an <a href="http://www.eray.co.uk">IT Senior Consultant</a> from Norway.
-		Specialising in developing and integrating middleware application systems.
-		Mainly open source and Java based technology stack.
-		Recently moved back to UK (Hampshire) after 5 years in Oslo and before that 15 years in Manchester.
+		<a href="http://www.ivar.co.uk">Ivar Abrahamsen</a>, an <a href="http://www.eray.co.uk">IT Consultant</a> from Norway currently living in Hampshire, UK.
+
+		Specialising in leading teams that integrate middleware applications,
+		payment systems and data processing systems using mainly Java and Scala technology stacks.
+
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
@@ -4986,7 +4999,7 @@ sudo service postfix restart;</code>
 		</p></li>
 		<li><p>
 			Include a short dump of the mail.log with your post.
-			(Remember to anonymise the servernames, email adresses &amp; definetly passwords!)
+			(Remember to anonymise the server names, email adresses &amp; definitely passwords!)
 		</p></li>
 	</ul>
 
@@ -5006,7 +5019,7 @@ sudo service postfix restart;</code>
 			Or alternatively use <a href="http://serverfault.com/questions/tagged/postfix">Server Fault</a>.
 		</b></p></li>
 		<li><p><b>
-			if more  Postfix specific, considered the <a href="http://www.postfix.org/lists.html">postfix mailing lists</a>.
+			If more  Postfix specific, considered the <a href="http://www.postfix.org/lists.html">postfix mailing lists</a>.
 		</b></p></li>
 	</ul>
 	<p>
@@ -5023,7 +5036,7 @@ sudo service postfix restart;</code>
 		know a lot more about Postfix than me.
 	</p>
 	<p>
-		Questions sent to me directly may not be answered for a while or at all unfortunetly.
+		Questions sent to me directly may not be answered for a while or at all unfortunately.
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
@@ -5110,18 +5123,8 @@ sudo service postfix restart;</code>
 	<ul>
 		<li>
 			<p>
-				You may hire me via <a href="http://www.eray.co.uk">www.eray.co.uk</a>
-			</p>
-			<ul>
-				<li>
-					<p><a href="http://www.eray.co.uk/contact/">to set up a complete email server for you</a></p>
-				</li>
-				<li>
-					<p><s><a href="http://www.eray.co.uk/services/consultancy.html">for advice as a consultant</a></s></p>
-				</li>
-			</ul>
-			<p>
-				(<a href="http://www.eray.co.uk/rates/availability.html">price &amp; availability</a>)
+				You may purchase a complete AWS based email server by me via <a href="http://www.eray.co.uk">www.eray.co.uk</a>
+				(<a href="http://www.eray.co.uk/rates/index.html">price</a>)
 			</p>
 		</li>
 		<li>
@@ -5250,12 +5253,14 @@ sudo service postfix restart;</code>
 	<h3>Why</h3>
 	<h4>Why your own mail server</h4>
 	<p>
-		Main reason: Because you can.<br />
+		Main reason: Because you can.
+	</p>
+	<p>
 		Other good reasons:
 		Basically it leaves you in complete control,
 		to expand, customize and tweak your mail server to your needs.
-		You are not dependant on 3rd party providers,
-		limited by their technology contraints or your budgets.
+		You are not dependent on 3rd party providers,
+		limited by their technology constraints or your budgets.
 		With your own mail server you can add as many aliases,
 		users and domain as you'd like,
 		be as restrictive or open about security, virus, spam,
@@ -5263,22 +5268,27 @@ sudo service postfix restart;</code>
 		And is it is well known, frequently updated, open source application stack,
 		you can also trust the software you use.
 	</p>
+	<p>
+		And its your data. You and your data is not a product of another company.
+		In theory should make your data more secure and keep your privacy.
+	</p>
 	<h4>Why I wrote this howto</h4>
 	<p>
 		When I set up my first email server I used a mix
 		of other howtos on the net.
-		And they were so helpfull that I though I would
+		And they were so helpful that I though I would
 		contribute back with my experience.
 		And it has been useful as a recipe script for
 		myself every time I need to install/update a server.
 	</p>
 	<p>
-		A less angelic reason is that back in 2003 I was setting up mail server
-		for a few friends and collegues.
-		Soon I was getting more request, and being a lazy programmer, I thought..
+		A less angelic reason is that back in 2003 I was setting up one mail server
+		for a myself and few friends and collegues.
+		Soon I was getting more request for more servers,
+		and being a lazy programmer, I thought..
 		"Why don't I write a howto and let them do it themselves..."
 		Soon it was listed on postfix.org
-		and I was getting thousends of hits and
+		and I was getting thousands of hits and
 		lots of emails. (blessing in disguise)
 	</p>
 
@@ -5377,7 +5387,6 @@ sudo service postfix restart;</code>
 		<li><p>
 			2013-06-30: Added contribute section.
 		</p></li>
-		<li><p>
 		<li><p>
 			2013-01-10: Made Roundcube default webmail client.
 		</p></li>
