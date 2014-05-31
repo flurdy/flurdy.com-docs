@@ -57,9 +57,9 @@
 </div>
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
 <!-- AddThis Button END -->
-<h6><a href="#editions">11th edition</a></h6>
+<h6><a href="#editions">12th edition</a></h6>
 <h6>
-	Author <a href="http://flurdy.com">Ivar Abrahamsen</a>
+	Author <a href="#author">Ivar Abrahamsen</a>
 </h6>
 <h6>
 	License:
@@ -345,7 +345,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		<tr>
 			<td colspan="1" nowrap><a href="edition7.html">7th</a></td>
 			<td colspan="1">
-				Released
+				Released (outdated)
 			</td>
 			<td colspan="1" nowrap>2008-04</td>
 			<td colspan="1" nowrap>2009-06</td>
@@ -394,7 +394,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</td>
 		</tr>
 		<tr>
-			<td colspan="1" nowrap>11th (this)</td>
+			<td colspan="1" nowrap><a href="edition11.html">11th</a></td>
 			<td colspan="1">
 				Released
 			</td>
@@ -405,7 +405,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</td>
 		</tr>
 		<tr>
-			<td colspan="1" nowrap><a href="edition12.html">12th</a></td>
+			<td colspan="1" nowrap>12th (this)</td>
 			<td colspan="1">
 				Draft
 			</td>
@@ -424,7 +424,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </div>
 <h6><a href="#top">Return to top</a>.</h6>
 
-<!--
+
 <a name="dev"></a>
 <h2>Notice</h2>
 
@@ -435,16 +435,13 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<p>
 		This edition is still in draft mode, so some sections are still to be thoroughly retested.
 	</p>
+	<!--
 	<p>
-		You may prefer to use the <b><a href="edition5.html">previous howto edition</a>(7th)</b>,
-		while we iron out any errors and missing sections.
+		You may prefer to use the <a href="edition11.html">previous howto edition</a>(11th),
+		whilst we iron out any errors and missing sections.
 	</p>
-	<
-	<p>
-		Some references to older editions still exists, but they are being ironed out.
-		And some sections still need some padding out with better descriptions.
-	</p>
-	>
+	-->
+
 	<p>
 		If you find any spelling mistakes or broken links, <a href="#contact">please let me know</a>.
 		Any clear technical mistakes, then  <a href="#contact">let me know</a>.
@@ -453,7 +450,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	</p>
 </div>
 <h6><a href="#top">Return to top</a>.</h6>
--->
+
 
 
 <a name="intro"></a>
@@ -867,12 +864,11 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 	</p>
 
 	<p>
-		Or if you have chosen an <a href="#ec2">ec2 based server</a>, you can:
-	<ul>
-		<li><p>Base it on a <a href="http://www.ubuntu.com/cloud/public">Canonical image</a></p></li>
-		<li><p>Apply my <a href="http://flurdy.com/docs/ec2/ubuntu/">ec2 Ubuntu server</a> suggestions</p></li>
-		<li><p><s>Use my prebuilt <a href="#ec2_ami">ec2 public images</a> for this postfix mail server</s></p></li>
-	</ul>
+		If you have chosen an <a href="#ec2">ec2 based server</a> you should follow <a href="#ec2">my ec2 suggestions</a> first.
+	</p>
+
+	<p>
+		I strongly suggest choosing the latest <a href="https://wiki.ubuntu.com/LTS">LTS version</a> of Ubuntu, not the versions in between. Once this is set up you will tinker very little with it, and it will quickly be annoying to upgrade distributions once a year.
 	</p>
 
 	<p>
@@ -1015,7 +1011,7 @@ sudo aptitude install postgrey</code>
 	</p>
 
 
-
+<!--
 	<div class="note">
 	<h5>EC2 Bundle</h5>
 	<p>
@@ -1023,6 +1019,7 @@ sudo aptitude install postgrey</code>
 		is based on Canonical's official Ubuntu with these basic mail server packages installed.
 	</p>
 	</div>
+-->
 
 </div>
 <h6><a href="#top">Return to top</a>.</h6>
@@ -1740,12 +1737,14 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			 only then you should test if you can actually read the emails before proceding</p></li>
 		</ul>
 
+<!--
 	<div class="note">
 		<p>
 			Ive created an EC2 bundle for this stage:
 			<a href="#ec2_ami">flurdy-amis/ubuntu-mail-server-simple</a>.
 		</p>
 	</div>
+-->
 
 </div>
 <h6><a href="#top">Return to top</a>.</h6>
@@ -2036,13 +2035,15 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 		and to insert some <a href="#data">data</a> in the db.
 	</p>
 	</div>
+
+<!--
 	<div class="note">
 	<p>
 		Ive created an EC2 bundle for this stage:
 		<a href="#ec2_ami">flurdy-amis/ubuntu-mail-server-spam</a>.
 	</p>
 	</div>
-
+-->
 
 </div>
 <h6><a href="#top">Return to top</a>.</h6>
@@ -2335,13 +2336,15 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 		and to insert some <a href="#data">data</a> in the db.
 	</p>
 	</div>
+
+<!--
 	<div class="note">
 	<p>
 		Ive created an EC2 bundle for this stage:
 		<a href="#ec2_ami">flurdy-amis/ubuntu-mail-server-secure</a>.
 	</p>
 	</div>
-
+-->
 
 </div>
 <h6><a href="#top">Return to top</a>.</h6>
@@ -2551,12 +2554,15 @@ $rcmail_config['create_default_folders'] = TRUE;</code>
 		Feel free to <a href="#extend">extend it</a> with my suggestions further down.
 	</p>
 	</div>
+
+<!--
 	<div class="note">
 	<p>
 		Ive created an EC2 bundle for this stage:
 		<a href="#ec2_ami">flurdy-amis/ubuntu-mail-server-webmail</a>.
 	</p>
 	</div>
+-->
 
 <script type="text/javascript"><!--
 google_ad_client = "pub-7805345644641760";
@@ -4557,21 +4563,8 @@ sudo service postfix restart;</code>
 		<li><p><a href="#ec2_links">EC2 Links</a></p></li>
 	</ul>
 
-	<!--
-<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab" id="Player_1e15411e-ade9-4fdd-b48f-48b279efc5c8"  WIDTH="250px" HEIGHT="250px"> <PARAM NAME="movie" VALUE="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822%2FUS%2Fflurdy-20%2F8014%2F1e15411e-ade9-4fdd-b48f-48b279efc5c8&Operation=GetDisplayTemplate"><PARAM NAME="quality" VALUE="high"><PARAM NAME="bgcolor" VALUE="#FFFFFF"><PARAM NAME="allowscriptaccess" VALUE="always"><embed src="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822%2FUS%2Fflurdy-20%2F8014%2F1e15411e-ade9-4fdd-b48f-48b279efc5c8&Operation=GetDisplayTemplate" id="Player_1e15411e-ade9-4fdd-b48f-48b279efc5c8" quality="high" bgcolor="#ffffff" name="Player_1e15411e-ade9-4fdd-b48f-48b279efc5c8" allowscriptaccess="always"  type="application/x-shockwave-flash" align="middle" height="250px" width="250px"></embed></OBJECT> <NOSCRIPT><A HREF="http://ws.amazon.com/widgets/q?ServiceVersion=20070822&MarketPlace=US&ID=V20070822%2FUS%2Fflurdy-20%2F8014%2F1e15411e-ade9-4fdd-b48f-48b279efc5c8&Operation=NoScript">Amazon.com Widgets</A></NOSCRIPT>
-	-->
-
 	<h4>Impressions</h4>
-	<!--
-	<h5>Before</h5>
-	<p>
-		Looked very neat,
-		Seemed applicable for big company/universities only.
-		And conveluted interface.
-	</p>
 
-	<h5>After</h5>
-	-->
 	<p>
 		Easy to use.
 		Anyone can use, not just big companies.
@@ -4610,15 +4603,29 @@ sudo service postfix restart;</code>
 		If you plan to use EC2 to follow this howto,
 		then familiarise yourself with EC2 first.
 		Check the <a href="#ec2_links">links</a> further down,
-		e.g. <a href="/docs/ec2/">my tips</>.
+		e.g. <a href="/docs/ec2/">my tips</a>.
 	</p>
 	<p>
 		Once competent enough on EC2, launch the latest official
 		<a href="http://help.ubuntu.com/community/EC2StartersGuide#Getting the images">Ubuntu ec2 image</a> or one of
 		<a href="http://alestic.com">Eric Hammond images</a>.
-		You can cheat by using my other images,
-		but you should really know how the whole server was built by starting
-		from the bottom.
+	</p>
+
+	<h5>Instance size</h5>
+	<p>
+		I run my own instances on several AWS ec2 micro size as my traffic is low.
+		However the memory is too low so I also add an 2GB EBS as swap file,
+		detailed in my <a href="/docs/ec2/ubuntu/">Ubuntu ec2 guide</a>.
+	</p>
+	<p>
+		However for a medium company I recommend the small size.
+		High traffic servers needs perhaps larger instances.
+	</p>
+
+	<h5>Security and backup</h5>
+	<p>
+		I also recommend using EBS for slight recovery of the mail spools
+		if the server goes down.
 	</p>
 	<p>
 		When using EC2 images, be aware of security groups as they restricts
@@ -4652,236 +4659,19 @@ sudo service postfix restart;</code>
 	</p>
 	<p>
 		<b>2nd Note</b>:
-		Amazon has extended this spam limitations,
+		Amazon AWS do have ec2 based email server limitations,
 		so if you have a busy mail server, follow their
 		<a href="http://aws.amazon.com/ec2/faqs/#Are_there_any_limitations_in_sending_email_from_EC2_instances">
 		FAQ entry for removing mail throttling</a>.
 	</p>
-	<p>
-		<b>3rd Note</b>:
-		<a href="http://groups.google.com/group/ec2ubuntu/msg/ea6dc7ee49092cea">This fix needs to applied to the instances</a>
-		built on an early 8.04 base. This is not a problem with the later Hammond or any Canonical based images.
-	</p>
-	<p>
-		<b>4th Note</b>:
-		Check I have not left my SSH key in the root or ubuntu user.
-	</p>
-	<p>
-		<b>5th Note</b>:
-		<a href="/contact">Please let me know</a> if I've been silly enough to leave a bash history or anything like that?
-	</p>
-
 
 	<a name="ec2_ami"></a>
 	<h4>Amazon EC2 Images: AMIs</h4>
 	<p>
-		Public AMIs to use as base:
+		I used to provide ec2 AMIs.
+		But these quickly got outdated so I have removed them.
 	</p>
 
-		<h5>Current AMIs:</h5>
-		<table border="1">
-			<tr>
-				<th colspan="2" rowspan="1">AMI</th>
-				<th rowspan="1">Description</th>
-				<th rowspan="1">S3 Name</th>
-				<th rowspan="1">Ubuntu<br/>version</th>
-				<th colspan="2" rowspan="1">Extended from</th>
-				<th rowspan="1">Status</th>
-			</tr>
-			<!-- <tr>
-				<th>AMI</th>
-				<th></th>
-			</tr> -->
-			<tr>
-				<td class="nowrap"><p>US E:</p></td>
-				<td class="nowrap"><p><s>ami-2d4aa444</s></p></td>
-				<td rowspan="4"><p>Ubuntu's official server AMI</p></td>
-				<td rowspan="4"><p>ubuntu-images/ubuntu-lucid-10.04-i386-server-20100427.1</p></td>
-				<td rowspan="4"><p>10.04 LTS Lucid</p></td>
-				<td rowspan="4"><p></p></td>
-				<td rowspan="4"><p></p></td>
-				<td rowspan="4"><p>OK</p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>US W:</p></td>
-				<td class="nowrap"><p><s>ami-c997c68c</s></p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>EU:</p></td>
-				<td class="nowrap"><p><s>ami-cf4d67bb</s></p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>Asia:</p></td>
-				<td class="nowrap"><p><s>ami-57f28d05</s></p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>US E:</p></td>
-				<td class="nowrap"><p><s>ami-f8a64e91</s><br/>ami-5833c831</p></td>
-				<td rowspan="2"><p>My base Ubuntu server AMI. Postfix not configured.</p></td>
-				<td rowspan="2"><p>flurdy-amis/ubuntu-lucid-base-20100604-02</p></td>
-				<td rowspan="2"><p>10.04 LTS Lucid</p></td>
-				<td class="nowrap"><p>ami-2d4aa444</p></td>
-				<td rowspan="2"><p><i>Ubuntu's official base</i></p></td>
-				<td rowspan="2"><p>OK</p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>EU:</p></td>
-				<td class="nowrap"><p>ami-91341ee5</p></td>
-				<td class="nowrap"><p>ami-cf4d67bb</p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>US E:</p></td>
-				<td class="nowrap"><p><s>ami-9c947cf5</s><br/>ami-a23ec5cb</p></td>
-				<td><p>Basic Postfix server, with MySql, amavis, TLS.</p></td>
-				<td><p>flurdy-amis/ubuntu_lucid_mailserver_base-20110701-01</p></td>
-				<td><p>10.04 LTS Lucid</p></td>
-				<td class="nowrap"><p>ami-f8a64e91</p></td>
-				<td><p><i>flurdy's base</i></p></td>
-				<td><p>Testing</p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>US E</p></td>
-				<td class="nowrap"><p><s>ami-0a957d63</s><br/>ami-f2758c9b</p></td>
-				<td><p>With Courier IMAP, SASL</p></td>
-				<td><p>flurdy-amis/ubuntu-lucid-mail-imap-20100610-01</p></td>
-				<td><p>10.04 LTS Lucid</p></td>
-				<td class="nowrap"><p>ami-9c947cf5</p></td>
-				<td><p><i>Basic Postfix</i></p></td>
-				<td><p>Testing</p></td>
-			</tr>
-			<tr>
-				<td class="nowrap"><p>US E</p></td>
-				<td class="nowrap"><p><s>ami-c0ee06a9</s><br/>ami-f0758c99</p></td>
-				<td><p>With RoundCube Webmail, PhpMyAdmin</p></td>
-				<td><p>flurdy-amis/ubuntu-lucid-mail-web-20100611-01</p></td>
-				<td><p>10.04 LTS Lucid</p></td>
-				<td class="nowrap"><p>ami-0a957d63</p></td>
-				<td><p><i>With Courier</i></p></td>
-				<td><p>Testing</p></td>
-				<!--
-				<td><p>Private</p></td>
-				<td><p>TBD</p></td>
-				-->
-			</tr>
-		</table>
-
-		<br/>
-		<br/>
-
-		<h5>Older AMIs:</h5>
-		<p>
-		(<i>
-			Images with <s>strike</s> through them are no longer recommended.
-			Their are fine for experimenting and testing,
-			but should not be used for permanent "live" servers
-		</i>)
-		</p>
-
-		<table border="1">
-			<tr>
-				<th>AMI</th>
-				<th>Description</th>
-				<th>S3 Name</th>
-				<th>Ubuntu<br/>version</th>
-				<th>Extended from</th>
-			</tr>
-			<tr>
-				<td><p>ami-1515f67c</p></td>
-				<td><p>Base install: Canonical's Official Ubuntu 9.10 Karmic 32bit US</p></td>
-				<td><p>canonical-cloud-us/ubuntu-karmic-9.10-i386-server-20091027.1</p></td>
-				<td><p>9.10 Karmic</p></td>
-				<td><p></p></td>
-			</tr>
-			<tr>
-				<td><p><s>ami-5059be39</s></p></td>
-				<td><p><s>Base install: Canonical's Official Ubuntu 8.10 Intrepid 32bit US</s></p></td>
-				<td><p><s>canonical-cloud-us/ubuntu-intrepid-20090422-i386</s></p></td>
-				<td><p>8.10 Intrepid</p></td>
-				<td><p></p></td>
-			</tr>
-			<tr>
-				<td><p>ami-c4f615ad</p></td>
-				<td><p>Base install: Alestic Ubuntu 8.04 LTS Hardy 32bit US</p></td>
-				<td><p>alestic/ubuntu-8.04-hardy-base-20091011</p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p></p></td>
-			</tr>
-			<tr>
-				<td><p><s>ami-ce44a1a7</p></td>
-				<td><p><s>Base install: Alestic Ubuntu 8.04 LTS Hardy 32bit US</s></p></td>
-				<td><p><s>alestic/ubuntu-8.04-hardy-base-20080430</s></p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p></p></td>
-			</tr>
-			<tr>
-				<td><p>ami-4132d428</p></td>
-				<td><p>Clean with all packages installed but no configuration</p></td>
-				<td><p>flurdy-amis/ubuntu-mail-server-clean-20090529-2</p></td>
-				<td><p>8.10 Intrepid</p></td>
-				<td><p><s>ami-5059be39 (Canonical)</s></p></td>
-			</tr>
-			<tr>
-				<td><p><s>ami-0f41a466</s></p></td>
-				<td><p><s>Clean with all packages installed but no configuration</s></p></td>
-				<td><p><s>flurdy-amis/ubuntu-mail-server-clean-080502-1</s></p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-ce44a1a7 (Old Alestic)</s></p></td>
-			</tr>
-			<tr>
-				<td><p>ami-eb39df82</p></td>
-				<td><p>Just mysql, postfix and courier configured</p></td>
-				<td><p>flurdy-amis/ubuntu-mail-server-basic-20090604-1</p></td>
-				<td><p>8.10 Intrepid</p></td>
-				<td><p>ami-4132d428 (Clean Canonical)</p></td>
-			</tr>
-			<tr>
-				<td><p>ami-8541a4ec</p></td>
-				<td><p>Just mysql, postfix and courier configured</p></td>
-				<td><p>flurdy-amis/ubuntu-mail-server-simple-080504-1</p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-0f41a466 (Clean Alestic)</s></p></td>
-			</tr>
-			<tr>
-				<td><p>ami-9941a4f0</p></td>
-				<td><p>Including anti spam and anti virus</p></td>
-				<td><p>flurdy-amis/ubuntu-mail-server-spam-080504-1</p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-8541a4ec (Simple)</s></p></td>
-			</tr>
-			<tr>
-				<td><p>ami-395fba50</p></td>
-				<td><p>Including TLS and SASL encryption and authentication</p></td>
-				<td><p>flurdy-amis/ubuntu-mail-server-secure-080527-2</p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-9941a4f0 (Spam)</s></p></td>
-			</tr>
-			<tr>
-				<td><p>ami-275fba4e</p></td>
-				<td><p>With webmail and admin enabled</p></td>
-				<td><p>flurdy-amis/ubuntu-mail-server-webmail-080527-1</p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-395fba50 (Secure)</s></p></td>
-			</tr>
-			<tr>
-				<td><p><s><i>ami-xxx</i></s></p></td>
-				<td><p><s>With back up mx</s></p></td>
-				<td><p><s>flurdy-amis/ubuntu-mail-server-backup-xxx</s></p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-275fba4e (Webmail)</s></p></td>
-			</tr>
-			<tr>
-				<td><p><s><i>ami-xxx</i></s></p></td>
-				<td><p><s>With back up mx only</s></p></td>
-				<td><p><s>flurdy-amis/ubuntu-mail-server-backup-only-xxx</s></p></td>
-				<td><p>8.04 LTS Hardy</p></td>
-				<td><p><s>ami-395fba50 (Secure)</s></p></td>
-			</tr>
-		</table>
-	</p>
-	<p>
-		If you have a comment or question about the ec2 images, please discuss it in the <a href="#forum">forums</a>?</br>
-		If you notice a security problem, or I have not cleaned the images properly <a href="#contact">please let me know</a>?
-	</p>
 
 	<a name="ec2_links"></a>
 	<h4>EC2 Links</h4>
@@ -4896,7 +4686,6 @@ sudo service postfix restart;</code>
 		<li><p><a href="https://s3.amazonaws.com/ec2-downloads/elasticfox-ff3b.xpi">Elasticfox for Firefox 3</a></p></li>
 		<li><p><a href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=771&categoryID=58">S3 Firefox extension: S3Fox</a></p></li>
 		<li><p><a href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=931">EC2 to S3 Admin Scripts</a></p></li>
-		<li><p><a href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1427&categoryID=101">Eric Hammond 8.04 AMI</a></p></li>
 		<li><p><a href="http://alestic.com">alestic</a>, ubuntu ec2 images</p></li>
 		<li><p><a href="http://www.ubuntu.com/ec2">Ubuntu ec2</a></p></li>
 		<li><p><a href="http://www.ubuntu.com/cloud">Ubuntu Cloud</a></p></li>
@@ -4935,9 +4724,9 @@ sudo service postfix restart;</code>
 		<li><p><a href="#author">About author</a></p></li>
 		<li><p><a href="#contact">Contact</a></p>
 			<ul>
-				<li><a href="#contact_check">Checklist</a></li>
-				<li><a href="#forum">Forums</a></li>
-				<li><a href="#consult">Consult</a></li>
+				<li><p><a href="#contact_check">Checklist</a></p></li>
+				<li><p><a href="#forum">Forums</a></p></li>
+				<li><p><a href="#consult">Consult</a></p></li>
 			</ul>
 		</li>
 		<li><p><a href="#app_why">Why</a></p></li>
@@ -4953,7 +4742,7 @@ sudo service postfix restart;</code>
 	<a name="author"></a>
 	<h3>About author</h3>
 	<p>
-		<a href="http://www.ivar.co.uk">Ivar Abrahamsen</a>, an <a href="http://www.eray.co.uk">IT Consultant</a> from Norway currently living in Hampshire, UK.
+		<a href="http://flurdy.com">Ivar Abrahamsen</a>, an <a href="http://www.eray.co.uk">IT Consultant</a> from Norway currently living in Hampshire, UK.
 
 		Specialising in leading teams that integrate middleware applications,
 		payment systems and data processing systems using mainly Java and Scala technology stacks.
@@ -5349,9 +5138,9 @@ sudo service postfix restart;</code>
 	<a name="app_links"></a>
 	<h3>Software Links</h3>
 	<p>
-		Please refer to the <a href="edition5.html#app_links">previous edition</a>
-		for a list of urls and suiteable downloads.
-		However most are unneccessary with decent package manager.
+		Please refer to a <a href="edition5.html#app_links">previous edition</a>
+		for a list of urls and suitable downloads.
+		However most are unnecessary with decent package manager.
 	</p>
 
 	<a name="app_diff"></a>
@@ -5384,6 +5173,9 @@ sudo service postfix restart;</code>
 			2010-05-29:
 		</p></li>
 		-->
+		<li><p>
+			2014-05-31: Removed ec2 AMIs
+		</p></li>
 		<li><p>
 			2013-06-30: Added contribute section.
 		</p></li>
@@ -5429,12 +5221,12 @@ sudo service postfix restart;</code>
 		<li><p>
 			2009-06-04:
 			made basic server image available on ec2.
-			based canonical's official ec2 ami.
+			based Canonical's official ec2 ami.
 		</p></li>
 		<li><p>
 			2009-06-02:
 			made clean server image available on ec2.
-			based canonical's official ec2 ami.
+			based Canonical's official ec2 ami.
 		</p></li>
 		<li><p>
 			2009-05-29:
@@ -5470,7 +5262,7 @@ sudo service postfix restart;</code>
 	</p>
 	<p>
 		But please, most of the frequent questions have been asked and answered in <a href="http://ubuntuforums.org/showthread.php?t=185913">the forums</a>.<br/>
-		Most are also unneccessary as following the <a href="#test">test section</a> will have solved them.
+		Most are also unnecessary as following the <a href="#test">test section</a> will have solved them.
 	</p>
 
 	<p>
@@ -5520,7 +5312,7 @@ sudo service postfix restart;</code>
 					If not they you can not log into squirrelmail
 					as the email folders will not yet exist.
 					When receiving their first email,
-					postfix will create all the neccessary folders.
+					postfix will create all the necessary folders.
 					If it does not your postfix setup is broken.
 				</p></li>
 				<li><p>
@@ -5553,7 +5345,7 @@ sudo service postfix restart;</code>
 				<li><p>
 					Do you need SASL at all?
 					If you accept TLS only and restrict by IP addresses
-					in mynetworks it may not be neccessary.
+					in mynetworks it may not be necessary.
 					Not an option with
 					road warriors and too random dynamic IPs unfortunately.
 				</p></li>
