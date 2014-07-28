@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2014-05-31</h6>
+<h6>Last Update: 2014-07-28</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -410,7 +410,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				Draft
 			</td>
 			<td colspan="1" nowrap>2014-05</td>
-			<td colspan="1" nowrap>2014-05</td>
+			<td colspan="1" nowrap>2014-07</td>
 			<td colspan="1" class="desc">
 				Based on Ubuntu 14.04 (trusty).
 			</td>
@@ -927,7 +927,7 @@ sudo apt-get upgrade</code>
 	<h5>MySQL</h5>
 	<p>
 		First we'll install MySQL
-		<code>sudo aptitude install mysql-client mysql-server</code>
+		<code>sudo apt-get install mysql-client mysql-server</code>
 		This will prompt you for a root password.
 		Choose someting wise and remember it!
 		For purpose of this tutorial I will set it to <b><i>rootPASSWORD</i></b>
@@ -935,43 +935,43 @@ sudo apt-get upgrade</code>
 	<h5>Postfix</h5>
 	<p>
 		Then we'll install postfix
-		<code>sudo aptitude install postfix postfix-mysql</code>
+		<code>sudo apt-get install postfix postfix-mysql</code>
 		This will prompt you to choose type of email server.
 		Select <b><i>internet site</i></b>
 		It will also  suggest a server name. Correct this if needed.
 	</p>
 	<h5>SASL</h5>
-	<code>sudo aptitude install libsasl2-modules libsasl2-modules-sql libgsasl7\
+	<code>sudo apt-get install libsasl2-modules libsasl2-modules-sql libgsasl7\
 				libauthen-sasl-cyrus-perl sasl2-bin libpam-mysql</code>
 	<h5>	ClamAV</h5>
 	<p>
-		<code>sudo aptitude install clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
+		<code>sudo apt-get install clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
 		(Earlier vesions of Ubuntu may use libclamav5)
 	</p>
 
 	<h5>Amavis, SpamAssassin, postgrey</h5>
 	<p>
-		<code>sudo aptitude install amavisd-new
-sudo aptitude install spamassassin spamc
-sudo aptitude install postgrey</code>
+		<code>sudo apt-get install amavisd-new
+sudo apt-get install spamassassin spamc
+sudo apt-get install postgrey</code>
 	</p>
 	-->
 
 	<!--
 	<h5>SquirrelMail</h5>
-	<code>sudo aptitude install squirrelmail squirrelmail-locales php-pear php5-cli</code>
+	<code>sudo apt-get install squirrelmail squirrelmail-locales php-pear php5-cli</code>
 	<h5>Roundcube</h5>
-	<code>sudo aptitude install roundcube roundcube-mysql roundcube-plugins php-pear php5-cli</code>
+	<code>sudo apt-get install roundcube roundcube-mysql roundcube-plugins php-pear php5-cli</code>
 
 	<h5>phpMyAdmin</h5>
-	<code>sudo aptitude install phpmyadmin</code>
+	<code>sudo apt-get install phpmyadmin</code>
 	<p>
 		Enter <i>Yes</i> to set it up, enter root mysql password, enter a phpmyadmin mysql user password twice.
 		Accept apache2 as the web server.
 	</p>
 
 	<h5>ShoreWall</h5>
-	<code>sudo aptitude install shorewall shorewall-doc
+	<code>sudo apt-get install shorewall shorewall-doc
 <span class="comment"># for earlier ubuntu versions use package <i>shorewall-common shorewall-perl shorewall-doc</i> instead</span></code>
 	<p>
 		Amazon provides a firewall/ access control for its  servers,
@@ -985,7 +985,7 @@ sudo aptitude install postgrey</code>
 	<!--
 	<h5>Courier</h5>
 	<p>
-		<code>sudo aptitude install courier-base courier-authdaemon courier-authlib-mysql \
+		<code>sudo apt-get install courier-base courier-authdaemon courier-authlib-mysql \
 			courier-imap courier-imap-ssl courier-ssl</code>
 		will prompt you about webdirectories. You can say no to this.
 		It will also warn you about the certificate location. Ignore it.
@@ -997,7 +997,7 @@ sudo aptitude install postgrey</code>
 	<p>
 		I also install a few other packages that I personally prefer.
 		But nothing todo with the mail server.
-		<code>sudo aptitude install vim mutt lynx curl git</code>
+		<code>sudo apt-get install vim mutt lynx curl git</code>
 	</p>
 
 
@@ -1007,7 +1007,7 @@ sudo aptitude install postgrey</code>
 		you can use for example:
 		<code>sudo dpkg --list | grep <i>postfix</i></code>
 		or
-		<code>sudo aptitude search postfix</code>
+		<code>sudo apt-get search postfix</code>
 	</p>
 
 
@@ -1103,7 +1103,7 @@ sudo aptitude install postgrey</code>
 	</p>
 
 	<h5>Installation</h5>
-	<code>sudo aptitude install shorewall shorewall-doc
+	<code>sudo apt-get install shorewall shorewall-doc
 <span class="comment"># for earlier ubuntu versions use package <i>shorewall-common shorewall-perl shorewall-doc</i> instead</span></code>
 	<p>
 		Amazon provides a firewall/ access control for its  servers,
@@ -1239,7 +1239,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<h4>MySQL</h4>
 	<h5>Installation</h5>
 	<p>
-		<code>sudo aptitude install mysql-client mysql-server</code>
+		<code>sudo apt-get install mysql-client mysql-server</code>
 		This will prompt you for a root password.
 		Choose someting wise and remember it!
 		For purpose of this tutorial I will set it to <b><i>rootPASSWORD</i></b>
@@ -1372,7 +1372,7 @@ general_log = 1</code>
 	<h4>Postfix</h4>
 	<h5>Installation</h5>
 	<p>
-		<code>sudo aptitude install postfix postfix-mysql</code>
+		<code>sudo apt-get install postfix postfix-mysql</code>
 		This will prompt you to choose type of email server.
 		Select <b><i>internet site</i></b>
 		It will also  suggest a server name. Correct this if needed.
@@ -1674,7 +1674,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<h4>Courier IMAP</h4>
 	<p>Installation:</p>
 	<p>
-		<code>sudo aptitude install courier-base courier-authdaemon courier-authlib-mysql \
+		<code>sudo apt-get install courier-base courier-authdaemon courier-authlib-mysql \
 			courier-imap courier-imap-ssl courier-ssl</code>
 		will prompt you about webdirectories. You can say no to this.
 		It will also warn you about the certificate location. Ignore it.
@@ -1789,7 +1789,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 
 	<p>Install amavids-new</p>
 	<p>
-		<code>sudo aptitude install amavisd-new</code>
+		<code>sudo apt-get install amavisd-new</code>
 	</p>
 	<p>
 		The defaults are pretty good and also the <a href="https://help.ubuntu.com/community/PostfixAmavisNew">ubuntu documentation</a> is pretty clear, and recommended.
@@ -1906,11 +1906,6 @@ $final_spam_destiny = D_PASS;
 	</p>
 
 	<p>
-		Enable scanning by ClamAV of amavis' temporary files.
-		<code>sudo adduser clamav amavis</code>
-	</p>
-
-	<p>
 		This should be it to get amavis working.
 		If emails are picked up by amavis and
 		passed back to postfix then it looks okay.
@@ -1947,7 +1942,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 	<h5>SpamAssassin</h5>
 	<p>Installation:</p>
 	<p>
-		<code>sudo aptitude install spamassassin spamc</code>
+		<code>sudo apt-get install spamassassin spamc</code>
 	</p>
 	<p>
 		The default config of spam assassin is okay.
@@ -1981,7 +1976,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 	<h5>ClamAV</h5>
 	<p>Installation:</p>
 	<p>
-		<code>sudo aptitude install clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
+		<code>sudo apt-get install clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
 		(Earlier vesions of Ubuntu may use libclamav5)
 	</p>
 	<p>
@@ -2001,6 +1996,12 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 		Not needed unless you need to configure.
 		<code>sudo dpkg-reconfigure clamav-base</code>
 	</p>
+
+	<p>
+		Enable scanning by ClamAV of amavis' temporary files.
+		<code>sudo adduser clamav amavis</code>
+	</p>
+
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
@@ -2008,7 +2009,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 	<a name="config-adv-policy"></a>
 	<h4>Postgrey</h4>
 	<p>Installation:</p>
-	<p><code>sudo aptitude install postgrey</code></p>
+	<p><code>sudo apt-get install postgrey</code></p>
 	<p>
 		The default config of postgrey is okay.
 		However you need to tell Postfix to use it.
@@ -2103,7 +2104,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 		But until then you can configure SASL to ask PAM to compare the passwords:
 	</p>
 	<h6>Installation</h6>
-	<p><code>sudo aptitude install libsasl2-modules libsasl2-modules-sql libgsasl7\
+	<p><code>sudo apt-get install libsasl2-modules libsasl2-modules-sql libgsasl7\
 				libauthen-sasl-cyrus-perl sasl2-bin libpam-mysql</code></p>
 
 	<h6>Configuration</h6>
@@ -2370,7 +2371,7 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 	<a name="ext_round"></a>
 	<h4>Roundcube webmail client</h4>
 	<p>To install Roundcube</p>
-	<code>sudo aptitude install roundcube roundcube-mysql roundcube-plugins</code>
+	<code>sudo apt-get install roundcube roundcube-mysql roundcube-plugins</code>
 	<p>
 		It will ask you if you want to configure its database access,
 		answer yes, then select mysql.
@@ -2439,7 +2440,7 @@ $rcmail_config['create_default_folders'] = TRUE;</code>
 		Check the <a href="#conf_firewall">firewall configuration</a> if this neccessary.
 	</p>
 	<h5>Install phpmyadmin</h5>
-	<code>sudo aptitude install phpmyadmin</code>
+	<code>sudo apt-get install phpmyadmin</code>
 	<p>
 		Enter <i>Yes</i> to set it up, enter root mysql password, enter a phpmyadmin mysql user password twice.
 		Accept apache2 as the web server.
@@ -4306,7 +4307,7 @@ insert into users (id,name,maildir,crypt) values
 		You need to fix the line endings in this file by either using sed:
 		<code>sed -i 's/.$//' Equifax_Secure_Certificate_Authority.cer;</code>
 		Or install a tiny util:
-		<code>sudo aptitude install tofrodos;
+		<code>sudo apt-get install tofrodos;
 fromdos Equifax_Secure_Certificate_Authority.cer;</code>
 		Put it into your certificate root folder:
 		<code>sudo chown root:root Equifax_Secure_Certificate_Authority.cer;
@@ -4494,7 +4495,7 @@ sudo service postfix restart;</code>
 		tool to protect your SSH service from brute force attack.
 		To install:
 	</p>
-	<code>sudo aptitude install denyhosts</code>
+	<code>sudo apt-get install denyhosts</code>
 	<p>
 		Tweak in <i>/etc/denyhosts.confs</i>.
 		Perhaps whitelist your ips to prevent accidentally locking yourself out...
