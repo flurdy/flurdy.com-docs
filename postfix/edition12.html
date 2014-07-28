@@ -1671,6 +1671,14 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 
 	<a name="config-simple-imap"></a>
 	<h3>Pop/IMAP</h3>
+
+	<p>
+		A normal mail server will need IMAP,
+		however if your server is a backup or redirection only server
+		then Courier is not needed.
+	</p>
+
+
 	<h4>Courier IMAP</h4>
 	<p>Installation:</p>
 	<p>
@@ -1864,7 +1872,7 @@ $final_spam_destiny = D_PASS;
 	</p>
 
 	<p>
-		<code>vi /etc/postfix/master.cf</code>
+		<code>sudo vi /etc/postfix/master.cf</code>
 
 		Append these lines to the end of the file
 		(make sure they are not already present).
@@ -1951,12 +1959,12 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 	</p>
 	<p>
 		You do need to tell SpamAssassin to start <i>smapd</i> on boot.
-		<code>vi /etc/default/spamassassin</code>
+		<code>sudo vi /etc/default/spamassassin</code>
 		<code class="document">ENABLED=1</code>
 	</p>
 	<p>
 		One configuration option you could tweak is to enable Bayes and auto learning.
-		<code>vi /etc/spamassassin/local.cf</code>
+		<code>sudo vi /etc/spamassassin/local.cf</code>
 	</p>
 
 	<div class="tees">
@@ -1976,7 +1984,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 	<h5>ClamAV</h5>
 	<p>Installation:</p>
 	<p>
-		<code>sudo apt-get install clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
+		<code>sudo apt-get install clamav clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
 		(Earlier vesions of Ubuntu may use libclamav5)
 	</p>
 	<p>
@@ -3638,8 +3646,8 @@ transport_maps = mysql:/etc/postfix/mysql_transport.cf</code>
 		as you may use small cron jobs to modify this ip address,
 		if you don't have a permanent static address.
 		It should contain your IP addres, hence if you do not
-		have a very static IP address, that you need to
-		automatic editing if the postfix file.
+		have a very static IP address, then you need some way of
+		automatic edit the postfix main.cf file.
 	</p>
 
 	<code>proxy_interfaces = <i>1.2.3.4</i></code>
@@ -3685,7 +3693,7 @@ additional_conditions = and enabled = 1</code>
 		in the transport field how to connect to the correct servers.
 		</p>
 		<p>
-		Say you are backiup for a friends server, mail.friend.com,
+		Say you are backup for a friends server, mail.friend.com,
 		for the domains of friend1.com and friend2.com.
 			So you should insert this into your backup table.
 		</p>
@@ -3701,9 +3709,9 @@ VALUES ('<i>friend1.com</i>' , ':[<i>mail.friend.com</i>]' ),
 		not doing any more look ups for valid MX servers.
 		</p>
 		<p>
-			This shouls now work fine.
+			This should now work fine.
 			Further tweaking of the queue values,
-			review these and modify as appropiate.
+			review these and modify as appropriate.
 			Shorter warning times are good for the sender,
 			so that they realise the email has not arrived yet,
 			but may also be annoying. Tradeoffs..
@@ -3714,7 +3722,7 @@ VALUES ('<i>friend1.com</i>' , ':[<i>mail.friend.com</i>]' ),
 	<a name="ext_mx_recipient"></a>
 	<h4>Relay recipient lookup</h4>
 	<p>
-		Unfortunetly spammers are using backup mx as a way to saturate the networks with invalid emails,
+		Unfortunately spammers are using backup mx as a way to saturate the networks with invalid emails,
 		known as <a href="http://en.wikipedia.org/wiki/Backscatter_(e-mail)">backscatter mail</a>.
 	</p>
 	<p>
@@ -3835,7 +3843,7 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 		<p>
 			Main domain DNS TXT field:
 		</p>
-		<code>"v=spf1 a mx a:<i>myserver.example.com</i> include:aspmx.googlemail.com include:gmail.com ~all"</code>
+		<code>"v=spf1 a mx a:<i>myserver.example.com</i> include:aspmx.googlemail.com include:gmail.com include:_spf.google.com ~all"</code>
 		<p>
 			The important elements are:
 		</p>
@@ -4298,6 +4306,7 @@ insert into users (id,name,maildir,crypt) values
 		If you have set your server up to <a href="#conf-secure-crypt">prefer TLS</a>
 		then you should add Google's signing authority to your server's root certificate list.
 		Google used to use Thawte but now use Equifax.
+		On the latest Ubuntu releases this is no longer needed as it is already included.
 	</p>
 	<p>
 		Download the Equifax Secure Certificate Authority certificate
@@ -4344,7 +4353,7 @@ sudo service postfix restart;</code>
 		<b>SPF</b><br />
 		If you use SPF for your domain,
 		consider that both your server and google will receive and send mail
-		on behalf of that domin.
+		on behalf of that domain.
 		Adding <code>include:_spf.google.com</code> should cover it.
 	</p>
 	<p>
@@ -4358,7 +4367,7 @@ sudo service postfix restart;</code>
 		Especially as it may only be an issue if Google's servers are part
 		of you domains MXs.
 		It may be worth adding aliases in your Google Apps admin
-		for the non google apps adresses
+		for the non google apps addresses
 		to some user whom can handle these?
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
@@ -4368,7 +4377,7 @@ sudo service postfix restart;</code>
 	<h3>Maildrop, spam folder and vacation messaging</h3>
 	<p>
 		Villu have documented swapping in Maildrop for virtual transport
-		and automatically deliverin spam to a spam folder.
+		and automatically delivering spam to a spam folder.
 		(And links to a post about vacation messaging)
 	</p>
 	<p>
@@ -4427,7 +4436,7 @@ sudo service postfix restart;</code>
 	<code>sudo squirrelmail-configure</code>
 	<p>
 		Initially change nothing. You can customize more afterwards.
-		You can browse, and exit sub menues by typing <b><i>R</i></b>.
+		You can browse, and exit sub menus by typing <b><i>R</i></b>.
 	</p>
 	<p>
 		Type <b><i>2</i></b> to edit server settings.
@@ -4480,7 +4489,7 @@ sudo service postfix restart;</code>
 		Preventing <a href="http://en.wikipedia.org/wiki/Brute-force_attack">Brute Force</a> attack on your server.
 	</p>
 	<p>
-		First line of defence is the firewall.
+		First line of defense is the firewall.
 		If they cant get to your server then they cant hack in.
 		However to be a useful internet based server you have to expose
 		some services, e.g. SMTP and maybe SSH.
@@ -4493,7 +4502,11 @@ sudo service postfix restart;</code>
 	<p>
 		<a href="http://denyhosts.sourceforge.net/">Deny hosts</a> is an effective
 		tool to protect your SSH service from brute force attack.
-		To install:
+		However DenyHosts has now <a href="http://askubuntu.com/questions/433924/package-denyhosts-in-ubuntu-trusty-tahr-is-deleted-temporary-or-forever">been removed from the main repositories</a>
+		due to lack of updates.
+	</p>
+	<p>
+		To install on an older version of Ubuntu:
 	</p>
 	<code>sudo apt-get install denyhosts</code>
 	<p>
@@ -4517,9 +4530,12 @@ sudo service postfix restart;</code>
 		<a href="http://www.fail2ban.org/wiki/index.php/Main_Page">fail2ban</a>
 		protects against a multitude of brute force attacks.
 		Relevant to this guide is the protection for SMTP and IMAP.
+	</p>
+		<code>sudo apt-get install fail2ban</code>
+	<p>
 		Follow
 		<a href="http://scottlinux.com/2011/05/26/prevent-postfix-brute-force/">this guide</a>
-		for how to install &amp; configure it.
+		for how to configure it.
 	</p>
 <h6><a href="#top">Return to top</a>.</h6>
 <br/>
