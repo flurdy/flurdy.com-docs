@@ -4286,8 +4286,9 @@ additional_conditions = and enabled = 1</code>
 	<p>
 		Assuming there are no <i>bloggs.com</i> data in any tables (domain,alias,users,relays,backups):
 
-		<code>insert into domains (domain,transport) values
+		<code>insert into backups (domain,transport) values
 		('<i>joe@bloggs.com</i>','smtp:[aspmx.l.google.com]:587'),
+insert into domains (domain,transport) values 
 		('<i>bloggs.com</i>','virtual:');
 insert into aliases (mail,destination) values
 		('<i>joe@bloggs.com</i>','<i>joe@bloggs.com</i>'),
