@@ -227,7 +227,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				<li><p><a href="#ec2">Impressions of EC2</a></p></li>
 				<li><p><a href="#ec2_tips">ec2 introduction, tips and hwotos</a></p></li>
 				<li><p><a href="#ec2_use">Using EC2 with this howto</a></p></li>
-				<li><p><a href="#ec2_ami">Amazon EC2 Images: AMIs</a></p></li>
+				<!-- <li><p><a href="#ec2_ami">Amazon EC2 Images: AMIs</a></p></li> -->
 				<li><p><a href="#ec2_links">EC2 Links</a></p></li>
 			</ul>
 		</li>
@@ -1523,6 +1523,14 @@ virtual_mailbox_domains = mysql:/etc/postfix/mysql_domains.cf
 <span class="comment"># not used yet
 # transport_maps = mysql:/etc/postfix/mysql_transport.cf</span></code>
 	</p>
+
+	<p>
+		I currently restrict my servers to ip4 and avoid ip6 at the moment. 
+		(Or rather avoid flooding my logs with ip6 errors). 
+		Hopefully soon enough servers that they interact with will support 6 and I can support both.
+	</p>
+
+	<code>inet_protocols=ipv4</code>
 
 	<p>
 		You can (as in my older editions) use a lookup for the uid and gid of the owner of mail files.
