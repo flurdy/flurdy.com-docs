@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2014-07-28</h6>
+<h6>Last Update: 2014-08-02</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -410,7 +410,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				Released
 			</td>
 			<td colspan="1" nowrap>2014-05</td>
-			<td colspan="1" nowrap>2014-07</td>
+			<td colspan="1" nowrap>2014-08</td>
 			<td colspan="1" class="desc">
 				Based on Ubuntu 14.04 (trusty).
 			</td>
@@ -1525,8 +1525,8 @@ virtual_mailbox_domains = mysql:/etc/postfix/mysql_domains.cf
 	</p>
 
 	<p>
-		I currently restrict my servers to ip4 and avoid ip6 at the moment. 
-		(Or rather avoid flooding my logs with ip6 errors). 
+		I currently restrict my servers to ip4 and avoid ip6 at the moment.
+		(Or rather avoid flooding my logs with ip6 errors).
 		Hopefully soon enough servers that they interact with will support 6 and I can support both.
 	</p>
 
@@ -2330,7 +2330,7 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 <br />
 
 	<p>
-		For maximum compatability it is not wise to restrict to TLS only for the traffic between servers. As this means not all valid emails sent by others can reach your server.
+		For maximum compatibility it is not wise to restrict to TLS only for the traffic between servers. As this means not all valid emails sent by others can reach your server.
 		However enabling them the option to encrypt is a good idea.
 	</p>
 	<p>
@@ -2376,7 +2376,7 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 	<h5>Enable web access</h5>
 	<p>
 		You may need to enable web access in the firewall.
-		Check the <a href="#conf-simple-firewall">firewall configuration</a> if this neccessary.
+		Check the <a href="#conf-simple-firewall">firewall configuration</a> if this necessary.
 	</p>
 	<h4>Alternative: SquirrelMail</h4>
 	<p>
@@ -2412,7 +2412,11 @@ Alias /roundcube /var/lib/roundcube</code>
 	<p>Next edit the configuration file</p>
 	<code>sudo vi /etc/roundcube/main.inc.php</code>
 	<p>Modify these lines for added security and ease of log in:</p>
-	<code class="document">$rcmail_config['default_host'] = 'ssl://localhost:993';
+	<code class="document">$rcmail_config['default_host'] = 'ssl://localhost';
+
+$rcmail_config['default_port'] = '993';
+
+$rcmail_config['imap_force_ns'] = true;
 
 $rcmail_config['smtp_server'] = 'ssl://localhost';
 
@@ -2434,14 +2438,25 @@ $rcmail_config['create_default_folders'] = TRUE;</code>
 		<i>http://mail.example.com/roundcube</i>.<br/>
 		That should be it
 	</p>
+
+	<p>If you have enabled session encryption then also enable the <i>mcrypt</i> library</p>
+
+	<code>sudo ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/apache2/conf.d/20-mcrypt.ini</code>
+
 	<p>
 		You can obviously modify and tweak further.
-		One thing that may be usefull is to have
-		the Roundcube Apache Alias on different virtual hosts,
-		and configure <i>username_domain</i> in <i>main.inc.php</i>
+	</p>
+	<p>
+		One thing that may be useful is to have
+		the Roundcube Apache Alias on different virtual hosts.
+		Other is to configure <i>username_domain</i> in <i>main.inc.php</i>
 		to append different email addresses, or
 		configure the <i>default_host</i> to
-		different mail server depending on virtual host...
+		different mail server depending on virtual host.
+		For security enforcing https for the webmail is probably smart.
+		Adding your own skin logo etc to customise the look is likely.
+	</p>
+	<p>
 		More details on the <a href="http://trac.roundcube.net/wiki/">Roundcube Wiki</a>.
 	</p>
 <h6><a href="#top">Return to top</a>.</h6>
@@ -2450,6 +2465,7 @@ $rcmail_config['create_default_folders'] = TRUE;</code>
 
 	<a name="config-extra-admin"></a>
 	<h3>Administration</h3>
+
 	<h5>Enable web access</h5>
 	<p>
 		You may need to enable web access in the firewall.
@@ -4288,7 +4304,7 @@ additional_conditions = and enabled = 1</code>
 
 		<code>insert into backups (domain,transport) values
 		('<i>joe@bloggs.com</i>','smtp:[aspmx.l.google.com]:587'),
-insert into domains (domain,transport) values 
+insert into domains (domain,transport) values
 		('<i>bloggs.com</i>','virtual:');
 insert into aliases (mail,destination) values
 		('<i>joe@bloggs.com</i>','<i>joe@bloggs.com</i>'),
