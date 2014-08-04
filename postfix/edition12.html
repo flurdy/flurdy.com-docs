@@ -1129,8 +1129,8 @@ sudo apt-get install postgrey</code>
 	<p>
 		By default Shorewall in Ubuntu has an empty set up.
 		You can find the default values for Shorewall in
-		<i>/usr/share/doc/shorwall/default-config</i>.
-		And examples in <i>/usr/share/doc/shorwall/examples</i>.
+		<i>/usr/share/shorewall/configfiles</i>.
+		And examples in <i>/usr/share/doc/shorewall/examples</i>.
 		We will create a basic set up.
 	</p>
 	<p>
@@ -3816,7 +3816,7 @@ additional_conditions = and enabled = 1</code>
 		that this may take some time.
 	</p>
 
-<code>tar czf mail-config.xxxxx.tgz /etc/postfic /etc/courier /etc/spamassassin /etc/clamav /etc/amavis /etc/mysql/my.cnf
+<code>tar czf mail-config.xxxxx.tgz /etc/postfix /etc/courier /etc/spamassassin /etc/clamav /etc/amavis /etc/mysql/my.cnf
 tar czf mail-fold.xxxx.tgz /var/spool/mail/virtual
 mysqldump -u mail -p<i>apassword</i> -t maildb &gt; data.sql
 mysqldump -u mail -p<i>apassword</i> -d maildb &gt; schema.sql
