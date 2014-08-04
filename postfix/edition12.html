@@ -227,6 +227,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				<li><p><a href="#ec2">Impressions of EC2</a></p></li>
 				<li><p><a href="#ec2_tips">ec2 introduction, tips and hwotos</a></p></li>
 				<li><p><a href="#ec2_use">Using EC2 with this howto</a></p></li>
+				<li><p><a href="#ec2_vagrant">Vagrant</a></p></li>
 				<!-- <li><p><a href="#ec2_ami">Amazon EC2 Images: AMIs</a></p></li> -->
 				<li><p><a href="#ec2_links">EC2 Links</a></p></li>
 			</ul>
@@ -240,8 +241,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				<li><p><a href="#app_why">Why</a></p></li>
 				<li><p><a href="#references">References</a></p></li>
 				<li><p><a href="#app_links">Software Links</a></p></li>
-				<li><p><a href="#app_dif">Difference between Ubuntu versions</a></p></li>
-				<li><p><a href="#download">Download</a></p></li>
 				<li><p><a href="#app_todo">Todo</a></p></li>
 				<li><p><a href="#app_log">Change Log</a></p></li>
 				<li><p><a href="#app_faq">FAQ</a></p></li>
@@ -401,7 +400,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2012-11</td>
 			<td colspan="1" nowrap>2014-05</td>
 			<td colspan="1" class="desc">
-				Based on Ubuntu 12.04 (precise). Tested with 12.10 (quantal) and 13.04 (raring)
+				Based on Ubuntu 12.04 LTS (precise). 
+				Tested with 12.10 (quantal) and 13.04 (raring)
 			</td>
 		</tr>
 		<tr>
@@ -412,7 +412,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2014-05</td>
 			<td colspan="1" nowrap>2014-08</td>
 			<td colspan="1" class="desc">
-				Based on Ubuntu 14.04 (trusty).
+				Based on Ubuntu 14.04 LTS (trusty).
 			</td>
 		</tr>
 	</table>
@@ -881,18 +881,32 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 	<h3>Repositories</h3>
 
 	<p>
-		For assistance with repositories, refer to <a href="http://wiki.ubuntu.com/AddingRepositoriesHowto">this article on ubuntu's wiki</a>.
+		For assistance with repositories, refer to <a href="https://help.ubuntu.com/community/Repositories/CommandLine">this article on ubuntu's wiki</a>.
 	</p>
-	<p>
+	<!-- <p>
 		A  <a href="edition5.html#install_repos">previous edition</a>
 		discussed repository configuration in more detail.
+	</p> -->
+	<p>
+		I would recommend find a <a href="https://launchpad.net/ubuntu/+archivemirrors">repository archive</a> close to your server's location.
+		For example a country specific one or if hosted on <i>AWS EC2</i> an archive in your AWS region.
+		Remember these are highly security sensitive so choose one you trust.
 	</p>
 	<p>
-		But basically for this you need <i>main</i> and <i>universe</i>, and I also throw in the other <i>"safe"</i> ones: <i>restricted</i> and <i>multiverse</i> (and <i>partner</i>, when available).
+		You need the <i>main</i> and <i>universe</i> repositories.
+		The <i>multiverse</i>, <i>restricted</i> and <i>partner</i> can be added but are not needed. 
+		Do not add <i>backports</i>.
+	</p>
+	<p>		
 		<code>sudo vi /etc/apt/sources.list </code>
-		If main and universe already is listed,
-		this is a quick find and replace to add the others all over:
-		<code>:%s/main un/main restricted multiverse un/g</code>
+		Uncomment the lines that have commented out <i>universe</i>. E.g. here are mine for ec2 in Europe:
+		<code>deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty universe
+deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty universe
+deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty-updates universe
+deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty-updates universe</code>
+		<code>deb http://security.ubuntu.com/ubuntu trusty-security universe
+deb-src http://security.ubuntu.com/ubuntu trusty-security universe</code>
+		Note <i>security</i> always have to go to the main server.
 	</p>
 	<p>
 		As mentioned in the <a href="edition5.html#install_repos">previous edition</a>
@@ -923,81 +937,17 @@ sudo apt-get upgrade</code>
 		You should use the original <i>apt-get</i> instead.
 	</p>
 
-	<!--
-	<h5>MySQL</h5>
-	<p>
-		First we'll install MySQL
-		<code>sudo apt-get install mysql-client mysql-server</code>
-		This will prompt you for a root password.
-		Choose someting wise and remember it!
-		For purpose of this tutorial I will set it to <b><i>rootPASSWORD</i></b>
-	</p>
-	<h5>Postfix</h5>
-	<p>
-		Then we'll install postfix
-		<code>sudo apt-get install postfix postfix-mysql</code>
-		This will prompt you to choose type of email server.
-		Select <b><i>internet site</i></b>
-		It will also  suggest a server name. Correct this if needed.
-	</p>
-	<h5>SASL</h5>
-	<code>sudo apt-get install libsasl2-modules libsasl2-modules-sql libgsasl7\
-				libauthen-sasl-cyrus-perl sasl2-bin libpam-mysql</code>
-	<h5>	ClamAV</h5>
-	<p>
-		<code>sudo apt-get install clamav-base libclamav6 clamav-daemon clamav-freshclam</code>
-		(Earlier vesions of Ubuntu may use libclamav5)
-	</p>
-
-	<h5>Amavis, SpamAssassin, postgrey</h5>
-	<p>
-		<code>sudo apt-get install amavisd-new
-sudo apt-get install spamassassin spamc
-sudo apt-get install postgrey</code>
-	</p>
-	-->
-
-	<!--
-	<h5>SquirrelMail</h5>
-	<code>sudo apt-get install squirrelmail squirrelmail-locales php-pear php5-cli</code>
-	<h5>Roundcube</h5>
-	<code>sudo apt-get install roundcube roundcube-mysql roundcube-plugins php-pear php5-cli</code>
-
-	<h5>phpMyAdmin</h5>
-	<code>sudo apt-get install phpmyadmin</code>
-	<p>
-		Enter <i>Yes</i> to set it up, enter root mysql password, enter a phpmyadmin mysql user password twice.
-		Accept apache2 as the web server.
-	</p>
-
-	<h5>ShoreWall</h5>
-	<code>sudo apt-get install shorewall shorewall-doc
-<span class="comment"># for earlier ubuntu versions use package <i>shorewall-common shorewall-perl shorewall-doc</i> instead</span></code>
-	<p>
-		Amazon provides a firewall/ access control for its  servers,
-		so not always needed then, but nice to have.
-		And in all others situations; a must have.
-	</p>
-	<p>
-
-	</p>
-	-->
-	<!--
-	<h5>Courier</h5>
-	<p>
-		<code>sudo apt-get install courier-base courier-authdaemon courier-authlib-mysql \
-			courier-imap courier-imap-ssl courier-ssl</code>
-		will prompt you about webdirectories. You can say no to this.
-		It will also warn you about the certificate location. Ignore it.
-	</p>
-	-->
 
 
 	<h5>Additional packages</h5>
 	<p>
 		I also install a few other packages that I personally prefer.
 		But nothing todo with the mail server.
-		<code>sudo apt-get install vim mutt lynx curl git</code>
+		<code>sudo apt-get install vim lynx curl git</code>
+		<a href="http://www.mutt.org/">Mutt</a> is a very usefull command line mail client that I always install
+		but I usually do that at the end when testing so that it doesn't
+		install its dependency on Postfix before I am ready.
+		<code>sudo apt-get install mutt</code>
 	</p>
 
 
@@ -1006,8 +956,8 @@ sudo apt-get install postgrey</code>
 		To find out which packages you may have installed,
 		you can use for example:
 		<code>sudo dpkg --list | grep <i>postfix</i></code>
-		or
-		<code>sudo apt-get search postfix</code>
+		And to find which are available:
+		<code>apt-cache search postfix</code>
 	</p>
 
 
@@ -1106,7 +1056,7 @@ sudo apt-get install postgrey</code>
 	<code>sudo apt-get install shorewall shorewall-doc
 <span class="comment"># for earlier ubuntu versions use package <i>shorewall-common shorewall-perl shorewall-doc</i> instead</span></code>
 	<p>
-		Amazon provides a firewall/ access control for its  servers,
+		Amazon provides a firewall/ access control for its servers,
 		so not always needed then, but nice to have.
 		And in all others situations; a must have.
 	</p>
@@ -4689,13 +4639,15 @@ sudo service postfix restart;</code>
 		I have made a separate <a href="http://flurdy.com/docs/ec2/index.html">tips and howto on the use of ec2</a>
 		for general server needs.
 		Hope it will be useful for people.
+		It could do with some updating.
 	</p>
 
 
 	<h4>How I use it for my mail servers</h4>
 	<p>
 		Different images to launch for different needs.
-		Good way to scale backup MXs if needed.
+		One for plain MX backup, one just for aliases, one to store email only and provide imap, one just for webmail.
+		Good way to also scale backup MXs if needed.
 		Can script backup to S3 of mail dirs etc.
 	</p>
 
@@ -4710,8 +4662,7 @@ sudo service postfix restart;</code>
 	</p>
 	<p>
 		Once competent enough on EC2, launch the latest official
-		<a href="http://help.ubuntu.com/community/EC2StartersGuide#Getting the images">Ubuntu ec2 image</a> or one of
-		<a href="http://alestic.com">Eric Hammond images</a>.
+		<a href="http://help.ubuntu.com/community/EC2StartersGuide#Getting the images">Ubuntu ec2 image</a>.
 	</p>
 
 	<h5>Instance size</h5>
@@ -4777,6 +4728,12 @@ sudo service postfix restart;</code>
 		But these quickly got outdated so I have removed them.
 	</p>
 
+	<a name="ec2_vagrant"></a>
+	<h4>Vagrant</h4>
+	<p>
+		One very useful way to test images without the cost of ec2 is to use <a href="http://www.vagrantup.com/">Vagrant</a> locally first.
+		This way you could potentially automate your <a href="http://www.fabfile.org/">fabric scripts</a>, <a href="https://github.com/puppetlabs/puppet">Puppet</a>, etc as well.
+	</p>
 
 	<a name="ec2_links"></a>
 	<h4>EC2 Links</h4>
@@ -4837,8 +4794,6 @@ sudo service postfix restart;</code>
 		<li><p><a href="#app_why">Why</a></p></li>
 		<li><p><a href="#references">References</a></p></li>
 		<li><p><a href="#app_links">Software Links</a></p></li>
-		<li><p><a href="#app_dif">Difference between Ubuntu versions</a></p></li>
-		<li><p><a href="#download">Download</a></p></li>
 		<li><p><a href="#app_todo">Todo</a></p></li>
 		<li><p><a href="#app_log">Change Log</a></p></li>
 	</ul>
@@ -5248,24 +5203,6 @@ sudo service postfix restart;</code>
 		However most are unnecessary with decent package manager.
 	</p>
 
-	<a name="app_diff"></a>
-	<h3>Difference between Ubuntu versions</h3>
-	<p>
-		I used to distinguish differences, which were available in a <a href="edition5.html#app_diff">previous edition</a>.
-	</p>
-	<p>
-		In the last few editions I have not. I base it on the latest LTS version, and test it with the minor releases in between.
-	</p>
-
-	<a name="download"></a>
-	<h3>Download</h3>
-	<p>
-		Please refer to the <a href="edition5.html#download">previous edition</a>
-		for a complete lists of downloads that are available.
-	</p>
-	<p>
-		However all the required software are available as .deb packages direct from ubuntu repositories.
-	</p>
 
 	<a name="app_log"></a>
 	<h3>Change log</h3>
@@ -5278,6 +5215,9 @@ sudo service postfix restart;</code>
 			2010-05-29:
 		</p></li>
 		-->
+		<li><p>
+			2014-07-25: Tested every step with Ubuntu Trusty 14.04, and updated differences.
+		</p></li>
 		<li><p>
 			2014-05-31: Removed ec2 AMIs
 		</p></li>
