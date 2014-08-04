@@ -2346,6 +2346,14 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 		which then negates the need for SASL.
 	</p>
 
+
+	<h5>HTTPS</h5>
+
+	<p>
+		You probably also want to insist on https connections over tls if you below add webmail that are exposed to the public.
+		Securing a web server is out of scope for this howto, but will not be a lot different than the mail server tls settings.
+	</p>
+
 	<div class="note">
 	<p>
 		You know have an advanced secure mail server.
@@ -4715,6 +4723,8 @@ sudo service postfix restart;</code>
 		so if you have a busy mail server, follow their
 		<a href="http://aws.amazon.com/ec2/faqs/#Are_there_any_limitations_in_sending_email_from_EC2_instances">
 		FAQ entry for removing mail throttling</a>.
+		AWS will then also add a reverse IP lookup for you elastic IP to your server,
+		which also helps in the spam scoring and delivery.
 	</p>
 
 	<a name="ec2_ami"></a>
