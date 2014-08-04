@@ -243,7 +243,11 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				<li><p><a href="#app_links">Software Links</a></p></li>
 				<li><p><a href="#app_todo">Todo</a></p></li>
 				<li><p><a href="#app_log">Change Log</a></p></li>
-				<li><p><a href="#app_faq">FAQ</a></p></li>
+				<li><p><a href="#app_faq">FAQ</a></p>
+					<ul>
+						<li><p><a href="#app_other">Other's problems and solutions</a></p>
+					</ul>
+				</li>
 	</ul>
 			</ul>
 		</li>
@@ -1085,31 +1089,31 @@ sudo apt-get upgrade</code>
 	</p>
 	<p>
 		First configure which network adapters we are accessing the net.
-		<code>cp /usr/share/doc/shorewall/default-config/interfaces /etc/shorewall/
-vi /etc/shorewall/interfaces</code>
-		<code>net     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs</code>
+		<code>sudo cp /usr/share/doc/shorewall/default-config/interfaces /etc/shorewall/;
+sudo vi /etc/shorewall/interfaces</code>
+		<code class="document">net     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs</code>
 	</p>
 	<p>
 		Then we will configure network zones
-		<code>cp /usr/share/doc/shorewall/default-config/zones /etc/shorewall/
-vi /etc/shorewall/zones</code>
+		<code>sudo cp /usr/share/doc/shorewall/default-config/zones /etc/shorewall/;
+sudo vi /etc/shorewall/zones</code>
 		Add the firewall if not there and the internet as a zone.
-		<code>fw	firewall
+		<code class="document">fw	firewall
 <span class="comment"># loc 	ipv4</span>
 net     ipv4</code>
 	</p>
 	<p>
 		Then if needed to specify hosts you can do it in this file.
 		E.g. If you wanto specify what is your home IP etc.
-		<code>cp /usr/share/doc/shorewall/default-config/hosts /etc/shorewall/
-vi /etc/shorewall/hosts</code>
-		<code><span class="comment"># loc	eth0:192.168.0.0/24</span></code>
+		<code>sudo cp /usr/share/doc/shorewall/default-config/hosts /etc/shorewall/;
+sudo vi /etc/shorewall/hosts</code>
+		<code class="document"><span class="comment"># loc	eth0:192.168.0.0/24</span></code>
 	</p>
 	<p>
 		Then set what is the default policy for firewall access.
-		<code>cp /usr/share/doc/shorewall/default-config/policy /etc/shorewall/
-vi /etc/shorewall/policy</code>
-		<code>$FW             net             ACCEPT
+		<code>sudo cp /usr/share/doc/shorewall/default-config/policy /etc/shorewall/;
+sudo vi /etc/shorewall/policy</code>
+		<code class="document">$FW             net             ACCEPT
 net             $FW             DROP            info
 net             all             DROP            info
 <span class="comment"># The FOLLOWING POLICY MUST BE LAST</span>
@@ -1117,18 +1121,18 @@ all             all             REJECT          info</code>
 	</p>
 	<p>
 		For safety in case it goes down.
-	<code>cp /usr/share/doc/shorewall/default-config/routestopped /etc/shorewall/
-vi /etc/shorewall/routestopped</code>
-		<code>eth0            0.0.0.0                 routeback</code>
+	<code>sudo cp /usr/share/doc/shorewall/default-config/routestopped /etc/shorewall/;
+sudo vi /etc/shorewall/routestopped</code>
+		<code class="document">eth0            0.0.0.0                 routeback</code>
 		You may put in a netmask of your ip range if you are more concerned.
 	</p>
 	<p>
 		Now for the main firewall rules.
 		You can find predetermined macro rules for Shorewall in
 		<i>/usr/share/shorewall</i>.
-		<code>cp /usr/share/doc/shorewall/default-config/rules /etc/shorewall/
-vi /etc/shorewall/rules</code>
-		<code>SSH/ACCEPT      net             $FW</code>
+		<code>sudo cp /usr/share/doc/shorewall/default-config/rules /etc/shorewall/;
+sudo vi /etc/shorewall/rules</code>
+		<code class="document">SSH/ACCEPT      net             $FW</code>
 	</p>
 	<h5>Open for business</h5>
 	<p>
@@ -1136,7 +1140,7 @@ vi /etc/shorewall/rules</code>
 		come back to this step and
 		open up SMTP and Web access to others.	</p>
 		<code>vi /etc/shorewall/rules</code>
-		<code>Ping/ACCEPT     net             $FW
+		<code class="document">Ping/ACCEPT     net             $FW
 
 # Permit all ICMP traffic FROM the firewall TO the net zone
 ACCEPT          $FW             net             icmp
@@ -1163,7 +1167,7 @@ Web/ACCEPT      net             $FW</code>
 	<p>
 		Then to switch it on during boot:
 		<code>vi /etc/default/shorewall</code>
-		<code>startup=1</code>
+		<code class="document">startup=1</code>
 	</p>
 	<p>
 		For more details on IP Tables and Shorewall,
@@ -1299,7 +1303,7 @@ exit;</code>
 		<code class="document"><span class="comment">#skip-networking</span></code>
 		However in todays file the default is to bind the
 		address to localhost, which is fine.
-		<code class="documen">bind-address = 127.0.0.1</code>
+		<code class="document">bind-address = 127.0.0.1</code>
 		It is very useful at the start to log any SQL calls that makes it to MySQL.
 		So enable these lines:
 		<code class="document">general_log_file = /var/log/mysql/mysql.log
@@ -1343,18 +1347,18 @@ general_log = 1</code>
 
 	<p>
 		First specify the name of your server.
-		<code><span class="comment"># This is already done in /etc/mailname
+		<code class="document"><span class="comment"># This is already done in /etc/mailname
 #myhostname= <i>mail.example.com</i></span></code>
 		Next is the origin which is the domain appended to email from this machine,
 		this can be your full servername, or domain name.
-		<code><span class="comment"># myorigin=/etc/mailname</span>
+		<code class="document"><span class="comment"># myorigin=/etc/mailname</span>
 myorigin=<i>example.com</i></code>
 	</p>
 	<p>
 		Then decide what the greeting text will be.
 		Enough info so it is useful,
 		but not divulge everything to potential hackers.
-		<code>smtpd_banner = $myhostname ESMTP $mail_name</code>
+		<code class="document">smtpd_banner = $myhostname ESMTP $mail_name</code>
 	</p>
 	<p>
 		Next you need to decide whether to send
@@ -1370,15 +1374,16 @@ myorigin=<i>example.com</i></code>
 		Also many servers block dynamic dns hosts,
 		so you may find your server gets rejected.
 		However choose whichever you are comfortable with.
-		<code><span class="comment"># leave blank to do it yourself</span>
-relayhost =</code><code><span class="comment"># or put it an accessible smtp server</span>
+		<code class="document"><span class="comment"># leave blank to do it yourself</span>
+relayhost =</code>
+		<code class="document"><span class="comment"># or point it to an accessible smtp server</span>
 relayhost = <i>smtp.yourisp.com</i></code>
 	</p>
 	<p>
 		Next is network details.
 		You will accept connection from anywhere,
 		and you only trust this machine
-		<code>inet_interfaces = all
+		<code class="document">inet_interfaces = all
 mynetworks_style = host</code>
 	</p>
 	<p>
@@ -1391,19 +1396,19 @@ mynetworks_style = host</code>
 		E.g. if you use a dynamic dns service,
 		then your server address will be a subdomain.
 		You can also specify which users not to masquerade.
-		<code><span class="comment"># masquerade_domains = <i>mail.example.com www.example.com !sub.dyndomain.com</i>
+		<code class="document"><span class="comment"># masquerade_domains = <i>mail.example.com www.example.com !sub.dyndomain.com</i>
 # masquerade_exceptions = root</span></code>
 	</p>
 	<p>
 		As we will be using virtual domains, these need to be empty.
-		<code>local_recipient_maps =
+		<code class="document">local_recipient_maps =
 mydestination =</code>
 
 	</p>
 	<p>
 		Then will set a few numbers.
 
-		<code><span class="comment"># how long if undelivered before sending warning update to sender		</span>
+		<code class="document"><span class="comment"># how long if undelivered before sending warning update to sender		</span>
 delay_warning_time = 4h
 <span class="comment"># will it be a permanent error or temporary</span>
 unknown_local_recipient_reject_code = 450
@@ -1432,7 +1437,7 @@ smtpd_hard_error_limit = 12</code>
 		Be carefull that each setting is on one line only.
 	</h4>
 
-	<code><span class="comment"># Requirements for the HELO statement</span>
+	<code class="document"><span class="comment"># Requirements for the HELO statement</span>
 smtpd_helo_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_hostname,
 		reject_invalid_hostname, permit
 <span class="comment"># Requirements for the sender details</span>
@@ -1449,7 +1454,7 @@ smtpd_data_restrictions = reject_unauth_pipelining</code>
 	</p>
 	<p>
 		Further restrictions:
-		<code><span class="comment"># require proper helo at connections </span>
+		<code class="document"><span class="comment"># require proper helo at connections </span>
 smtpd_helo_required = yes
 <span class="comment"># waste spammers time before rejecting them</span>
 smtpd_delay_reject = yes
@@ -1457,7 +1462,7 @@ disable_vrfy_command = yes</code>
 	</p>
 	<p>
 		Next we need to set some maps and lookups for the virtual domains.
-		<code><span class="comment"># not sure of the difference of the next two</span>
+		<code class="document"><span class="comment"># not sure of the difference of the next two</span>
 <span class="comment"># but they are needed for local aliasing</span>
 alias_maps = hash:/etc/postfix/aliases
 alias_database = hash:/etc/postfix/aliases
@@ -1480,12 +1485,12 @@ virtual_mailbox_domains = mysql:/etc/postfix/mysql_domains.cf
 		Hopefully soon enough servers that they interact with will support 6 and I can support both.
 	</p>
 
-	<code>inet_protocols=ipv4</code>
+	<code class="document">inet_protocols=ipv4</code>
 
 	<p>
 		You can (as in my older editions) use a lookup for the uid and gid of the owner of mail files.
 		But I tend to have one owner(virtual), so instead add this:
-		<code>virtual_uid_maps = static:5000
+		<code class="document">virtual_uid_maps = static:5000
 virtual_gid_maps = static:5000</code>
 	</p>
 
@@ -1601,9 +1606,9 @@ additional_conditions = and enabled = 1</code>
 	<h6><a href="#top">Return to top</a>.</h6>
 
 	<div style="float:right; padding-right: 15px;">
-			<a href="http://flurdy.spreadshirt.net/en/GB/Shop/Article/Index/article/NO-LOL-on-dickies-7609529"><img
+			<a href="http://flurdy.spreadshirt.co.uk/no-lol-A7947873/customize/color/2"><img
 				style="border: 1px solid black;"
-				src="http://image.spreadshirt.net/image-server/image/product/8788774/view/2/type/png/width/190/height/190"
+				src="http://image.spreadshirt.net/image-server/v1/compositions/9128400/views/1,width=280,height=280,appearanceId=2.png/no-lol_design.png"
 				width="90" height="90" border="0" alt="No LOL"
 				align="right" title="t-shirt by flurdy (UK)" vspace="5" hspace="5"/></a>
 	</div>
@@ -1981,7 +1986,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 		However you need to tell Postfix to use it.
 		<code>sudo vi /etc/postfix/main.cf</code>
 		And then edit the recipient restrictions:
-		<code>smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, permit_sasl_authenticated,
+		<code class="document">smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, permit_sasl_authenticated,
 		reject_non_fqdn_recipient, reject_unknown_recipient_domain, reject_unauth_destination,
 		check_policy_service inet:127.0.0.1:10023, permit</code>
 	</p>
@@ -1989,7 +1994,7 @@ $final_spam_destiny = D_DISCARD; <span class="comment"># ubuntu default, recomme
 		You can tweak whitelisting in <b><i>/etc/postgrey</i></b>.
 		You can tweak postgrey configuration by tweaking <b><i>/etc/default/postgrey</i></b>.
 		E.g. delay, auto whitelisting, or reject message.
-	<code>POSTGREY_OPTS="--inet=10023 --max-age=365"</code>
+	<code class="document">POSTGREY_OPTS="--inet=10023 --max-age=365"</code>
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
@@ -2997,6 +3002,9 @@ order by d.domain,a.mail</code>
 			<p>Got to blame it on something or someone.</p>
 		</li>
 	</ul>
+
+	<p>Check <a href="#app_faq">the FAQ</a> for common specific problems.</p>
+
 	<h6><a href="#top">Return to top</a>.</h6>
 
 	<br/>
@@ -3338,15 +3346,6 @@ Escape character is '^]'.
 220 [127.0.0.1] ESMTP amavisd-new service ready</span></code>
 	Then just tail <i>/var/log/mail.log</i> for any problems.
 	</p>
-
-	<h4>Other's solutions</h4>
-
-	<p>
-		In addition to the 100s of solutions in the forum threads, some have published their issues and solutions as well:		
-	</p>
-	<ul>
-		<li><p><a href="http://idev.ge/postfix-mta-configuration-problems-and-solutions-ubuntu-12-04/">Sandro's Postfix MTA configuration problems and solutions Ubuntu 12.04</a></p></li>
-	</ul>
 
 </div>
 
@@ -4444,7 +4443,7 @@ sudo service postfix restart;</code>
 		<code><span class="comment"># alias /squirrelmail /usr/share/squirrelmail</span></code>
 		Uncomment the virtual settings.,
 		and insert your servers name.
-		<code><span class="comment"># users will prefer a simple URL like http://webmail.example.com</span>
+		<code class="document"><span class="comment"># users will prefer a simple URL like http://webmail.example.com</span>
 <VirtualHost *>
   DocumentRoot /usr/share/squirrelmail
   ServerName <i>webmail.example.com</i>
@@ -4487,7 +4486,7 @@ sudo service postfix restart;</code>
 		Now they say using TLS over localhost is a waste of time.
 		But I do anyway.
 		Type <b><i>7</i></b> to edit secure IMAP.
-		Type <code>Y</code> to enable it.
+		Type <b><i>Y</i></b> to enable it.
 	</p>
 	<p>
 		Type <b><i>5</i></b> to edit IMAP port.
@@ -4796,6 +4795,11 @@ sudo service postfix restart;</code>
 		<li><p><a href="#app_links">Software Links</a></p></li>
 		<li><p><a href="#app_todo">Todo</a></p></li>
 		<li><p><a href="#app_log">Change Log</a></p></li>
+		<li><p><a href="#app_faq">FAQ</a></p>
+			<ul>
+				<li><p><a href="#app_other">Other's problems and solutions</a></p>
+			</ul>
+		</li>
 	</ul>
 
 	<a name="about"></a>
@@ -5414,6 +5418,17 @@ sudo service postfix restart;</code>
 				Restart these services, and even some times reboot...
 			</p>
 		</li>
+	</ul>
+
+	<a name="app_other"></a>
+	<h4>Other's solutions</h4>
+
+	<p>
+		In addition to the 100s of solutions in the <a href="#forums">forum threads</a>, 
+		some have published their issues and solutions as well:		
+	</p>
+	<ul>
+		<li><p><a href="http://idev.ge/postfix-mta-configuration-problems-and-solutions-ubuntu-12-04/">Sandro's Postfix MTA configuration problems and solutions Ubuntu 12.04</a></p></li>
 	</ul>
 
 </div>
