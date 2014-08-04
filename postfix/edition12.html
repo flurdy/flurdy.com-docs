@@ -2454,15 +2454,58 @@ $rcmail_config['create_default_folders'] = TRUE;</code>
 	<p>
 		You can obviously modify and tweak further.
 	</p>
+	
+	<ul>
+		<li>
+			<p>
+				One thing that may be useful is to have
+				the Roundcube Apache <i>Alias</i> on different virtual hosts.
+			</p>
+		</li>
+		<li>
+			<p>
+				Other is to configure <i>username_domain</i> in <i>main.inc.php</i>
+		to append different email addresses
+			</p>
+		</li>
+		<li>
+			<p>
+				Or configure the <i>default_host</i> to
+				different mail server depending on virtual host
+			</p>
+		</li>
+		<li>
+			<p>
+				For security enforcing https for the webmail is probably smart.
+			</p>
+		</li>
+		<li>
+			<p>
+				Adding your own skin logo etc to customise the look is likely.
+				<i>( $rcmail_config['skin_logo'] = 'yourlogo.png'; )</i>
+			</p>
+		</li>
+		<li>
+			<p>
+				If you webmail is not on the same server as your MTA (Postfix),
+				then the MTA might not have the webmail server's IP listed in permit_mynetworks,
+				so you might want to log into the smtp when sending email:
+<code>$rcmail_config['smtp_user'] = '%u';
+$rcmail_config['smtp_pass'] = '%p';
+$rcmail_config['smtp_auth_type'] = 'login';
+</code>
+			</p>
+		</li>
+		<li>
+			<p>
+			</p>
+		</li>
+	</ul>
 	<p>
-		One thing that may be useful is to have
-		the Roundcube Apache Alias on different virtual hosts.
-		Other is to configure <i>username_domain</i> in <i>main.inc.php</i>
-		to append different email addresses, or
-		configure the <i>default_host</i> to
-		different mail server depending on virtual host.
-		For security enforcing https for the webmail is probably smart.
-		Adding your own skin logo etc to customise the look is likely.
+		
+		 
+		
+		
 	</p>
 	<p>
 		More details on the <a href="http://trac.roundcube.net/wiki/">Roundcube Wiki</a>.
