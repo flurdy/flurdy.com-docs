@@ -1129,6 +1129,12 @@ sudo vi /etc/shorewall/routestopped</code>
 sudo vi /etc/shorewall/rules</code>
 		<code class="document">SSH/ACCEPT      net             $FW</code>
 	</p>
+
+	<p>
+		Please note SSH is these days a known attack vector for <a href="ext_brute">brute force attacks</a>.
+		Especially if you allow connection from anywhere on the internet and on the standard SSH port (22).
+	</p>
+
 	<h5>Open for business</h5>
 	<p>
 		Once your server is working
@@ -4516,13 +4522,65 @@ sudo service postfix restart;</code>
 		Preventing <a href="http://en.wikipedia.org/wiki/Brute-force_attack">Brute Force</a> attack on your server.
 	</p>
 	<p>
-		First line of defense is the firewall.
+		First line of defence is the firewall.
 		If they cant get to your server then they cant hack in.
 		However to be a useful internet based server you have to expose
-		some services, e.g. SMTP and maybe SSH.
+		some services, e.g. SMTP.
+	</p>
+
+	<p>
+		However SSH and IMAP can be restricted. You should limit it to your own IP ranges only.
+		Another trick is to not use the standard ports.
 	</p>
 	<p>
-		Below are two widely used ways to protect yourself.
+		This however can cause issues with tools expecting it to be on the standard port and which can not be configured.
+		Or if the SSH port is not documented and standardised in your organisation the correct port may be forgotten.
+	</p>
+
+	<p>
+		To add a new SSH port to the firewall rule:
+	</p>
+	<code>sudo vi /etc/shorewall/rules</code>
+	<code class="document"><span class="comment">We will keep the old port here until we can safely switch it off</span>
+SSH(ACCEPT)	net		$FW
+<span class="comment"># Please pick another port number than 1092!</span>
+ACCEPT		net		$FW		tcp		<i>1092</i></code>
+	<code>sudo service shorewall check</code>
+	<code>sudo service shorewall safe-restart</code>
+
+	<p>
+		Open the SSH configuration:
+	</p>
+	<code>sudo vi /etc/ssh/sshd_config</code>
+	<p>And change the port from 22</p>
+	<code class="document">Port <i>1092</i></code>
+	<code>sudo service ssh restart</code>
+
+	<p>Now from another machine test if the new port works</p>
+	<code>ssh -p <i>1092</i> <i>yourusername</i>@<i>yourserver</i></code>
+
+	<p>We can then remove the old port from the firewall rules or add it as reject.</p>
+	<code>sudo vi /etc/shorewall/rules</code>
+	<code class="document">SSH(DROP)	net		$FW</code>
+	<code>sudo service shorewall check</code>
+	<code>sudo service shorewall safe-restart</code>
+
+	<p>
+		To simplify your life add the new port to <a href="http://nerderati.com/2011/03/17/simplify-your-life-with-an-ssh-config-file/">your personal SSH configuration</a>.
+	</p>
+
+	<p>
+		Note if you have physical firewall in front of your mail server you will need to update it as well.
+		E.g. if you use ec2 you will need to add the new port to the security group and remove the old port.
+	</p>
+	<p>
+		I would suggest IP range restrictions to be on the external firewall to avoid a maintenance hell
+		of updating x servers if a new range needs adding/modifying.
+	</p>
+
+
+	<p>
+		Below are two widely used ways to protect yourself further.
 	</p>
 	<a name="ext_brute_deny"></a>
 	<h4>DenyHosts</h4>
