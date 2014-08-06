@@ -148,8 +148,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				<li><p><a href="#config-external-dns">DNS</a></p></li>
 			</ul>
 		</li>
-			</ul>
-		</li>
 		<li>
 			<h5><a href="#data">Data</a></h5>
 			<p>
@@ -295,9 +293,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2004-07</td>
 			<td colspan="1" class="desc">
 				Based on Mandrake 10.x, but valid for all distributions.
-				Very thorough. Includes package description, where to get the sources and binaries,
-				how to build them or which RPMs to use, includes many refrences, etc etc.
-				Starts off with a basic working server, then advances, extends and tightens it in stages.
+				Very thorough. 
 			</td>
 		</tr>
 		<tr>
@@ -361,7 +357,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		<tr>
 			<td colspan="1" nowrap><a href="edition8.html">8th</a></td>
 			<td colspan="1">
-				Released (superseeded)
+				Released (outdated)
 			</td>
 			<td colspan="1" nowrap>2009-05</td>
 			<td colspan="1" nowrap>2009-11</td>
@@ -374,7 +370,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		<tr>
 			<td colspan="1" nowrap><a href="edition9.html">9th</a></td>
 			<td colspan="1">
-				Released (superseeded)
+				Released (outdated)
 			</td>
 			<td colspan="1" nowrap>2009-11</td>
 			<td colspan="1" nowrap>2010-05</td>
@@ -910,7 +906,7 @@ deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty-updates univer
 deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty-updates universe</code>
 		<code>deb http://security.ubuntu.com/ubuntu trusty-security universe
 deb-src http://security.ubuntu.com/ubuntu trusty-security universe</code>
-		Note <i>security</i> always have to go to the main server.
+		Note the <i>security</i> repository always have to go to the non-mirrored server.
 	</p>
 	<p>
 		As mentioned in the <a href="edition5.html#install_repos">previous edition</a>
@@ -1277,16 +1273,10 @@ PRIMARY KEY  (`pkid`)
 `clear` varchar(128) NOT NULL default 'ChangeMe',
 `crypt` varchar(128) NOT NULL default 'sdtrusfX0Jj66',
 `quota` varchar(255) NOT NULL default '',
-`procmailrc` varchar(128) NOT NULL default '',
-`spamassassinrc` varchar(128) NOT NULL default '',
 PRIMARY KEY  (`id`),
 UNIQUE KEY `id` (`id`)
 ) ;</code>
 
-	<p>
-		The last few fields in the <b><i>users</i></b> table are not required,
-		but useful if you extend later.
-	</p>
 
 	<code><span class="comment"># To visualise the tables created:</span>
 describe aliases; describe domains; describe users;
@@ -1364,10 +1354,9 @@ myorigin=<i>example.com</i></code>
 		Next you need to decide whether to send
 		all outgoing mail via another SMTP server,
 		or send them yourself.
-		I send via my ISP's server,
+		I sometimes send via my ISP's server,
 		so it has to worry about the queuing etc.
-		If you send it yourself then you are not reliant
-		on 3rd party server.
+		If you send it yourself then you are not reliant on 3rd party server.
 		But you may risk more exposure and
 		accidentally be blocked by spam blockers.
 		And it is more work for your server.
@@ -1386,6 +1375,14 @@ relayhost = <i>smtp.yourisp.com</i></code>
 		<code class="document">inet_interfaces = all
 mynetworks_style = host</code>
 	</p>
+	<p>
+		I currently restrict my servers to ip4 and avoid ip6 at the moment.
+		(Or rather avoid flooding my logs with ip6 errors).
+		Hopefully soon enough servers that they interact with will support 6 and I can support both.
+	</p>
+
+	<code class="document">inet_protocols=ipv4</code>
+
 	<p>
 		Next you can masquerade some outgoing addresses.
 		Say your machine's name is <i>mail.domain.com</i>.
@@ -1478,14 +1475,6 @@ virtual_mailbox_domains = mysql:/etc/postfix/mysql_domains.cf
 <span class="comment"># not used yet
 # transport_maps = mysql:/etc/postfix/mysql_transport.cf</span></code>
 	</p>
-
-	<p>
-		I currently restrict my servers to ip4 and avoid ip6 at the moment.
-		(Or rather avoid flooding my logs with ip6 errors).
-		Hopefully soon enough servers that they interact with will support 6 and I can support both.
-	</p>
-
-	<code class="document">inet_protocols=ipv4</code>
 
 	<p>
 		You can (as in my older editions) use a lookup for the uid and gid of the owner of mail files.
@@ -1828,7 +1817,6 @@ $final_spam_destiny = D_PASS;
 <span class="comment"># $final_spam_destiny = D_DISCARD; # ubuntu default, recommended as sender is usually faked</span></code>
 	</p>
 
-
 	<p>
 		We have now setup amavis to scan and pass along incomming email.
 		Next we will setup postfix to talk to amavis.
@@ -2146,7 +2134,7 @@ sql_select: select crypt from users where id='%u@%r' and enabled = 1</code>
 	</p>
 	<code>sudo vi /etc/pam.d/smtp</code>
 	<p>These must be on 2 lines only, but I have broken them up for easier to read.</p>
-	<code>auth required pam_mysql.so user=mail passwd=<i>aPASSWORD</i>
+	<code class="document">auth required pam_mysql.so user=mail passwd=<i>aPASSWORD</i>
 			host=127.0.0.1 db=maildb table=users usercolumn=id passwdcolumn=crypt crypt=1
 account sufficient pam_mysql.so user=mail passwd=<i>aPASSWORD</i>
 			host=127.0.0.1 db=maildb table=users usercolumn=id passwdcolumn=crypt crypt=1</code>
@@ -2178,10 +2166,11 @@ sudo /etc/init.d/postfix restart</code>
 		If not replace the current line by adding UTH=CRAM-MD5 AUTH=CRAM-SHA1 so it resembles something like this:
 		(Again on one line)
 	</p>
-	<code>IMAP_CAPABILITY="IMAP4rev1 UIDPLUS CHILDREN NAMESPACE
+	<code class="document">IMAP_CAPABILITY="IMAP4rev1 UIDPLUS CHILDREN NAMESPACE
 			THREAD=ORDEREDSUBJECT THREAD=REFERENCES SORT QUOTA AUTH=CRAM-MD5 AUTH=CRAM-SHA1 IDLE"</code>
 	<code>sudo /etc/init.d/courier-authdaemon restart;
-sudo /etc/init.d/courier-imap restart</code>
+sudo /etc/init.d/courier-imap restart;
+sudo /etc/init.d/courier-imap-ssl restart</code>
 
 	<h6><a href="#top">Return to top</a>.</h6>
 	<br/>
@@ -2214,7 +2203,7 @@ sudo /etc/init.d/courier-imap restart</code>
 		<code>vi /etc/postfix/main.cf</code>
 		There are already some TLS settings in the default debian/ubuntu version of this file.
 		I moved these to the end, for clarity, but that is up to you.
-		<code># TLS parameters
+		<code class="document"># TLS parameters
 <span class="comment"># smtp_use_tls = no</span>
 smtp_tls_security_level = may
 <span class="comment"># smtpd_use_tls=yes</span>
@@ -2241,7 +2230,7 @@ smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt</code>
 		Also enabled <i>smtps</i> service (port 465),
 		for some compatebility with some older clients (outlook express etc).
 	</p>
-	<code>submission inet n       -       n       -       -       smtpd
+	<code class="document">submission inet n       -       n       -       -       smtpd
   -o smtpd_sasl_auth_enable=yes
 <span class="comment"># if you do not want to restrict it encryption only, comment out next line</span><
   -o smtpd_tls_auth_only=yes
@@ -2273,12 +2262,12 @@ openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \
 		Then you need to edit
 		<code>vi /etc/courier/imapd-ssl</code>
 		By default Ubuntu already points to you certificate
-		<code>TLS_CERTFILE=/etc/courier/imapd.pem</code>
+		<code class="document">TLS_CERTFILE=/etc/courier/imapd.pem</code>
 		Modify this if needed.
 	</p>
 	<p>
 		Also you if want to restrict IMAP users to SSL/TLS only toggle this setting to 1.
-		<code>IMAP_TLS_REQUIRED=1</code>
+		<code class="document">IMAP_TLS_REQUIRED=1</code>
 	</p>
 
 <br />
@@ -2445,7 +2434,7 @@ $rcmail_config['create_default_folders'] = TRUE;</code>
 				If you webmail is not on the same server as your MTA (Postfix),
 				then the MTA might not have the webmail server's IP listed in permit_mynetworks,
 				so you might want to log into the smtp when sending email:
-<code>$rcmail_config['smtp_user'] = '%u';
+<code class="document">$rcmail_config['smtp_user'] = '%u';
 $rcmail_config['smtp_pass'] = '%p';
 $rcmail_config['smtp_auth_type'] = 'login';
 </code>
@@ -3121,7 +3110,7 @@ order by d.domain,a.mail</code>
 		Add <i>info</i> to all <i>REJECT</I>, <i>BOUNCE</i> and <i>DROP</i> policies.
 		<code>sudo vi /etc/shorewall/policy</code>
 		such as:
-		<code>net	all	DROP		info</code>
+		<code class="document">net	all	DROP		info</code>
 	</p>
 
 	<h5>MySQL</h5>
@@ -3132,14 +3121,14 @@ order by d.domain,a.mail</code>
 		in case that was missed switch it on now:
 		<code>sudo vi /etc/mysql/my.cnf</code>
 		Make sure this is not commented out
-		<code>log = /var/log/mysql/mysql.log</code>
+		<code class="document">log = /var/log/mysql/mysql.log</code>
 	</p>
 
 	<h5>Courier</h5>
 	<p>
 		As mentioned in the setup , switching on debugging for Courier is easy:
 		<code>sudo vi /etc/courier/authdaemonrc</code>
-		<code>DEBUG_LOGIN=2</code>
+		<code class="document">DEBUG_LOGIN=2</code>
 	</p>
 
 	<h5>Amavis</h5>
@@ -3147,7 +3136,7 @@ order by d.domain,a.mail</code>
 		You can also debug amavis:
 		<code>sudo vi /etc/amavis/conf.d/50-user</code>
 		And perhaps bump it up if already debugging:
-		<code>$log_level = 2;</code>
+		<code class="document">$log_level = 2;</code>
 	</p>
 
 	<h6><a href="#top">Return to top</a>.</h6>
@@ -3484,7 +3473,7 @@ flush privileges;</code>
 		And then your domain name in
 		<code>sudo vi /etc/postfix/main.cf</code>
 		under the mydomain setting
-		<code>myorigin=<i>yourdomain.com</i></code>
+		<code class="document">myorigin=<i>yourdomain.com</i></code>
 		It could also be smart to check what the unix hostname is specified
 		as
 		<code>hostname</code>
@@ -3493,7 +3482,7 @@ flush privileges;</code>
 		All though this does not have to be the same as your postfix mail server name.
 		You may want to speficiy some hosts in hosts file as well,
 		<code>sudo vi /etc/hosts</code>
-		<code>127.0.0.1 localhost.localdomain localhost
+		<code class="document">127.0.0.1 localhost.localdomain localhost
 127.0.0.1 <i>smtp.yourdomain.com smtp</i></code>
 	</p>
 
@@ -3672,7 +3661,7 @@ delete from aliases where mail = 'foo@bar.com';</code>
 		edit main.cf and add these:
 	</p>
 
-	<code>relay_domains = mysql:/etc/postfix/mysql_backups.cf
+	<code class="document">relay_domains = mysql:/etc/postfix/mysql_backups.cf
 transport_maps = mysql:/etc/postfix/mysql_transport.cf</code>
 
 	<p>
@@ -3684,7 +3673,7 @@ transport_maps = mysql:/etc/postfix/mysql_transport.cf</code>
 		automatic edit the postfix main.cf file.
 	</p>
 
-	<code>proxy_interfaces = <i>1.2.3.4</i></code>
+	<code class="document">proxy_interfaces = <i>1.2.3.4</i></code>
 
 
 		<p>
@@ -3696,7 +3685,7 @@ transport_maps = mysql:/etc/postfix/mysql_transport.cf</code>
 		</p>
 
 
-	<code>user=mail
+	<code class="document">user=mail
 password=<i>apassword</i>
 dbname=maildb
 table=backups
@@ -3707,7 +3696,7 @@ additional_conditions = and enabled = 1</code>
 
 	<p>Next create this file /etc/postfix/mysql_transport.cf</p>
 
-	<code>user=mail
+	<code class="document">user=mail
 password=<i>apassword</i>
 dbname=maildb
 table=backups
@@ -4119,13 +4108,15 @@ hosts=127.0.0.1</code>
 
 	<a name="ext_admin"></a>
 	<h3>Admin software</h3>
-	<h6 class="red">todo</h6>
+	
 	<p>
 		Trying out a few admin software might make you life
 		easier, if phpMyAdmin gets to crude.
-		<a href="http://www.google.com/search?q=postfix+admin">Quick search</a>
-		</p>
-		<p>More to come later.</p>
+		<a href="http://www.google.com/search?q=postfix+admin">Quick search</a> for postfix admin.
+	</p>
+	<p>
+		I have made just as crude app at <a href="http://github.com/flurdy/sortingoffice">github.com/flurdy/sortingoffice</a>.
+	</p>	
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
@@ -4389,7 +4380,8 @@ sudo service postfix restart;</code>
 		If you use SPF for your domain,
 		consider that both your server and google will receive and send mail
 		on behalf of that domain.
-		Adding <code>include:_spf.google.com</code> should cover it.
+		Including Google's spfs in your domain's dns txt settings should cover it.
+		<code>include:_spf.google.com</code>
 	</p>
 	<p>
 		<b>Google internally</b><br />
@@ -4397,13 +4389,14 @@ sudo service postfix restart;</code>
 		So if others inside google, or using google hosted apps or GMail,
 		if they email you, the email may not go via your email server,
 		but directly to the Google Apps for your domain.
-		That could be an issue if not all aliases you have use Google Apps.
-		This needs to be tested more though.
-		Especially as it may only be an issue if Google's servers are part
-		of you domains MXs.
-		It may be worth adding aliases in your Google Apps admin
-		for the non google apps addresses
-		to some user whom can handle these?
+	</p>
+	<p>
+		That is only an issue if not all aliases you have use Google Apps.
+	</p>
+	<p>
+		One possible solution is to forward all emails for the people
+		that do not want to use gmail to another domain hosted by you
+		that then again on your server aliases to the original email address.
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
@@ -4440,7 +4433,7 @@ sudo service postfix restart;</code>
 		You may accept the default apache configuration where squirrelmail is folder in all sites. But I prefer virtual hosting. But you dont need to do these next steps.
 		<code>sudo vi /etc/apache2/sites-available/squirrelmail</code>
 		Comment out the alias.
-		<code><span class="comment"># alias /squirrelmail /usr/share/squirrelmail</span></code>
+		<code class="document"><span class="comment"># alias /squirrelmail /usr/share/squirrelmail</span></code>
 		Uncomment the virtual settings.,
 		and insert your servers name.
 		<code class="document"><span class="comment"># users will prefer a simple URL like http://webmail.example.com</span>
