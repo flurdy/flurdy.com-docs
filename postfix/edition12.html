@@ -292,8 +292,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2004-02</td>
 			<td colspan="1" nowrap>2004-07</td>
 			<td colspan="1" class="desc">
-				Based on Mandrake 10.x, but valid for all distributions.
-				Very thorough. 
+				Based on Mandrake 10.x.
+				Very thorough with advanced server sections. 
 			</td>
 		</tr>
 		<tr>
@@ -303,7 +303,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2005-11</td>
 			<td colspan="1" class="desc">
 				Based on Ubuntu 5.04, Hoary Hedgehog.
-				More concise simplified guide to get an advanced server working quickly.
 				Now includes SASL &amp; TLS integration.
 			</td>
 		</tr>
@@ -314,7 +313,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2005-12</td>
 			<td colspan="1" class="desc">
 				Based on Breezy Badger, Ubuntu 5.10.
-				Includes Postgrey
+				Includes Postgrey.
 			</td>
 		</tr>
 		<tr>
@@ -325,7 +324,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			<td colspan="1" nowrap>2006-05</td>
 			<td colspan="1" nowrap>2006-11</td>
 			<td colspan="1" class="desc">
-				Based on Dapper Drake, Ubuntu 6.06 LTS.
+				Based on Ubuntu 6.06 LTS, Dapper Drake.
 			</td>
 		</tr>
 		<tr>
@@ -1291,7 +1290,7 @@ exit;</code>
 		<code>sudo vi /etc/mysql/my.cnf</code>
 		In previous version you needed to comment out this line
 		<code class="document"><span class="comment">#skip-networking</span></code>
-		However in todays file the default is to bind the
+		However in today's file the default is to bind the
 		address to localhost, which is fine.
 		<code class="document">bind-address = 127.0.0.1</code>
 		It is very useful at the start to log any SQL calls that makes it to MySQL.
@@ -4557,7 +4556,7 @@ sudo service postfix restart;</code>
 	<p>
 		<a href="http://www.fail2ban.org/wiki/index.php/Main_Page">fail2ban</a>
 		protects against a multitude of brute force attacks.
-		Relevant to this guide is the protection for SMTP and IMAP.
+		Relevant to this guide is the protection for SSH, SMTP, MySQL and IMAP.
 	</p>
 		<code>sudo apt-get install fail2ban</code>
 	<p>
@@ -4809,17 +4808,63 @@ sudo service postfix restart;</code>
 
 	<a name="contact"></a>
 	<a name="forum"></a>
-	<a name="contact_check"></a>
 	<h3>Contact</h3>
 
 	<p>
 		Remember I have <b>stood on the shoulders of <a href="#references">giants</a></b>.
 		I just ended up with a system that worked for me, and decided to document its evolution.
 	</p>
+
+
+	<a name="forums"></a>
+	<h4>Forums</h4>
+	<p>
+		The internet is full of people much more knowledgeable than me.
+		And definitely more likely to reply.
+	</p>
+	<ul>
+		<li><p>
+			<b><a href="http://ubuntuforums.org/showthread.php?t=185913">Here is a forum thread</a> on this specific mail server howto</b>.
+		</p></li>
+		<li><p>
+			<b>And <a href="http://ubuntuforums.org/showthread.php?t=97600">another one</a> by me which is also used.</b>.
+		</p></li>
+		<li><p><b>
+			Alternatively many solutions are available on <a href="http://serverfault.com/questions/tagged/postfix">Server Fault</a>.
+		</b></p></li>
+		<li><p><b>
+			If more  Postfix specific, considered the <a href="http://www.postfix.org/lists.html">postfix mailing lists</a>.
+		</b></p></li>
+	</ul>
+	<p>
+		If you find or know of other sources then <a href="#contribute">let me know</a>.
+	</p>
+	<p>
+		Please participate in the forums.<br/>
+		<ul>
+			<li><p>If you see an issue you also have, contribute with more information.</p></li>
+			<li><p>And even better if it something you may know how to solve, please <a href="http://ubuntuforums.org/showthread.php?t=185913">let people know</a>.</p></li>
+			<li><p>And especially, if you post a problem, then solve it, let <a href="http://ubuntuforums.org/showthread.php?t=185913">people know what the solution was</a>! (and not just that you solved it...)</p></li>
+		</ul>
+	</p>
+
+	<a name="contact_check"></a>
+
+	<p>
+		I am a firm believer in: <i><a href="http://www.amatecon.com/fish.html">Give a man a fish; you have fed him for today.
+		Teach a man to fish; and you have fed him for a lifetime</a></i>.<br/>
+		(Playing far too much <a href="http://www.civilization.com">Civilization</a> in my youth was not all wasted..)
+		<br/>
+		Or rather my version:
+		<b>"Teach a man to fish, share the teaching,
+		and you have fed many others for a lifetime"</b>.
+	</p>
+
+
 	<h4>Checklist</h4>
 
 	<p>
-		Before contacting, have you?:
+		Before posting in the forums, ServerFault, etc, have you?:
 	</p>
 	<ul>
 		<li><p>
@@ -4832,10 +4877,11 @@ sudo service postfix restart;</code>
 			Applied the solutions provided in the <a href="#test">test section</a>?
 		</p></li>
 		<li><p>
-			Read the <a href="#forum">forums</a> for solutions already posted?
+			<b>Read the <a href="#app_faq">FAQ</a></b>?
 		</p></li>
 		<li><p>
-			<b>Read the <a href="#app_faq">FAQ</a></b>?
+			Read the <a href="#forum">previous posts in the forums</a> and archives for solutions already found?
+			And at least some forum searching?
 		</p></li>
 		<li><p>
 			Tailed the mail.log? It usually <b>tells you what the problem is</b>!
@@ -4843,181 +4889,85 @@ sudo service postfix restart;</code>
 		<li><p>
 			Tailed the mysql.log? If nothing happens there it should indicate something...
 		</p></li>
-		<li><p>
-			Include a short dump of the mail.log with your post.
-			(Remember to anonymise the server names, email adresses &amp; definitely passwords!)
-		</p></li>
 	</ul>
 
-	<a name="forums"></a>
-	<h4>Forums</h4>
 	<p>
-		Use the <a href="http://www.ubuntuforums.org">Ubuntu forums</a>! :)<br />
-	</p>
-	<ul>
-		<li><p>
-			<b><a href="http://ubuntuforums.org/showthread.php?t=185913">Here is a thread</a> on this specific mail server howto</b>.
-		</p></li>
-		<li><p>
-			<b>And <a href="http://ubuntuforums.org/showthread.php?t=97600">another one</a> by me which is also used.</b>.
-		</p></li>
-		<li><p><b>
-			Or alternatively use <a href="http://serverfault.com/questions/tagged/postfix">Server Fault</a>.
-		</b></p></li>
-		<li><p><b>
-			If more  Postfix specific, considered the <a href="http://www.postfix.org/lists.html">postfix mailing lists</a>.
-		</b></p></li>
-	</ul>
-	<p>
-		Please participate in the forums.<br/>
-		<ul>
-			<li><p>If you see an issue you also have, contribute with more information.</p></li>
-			<li><p>And even better if it something you may know how to solve, please <a href="http://ubuntuforums.org/showthread.php?t=185913">let people know</a>.</p></li>
-			<li><p>And especially, if you post a problem, then solve it, let <a href="http://ubuntuforums.org/showthread.php?t=185913">people know what the solution was</a>! (and not just that you solved it...)</p></li>
-		</ul>
-	</p>
-	<p>
-		I am rubbish in replying to emails,
-		and the forums are read and answered by people whom
-		know a lot more about Postfix than me.
-	</p>
-	<p>
-		Questions sent to me directly may not be answered for a while or at all unfortunately.
-	</p>
+		When you do post remember to include a short dump of the mail.log.<br/>
+		(Remember to anonymise the server names, email addresses &amp; definitely passwords!)
+	</p>	
+
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
 	<a name="consult"></a>
 	<h4>Consultancy and advice</h4>
-	<p>
-		Not to be rude, but in attempt to reduce the volume of emails I receive please consider the following:
-	</p>
-	<ul>
 
-		<li>
-			<p>
-				If you simply want advice please use the <a href="http://ubuntuforums.org/showthread.php?t=185913">forum</a> or <a href="http://serverfault.com/questions/tagged/postfix">Server Fault</a>.
-			</p>
-		</li>
+	<p>
+		I do run a consultancy service, <a href="http://www.eray.co.uk">eray by flurdy</a>.
+		However I do not offer email server consultancy,
+		as it is not really my expertise nor interest despite this document.
+		It was a long time ago when I write most of this stuff.
+	</p>
+	<p>
+		I do though offer a complete <a href="http://aws.amazon.com">AWS</a> based email server set up by me.
+		(<a href="http://www.eray.co.uk/rates/index.html">price</a>)
+	</p>
+
+	
+	<h4>Contact me</h4>
+
+	<ul>
 		<li><p>
-			<a href="#references">My references</a> and the people whom follow <a href="http://ubuntuforums.org/showthread.php?t=185913">the forums</a> and the <a href="http://www.postfix.org/lists.html">postfix mailling lists</a> are much <b>more knowledgable</b> than me.
+			If you made / found an extension / alternative / translation to this tutorial, fantastic!<br/>
+			<a href="#contribute">Please let me know</a>, and I'll link to it.
+			And <a href="/contact">shout at me</a>, if I am slow in doing so. :)
 		</p></li>
 		<li><p>
-			People whom follow <a href="http://ubuntuforums.org/showthread.php?t=185913">the forums</a> and the <a href="http://www.postfix.org/lists.html">postfix mailling lists</a> are much <b>more likely</b> to reply than me.
+			Any clear technical mistakes by me in this guide,
+			then <a href="#contribute">let me know</a> or at least <a href="#forum">others know</a>.<br/>
+			It may be a known problem, or simple difference of technical opinion,
+			but better to surface more than miss some.
 		</p></li>
-		<!-- <li><p>
-			While I am a consultant, it is not regarding email servers. So this is not actually my field.
-			I am generally contracted out as software engineer or architect within enterprise Java applications.
-		</p></li> -->
 		<li><p>
-			I am a firm believer in: <i><a href="http://www.amatecon.com/fish.html">Give a man a fish; you have fed him for today.
-			Teach a man to fish; and you have fed him for a lifetime</a></i>.
-			(Playing far too much <a href="http://www.civilization.com">Civ</a> was not all wasted..)
+			If you find any spelling mistakes or broken links, <a href="#contribute">please let me know</a>.
 			<br/>
-			Or rather my version:
-			<b>"Teach a man to fish, share the teaching,
-			and you have fed many others for a lifetime"</b>.
-		</p></li>
-		<li><p>
-			So if you have any questions,
-			problems with using this guide,
-			or any other issues with this guide,
-			<a href="http://ubuntuforums.org/showthread.php?t=185913">please use the forum</a>.<br/>
-			Then it is also an available archive for others to find solutions in the future.
+			Even after 10 years since the first version people are still finding typos every week.
 		</p></li>
 		<li><p>
 			Any technical difference of opinion,
 			<a href="http://ubuntuforums.org/showthread.php?t=185913">please use the forum</a>.
 		</p></li>
 		<li><p>
-			Interested in Postfix, or got a technical query about it?
-			Considered the <a href="http://www.postfix.org/lists.html">postfix mailling lists</a>.
-		</p></li>
-		<!--
-		<li><p>
-			I really do not have much spare time.
-			And rarely do I spend to the one spare hour I get a week on mail server issues.<br/>
-			While I try to be nice, setting up a server for someone else would use up my spare time that month!
-		</p></li>
-		-->
-		<li><p>
-			If you made / found an extension / alternative / translation to this tutorial, fantastic!
-			<a href="#contribute">Please let me know</a>, and I'll link to it.
-			And <a href="/contact">shout at me</a>, if I am slow in doing so. :)
-		</p></li>
-		<li><p>
-			Any clear technical mistakes by me in this guide,
-			then <a href="#contribute">let me know</a>,
-			but perhaps <a href="http://ubuntuforums.org/showthread.php?t=185913">discuss it first in the forums</a>?
+			Please do <b>not</b> contact me if you have set up problems.
+			I am terrible procrastinator of replying to all emails,
+			even the very polite ones where I might even know the simple solution to. :(<br/>
+			Note that:
+			<ul>
+				<li><p>
+					90% of all emails I receive are solved by <a href="#test">testing</a> properly.
+					Or by applying the <a href="#app_faq">common solutions</a>.
+				</p></li>	
+				<li><p>
+					A further 9.9% are problems already solved in the forums.
+				</p></li>	
+				<li><p>
+					0.01% are real problems I then forget to respond to.
+				</p></li>	
+			</ul>	
 		</p></li>
 		<li><p>
-			If you find any spelling mistakes or broken links, <a href="#contribute">please let me know</a>.
-			<br/>
-			Even after 10 years since the first version people are
-			still finding typos every week.
-			So my initial versions must have contained only typos! :0
+			You can contact me via <a href="/contact/">flurdy.com/contact</a>
+			as long as you are sure it complies with the <i><a href="http://www.amatecon.com/fish.html">fishing</a></i> analogy.
 		</p></li>
 		<li><p>
-			<b>Thank you messages</b> are <a href="/contact/">very appreciated</a> however! Actually it makes my day. :)<br />
-			(People whom <a href="http://shirts.flurdy.com">buy a T-shirt</a> of me makes my week.. ;p )
+			<b>Thank you messages</b> are <a href="/contact/">very appreciated</a> however! It makes my day! :)
 		</p></li>
 	</ul>
 
 	<p>
-		<b>If you still want my help:</b>
-	</p>
-	<ul>
-		<li>
-			<p>
-				You may purchase a complete AWS based email server by me via <a href="http://www.eray.co.uk">www.eray.co.uk</a>
-				(<a href="http://www.eray.co.uk/rates/index.html">price</a>)
-			</p>
-		</li>
-		<li>
-			<p>
-				Otherwise if you:
-			</p>
-			<ul>
-				<!-- <li><p>
-					are an individual or non commercial organisation
-				</p></li> -->
-				<li>
-					<p>
-						have <b>tried all the steps</b> mentioned above:
-						<a href="#test">test section</a>,
-						<a href="#app_faq">FAQ</a>,
-						<a href="#forum">forums</a>,
-						<a href="http://www.postfix.org/lists.html">mailing lists</a>.
-					</p>
-				</li>
-				<li><p>
-					understand the <i><a href="http://www.amatecon.com/fish.html">fishing</a></i> analogy
-				</p></li>
-				<li><p>
-					then you can contact me via <a href="/contact/">flurdy.com/contact</a>
-				</p></li>
-			</ul>
-		</li>
-	</ul>
-	<p>
-		<i>
-			10 years after the initial version of this document I think roughly
-			95% of the people that do contact me directly,
-			have not bothered to <a href="#test">test properly</a>
-			(command line first, not straight to GUI...)
-			nor read the whole guide, <a href="#app_gaq">common solutions</a> nor
-			<a href="#forum">forums</a>.
-			They just want me do to their work for them, for free.
-			The chances of me replying to their emails are minuscule,
-			I much prefer to spend time with my daughter instead :)
-		</i>
-	</p>
-	<p>
-		<i>
-			However many people contribute with really good stuff in the forums,
-			send me typos (frequently), or thank you notes.
-			You guys are great!
-		</i>
+		Many people contribute with really good stuff in the forums,
+		send me typos (frequently), or thank you notes.
+		You guys are great!	
 	</p>
 
 	<h6><a href="#top">Return to top</a>.</h6>
@@ -5026,6 +4976,9 @@ sudo service postfix restart;</code>
 
 	<a name="contribute"></a>
 	<h3>Contribute</h3>
+
+
+	<a href="https://github.com/flurdy/flurdy.com-docs"><img align="right" src="/images/social_coding.png" alt="github" width="60"></a>
 
 	<p>
 		Ways to contribute towards this document:
@@ -5040,7 +4993,7 @@ sudo service postfix restart;</code>
 
 	<h5>Correct typos</h5>
 	<p>
-		If you spot any typos either <a href="#contact">contact me</a> about it,
+		If you spot any typos either <a href="/contact">contact me</a> about it,
 		or preferably fork <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a>
 		and send me a pull request.
 	</p>
@@ -5057,8 +5010,8 @@ sudo service postfix restart;</code>
 	<h5>Larger enhancements</h5>
 	<p>
 		For extensive changes to this document,
-		please <a href="#contact">contact me</a> about it first.
-		We may then decide:
+		please <a href="/contact">contact me</a> about it first.
+		Together we may then decide:
 	</p>
 	<ul>
 		<li><p>it is a good idea, and you should send me a <a href="https://github.com/flurdy/flurdy.com-docs">pull request</a></p></li>
@@ -5072,10 +5025,10 @@ sudo service postfix restart;</code>
 		instead of including it inside this document I prefer to just link to a version hosted by you instead.
 	</p>
 	<p>
-		Please <a href="#contact">contact me</a> about the HOWTO or even better send me a <a href="https://github.com/flurdy/flurdy.com-docs">pull request</a> with the link added to this document.
+		Please <a href="/contact">contact me</a> about your document or even better send me a <a href="https://github.com/flurdy/flurdy.com-docs">pull request</a> with the link added to this document.
 	</p>
 	<p>
-		If you require assistance with hosting it, please <a href="#contact">contact me</a> for suggestion or assistance.
+		If you require assistance with hosting it, please <a href="/contact">contact me</a> for suggestion or assistance.
 	</p>
 
 
@@ -5129,7 +5082,7 @@ sudo service postfix restart;</code>
 	</p>
 	<p>
 		A less angelic reason is that back in 2003 I was setting up one mail server
-		for a myself and few friends and collegues.
+		for a myself and few friends and colleagues.
 		Soon I was getting more request for more servers,
 		and being a lazy programmer, I thought..
 		"Why don't I write a howto and let them do it themselves..."
