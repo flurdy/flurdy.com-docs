@@ -1273,8 +1273,8 @@ PRIMARY KEY  (`pkid`)
 `gid` smallint(5) unsigned NOT NULL default '5000',
 `home` varchar(255) NOT NULL default '/var/spool/mail/virtual',
 `maildir` varchar(255) NOT NULL default 'blah/',
-`enabled` tinyint(3) unsigned NOT NULL default '1',
-`change_password` tinyint(3) unsigned NOT NULL default '1',
+`enabled` tinyint(1) NOT NULL default '1',
+`change_password` tinyint(1) NOT NULL default '1',
 `clear` varchar(128) NOT NULL default 'ChangeMe',
 `crypt` varchar(128) NOT NULL default 'sdtrusfX0Jj66',
 `quota` varchar(255) NOT NULL default '',
@@ -3656,7 +3656,7 @@ delete from aliases where mail = 'foo@bar.com';</code>
 	`pkid` smallint(6) NOT NULL auto_increment,
 	`domain` varchar(128) NOT NULL default '',
 	`transport` varchar(128) NOT NULL default ':[]',
-	`enabled` smallint(6) NOT NULL default '1',
+	`enabled` tinyint(1) NOT NULL default '1',
 	PRIMARY KEY  (`pkid`),
 	UNIQUE KEY `domain` (`domain`)
 );</code>
@@ -4541,7 +4541,7 @@ sudo service postfix restart;</code>
 		To add a new SSH port to the firewall rule:
 	</p>
 	<code>sudo vi /etc/shorewall/rules</code>
-	<code class="document"><span class="comment">We will keep the old port here until we can safely switch it off</span>
+	<code class="document"><span class="comment"># We will keep the old port here until we can safely switch it off</span>
 SSH(ACCEPT)	net		$FW
 <span class="comment"># Please pick another port number than 1092!</span>
 ACCEPT		net		$FW		tcp		<i>1092</i></code>
