@@ -1,0 +1,85 @@
+body {
+	background-color: #909090;
+	color: black;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+#ocean {
+	padding: 0.2em 0.3em 1em 0.3em;
+}
+#ship {
+	background-color: white;
+	border: 2px solid black;
+	box-shadow: 10px 10px 15px -5px #333333;
+	-webkit-box-shadow: 0px 0px 25px 6px #333333;
+	-moz-box-shadow: 10px 10px 15px -5px #333333;
+	padding: 0.1em 0.5em 0.1em 1.3em;
+	min-width: 32em;
+	max-width: 60em;
+}
+header {
+}
+h1 {
+	/* color: #f0f0f0; */
+	font-size: 1.3em;
+}
+h3 {
+	/* color: #f0f0f0; */
+	font-size: 1.0em;
+	margin-top: 2em;
+}
+h1,h3{
+	font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+}
+#cargo {
+}
+footer {
+}
+a, a:visited {
+	color: black;
+}
+#toprighter {
+	float: right;
+	clear: right;
+	padding: 0.3em 0.2em;
+}
+#toprighter img {
+	height: 0.9em;
+}
+#toprighter .flurdySmall {
+}
+navigation {
+}
+ul.horizontal {
+}
+ul.horizontal li {
+	display: inline;
+	font-size: 0.8em;
+}
+#starboard {
+	float: right;
+	width: 13em;
+	margin: 0 0 0 0.5em;
+}
+#starboard {
+	font-size: 9pt;
+}
+#starboard ul {
+	padding-left: 1.2em;
+}
+#starboard li {
+}
+#jib {
+	font-size: 0.7em;
+	font-style: italic;
+}
+code{
+	display: block;
+	white-space: nowrap;
+	background-color: #252525;
+	border: 1px inset #525252;
+	color: white;
+	padding: 0.2em 0.5em;
+	margin: 0.1em;
+	max-width: 30em;
+	min-width: 30em;
+}

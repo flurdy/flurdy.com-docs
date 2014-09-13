@@ -1,0 +1,398 @@
+<html>
+<head>
+	<title>Docker with OSX and Ubuntu</title>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link href="docs.css" rel="stylesheet" type="text/css" />
+	<!-- link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" -->
+	<link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+	<style>
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+	<script type="text/javascript">
+		$( document ).ready(function() {
+			window.setTimeout( "reload()", 5000);
+		});
+		function reload(){
+			location.reload(false)
+		}
+	</script>
+</head>
+<body>
+	<div id="ocean">
+		<div id="ship">
+			<div id="toprighter">
+				<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+					src="/images/cc-by-sa-small.png" alt="cc by-sa"
+					title="Creative Commons Attributions-ShareAlike"
+					border="0" align="right" /></a>
+				<a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+			</div>
+			<header>
+				<h1>Docker with OSX and Ubuntu</h1>
+			</header>
+			<nav id="lookout">
+				<ul class="horizontal">
+					<li><a href="http://flurdy.com">flurdy</a></li>
+					<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+					<li><a href="http://blog.flurdy.com">blog</a></li>
+					<li><a href="#contact">feedback</a></li>
+					<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+					<li><a href="/docs/">more docs</a></li>
+				</ul>
+			</nav>
+			<div id="jib">
+				Started: September 2014.
+				Last updated: 12th Sep 2014.
+			</div>
+			<div id="starboard">
+				<nav>
+					<ul>
+						<li><a href="#top">Why Docker</a></li>
+						<li>
+							<a href="">OSX + Docker</a>
+							<ul>
+								<li><a href="#boot2docker">boot2docker</a></li>
+								<li><a href="#osxvagrant">OSX + Vagrant</a></li>
+								<li><a href="#kitematic">Kitematic</a></li>
+							</ul>
+						</li>
+						<li><a href="#ubuntu">Ubuntu + Docker</a>
+							<ul>
+								<li><a href="#ubuntuvagrant">Ubuntu + Vagrant</a></li>
+							</ul>
+						</li>
+						<li><a href="#vagrantubuntu">Vagrant + Ubuntu</a></li>
+						<li><a href="#vagrantcoreos">Vagrant + CoreOS</a></li>
+						<li>
+							<a href="#baseubuntu">Docker + Ubuntu</a>
+							<ul>
+								<li><a href="#dockerubuntu">Docker's Ubuntu</a></li>
+								<li><a href="#phusionubuntu">Phusion's Ubuntu</a></li>
+							</ul>
+						</li>
+						<li><a href="#docker">Initial Docker</a></li>
+						<li><a href="#build">Build Docker images</a></li>
+						<li><a href="#handydocker">Handy Docker tips</a></li>
+						<li>
+							<a href="">Hosting</a>
+							<ul>
+								<li><a href="#aws">AWS</a></li>
+								<li><a href="#digitalocean">Digital Ocean</a></li>
+								<li><a href="#google">Google Compute Engine</a></li>
+							</ul>
+						</li>
+						<li><a href="#architecture">Architecture</a></li>
+						<li><a href="#continuous">Continuous Delivery</a></li>
+						<li><a href="#reference">References</a></li>
+						<li><a href="#contact">Feedback</a></li>
+					</ul>
+				</nav>
+			</div>
+			<div id="cargo">
+
+				<a name="why"></a>
+				<h3>Why Docker</h3>
+				<p>
+					<a href="http://docker.io">Docker</a> is a great invention. Both for operations of deploying and hosting of systems and also for developers.
+				</p>
+				<p>
+					Docker is a <a href="https://en.wikipedia.org/wiki/Hardware_virtualization">virtual operating system</a>  container.
+					It allows you develop and run one or several systems on your computer or server isolated from your actual OS.
+					This protects your host system, but also easy to clone, extend, scale and share containers.
+				</p>
+				<p>
+					Virtualisation is nothing new.
+					Mainframes has split virtually into many systems per real systems for decades.
+					<a href="http://www.vmware.com">VMWare</a> have created a huge enterprise selling many solutions for virtualising servers and desktops.
+					Sun then Oracle developed the popular open source software <a href="http://virtualbox.org">VirtualBox</a>.
+					<a href="http://www.xenproject.org">Xen</a> powers <a href="http://amazon.com">Amazon</a>'s <a href="http://aws.amazon.com/ec2">AWS EC2</a> cloud servers that host a huge portion of the worlds internet servers.
+					Every other <a href="https://en.wikipedia.org/wiki/Cloud_computing#Infrastructure_as_a_service_.28IaaS.29">IAAS</a> and <a href="https://en.wikipedia.org/wiki/Cloud_computing#Platform_as_a_service_.28PaaS.29">PAAS</a> provider use virtualisation extensively.
+				</p>
+				<p>
+					<a href="http://www.vmware.com/products/workstation/">VMWare Workstation</a> with <a href="http://ubuntu.com">Ubuntu</a> for many years was my way to overcome companies' standardised Windows environments.
+					Frequently teams use VirtualBox to share images of company essential tools,
+					E.g. Windows preconfigured with DB2 or SQL Server, or just to test with Microsoft Internet Explorer and Outlook etc.
+				</p>
+				<p>
+					A <a href="http://twitter.com/djmidwood">colleague</a> introduced me to <a href="http://vagrantup.com">Vagrant</a> a few years ago,
+					and I have since used it extensively.
+					It is basically Virtualbox without any GUI, just command line.
+					It allows you to run many virtual servers locally and usually for just one purpose.
+					E.g. to develop one application. And to quickly scratch and rebuild these environments.
+					I also use Vagrant to test server images locally
+					with e.g. <a href="http://puppetlabs.com">Puppet</a> provisioning, before pushing it to a data center or IAAS.
+				</p>
+				<p>
+					Docker's great distinguisher is that it shares the hosts memory and disk space so you no longer need to reserve memory per VM.
+					Docker also only stores files that are different from the host base.
+					This makes Docker great for single purpose (often single thread) applications.
+					In fact Docker containers often shut down when application thread is no longer running.
+					But they resume really quickly.
+				</p>
+				<p>
+					This document is as a developer how I set up and use Docker to develop my applications.
+					And with some suggestion to architect, deploy and host with Docker.
+				</p>
+
+				<a name="osxdocker"></a>
+				<h3>OSX + Docker</h3>
+				<p>
+					<a href="http://apple.com/max/osx">Mac OS X</a>
+					can not run Docker natively as Docker
+					uses Linux kernel specific features.
+					However the <a href="http://docs.docker.com/installation/mac/">Docker team has made a tiny VM</a>, <a href="https://github.com/boot2docker/boot2docker">boot2docker</a>,
+					to seamlessly run your Docker containers on OSX (and even Windows). This is the easiest option.
+				</p>
+				<p>
+					Alternatively you run a Vagrant VM with Linux as the container for all Docker images. This is my preferred option.
+				</p>
+
+				<a name="boot2docker"></a>
+				<h3>boot2docker</h3>
+				<p>
+					Whilst you can install boot2docker via <a href="https://github.com/boot2docker/osx-installer/releases">normal OSX packages</a>,
+					I prefer <a href="http://brew.sh">Homebrew</a>(and <a href="http://caskroom.io">Cask</a>).
+				</p>
+				<code>brew install boot2docker;</code>
+				<code>brew install docker</code>
+				<p>
+					This install docker in OSX,
+					but relays all communicatiosn via a socket to the Docker daemon
+					running inside the boot2docker VM instead of the local machine.
+				</p>
+				<p>
+					To share local folders with boot2docker Docker images
+					there are <a href="https://github.com/boot2docker/boot2docker">some complicated steps to set up a volume image</a>.
+				</p>
+
+				<a name="osxvagrant"></a>
+				<h3>OSX + Vagrant</h3>
+				<p>
+					I prefer the Vagrant alternative
+					as you can easily share you local folders with your VM
+					and its containers.
+					And the host base is often very similar to my
+					application images which means smaller container sizes.
+				</p>
+				<code>brew cask install virtualbox;</code>
+				<code>brew install vagrant</code>
+
+				<a name="kitematic"></a>
+				<h3>Kitematic</h3>
+				<p>
+					Another alternative for the ones preferring a nice GUI
+					is to use the smooth <a href="https://kitematic.com/">Kitematic</a> application.
+					It basically runs boot2docker underneath as well
+					but everything all managed and run within a GUI.
+				</p>
+
+				<a name="ubuntu"></a>
+				<h3>Ubuntu + Docker</h3>
+				<p>
+					With Ubuntu you do not need to abstract via a VM
+					as Docker works directly.
+					Though note that there is an old unrelated package
+					that is already called docker.
+				</p>
+				<code>sudo apt-get update;</code>
+				<code>sudo apt-get install docker.io</code>
+
+				<a name=""></a>
+				<h3>Ubuntu + Vagrant</h3>
+				<p>
+					Even on Ubuntu I still use Vagrant as the VM container for all my Docker applications.
+					This is to keep a clean abstraction and to be able
+					to share setup between OSX and Ubuntu.
+				</p>
+				<code>sudo apt-get install virtualbox</code>
+				<p>Make sure you have the <a href="https://help.ubuntu.com/community/Repositories/Ubuntu">multiverse repository</a> enabled.</p>
+
+				<a name="vagrantubuntu"></a>
+				<h3>Vagrant + Ubuntu</h3>
+				<code>vagrant plugin install vagrant-vbguest</code>
+				<p>
+					This <a href="https://github.com/dotless-de/vagrant-vbguest">installs a plugin</a>
+					that automatically installs and updates Virtualbox Guest Additions into every Vagrant instance.
+				</p>
+				<code>vagrant init ubuntu/trusty64;</code>
+				<code>vagrant up;</code>
+				<code>vagrant ssh</code>
+				<p>
+					This install an Vagrant Ubuntu 14.04 image.
+					It boots it up and logs into it.
+				</p>
+
+				<a name="vagrantcoreos"></a>
+				<h3>Vagrant + CoreOS</h3>
+				<p>
+					<a href="http://core.os">CoreOS</a> is another Linux distribution that is designed to run and scale across multiple servers from the start.
+					CoreOS' philosophy views Docker as a core part of the offering.
+				</p>
+				<p>
+					I would suggest once you are comfortable with Ubuntu as host, either directly or via Vagrant to try out CoreOS. Always <a href="https://github.com/coreos/coreos-vagrant">use Vagrant with CoreOS</a> locally.
+				</p>
+				<p>
+					CoreOS is as host only, you would probably still use Ubuntu as Docker base image
+.				</p>
+
+				<a name="baseubuntu"></a>
+				<h3>Docker + Ubuntu</h3>
+				<p>
+					Your Docker applications will mostly be based of one base image.
+					In my case always Ubuntu.
+				</p>
+
+				<a name="dockerubuntu"></a>
+				<h3>Docker's Ubuntu </h3>
+				<p>
+					Docker's own default base image is the standard Canoncical Ubuntu image.
+				</p>
+				<code>docker pull ubuntu</code>
+
+				<a name="phusionubuntu"></a>
+				<h3>Phusion's Ubuntu</h3>
+				<p>
+					<a href="http://phusion.github.io/baseimage-docker/">Phusion has adapted Ubuntu</a> to be more
+					compatible with Docker.
+					This is as Docker images simply
+					are not a full blown server
+					but instead limited to how many threads
+					can run and also when it suspends/shuts down.
+					Most Docker code you find online assumes this is the base image used.
+				</p>
+				<code>docker pull phusion/baseimage</code>
+
+				<a name="docker"></a>
+				<h3>Basic Docker</h3>
+				<code>docker ps -l</code>
+				<p>
+					List all Docker process running.
+					Will initially be empty.
+				</p>
+				<code>docker ps -la</code>
+				<p>
+					List all Docker process running and the ones that has finished.
+				</p>
+				<p>
+					Take note of the reference in column one.
+				</p>
+
+				<code>docker run -t xxxxxx</code>
+
+				<code>docker ps -la</code>
+				<p>
+					Should list the Docker process that we just ran.
+					Take note of the reference in column one.
+				</p>
+
+				<a name="build"></a>
+				<h3>Build Docker images</h3>
+				<p>
+
+				</p>
+				<code></code>
+
+				<a name="handydocker"></a>
+				<h3>Handy Docker tips</h3>
+				<p>
+
+				</p>
+				<code>docker build xxxxxx</code>
+
+				<ul>
+					<li>
+						<i>Memory</i>
+						<ul>
+							<li><i>boot2docker</i></li>
+							<li><i>Vagrant</i></li>
+						</ul>
+					</li>
+					<li><i>Port ranges</i></li>
+					<li><i>Host file</i></li>
+					<li><i>Dotfiles</i></li>
+					<li><i>SSH keys</i></li>
+				</ul>
+
+				<a name=""></a>
+				<h3>Hosting</h3>
+				<p>
+				</p>
+
+				<a name="aws"></a>
+				<h3>AWS</h3>
+				<p>
+				</p>
+
+				<a name="digitalocean"></a>
+				<h3>DigitalOcean</h3>
+				<p>
+
+				<a name="google"></a>
+				<h3>Google Compute Engine</h3>
+				<p>
+				</p>
+
+				<a name="architecture"></a>
+				<h3>Architecture</h3>
+				<p>
+
+				</p>
+
+				<a name="continuous"></a>
+				<h3>Continuous Delivery</h3>
+				<p>
+				</p>
+
+
+				<a name="reference"></a>
+				<h3>References</h3>
+				<p>
+					In no particular order or relevance.
+				</p>
+				<ul>
+					<li><a href="https://www.docker.com/">Docker</a></li>
+					<li><a href="https://hub.docker.com/">Docker Hub</a></li>
+					<li><a href="http://lukebond.ghost.io/getting-started-with-coreos-and-docker-using-vagrant/">getting-started-with-coreos-and-docker-using-vagrant</a></li>
+					<li><a href="http://nathanleclaire.com/blog/2014/07/12/10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy/">10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy</a></li>
+					<li><a href="http://johnzanchetta.wordpress.com/2014/02/08/setting-up-a-docker-dev-environment-on-mac-os-x/">setting-up-a-docker-dev-environment-on-mac-os-x</a></li>
+					<li><a href="http://macyves.wordpress.com/2014/05/31/docker-in-osx-via-boot2docker-or-vagrant-getting-over-the-hump/">docker-in-osx-via-boot2docker-or-vagrant-getting-over-the-hump</a></li>
+					<li><a href="http://cjlarose.com/2014/03/08/run-docker-with-vagrant.html">run-docker-with-vagrant</a></li>
+					<li><a href="http://blog.javabien.net/2014/06/04/deploy-docker-containers-on-compute-engine/">deploy-docker-containers-on-compute-engine</a></li>
+					<li><a href="https://github.com/wsargent/docker-cheat-sheet">docker-cheat-sheet</a></li>
+					<li><a href="https://github.com/boot2docker/boot2docker">boot2docker</a></li>
+					<li><a href="https://coreos.com/using-coreos/docker/">using-coreos/docker/</a></li>
+					<li><a href="https://www.digitalocean.com/company/blog/coreos-now-available-on-digitalocean/">coreos-now-available-on-digitalocean</a></li>
+					<li><a href="http://vagrantup.com">vagrantup</a></li>
+					<li><a href="http://contino.co.uk/use-docker-continuously-deliver-microservices-part-1/">use-docker-continuously-deliver-microservices-p</a></li>
+					<li><a href="
+https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
+					<li><a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a></li>
+					<li><a href="http://www.fig.sh">Fig</a></li>
+					<!--
+					<li><a href=""></a></li>
+					-->
+				</ul>
+
+				<a name="contact"></a>
+				<h3>Feedback</h3>
+				<p>
+					<a href="/contact">Contact flurdy</a>
+				</p>
+
+			</div>
+			<footer>
+				<nav>
+					<ul class="horizontal">
+						<li><a href="http://flurdy.com">flurdy</a></li>
+						<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+						<li><a href="http://blog.flurdy.com">blog</a></li>
+						<li><a href="#contact">feedback</a></li>
+						<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+						<li><a href="/docs/">more docs</a></li>
+					</ul>
+				</nav>
+			</footer>
+		</div>
+	</div>
+</body>
+</html>
