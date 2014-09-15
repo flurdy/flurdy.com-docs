@@ -10,10 +10,10 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
-			window.setTimeout( "reload()", 5000);
+			window.setTimeout( "reload()", 30000);
 		});
 		function reload(){
-			location.reload(false)
+			// location.reload(false)
 		}
 	</script>
 </head>
@@ -71,8 +71,9 @@
 							</ul>
 						</li>
 						<li><a href="#docker">Initial Docker</a></li>
-						<li><a href="#build">Build Docker images</a></li>
-						<li><a href="#handydocker">Handy Docker tips</a></li>
+						<li><a href="#docker">Useful Docker</a></li>
+						<!-- <li><a href="#build">Build Docker images</a></li> -->
+						<li><a href="#handydocker">Handy Docker</a></li>
 						<li>
 							<a href="">Hosting</a>
 							<ul>
@@ -151,10 +152,10 @@
 				<h3>boot2docker</h3>
 				<p>
 					Whilst you can install boot2docker via <a href="https://github.com/boot2docker/osx-installer/releases">normal OSX packages</a>,
-					I prefer <a href="http://brew.sh">Homebrew</a>(and <a href="http://caskroom.io">Cask</a>).
+					I prefer <a href="http://brew.sh">Homebrew</a> (and <a href="http://caskroom.io">Cask</a>).
 				</p>
-				<code>brew install boot2docker;</code>
-				<code>brew install docker</code>
+				<code><span class="host">osxhost$</span> brew install boot2docker;</code>
+				<code><span class="host">osxhost$</span> brew install docker</code>
 				<p>
 					This install docker in OSX,
 					but relays all communicatiosn via a socket to the Docker daemon
@@ -174,8 +175,8 @@
 					And the host base is often very similar to my
 					application images which means smaller container sizes.
 				</p>
-				<code>brew cask install virtualbox;</code>
-				<code>brew install vagrant</code>
+				<code><span class="host">osxhost$</span> brew cask install virtualbox;</code>
+				<code><span class="host">osxhost$</span> brew install vagrant</code>
 
 				<a name="kitematic"></a>
 				<h3>Kitematic</h3>
@@ -194,8 +195,8 @@
 					Though note that there is an old unrelated package
 					that is already called docker.
 				</p>
-				<code>sudo apt-get update;</code>
-				<code>sudo apt-get install docker.io</code>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get update;</code>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get install docker.io</code>
 
 				<a name=""></a>
 				<h3>Ubuntu + Vagrant</h3>
@@ -204,22 +205,72 @@
 					This is to keep a clean abstraction and to be able
 					to share setup between OSX and Ubuntu.
 				</p>
-				<code>sudo apt-get install virtualbox</code>
+				<p>
+					You can install via apt-get, but they are often out of date,
+					so you may want to directly download more up to date versions
+					of <a href="https://www.virtualbox.org/wiki/Downloads">Virtualbox</a> and <a href="http://www.vagrantup.com/downloads.html">Vagrant</a>.
+				</p>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get install virtualbox</code>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get install vagrant</code>
 				<p>Make sure you have the <a href="https://help.ubuntu.com/community/Repositories/Ubuntu">multiverse repository</a> enabled.</p>
 
 				<a name="vagrantubuntu"></a>
 				<h3>Vagrant + Ubuntu</h3>
-				<code>vagrant plugin install vagrant-vbguest</code>
+				<code><span class="host">anyhost$</span> vagrant plugin install vagrant-vbguest</code>
 				<p>
 					This <a href="https://github.com/dotless-de/vagrant-vbguest">installs a plugin</a>
 					that automatically installs and updates Virtualbox Guest Additions into every Vagrant instance.
 				</p>
-				<code>vagrant init ubuntu/trusty64;</code>
-				<code>vagrant up;</code>
-				<code>vagrant ssh</code>
+				<code><span class="host">anyhost$</span> vagrant plugin install vagrant-vbox-snapshot</code>
 				<p>
-					This install an Vagrant Ubuntu 14.04 image.
-					It boots it up and logs into it.
+					Optionally <a href="https://github.com/dergachev/vagrant-vbox-snapshot">install this a plugin</a>
+					that enable snapshotting vagrant boxes.
+				</p>
+
+				<code><span class="host">anyhost$</span> vagrant init ubuntu/trusty64;</code>
+				<p>
+					This downloads a Vagrant Ubuntu 14.04 image,
+					and initialises a Vagrant instance for you.
+				</p>
+				<p>
+					Edit the Vagrantfile it created in your folder.
+				</p>
+				<code class="file"># -*- mode: ruby -*-<br />
+# vi: set ft=ruby :<br />
+<br />
+VAGRANTFILE_API_VERSION = "2"<br />
+<br />
+&nbsp;&nbsp;&nbsp;Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|<br />
+<br />
+&nbsp;&nbsp;&nbsp;config.vm.box = "ubuntu/trusty64"<br />
+<br />
+&nbsp;&nbsp;&nbsp;config.vm.hostname = "vagrantdocker"<br />
+<br />
+&nbsp;&nbsp;&nbsp;if Vagrant.has_plugin?("vagrant-vbguest") then<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;config.vbguest.auto_update = false<br/>
+&nbsp;&nbsp;&nbsp;end<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;# config.vm.synced_folder "../data", "/vagrant_data"<br />
+<br />
+&nbsp;&nbsp;&nbsp;# config.vm.provider "virtualbox" do |vb|<br />
+&nbsp;&nbsp;&nbsp;# &nbsp;&nbsp;&nbsp;vb.customize ["modifyvm", :id, "--memory", "2048"]<br />
+&nbsp;&nbsp;&nbsp;# end<br />
+<br />
+&nbsp;&nbsp;&nbsp;config.vm.provision "docker"<br />
+<br />
+end</code>
+					
+				<p>
+					This sets the provisioner as Docker and sets a hostname.
+					It disabled guest additions updates for this specific instance.
+					It also includes examples for syncing folders
+					and increasing the allocated memory.
+				</p>
+
+				<code><span class="host">anyhost$</span> vagrant up;</code>
+				<code><span class="host">anyhost$</span> vagrant ssh</code>
+				<p>
+					This boots it up and logs you in.
 				</p>
 
 				<a name="vagrantcoreos"></a>
@@ -229,10 +280,10 @@
 					CoreOS' philosophy views Docker as a core part of the offering.
 				</p>
 				<p>
-					I would suggest once you are comfortable with Ubuntu as host, either directly or via Vagrant to try out CoreOS. Always <a href="https://github.com/coreos/coreos-vagrant">use Vagrant with CoreOS</a> locally.
+					I would suggest once you are comfortable with Ubuntu as host to try out CoreOS instead. Use <a href="https://github.com/coreos/coreos-vagrant">Vagrant with CoreOS</a> locally.
 				</p>
 				<p>
-					CoreOS is as host only, you would probably still use Ubuntu as Docker base image
+					CoreOS is ideal as host only, you would probably still use Ubuntu as Docker base image
 .				</p>
 
 				<a name="baseubuntu"></a>
@@ -242,58 +293,261 @@
 					In my case always Ubuntu.
 				</p>
 
+				<h3>Recursive Ubuntu</h3>
+				<p>
+					This could in theory be your second or third level of Ubuntu within Ubuntu. Ubuntu Host + Vagrant with Ubuntu + Docker with Ubuntu.
+				</p>
+				<img id="recursive-ubuntu" src="ubuntu-vagrant-ubuntu-docker-ubuntu.png" 
+						alt="ubuntu-vagrant-ubuntu-docker-ubuntu" title="ubuntu-vagrant-ubuntu-docker-ubuntu" />
+				<a href="http://i.imgur.com/yDGKBUW.jpg"><img id="shipping-ubuntu" src="shipping.jpg" 
+						alt="ship shipping ship shipping shipping ships" title="" /></a>
+				
 				<a name="dockerubuntu"></a>
 				<h3>Docker's Ubuntu </h3>
 				<p>
-					Docker's own default base image is the standard Canoncical Ubuntu image.
+					Docker's own <a href="https://registry.hub.docker.com/_/ubuntu/">default base image</a> is the standard <a href="http://canonical.com">Canonical</a> Ubuntu minimal image.
 				</p>
-				<code>docker pull ubuntu</code>
+				<code><span class="host">dockerhost$</span> docker pull ubuntu</code>
+				<p>
+					This downloads Docker's Ubuntu image
+					and stores it locally.
+					Docker has a range of ready made images in their <a href="http://hub.docker.com">register</a>.
+					Later you can easily upload your images to this register.
+				</p>
 
 				<a name="phusionubuntu"></a>
 				<h3>Phusion's Ubuntu</h3>
 				<p>
 					<a href="http://phusion.github.io/baseimage-docker/">Phusion has adapted Ubuntu</a> to be more
 					compatible with Docker.
-					This is as Docker images simply
-					are not a full blown server
-					but instead limited to how many threads
+					This is because Docker images simply
+					are not a full blown server with a normal lifecycle.
+					Instead it is limited to how many threads
 					can run and also when it suspends/shuts down.
-					Most Docker code you find online assumes this is the base image used.
+					A majority of Docker examples and code you find online assumes this is the base image used.
 				</p>
-				<code>docker pull phusion/baseimage</code>
+				<code><span class="host">dockerhost$</span> docker pull phusion/baseimage</code>
 
 				<a name="docker"></a>
 				<h3>Basic Docker</h3>
-				<code>docker ps -l</code>
+
+				<code><span class="host">dockerhost$</span> docker ps</code>
 				<p>
-					List all Docker process running.
-					Will initially be empty.
+					Lists all Docker processes running.
 				</p>
-				<code>docker ps -la</code>
+				<code><span class="host">dockerhost$</span> docker ps -la</code>
 				<p>
-					List all Docker process running and the ones that has finished.
+					Lists the latest Docker processes including the ones that has finished.
 				</p>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>CONTAINER ID</td>
+							<td>IMAGE</td>
+							<td>COMMAND</td>
+							<td>CREATED</td>
+							<td>STATUS</td>
+							<td>PORTS</td>
+							<td>NAMES</td>
+						</tr>
+					</tbody>
+				</table>
 				<p>
-					Take note of the reference in column one.
+					Nothing has been run yet so these will initially be empty.
 				</p>
 
-				<code>docker run -t xxxxxx</code>
-
-				<code>docker ps -la</code>
+				<code><span class="host">dockerhost$</span> docker run ubuntu /bin/bash</code>
 				<p>
-					Should list the Docker process that we just ran.
-					Take note of the reference in column one.
+					Starts a docker image using the Ubuntu image
+					and runs a bash process. And immediately stops it as nothing else is specified.
 				</p>
 
-				<a name="build"></a>
-				<h3>Build Docker images</h3>
+				<code><span class="host">dockerhost$</span> docker ps</code>
+				<p>
+					As the bash process finished quickly it won't still be running.
+				</p>
+				<code><span class="host">dockerhost$</span> docker ps -a</code>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>CONTAINER ID</td>
+							<td>IMAGE</td>
+							<td>COMMAND</td>
+							<td>CREATED</td>
+							<td>STATUS</td>
+							<td>PORTS</td>
+							<td>NAMES</td>
+						</tr>
+						<tr>
+							<td>98765defgh</td>
+							<td>ubuntu:14.04</td>
+							<td>"/bin/bash"</td>
+							<td>11&nbsp;seconds&nbsp;ago</td>
+							<td>Exited&nbsp;(0)&nbsp;11&nbsp;seconds</td>
+							<td>&nbsp;</td>
+							<td>stoic_pike</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					But it will be listed as having finished.
+					Note the <em>container id</em> column.
+				</p>
+
+				<code><span class="host">dockerhost$</span> docker run -t -i ubuntu /usr/bin/top</code>
+				<p>
+					This starts and keeps a process running.
+					In another shell list processes.
+					(log into the vagrant instance if applicable)					
+				</p>
+				<code><span class="host">dockerhost$</span> docker ps</code>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>CONTAINER ID</td>
+							<td>IMAGE</td>
+							<td>COMMAND</td>
+							<td>CREATED</td>
+							<td>STATUS</td>
+							<td>PORTS</td>
+							<td>NAMES</td>
+						</tr>
+						<tr>
+							<td>22121abcd</td>
+							<td>ubuntu:14.04</td>
+							<td>"/usr/bin/top"</td>
+							<td>11&nbsp;seconds&nbsp;ago</td>
+							<td>Up&nbsp;11&nbsp;seconds</td>
+							<td>&nbsp;</td>
+							<td>determined_davinci</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					As you can see it is running.
+					End the top session (press q).
+				</p>
+				<code><span class="host">dockerhost$</span> docker ps -la</code>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>CONTAINER ID</td>
+							<td>IMAGE</td>
+							<td>COMMAND</td>
+							<td>CREATED</td>
+							<td>STATUS</td>
+							<td>PORTS</td>
+							<td>NAMES</td>
+						</tr>
+						<tr>
+							<td>22121abcd</td>
+							<td>ubuntu:14.04</td>
+							<td>"/usr/bin/top"</td>
+							<td>About&nbsp;a&nbsp;minute&nbsp;ago</td>
+							<td>Exited&nbsp;(0)&nbsp;3&nbsp;seconds</td>
+							<td>&nbsp;</td>
+							<td>determined_davinci</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					And now it is marked as finished.
+				</p>
+
+				<code><span class="host">dockerhost$</span> docker run -t -i ubuntu /bin/bash;</code>
+				<code><span class="host">docker$</span> touch example.txt;</code>
+				<code><span class="host">docker$</span> exit;</code>
+				<code><span class="host">dockerhost$</span> docker ps -la</code>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>CONTAINER ID</td>
+							<td>IMAGE</td>
+							<td>COMMAND</td>
+							<td>CREATED</td>
+							<td>STATUS</td>
+							<td>PORTS</td>
+							<td>NAMES</td>
+						</tr>
+						<tr>
+							<td>12345abcd</td>
+							<td>ubuntu:14.04</td>
+							<td>"/bin/bash"</td>
+							<td>15&nbsp;seconds&nbsp;ago</td>
+							<td>Exited&nbsp;(0)&nbsp;10&nbsp;seconds</td>
+							<td>&nbsp;</td>
+							<td>sleepy_franklin</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					Note container id of latest bash session.
+				</p>
+				<code><span class="host">dockerhost$</span> docker diff <em>12345abcd</em></code>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>A /.bash_history</td>
+						</tr>
+						<tr>
+							<td>A /example.txt</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					Replace <em>12345abcd</em> with the container id of your bash session.
+					This diff lists files changed by your process.
+					Should list /example.txt and /.bash_history.
+				</p>
+
+				<code><span class="host">dockerhost$</span> docker commit <em>12345abcd</em> <em>mycoolimages/example-image:0.1</em></code>
+				<p>
+					This creates an image we can refer to, recreate etc.
+				</p>
+				<code><span class="host">dockerhost$</span> docker images</code>	
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>REPOSITORY</td>
+							<td>TAG</td>
+							<td>IMAGE&nbsp;ID</td>
+							<td>CREATED</td>
+							<td>VIRTUAL&nbsp;SIZE</td>
+						</tr>
+						<tr>
+							<td>mycoolimages/example-image</td>
+							<td>0.1</td>
+							<td>0123abcd00</td>
+							<td>10&nbsp;seconds&nbsp;ago</td>
+							<td>194.2&nbsp;MB</td>
+						</tr>
+						<tr>
+							<td>ubuntu</td>
+							<td>14.14</td>
+							<td>112233445566</td>
+							<td>10&nbsp;days&nbsp;ago</td>
+							<td>194.2&nbsp;MB</td>
+						</tr>
+						<tr>
+							<td colspan="5">...</td>
+						</tr>
+					</tbody>
+				</table>		
+				<p>
+					Lists images created by you, and all the downloaded images as well.Helpfully lists their relative size difference from their base image.
+					As you can see <em>mycoolimages/example-image:0.1</em> is listed at the top.
+				</p>
+
+
+				<a name="usefuldocker"></a>
+				<h3>Useful Docker</h3>
 				<p>
 
 				</p>
 				<code></code>
 
 				<a name="handydocker"></a>
-				<h3>Handy Docker tips</h3>
+				<h3>Handy Docker</h3>
 				<p>
 
 				</p>
@@ -307,9 +561,22 @@
 							<li><i>Vagrant</i></li>
 						</ul>
 					</li>
-					<li><i>Port ranges</i></li>
+					<li>
+						<i>Port ranges</i>
+						Add a range of forwarded ports to your Vagrantfile to easily 
+						connect to docker ports:
+						<code class="file">
+							for i in 49800..49900
+  							  config.vm.network "forwarded_port", guest: i, host: i
+  							end
+						</code>	
+					</li>
 					<li><i>Host file</i></li>
-					<li><i>Dotfiles</i></li>
+					<li>
+						<i>Dotfiles</i>
+						Using <a href="http://dotfiles.github.io">dotfiles</a>
+						will make spawning a range of servers more survivable.
+					</li>
 					<li><i>SSH keys</i></li>
 				</ul>
 
@@ -352,6 +619,7 @@
 				<ul>
 					<li><a href="https://www.docker.com/">Docker</a></li>
 					<li><a href="https://hub.docker.com/">Docker Hub</a></li>
+					<li><a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a></li>
 					<li><a href="http://lukebond.ghost.io/getting-started-with-coreos-and-docker-using-vagrant/">getting-started-with-coreos-and-docker-using-vagrant</a></li>
 					<li><a href="http://nathanleclaire.com/blog/2014/07/12/10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy/">10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy</a></li>
 					<li><a href="http://johnzanchetta.wordpress.com/2014/02/08/setting-up-a-docker-dev-environment-on-mac-os-x/">setting-up-a-docker-dev-environment-on-mac-os-x</a></li>
@@ -366,8 +634,8 @@
 					<li><a href="http://contino.co.uk/use-docker-continuously-deliver-microservices-part-1/">use-docker-continuously-deliver-microservices-p</a></li>
 					<li><a href="
 https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
-					<li><a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a></li>
 					<li><a href="http://www.fig.sh">Fig</a></li>
+					<li><a href="http://blog.xen.org/index.php/2014/09/08/xen-docker-made-for-each-other">xen-docker-made-for-each-other</a></li>
 					<!--
 					<li><a href=""></a></li>
 					-->
