@@ -123,5 +123,10 @@ table.output td {
 	font-size: 0.7em;
 	padding: 0.1em 0.2em;
 }
-
+.indent1 {
+	padding: 0 1em;
+}
+.indent2 {
+	padding: 0 2em;
+}
 

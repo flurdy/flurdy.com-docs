@@ -16,6 +16,19 @@
 			// location.reload(false)
 		}
 	</script>
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-281408-1']);
+	  _gaq.push(['_trackPageview']);
+
+	   (function() {
+	   if(location.host!='localhost'){
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 	}
+	  })();
+	</script>
 </head>
 <body>
 	<div id="ocean">
@@ -42,7 +55,8 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 12th Sep 2014.
+				Last updated: 15th Sep 2014.
+				Status: Draft
 			</div>
 			<div id="starboard">
 				<nav>
@@ -240,23 +254,23 @@
 <br />
 VAGRANTFILE_API_VERSION = "2"<br />
 <br />
-&nbsp;&nbsp;&nbsp;Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|<br />
+<span class="indent1"></span>Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|<br />
 <br />
-&nbsp;&nbsp;&nbsp;config.vm.box = "ubuntu/trusty64"<br />
+<span class="indent1"></span>config.vm.box = "ubuntu/trusty64"<br />
 <br />
-&nbsp;&nbsp;&nbsp;config.vm.hostname = "vagrantdocker"<br />
+<span class="indent1"></span>config.vm.hostname = "vagrantdocker"<br />
 <br />
-&nbsp;&nbsp;&nbsp;if Vagrant.has_plugin?("vagrant-vbguest") then<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;config.vbguest.auto_update = false<br/>
-&nbsp;&nbsp;&nbsp;end<br/>
+<span class="indent1"></span>if Vagrant.has_plugin?("vagrant-vbguest") then<br/>
+<span class="indent2"></span>config.vbguest.auto_update = false<br/>
+<span class="indent1"></span>end<br/>
 <br/>
-&nbsp;&nbsp;&nbsp;# config.vm.synced_folder "../data", "/vagrant_data"<br />
+<span class="indent1"></span># config.vm.synced_folder "../data", "/vagrant_data"<br />
 <br />
-&nbsp;&nbsp;&nbsp;# config.vm.provider "virtualbox" do |vb|<br />
-&nbsp;&nbsp;&nbsp;# &nbsp;&nbsp;&nbsp;vb.customize ["modifyvm", :id, "--memory", "2048"]<br />
-&nbsp;&nbsp;&nbsp;# end<br />
+<span class="indent1"></span># config.vm.provider "virtualbox" do |vb|<br />
+<span class="indent1"></span># <span class="indent1"></span>vb.customize ["modifyvm", :id, "--memory", "2048"]<br />
+<span class="indent1"></span># end<br />
 <br />
-&nbsp;&nbsp;&nbsp;config.vm.provision "docker"<br />
+<span class="indent1"></span>config.vm.provision "docker"<br />
 <br />
 end</code>
 					
@@ -551,7 +565,7 @@ end</code>
 				<p>
 
 				</p>
-				<code>docker build xxxxxx</code>
+				<code></code>
 
 				<ul>
 					<li>
