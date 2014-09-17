@@ -18,17 +18,19 @@ body {
 }
 header {
 }
+h1,h3,h4 {
+	font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+}
 h1 {
-	/* color: #f0f0f0; */
 	font-size: 1.3em;
 }
 h3 {
-	/* color: #f0f0f0; */
 	font-size: 1.0em;
 	margin-top: 2em;
 }
-h1,h3 {
-	font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+h4 {
+	font-size: 0.9em;
+	margin-top: 2em;
 }
 h4 {
 	margin-bottom: 0.1em;
@@ -63,7 +65,7 @@ ul.horizontal li {
 }
 #starboard {
 	float: right;
-	width: 13em;
+	width: 14em;
 	margin: 0 0 0 0.5em;
 }
 #starboard {
@@ -71,6 +73,9 @@ ul.horizontal li {
 }
 #starboard ul {
 	padding-left: 1.2em;
+}
+#starboard ul ul {
+	padding-left: 0.6em;
 }
 #starboard li {
 }
@@ -85,9 +90,12 @@ code{
 	border: 1px inset #525252;
 	color: white;
 	padding: 0.2em 0.5em 0.2em 1em;
-	margin: 0.1em;
+	margin: 0.3em 0;
 	max-width: 40em;
 	min-width: 30em;
+}
+code.wide {
+	min-width: 45em;
 }
 code.comment {
 	color: gray;
