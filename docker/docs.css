@@ -30,6 +30,9 @@ h3 {
 h1,h3 {
 	font-family: 'Michroma', Tahoma, Geneva, sans-serif;
 }
+h4 {
+	margin-bottom: 0.1em;
+}
 p {
 	font-size: 0.9em;
 }
@@ -94,6 +97,7 @@ code.file {
 	max-width: 40em;
 	background-color: #204020;
 	padding: 0.4em 1em;
+	margin: 0.8em 0;
 }
 #cargo img#recursive-ubuntu { 
 	height: 12em; 
@@ -122,6 +126,7 @@ code.output {
 table.output td {
 	font-size: 0.7em;
 	padding: 0.1em 0.2em;
+	white-space: nowrap;
 }
 .indent1 {
 	padding: 0 1em;

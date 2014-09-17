@@ -55,7 +55,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 15th Sep 2014.
+				Last updated: 17th Sep 2014.
 				Status: Draft
 			</div>
 			<div id="starboard">
@@ -146,7 +146,12 @@
 				</p>
 				<p>
 					This document is as a developer how I set up and use Docker to develop my applications.
-					And with some suggestion to architect, deploy and host with Docker.
+					It describes setting up with OSX and Ubuntu, 
+					using Docker natively and within Vagrant. 
+					Also includes some suggestions on deploying and hosting the applications.
+					A lot of it is based on
+					<a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a> 
+					by <a href="https://twitter.com/fideloper">Chris Fidao</a>.					
 				</p>
 
 				<a name="osxdocker"></a>
@@ -498,6 +503,9 @@ end</code>
 					Note container id of latest bash session.
 				</p>
 				<code><span class="host">dockerhost$</span> docker diff <em>12345abcd</em></code>
+				<p>
+					Replace <em>12345abcd</em> with the container id of your bash session.
+				</p>
 				<table class="output">
 					<tbody>
 						<tr>
@@ -509,14 +517,13 @@ end</code>
 					</tbody>
 				</table>
 				<p>
-					Replace <em>12345abcd</em> with the container id of your bash session.
 					This diff lists files changed by your process.
 					Should list /example.txt and /.bash_history.
 				</p>
 
 				<code><span class="host">dockerhost$</span> docker commit <em>12345abcd</em> <em>mycoolimages/example-image:0.1</em></code>
 				<p>
-					This creates an image we can refer to, recreate etc.
+					This creates an image we can recreate, base other images on etc.
 				</p>
 				<code><span class="host">dockerhost$</span> docker images</code>	
 				<table class="output">
@@ -553,45 +560,233 @@ end</code>
 				</p>
 
 
+
+
 				<a name="usefuldocker"></a>
 				<h3>Useful Docker</h3>
 				<p>
-
+					Now you know how to launch docker images
+					and how to make docker images.
+					Lets now create some more useful images.
 				</p>
-				<code></code>
+				<p>
+					A <em>Dockerfile</em> is used in a simlar fashion 
+					to a <em>VagrantFile</em>.
+					It describes what an image is based on,
+					what to do with it, e.g. what to provision,
+					and which processes to run on it.
+				</p>
+				<p>
+					Lets create one that install and runs an Apache web server inside Docker.
+					And shows a specific index.html file.
+				</p>
+				<code><span class="host">dockerhost$</span> mkdir apacheexample;</code>
+				<code><span class="host">dockerhost$</span> cd apacheexample;</code>
+				<code><span class="host">dockerhost$</span> touch index.html</code>
+				<p>
+					Edit the just touched <em>apacheexmple/index.html</em> file.
+				</p>
+				<code class="file">
+					&lt;html&gt;</br>
+					&lt;body&gt;</br>
+					<span class="indent1"/>&lt;h1&gt;Hello Docker world&lt;/h1&gt;</br>
+					&lt;/body&gt;</br>
+					&lt;/html&gt;
+				</code>
+
+				<code><span class="host">dockerhost$</span> touch Dockerfile</code>
+				<p>
+					Edit the just touched <em>apacheexmple/Dockerfile</em> file.
+				</p>
+				<code class="file">
+					FROM <em>mycoolimages/example-image:0.1</em><br/>
+					<br/>
+					RUN apt-get update<br/>
+					RUN apt-get install -y apache2<br/>
+					<br/>
+					EXPOSE 80<br/> 
+					<br/>
+					ADD index.html /var/www/index.html<br/>
+					<br/>
+					ENTRYPOINT ["/usr/sbin/apache2"]<br/>
+					CMD ["-D", "FOREGROUND"]<br/>
+				</code>
+
+				<p>
+					Lets create an image of this Apache Dockerfile.
+				</p>
+				<code><span class="host">dockerhost$</span> docker build -t mycoolimages/apache .;</code>
+				<code><span class="host">dockerhost$</span> docker images</code>
+				<p>
+				</p>
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>REPOSITORY</td>
+							<td>TAG</td>
+							<td>IMAGE&nbsp;ID</td>
+							<td>CREATED</td>
+							<td>VIRTUAL&nbsp;SIZE</td>
+						</tr>
+						<tr>
+							<td>mycoolimages/apache</td>
+							<td>latest</td>
+							<td>a1b2b3b4b5b6</td>
+							<td>10&nbsp;seconds&nbsp;ago</td>
+							<td>467.2&nbsp;MB</td>
+						</tr>
+						<tr>
+							<td>mycoolimages/example-image</td>
+							<td>0.1</td>
+							<td>0123abcd00</td>
+							<td>1&nbsp;day&nbsp;ago</td>
+							<td>194.2&nbsp;MB</td>
+						</tr>
+						<tr>
+							<td>ubuntu</td>
+							<td>14.14</td>
+							<td>112233445566</td>
+							<td>10&nbsp;days&nbsp;ago</td>
+							<td>194.2&nbsp;MB</td>
+						</tr>
+						<tr>
+							<td colspan="5">...</td>
+						</tr>
+					</tbody>
+				</table>		
+
+				<p>
+					Launch new image.
+				</p>
+				<code><span class="host">dockerhost$</span> docker run -p 80:80 -d mycoolimages/apache</code>
+				<code><span class="host">dockerhost$</span> docker ps</code>
+
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>CONTAINER ID</td>
+							<td>IMAGE</td>
+							<td>COMMAND</td>
+							<td>CREATED</td>
+							<td>STATUS</td>
+							<td>PORTS</td>
+							<td>NAMES</td>
+						</tr>
+						<tr>
+							<td>992sasd</td>
+							<td>mycoolimages/apache:latest</td>
+							<td>"/usr/sbin/apache2"</td>
+							<td>10&nbsp;seconds&nbsp;ago</td>
+							<td>Up&nbsp;10&nbsp;seconds</td>
+							<td>80/tcp</td>
+							<td>dozy_roses</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<code><span class="host">dockerhost$</span> curl localhost</code>
+
+				<table class="output">
+					<tbody>
+						<tr>
+							<td>&lt;html&gt;</td>
+						</tr>
+						<tr>
+							<td>&lt;body&gt;</td>
+						</tr>
+						<tr>
+							<td>&lt;h1&gt;Hello Docker world&lt;/h1&gt;</td>
+						</tr>
+						<tr>
+							<td>&lt;/body&gt;</td>
+						</tr>
+						<tr>
+							<td>&lt;/html&gt;</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					Note to expose this if running inside Vagrant,
+					you need to add port forwarding to your <em>Vagrantfile</em>.
+				</p>
+  				<code class="file">
+  					config.vm.network "forwarded_port", guest: 80, host: 8080
+  				</code>
+  				<p>
+  					Or utilise the flexibility of the port ranges mention in the 
+  					<a href="#handydocker">handy tips section</a>
+  				</p>
+
+
+				<!--
+					share volume
+				-->
+
 
 				<a name="handydocker"></a>
 				<h3>Handy Docker</h3>
-				<p>
-
-				</p>
-				<code></code>
 
 				<ul>
 					<li>
-						<i>Memory</i>
+						<h4>Memory</h4>
+						If you run your Docker on OSX or within a Vagrant VM then 
+						you probably want to allocate more memory to it. For example 3GB.
 						<ul>
-							<li><i>boot2docker</i></li>
-							<li><i>Vagrant</i></li>
+							<li>
+								<h4>boot2docker</h4>
+								<code><span class="host">osxhost$</span> boot2docker delete</code>
+								<code><span class="host">osxhost$</span> boot2docker init -m 3072</code>
+								<code><span class="host">osxhost$</span> boot2docker info</code>
+							</li>
+							<li>
+								<h4>Vagrant</h4>
+								Add/uncomment this to your <em>Vagrantfile</em>.
+								<code class="file">									
+									config.vm.provider "virtualbox" do |vb|<br />
+									<span class="indent1"/>vb.customize ["modifyvm", :id, "--memory", "3072"]<br />
+									end
+								</code>
+								<code><span class="host">anyhost$</span> vagrant reload</code>
+							</li>
 						</ul>
 					</li>
 					<li>
-						<i>Port ranges</i>
-						Add a range of forwarded ports to your Vagrantfile to easily 
-						connect to docker ports:
+						<h4>Port ranges</h4>
+						Add a range of forwarded ports to your Vagrantfile to easily connect to docker ports
+						without reloading Vagrant.
 						<code class="file">
-							for i in 49800..49900
-  							  config.vm.network "forwarded_port", guest: i, host: i
+							for i in 49800..49900<br/>
+  							<span class="indent1"/>config.vm.network "forwarded_port", guest: i, host: i<br/>
   							end
 						</code>	
 					</li>
-					<li><i>Host file</i></li>
 					<li>
-						<i>Dotfiles</i>
+						<h4>Host file</h4>
+						Adding your Vagrant VM's IP to your host file will make a better separation.
+						<code><span class="host">vagranthost$</span> ifconfig | grep -A 4 eth0 | grep "inet addr"</code>
+						Note you can also find out Docker container's ip if needed.
+						<code><span class="host">dockerhost$</span> docker inspect <em>12345abcd</em> | grep IpAddress</code>
+					</li>
+					<li>
+						<h4>Dotfiles</h4>
 						Using <a href="http://dotfiles.github.io">dotfiles</a>
 						will make spawning a range of servers more survivable.
 					</li>
-					<li><i>SSH keys</i></li>
+					<li>
+						<h4>SSH keys</h4>
+						<p>
+							If you need to add SSH keys to docker images,
+							then you are doing something wrong.
+							If it is to simple inspect files,
+							then there are other ways.
+						</p>	
+					</li>
+					<li><i>Link containers</i></li>
+					<li>
+						<h4>Source control</h4>
+						Ensure your Vagrantfile, Dockerfile and others are added to source control.
+						And pushed to a repository on another server.
+					</li>
 				</ul>
 
 				<a name=""></a>
@@ -650,6 +845,8 @@ end</code>
 https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 					<li><a href="http://www.fig.sh">Fig</a></li>
 					<li><a href="http://blog.xen.org/index.php/2014/09/08/xen-docker-made-for-each-other">xen-docker-made-for-each-other</a></li>
+					<li><a href="http://www.kstaken.com/blog/2013/07/06/how-to-run-apache-under-docker/">how-to-run-apache-under-docker</a></li>
+					<li><a href="http://blog.trifork.com/2013/08/15/using-docker-to-efficiently-create-multiple-tomcat-instances/">using-docker-to-efficiently-create-multiple-tomcat-instances</a></li>
 					<!--
 					<li><a href=""></a></li>
 					-->
