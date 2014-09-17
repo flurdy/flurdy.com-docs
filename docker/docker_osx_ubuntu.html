@@ -9,14 +9,6 @@
 	</style>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
 	<script type="text/javascript">
-		$( document ).ready(function() {
-			window.setTimeout( "reload()", 30000);
-		});
-		function reload(){
-			// location.reload(false)
-		}
-	</script>
-	<script type="text/javascript">
 	  var _gaq = _gaq || [];
 	  _gaq.push(['_setAccount', 'UA-281408-1']);
 	  _gaq.push(['_trackPageview']);
@@ -56,7 +48,6 @@
 			<div id="jib">
 				Started: September 2014.
 				Last updated: 17th Sep 2014.
-				Status: Draft
 			</div>
 			<div id="starboard">
 				<nav>
@@ -87,15 +78,10 @@
 						<li><a href="#docker">Initial Docker</a></li>
 						<li>
 							<a href="#usefuldocker">Useful Docker</a>
-							<!--
-							<ul>
-								<li><a href="#buildimage">Build image</a></li>
-								<li><a href="#runimage">Run image</a></li>
-							</ul> 
-							-->
 						</li>
-						<!-- <li><a href="#build">Build Docker images</a></li> -->
 						<li><a href="#handydocker">Handy Docker</a></li>
+						<li><a href="#mydocker">My Docker</a></li>
+						<li><a href="#continuous">Continuous Delivery</a></li>
 						<li>
 							<a href="">Hosting</a>
 							<ul>
@@ -105,10 +91,6 @@
 								<li><a href="#azure">Microsoft Azure</a></li>
 							</ul>
 						</li>
-						<!--
-						<li><a href="#architecture">Architecture</a></li>
-						<li><a href="#continuous">Continuous Delivery</a></li>
-						-->
 						<li><a href="#reference">References</a></li>
 						<li><a href="#contact">Feedback</a></li>
 					</ul>
@@ -609,7 +591,7 @@ end</code>
 
 				<code><span class="host">dockerhost$</span> touch Dockerfile</code>
 				<p>
-					Edit the just touched <em>apacheexmple/Dockerfile</em> file.
+					Edit the just touched <em>apacheexample/Dockerfile</em> file.
 				</p>
 				<code class="file">
 					FROM <em>mycoolimages/example-image:0.1</em><br/>
@@ -751,7 +733,7 @@ end</code>
 				</code>
 				<p>
 					This shares the local folders with the Drocker container
-					as <a href="http://docs.docker.com/userguide/dockervolumes/">a volume</a>
+					as <a href="http://docs.docker.com/userguide/dockervolumes/">a volume</a>.
 					<em>/vagrant/www</em> is shared as <em>/var/www</em>
 					in a read only mode.
 					<em>/vagrant/logs</em> is shared as <em>/var/logs/apache2</em>
@@ -881,11 +863,50 @@ end</code>
 				<code class="wide"><span class="host">anyhost$</span> docker version</code>
 					
 
+				<a name="mydocker"></a>
+				<h3>My Docker</h3>
+				<p>
+					I use Docker mostly for development,
+					and experiment with actual hosting,
+					but none of my important applications run
+					Docker in production, yet.
+				</p>
+				<p>
+					I have containers for every tiny website I run,
+					with the folder added as volumes locally.
+					Containers for every Scala Play! and Akka application,
+					containers for Postgresql, Cassandra and Redis, etc.
+					I can easily and quickly swap which database copy I connect to, from integration to staging, to client A to client B.
+				</p>
+				<p>
+					I have development containers of each application
+					but also some production copy containers to compare locally.
+				</p>
+				<p>
+					And now I am testing scaling applications with CoreOS. 
+				</p>
+
+				<a name="continuous"></a>
+				<h3>Continuous Delivery</h3>
+				<p>
+					One good aspect of Docker container images,
+					is that not just your application binary
+					is part of the delivery but the entire container image.
+					So no risk of wrong Java version being installed, etc.
+				</p>
+				<p>
+					You could (and should) achieve this before
+					with baking AWS AMIs containg your binary or creating .deb packages.
+					But a Docker image is a lot smaller,
+					so quicker to continuously build and ready to ship.
+				</p>
+
+
 				<a name="hosting"></a>
 				<h3>Hosting</h3>
 
 				<a name="digitalocean"></a>
-				<h3>DigitalOcean</h3>
+				<h4>DigitalOcean</h4>
 				<p>
 					<a href="https://www.digitalocean.com">DigitalOcean</a> 
 					have already a <a href="https://www.digitalocean.com/community/tutorials/how-to-use-the-digitalocean-docker-application">Docker application</a> that you can use in your Droplets.
@@ -898,7 +919,7 @@ end</code>
 				</p>
 
 				<a name="google"></a>
-				<h3>Google Compute Engine</h3>
+				<h4>Google Compute Engine</h4>
 				<p>
 					CoreOS is written by many current and former Google engineers.
 					Google have official <a href="http://googlecloudplatform.blogspot.co.uk/2014/05/official-coreos-images-are-now-available-on-google-compute-engine.html">CoreOS images for Google Compute Engine</a>.
@@ -907,33 +928,16 @@ end</code>
 				</p>
 
 				<a name="aws"></a>
-				<h3>Amazon AWS</h3>
+				<h4>Amazon AWS</h4>
 				<p>
 					There are ways of using <a href="https://aws.amazon.com/blogs/aws/aws-elastic-beanstalk-for-docker/">Beanstalk to set up Docker containers</a> on <a href="http://aws.amazon.com">AWS</a>. Docker also has many blog posts about <a href="http://blog.docker.com/category/aws/">AWS integration</a>. CoreOS is also possible on AWS.
 				</p>
 
 				<a name="azure"></a>
-				<h3>Microsoft Azure</h3>
+				<h4>Microsoft Azure</h4>
 				<p>
 					Microsoft now lets you <a href="http://techcrunch.com/2014/08/28/microsoft-azure-now-supports-googles-kubernetes-for-managing-docker-containers/">manage Docker containers</a> on their Azure cloud offering. 
 				</p>
-
-
-				<!--
-
-				<a name="architecture"></a>
-				<h3>Architecture</h3>
-				<p>
-
-				</p>
-
-				<a name="continuous"></a>
-				<h3>Continuous Delivery</h3>
-				<p>
-				</p>
-
-				-->
-
 
 				<a name="reference"></a>
 				<h3>References</h3>
