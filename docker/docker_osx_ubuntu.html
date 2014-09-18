@@ -95,6 +95,18 @@
 						<li><a href="#contact">Feedback</a></li>
 					</ul>
 				</nav>
+				<div class="shirts">
+					<div class="shirt">
+						<a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+							src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+							asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+					</div>
+					<div class="shirt">
+						<a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+							src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+					</div>
+					<div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+				</div>
 			</div>
 			<div id="cargo">
 
@@ -139,12 +151,12 @@
 				</p>
 				<p>
 					This document is as a developer how I set up and use Docker to develop my applications.
-					It describes setting up with OSX and Ubuntu, 
-					using Docker natively and within Vagrant. 
+					It describes setting up with OSX and Ubuntu,
+					using Docker natively and within Vagrant.
 					Also includes some suggestions on deploying and hosting the applications.
 					A lot of this is based on
-					<a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a> 
-					by <a href="https://twitter.com/fideloper">Chris Fidao</a>.					
+					<a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a>
+					by <a href="https://twitter.com/fideloper">Chris Fidao</a>.
 				</p>
 
 				<a name="osxdocker"></a>
@@ -271,7 +283,7 @@ VAGRANTFILE_API_VERSION = "2"<br />
 <span class="indent1"></span>config.vm.provision "docker"<br />
 <br />
 end</code>
-					
+
 				<p>
 					This sets the provisioner as Docker and sets a hostname.
 					It disabled guest additions updates for this specific instance.
@@ -309,11 +321,11 @@ end</code>
 				<p>
 					This could in theory be your second or third level of Ubuntu within Ubuntu. Ubuntu Host + Vagrant with Ubuntu + Docker with Ubuntu.
 				</p>
-				<img id="recursive-ubuntu" src="ubuntu-vagrant-ubuntu-docker-ubuntu.png" 
+				<img id="recursive-ubuntu" src="ubuntu-vagrant-ubuntu-docker-ubuntu.png"
 						alt="ubuntu-vagrant-ubuntu-docker-ubuntu" title="ubuntu-vagrant-ubuntu-docker-ubuntu" />
-				<a href="http://i.imgur.com/yDGKBUW.jpg"><img id="shipping-ubuntu" src="shipping.jpg" 
+				<a href="http://i.imgur.com/yDGKBUW.jpg"><img id="shipping-ubuntu" src="shipping.jpg"
 						alt="ship shipping ship shipping shipping ships" title="" /></a>
-				
+
 				<a name="dockerubuntu"></a>
 				<h3>Docker's Ubuntu </h3>
 				<p>
@@ -410,7 +422,7 @@ end</code>
 				<p>
 					This starts and keeps a process running.
 					In another shell list processes.
-					(log into the vagrant instance if applicable)					
+					(log into the vagrant instance if applicable)
 				</p>
 				<code><span class="host">dockerhost$</span> docker ps</code>
 				<table class="output">
@@ -514,11 +526,11 @@ end</code>
 					Should list /example.txt and /.bash_history.
 				</p>
 
-				<code><span class="host">dockerhost$</span> docker commit <em>12345abcd</em> <em>mycoolimages/example-image:0.1</em></code>
+				<code class="wide"><span class="host">dockerhost$</span> docker commit <em>12345abcd</em> <em>mycoolimages/example-image:0.1</em></code>
 				<p>
 					This creates an image we can recreate, base other images on etc.
 				</p>
-				<code><span class="host">dockerhost$</span> docker images</code>	
+				<code><span class="host">dockerhost$</span> docker images</code>
 				<table class="output">
 					<tbody>
 						<tr>
@@ -546,7 +558,7 @@ end</code>
 							<td colspan="5">...</td>
 						</tr>
 					</tbody>
-				</table>		
+				</table>
 				<p>
 					Lists images created by you, and all the downloaded images as well.Helpfully lists their relative size difference from their base image.
 					As you can see <em>mycoolimages/example-image:0.1</em> is listed at the top.
@@ -556,24 +568,22 @@ end</code>
 				<a name="usefuldocker"></a>
 				<a name="buildimage"></a>
 				<h3>Useful Docker</h3>
-				<!--
-				<h4>Build image</h4>
-				-->
+
 				<p>
 					Now you know how to launch docker images
 					and how to make docker images.
 					Lets now create some more useful images.
 				</p>
 				<p>
-					A <em>Dockerfile</em> is used in a simlar fashion 
+					A <a href="http://docs.docker.com/reference/builder/">Dockerfile</a> is used in a similar fashion
 					to a <em>VagrantFile</em>.
 					It describes what an image is based on,
 					what to do with it, e.g. what to provision,
 					and which processes to run on it.
 				</p>
 				<p>
-					Lets create one that install and runs an Apache web server inside Docker.
-					And shows a specific index.html file.
+					Lets create one that install and runs an <a href="https://httpd.apache.org/">Apache web server</a> inside Docker.
+					And shows a specific <em>index.html</em> file.
 				</p>
 				<code><span class="host">dockerhost$</span> mkdir apacheexample;</code>
 				<code><span class="host">dockerhost$</span> cd apacheexample;</code>
@@ -599,7 +609,7 @@ end</code>
 					RUN apt-get update<br/>
 					RUN apt-get install -y apache2<br/>
 					<br/>
-					EXPOSE 80<br/> 
+					EXPOSE 80<br/>
 					<br/>
 					ADD index.html /var/www/index.html<br/>
 					<br/>
@@ -648,12 +658,7 @@ end</code>
 							<td colspan="5">...</td>
 						</tr>
 					</tbody>
-				</table>		
-
-				<!--
-				<a name="runimage"></a>
-				<h4>Run image</h4>
-				-->
+				</table>
 
 				<code><span class="host">dockerhost$</span> docker run -p 80:80 -d mycoolimages/apache</code>
 				<code><span class="host">dockerhost$</span> docker ps</code>
@@ -703,14 +708,14 @@ end</code>
 					</tbody>
 				</table>
 				<p>
-					Note to expose this if running inside Vagrant,
+					To expose this if running inside Vagrant,
 					you need to add port forwarding to your <em>Vagrantfile</em>.
 				</p>
   				<code class="file">
   					config.vm.network "forwarded_port", guest: 80, host: 8080
   				</code>
   				<p>
-  					Or utilise the flexibility of the port ranges mention in the 
+  					Or utilise the flexibility of the port ranges mention in the
   					<a href="#handydocker">handy tips section</a>
   				</p>
 
@@ -718,7 +723,7 @@ end</code>
 				<p>
 					Stops the container gracefully.
 				</p>
-				
+
 				<a name="handydocker"></a>
 				<h3>Handy Docker</h3>
 
@@ -732,7 +737,7 @@ end</code>
 					-p 80:80 -d mycoolimages/apacheother
 				</code>
 				<p>
-					This shares the local folders with the Drocker container
+					This shares the local folders with the Docker container
 					as <a href="http://docs.docker.com/userguide/dockervolumes/">a volume</a>.
 					<em>/vagrant/www</em> is shared as <em>/var/www</em>
 					in a read only mode.
@@ -742,10 +747,24 @@ end</code>
 				<p>
 					Note for the image we created earlier (<em>mycoolimages/apache</em>)
 					this will cause a conflict as
-					we already added the 
+					we already added the
 					<em>index.html</em> file to <em>/var/www</em>.
 					So create a different image first.
-				</p>	
+				</p>
+				<p>
+					The example of <em>/vagrant</em> is if your Docker host is a Vagrant VM.
+					<em>/vagrant</em> folder is the automatically shared folder from your
+					real host's folder containing the <em>Vagrantfile</em>.
+					If you want to share other folders between your host and Vagrant add
+					lines like these to the <em>Vagrantfile</em>.
+				</p>
+				<code class="file">
+					config.vm.synced_folder "/opt/mysite", "/var/www"
+				</code>
+				<p>
+					This makes the host's <em>/opt/mysite</em> folder
+					available as <em>/var/www</em> inside Vagrant.
+				</p>
 
 				<h4>Link containers</h4>
 				<p>
@@ -765,7 +784,7 @@ end</code>
 					Docker has modified <em>myweb</em> container's <em>/etc/hosts</em> file to contain an alias to <em>app</em>.
 					Docker has also made environment variables available for you applications to use.
 				</p>
-				
+
 				<h4>Kill</h4>
 				<code><span class="host">dockerhost$</span> docker kill <em>992sasd</em></code>
 				<p>
@@ -786,7 +805,7 @@ end</code>
 				</p>
 				<h4>Memory</h4>
 				<p>
-					If you run your Docker on OSX or within a Vagrant VM then 
+					If you run your Docker on OSX or within a Vagrant VM then
 					you probably want to allocate more memory to it. For example 3GB.
 				</p>
 				<ul>
@@ -795,13 +814,17 @@ end</code>
 						<code><span class="host">osxhost$</span> boot2docker delete</code>
 						<code><span class="host">osxhost$</span> boot2docker init -m 3072</code>
 						<code><span class="host">osxhost$</span> boot2docker info</code>
+						<p>
+							Note that this will destroy the Docker containers inside the VMs.
+							Make sure they are backed up.
+						</p>
 					</li>
 					<li>
 						<h4>Vagrant</h4>
 						<p>
 							Add/uncomment this to your <em>Vagrantfile</em>.
 						</p>
-						<code class="file">									
+						<code class="file">
 							config.vm.provider "virtualbox" do |vb|<br />
 							<span class="indent1"/>vb.customize ["modifyvm", :id, "--memory", "3072"]<br />
 							end
@@ -819,7 +842,7 @@ end</code>
 					for i in 49800..49900<br/>
 						<span class="indent1"/>config.vm.network "forwarded_port", guest: i, host: i<br/>
 						end
-				</code>	
+				</code>
 
 				<h4>Host file</h4>
 				<p>
@@ -843,7 +866,7 @@ end</code>
 					then you are doing something wrong.
 					If it is to simple inspect files,
 					then there are other ways.
-				</p>	
+				</p>
 
 				<h4>Source control</h4>
 				<p>
@@ -861,14 +884,14 @@ end</code>
 				</p>
 				<code class="wide"><span class="host">anyhost$</span> export DOCKER_HOST=tcp://localhost:4243;</code>
 				<code class="wide"><span class="host">anyhost$</span> docker version</code>
-					
+
 
 				<a name="mydocker"></a>
 				<h3>My Docker</h3>
 				<p>
 					I use Docker mostly for development,
-					and experiment with actual hosting,
-					but none of my important applications run
+					and only experiment with actual hosting.
+					None of my important applications run
 					Docker in production, yet.
 				</p>
 				<p>
@@ -883,7 +906,7 @@ end</code>
 					but also some production copy containers to compare locally.
 				</p>
 				<p>
-					And now I am testing scaling applications with CoreOS. 
+					And now I am testing scaling applications with CoreOS.
 				</p>
 
 				<a name="continuous"></a>
@@ -895,10 +918,10 @@ end</code>
 					So no risk of wrong Java version being installed, etc.
 				</p>
 				<p>
-					You could (and should) achieve this before
-					with baking AWS AMIs containg your binary or creating .deb packages.
+					You could (and should) have achieve this already
+					by <a href="http://flurdy.com/docs/ec2/ami/">baking AWS AMIs</a> containing your binary or <a href="https://github.com/sbt/sbt-native-packager">creating .deb packages</a>.
 					But a Docker image is a lot smaller,
-					so quicker to continuously build and ready to ship.
+					so quicker to continuously build, ready to ship and scale.
 				</p>
 
 
@@ -908,12 +931,12 @@ end</code>
 				<a name="digitalocean"></a>
 				<h4>DigitalOcean</h4>
 				<p>
-					<a href="https://www.digitalocean.com">DigitalOcean</a> 
+					<a href="https://www.digitalocean.com">DigitalOcean</a>
 					have already a <a href="https://www.digitalocean.com/community/tutorials/how-to-use-the-digitalocean-docker-application">Docker application</a> that you can use in your Droplets.
 				</p>
 				<p>
-					More importantly DigitalOcean recently 
-					<a href="https://www.digitalocean.com/company/blog/coreos-now-available-on-digitalocean/">announced full support for running CoreOS</a> 
+					More importantly DigitalOcean recently
+					<a href="https://www.digitalocean.com/company/blog/coreos-now-available-on-digitalocean/">announced full support for running CoreOS</a>
 					on their IAAS.
 					Within CoreOS you can then <a href="https://coreos.com/using-coreos/docker/">deploy many Docker containers</a>.
 				</p>
@@ -923,7 +946,7 @@ end</code>
 				<p>
 					CoreOS is written by many current and former Google engineers.
 					Google have official <a href="http://googlecloudplatform.blogspot.co.uk/2014/05/official-coreos-images-are-now-available-on-google-compute-engine.html">CoreOS images for Google Compute Engine</a>.
-					Google are also heavily invested in <a href="https://github.com/GoogleCloudPlatform/kubernetes">Kubernetes</a> for managing containers 
+					Google are also heavily invested in <a href="https://github.com/GoogleCloudPlatform/kubernetes">Kubernetes</a> for managing containers
 					and supporting them on their Compute Engine.
 				</p>
 
@@ -936,7 +959,7 @@ end</code>
 				<a name="azure"></a>
 				<h4>Microsoft Azure</h4>
 				<p>
-					Microsoft now lets you <a href="http://techcrunch.com/2014/08/28/microsoft-azure-now-supports-googles-kubernetes-for-managing-docker-containers/">manage Docker containers</a> on their Azure cloud offering. 
+					Microsoft now lets you <a href="http://techcrunch.com/2014/08/28/microsoft-azure-now-supports-googles-kubernetes-for-managing-docker-containers/">manage Docker containers</a> on their Azure cloud offering.
 				</p>
 
 				<a name="reference"></a>

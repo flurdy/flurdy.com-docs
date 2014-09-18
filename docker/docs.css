@@ -79,6 +79,23 @@ ul.horizontal li {
 }
 #starboard li {
 }
+#starboard .shirts {
+
+}
+#starboard .shirts .shirt {
+	text-align: left;
+}
+#starboard .shirts .shirt img{
+	width: 10em;
+}
+#starboard .shirts .shirt img#wontfix{
+}
+#starboard .shirts .shirt img#dumb{
+
+}
+#starboard .shirts .link {
+	padding-left: 1.5em;
+}
 #jib {
 	font-size: 0.7em;
 	font-style: italic;
@@ -110,11 +127,11 @@ code.file {
 	padding: 0.4em 1em;
 	margin: 0.8em 0;
 }
-#cargo img#recursive-ubuntu { 
-	height: 12em; 
+#cargo img#recursive-ubuntu {
+	height: 12em;
 }
-#cargo img#shipping-ubuntu { 
-	height: 10em; 
+#cargo img#shipping-ubuntu {
+	height: 10em;
 	border: 2px inset silver;
 }
 code .host {
