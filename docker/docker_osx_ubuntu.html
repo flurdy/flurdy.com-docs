@@ -182,12 +182,12 @@
 				<code><span class="host">osxhost$</span> brew install docker</code>
 				<p>
 					This install docker in OSX,
-					but relays all communicatiosn via a socket to the Docker daemon
+					but relays all communications via a socket to the Docker daemon
 					running inside the boot2docker VM instead of the local machine.
 				</p>
 				<p>
 					To share local folders with boot2docker Docker images
-					there are <a href="https://github.com/boot2docker/boot2docker">some complicated steps to set up a volume image</a>.
+					there are <a href="https://github.com/boot2docker/boot2docker#folder-sharing">some complicated steps to set up a volume image</a>.
 				</p>
 
 				<a name="osxvagrant"></a>
@@ -317,7 +317,7 @@ end</code>
 					In my case always Ubuntu.
 				</p>
 
-				<h3>Recursive Ubuntu</h3>
+				<h4>Recursive Ubuntu</h4>
 				<p>
 					This could in theory be your second or third level of Ubuntu within Ubuntu. Ubuntu Host + Vagrant with Ubuntu + Docker with Ubuntu.
 				</p>
@@ -335,7 +335,7 @@ end</code>
 				<p>
 					This downloads Docker's Ubuntu image
 					and stores it locally.
-					Docker has a range of ready made images in their <a href="http://hub.docker.com">register</a>.
+					Docker has a range of ready made images in their <a href="http://registry.hub.docker.com">registry</a>.
 					Later you can easily upload your images to this register.
 				</p>
 
@@ -576,7 +576,7 @@ end</code>
 				</p>
 				<p>
 					A <a href="http://docs.docker.com/reference/builder/">Dockerfile</a> is used in a similar fashion
-					to a <em>VagrantFile</em>.
+					to a <em>Vagrantfile</em>.
 					It describes what an image is based on,
 					what to do with it, e.g. what to provision,
 					and which processes to run on it.
@@ -611,10 +611,9 @@ end</code>
 					<br/>
 					EXPOSE 80<br/>
 					<br/>
-					ADD index.html /var/www/index.html<br/>
+					ADD index.html /var/www/html/index.html<br/>
 					<br/>
-					ENTRYPOINT ["/usr/sbin/apache2"]<br/>
-					CMD ["-D", "FOREGROUND"]<br/>
+					CMD ["apache2ctl","-DFOREGROUND"]<br/>
 				</code>
 
 				<p>
@@ -753,7 +752,7 @@ end</code>
 				</p>
 				<p>
 					The example of <em>/vagrant</em> is if your Docker host is a Vagrant VM.
-					<em>/vagrant</em> folder is the automatically shared folder from your
+					The <em>/vagrant</em> folder is the automatically shared folder from your
 					real host's folder containing the <em>Vagrantfile</em>.
 					If you want to share other folders between your host and Vagrant add
 					lines like these to the <em>Vagrantfile</em>.
@@ -765,6 +764,18 @@ end</code>
 					This makes the host's <em>/opt/mysite</em> folder
 					available as <em>/var/www</em> inside Vagrant.
 				</p>
+				<p>
+					Obviously if you use Docker natively you 
+					can share any path directly as a volume.
+				</p>
+				<p>
+					Another option is to <a href="http://docs.docker.com/reference/builder/#volume">hardcode volumes</a> inside the <em>Dockerfile</em>.	
+				</p>
+				<p>
+					If you use boot2docker you can't share paths easily.
+					You have to <a href="https://github.com/boot2docker/boot2docker#folder-sharing">set up a volume container</a>.
+				</p>
+
 
 				<h4>Link containers</h4>
 				<p>
@@ -803,6 +814,16 @@ end</code>
 				<p>
 					Removes an image.
 				</p>
+
+				<h4>Supervisor</h4>
+				<p>
+					If you want to run multiple processes in the same container,
+					or manage process lifecycle and automatic restarts,
+					then a
+					<a href="http://docs.docker.com/articles/using_supervisord/">Supervisord</a>
+					is needed.
+				</p>
+
 				<h4>Memory</h4>
 				<p>
 					If you run your Docker on OSX or within a Vagrant VM then
@@ -835,7 +856,7 @@ end</code>
 
 				<h4>Port ranges</h4>
 				<p>
-					Add a range of forwarded ports to your Vagrantfile to easily connect to docker ports
+					Add a range of forwarded ports to your <em>Vagrantfile</em> to easily connect to docker ports
 				without reloading Vagrant.
 				</p>
 				<code class="file">
@@ -870,7 +891,7 @@ end</code>
 
 				<h4>Source control</h4>
 				<p>
-					Ensure your Vagrantfile, Dockerfile and others are added to source control.
+					Ensure your <em>Vagrantfile</em>, <em>Dockerfile</em> and others are added to source control.
 					And pushed to a repository on another server.
 					You application and content is hopefully already under source control.
 				</p>
@@ -892,7 +913,7 @@ end</code>
 					I use Docker mostly for development,
 					and only experiment with actual hosting.
 					None of my important applications run
-					Docker in production, yet.
+					Docker in production. Yet.
 				</p>
 				<p>
 					I have containers for every tiny website I run,
@@ -989,6 +1010,7 @@ https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 					<li><a href="http://blog.xen.org/index.php/2014/09/08/xen-docker-made-for-each-other">xen-docker-made-for-each-other</a></li>
 					<li><a href="http://www.kstaken.com/blog/2013/07/06/how-to-run-apache-under-docker/">how-to-run-apache-under-docker</a></li>
 					<li><a href="http://blog.trifork.com/2013/08/15/using-docker-to-efficiently-create-multiple-tomcat-instances/">using-docker-to-efficiently-create-multiple-tomcat-instances</a></li>
+					<li><a href="http://docs.docker.com/articles/basics/">Docker basics</a></li>
 					<!--
 					<li><a href=""></a></li>
 					-->
