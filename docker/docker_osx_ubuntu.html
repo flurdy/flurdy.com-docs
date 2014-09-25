@@ -47,7 +47,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 17th Sep 2014.
+				Last updated: 24th Sep 2014.
 			</div>
 			<div id="starboard">
 				<nav>
@@ -608,6 +608,7 @@ end</code>
 					<br/>
 					RUN apt-get update<br/>
 					RUN apt-get install -y apache2<br/>
+					RUN apt-get clean<br/>
 					<br/>
 					EXPOSE 80<br/>
 					<br/>
@@ -751,7 +752,7 @@ end</code>
 					So create a different image first.
 				</p>
 				<p>
-					The example of <em>/vagrant</em> is if your Docker host is a Vagrant VM.
+					The example includes the path <em>/vagrant</em> which is if your Docker host is a Vagrant VM.
 					The <em>/vagrant</em> folder is the automatically shared folder from your
 					real host's folder containing the <em>Vagrantfile</em>.
 					If you want to share other folders between your host and Vagrant add
@@ -820,9 +821,23 @@ end</code>
 					If you want to run multiple processes in the same container,
 					or manage process lifecycle and automatic restarts,
 					then a
-					<a href="http://docs.docker.com/articles/using_supervisord/">Supervisord</a>
+					<a href="http://docs.docker.com/articles/using_supervisord/">Supervisor daemon</a>
 					is needed.
 				</p>
+
+				<h4>Dockerfile</h4>
+				<p>
+					As shown earlier <a href="http://docs.docker.com/reference/builder/">Dockerfile</a> describes how to build a container image.
+					Much like a <em>Vagrantfile</em> with an included provisioner e.g. <a href="http://puppetlabs.com/">Puppet</a>.
+				</p>
+				<p>
+					There are many example Dockerfiles, on <a href="http://github.com/search?q=Dockerfile">Github</a>, on Docker's own <a href="https://registry.docker.com">hub registry</a>.
+				</p>
+				<p>
+					I have a few public Dockerfiles I wrote myself, <a href="http://github.com/flurdy/Dockerfiles">github.com/flurdy/Dockerfiles</a>, for simple apache web site, java 6, 7 or 8, and maybe some more. 
+					They are mostly used as a base/template for application specific Dockerfiles.
+				</p>
+
 
 				<h4>Memory</h4>
 				<p>
