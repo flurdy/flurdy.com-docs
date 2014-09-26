@@ -80,16 +80,17 @@
 							<a href="#usefuldocker">Useful Docker</a>
 						</li>
 						<li><a href="#handydocker">Handy Docker</a></li>
-						<li><a href="#mydocker">My Docker</a></li>
-						<li><a href="#continuous">Continuous Delivery</a></li>
+						<li><a href="#whatdocker">What to Docker</a></li>
+						<!-- <li><a href="#mydocker">My Docker</a></li> -->
 						<li>
-							<a href="">Hosting</a>
+							<a href="#dockerhosting">Docker Hosting</a>
+							<!--
 							<ul>
 								<li><a href="#digitalocean">Digital Ocean</a></li>
 								<li><a href="#google">Google Compute Engine</a></li>
 								<li><a href="#aws">Amazon AWS</a></li>
 								<li><a href="#azure">Microsoft Azure</a></li>
-							</ul>
+							</ul-->
 						</li>
 						<li><a href="#reference">References</a></li>
 						<li><a href="#contact">Feedback</a></li>
@@ -922,6 +923,83 @@ end</code>
 				<code class="wide"><span class="host">anyhost$</span> docker version</code>
 
 
+				<a name="whatdocker"></a>
+				<h3>What to Docker</h3>
+				<p>
+					Building on what you would often use virtual machines 
+					and Vagrant for already.
+				</p>
+
+				<h4>Development</h4>
+				<p>
+					Whether it is a complex application or simple web site,
+					having a Docker container per application is a nice separation.
+					Multiple containers for different versions, branches, target environments etc is also useful.
+					With source code folders added as volumes locally.
+				</p>
+				<p>
+					You can use <em>linking</em> as explained earlier to 
+					run a complex system of multiple containers locally.
+					Also using the previously mentioned idea of adding Docker IPs host files 
+					can make the separation clearer and assist
+					in virtual hosting and session cookie etc.
+				</p>
+
+				<h4>Continuous Delivery</h4>
+				<p>
+					One good aspect of Docker container images,
+					is that not just your application binary
+					is part of the delivery but the entire fully provisioned container image.
+					So no risk of wrong Java version being installed, 
+					no risk that staging and production environments are different,
+					etc.
+				</p>
+				<p>
+					You could achieve this already 
+					by e.g. <a href="http://flurdy.com/docs/ec2/ami/">baking AWS AMIs</a> containing your binary or <a href="https://github.com/sbt/sbt-native-packager">creating .deb packages</a>.
+					But a Docker image is a lot smaller,
+					so quicker to continuously build, ready to ship and scale.
+				</p>
+
+				<h4>Testing and Demonstrations</h4>
+				<p>
+					By packaging the entire environment
+					you can quickly share and spin up any application environment.
+					This means testing can quickly be switched and shared.
+					Demos can run without risk of environment suddenly going down and switch quickly to different versions.
+				</p>
+
+				<h4>Databases</h4>
+				<p>
+					No need for every machine to install every specific flavour and versions
+					of a database.
+					Just share a container image instead of bloating all the laptops etc.
+					Especially useful for testing multiple nodes locally.
+				</p>
+				<p>
+					This is the same for any other stand alone application,
+					e.g. an <a href="https://en.wikipedia.org/wiki/Enterprise_service_bus">ESB</a>, a <a href="https://en.wikipedia.org/wiki/Message_queue">MQ solution</a>,
+					a black box third party application, etc.
+				</p>
+
+				<h4>Clustering / horizontal scaling</h4>
+				<p>
+					As images can be spun up at any time, similar to other virtual machines,
+					you can scale your applications or databases horizontally easily. 
+					But with Docker this will be a much more lightweight burden 
+					on the CPU and memory requirements.
+				</p>
+
+				<h4>Exploration</h4>
+				<p>
+					If just testing out some new technology,
+					or installing an application you don't trust 
+					on your host computer,
+					then just create a Docker image of it.
+					Although I probably would investigate it with Vagrant initially.
+				</p>
+
+				<!--
 				<a name="mydocker"></a>
 				<h3>My Docker</h3>
 				<p>
@@ -944,25 +1022,10 @@ end</code>
 				<p>
 					And now I am testing scaling applications with CoreOS.
 				</p>
+				-->
 
-				<a name="continuous"></a>
-				<h3>Continuous Delivery</h3>
-				<p>
-					One good aspect of Docker container images,
-					is that not just your application binary
-					is part of the delivery but the entire container image.
-					So no risk of wrong Java version being installed, etc.
-				</p>
-				<p>
-					You could (and should) have achieve this already
-					by <a href="http://flurdy.com/docs/ec2/ami/">baking AWS AMIs</a> containing your binary or <a href="https://github.com/sbt/sbt-native-packager">creating .deb packages</a>.
-					But a Docker image is a lot smaller,
-					so quicker to continuously build, ready to ship and scale.
-				</p>
-
-
-				<a name="hosting"></a>
-				<h3>Hosting</h3>
+				<a name="dockerhosting"></a>
+				<h3>Docker Hosting</h3>
 
 				<a name="digitalocean"></a>
 				<h4>DigitalOcean</h4>
@@ -1006,6 +1069,7 @@ end</code>
 				<ul>
 					<li><a href="https://www.docker.com/">Docker</a></li>
 					<li><a href="https://hub.docker.com/">Docker Hub</a></li>
+					<li><a href="https://registry.hub.docker.com/">Docker Hub Registry</a></li>
 					<li><a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a></li>
 					<li><a href="http://lukebond.ghost.io/getting-started-with-coreos-and-docker-using-vagrant/">getting-started-with-coreos-and-docker-using-vagrant</a></li>
 					<li><a href="http://nathanleclaire.com/blog/2014/07/12/10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy/">10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy</a></li>
