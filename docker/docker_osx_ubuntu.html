@@ -43,14 +43,14 @@
 					<li><a href="http://flurdy.com">flurdy</a></li>
 					<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
 					<li><a href="http://blog.flurdy.com">blog</a></li>
-					<li><a href="#contact">feedback</a></li>
-					<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+					<!-- <li><a href="#contact">feedback</a></li> -->
+					<li><a href="http://shirts.flurdy.com">shirts</a></li>
 					<li><a href="/docs/">more docs</a></li>
 				</ul>
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 24th Sep 2014.
+				Last updated: 27th Sep 2014.
 			</div>
 			<!-- docker doc leaderboard -->
 			<ins class="adsbygoogle"
@@ -81,10 +81,12 @@
 						<li><a href="#vagrantcoreos">Vagrant + CoreOS</a></li>
 						<li>
 							<a href="#baseubuntu">Docker + Ubuntu</a>
+							<!-- 
 							<ul>
 								<li><a href="#dockerubuntu">Docker's Ubuntu</a></li>
 								<li><a href="#phusionubuntu">Phusion's Ubuntu</a></li>
-							</ul>
+							</ul> 
+							-->
 						</li>
 						<li><a href="#docker">Initial Docker</a></li>
 						<li>
@@ -134,7 +136,7 @@
 				</p>
 				<p>
 					Virtualisation is nothing new.
-					Mainframes has split virtually into many systems per real systems for decades.
+					Mainframes has split virtually into many systems per real server for decades.
 					<a href="http://www.vmware.com">VMWare</a> have created a huge enterprise selling many solutions for virtualising servers and desktops.
 					Sun then Oracle developed the popular open source software <a href="http://virtualbox.org">VirtualBox</a>.
 					<a href="http://www.xenproject.org">Xen</a> powers <a href="http://amazon.com">Amazon</a>'s <a href="http://aws.amazon.com/ec2">AWS EC2</a> cloud servers that host a huge portion of the worlds internet servers.
@@ -339,7 +341,7 @@ end</code>
 						alt="ship shipping ship shipping shipping ships" title="" /></a>
 
 				<a name="dockerubuntu"></a>
-				<h3>Docker's Ubuntu </h3>
+				<h4>Docker's Ubuntu </h4>
 				<p>
 					Docker's own <a href="https://registry.hub.docker.com/_/ubuntu/">default base image</a> is the standard <a href="http://canonical.com">Canonical</a> Ubuntu minimal image.
 				</p>
@@ -352,7 +354,7 @@ end</code>
 				</p>
 
 				<a name="phusionubuntu"></a>
-				<h3>Phusion's Ubuntu</h3>
+				<h4>Phusion's Ubuntu</h4>
 				<p>
 					<a href="http://phusion.github.io/baseimage-docker/">Phusion has adapted Ubuntu</a> to be more
 					compatible with Docker.
@@ -840,16 +842,19 @@ end</code>
 				<h4>Dockerfile</h4>
 				<p>
 					As shown earlier <a href="http://docs.docker.com/reference/builder/">Dockerfile</a> describes how to build a container image.
-					Much like a <em>Vagrantfile</em> with an included provisioner e.g. <a href="http://puppetlabs.com/">Puppet</a>.
+					Much like a <em>Vagrantfile</em> with an included provisioner (e.g. <a href="http://puppetlabs.com/">Puppet</a>).
 				</p>
 				<p>
-					There are many example Dockerfiles, on <a href="http://github.com/search?q=Dockerfile">Github</a>, on Docker's own <a href="https://registry.docker.com">hub registry</a>.
+					Mostly you copy others or your own Dockerfiles and use them as a template to extend. 
+					Combined with copying others or your own images to base the Dockerfile on.
 				</p>
-				<p>
-					I have a few public Dockerfiles I wrote myself, <a href="http://github.com/flurdy/Dockerfiles">github.com/flurdy/Dockerfiles</a>, for simple apache web site, java 6, 7 or 8, and maybe some more. 
-					They are mostly used as a base/template for application specific Dockerfiles.
-				</p>
-
+				<ul>
+					<li><a href="http://docs.docker.com/reference/builder/">Dockerfile reference</a></li>
+					<li><a href="https://registry.hub.docker.com">registry.hub.docker.com</a></li>
+					<li><a href="http://dockerfile.github.io/">dockerfile.github.io</a></li>
+					<li><a href="http://github.com/flurdy/Dockerfiles">github.com/flurdy/Dockerfiles</a></li>
+					<li><a href="http://github.com/search?q=Dockerfile">github.com/search?q=Dockerfile</a></li>
+				</ul>
 
 				<h4>Memory</h4>
 				<p>
@@ -1037,6 +1042,11 @@ end</code>
 
 				<a name="dockerhosting"></a>
 				<h3>Docker Hosting</h3>
+				<p>
+					Docker opens up some exciting possibilities for rolling your own dynamic virtualised hosting, 
+					also known as a private cloud and as IAAS and PAAS.
+					However the major public cloud / IAAS providers do also support Docker. 
+				</p>
 
 				<a name="digitalocean"></a>
 				<h4>DigitalOcean</h4>
@@ -1128,8 +1138,8 @@ https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 						<li><a href="http://flurdy.com">flurdy</a></li>
 						<li><a href="http://twitter.com/flurdy">@flurdy</a></li>
 						<li><a href="http://blog.flurdy.com">blog</a></li>
-						<li><a href="#contact">feedback</a></li>
-						<li><a href="http://shirts.flurdy.com">donate/shirts</a></li>
+						<!-- <li><a href="#contact">feedback</a></li> -->
+						<li><a href="http://shirts.flurdy.com">shirts</a></li>
 						<li><a href="/docs/">more docs</a></li>
 					</ul>
 				</nav>
