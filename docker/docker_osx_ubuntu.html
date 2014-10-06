@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Docker with OSX and Ubuntu</title>
@@ -50,7 +51,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 27th Sep 2014.
+				Last updated: 6th Oct 2014.
 			</div>
 			<!-- docker doc leaderboard -->
 			<ins class="adsbygoogle"
@@ -544,7 +545,7 @@ end</code>
 				<p>
 					This creates an image we can recreate, base other images on etc.
 				</p>
-				<code><span class="host">dockerhost$</span> docker images</code>
+				<code><span class="host">dockerhost$</span> docker images | head</code>
 				<table class="output">
 					<tbody>
 						<tr>
@@ -635,7 +636,7 @@ end</code>
 					Lets create an image of this Apache Dockerfile.
 				</p>
 				<code><span class="host">dockerhost$</span> docker build -t mycoolimages/apache .;</code>
-				<code><span class="host">dockerhost$</span> docker images</code>
+				<code><span class="host">dockerhost$</span> docker images | head</code>
 				<p>
 				</p>
 				<table class="output">
@@ -811,6 +812,12 @@ end</code>
 					Docker has also made environment variables available for you applications to use.
 				</p>
 
+				<p>
+					Once you are linked up,
+					there is a further abstraction called 
+					<a href="http://docs.docker.com/articles/ambassador_pattern_linking/">Ambassador Pattern Linking</a>.					
+				</p>
+
 				<h4>Kill</h4>
 				<code><span class="host">dockerhost$</span> docker kill <em>992sasd</em></code>
 				<p>
@@ -892,7 +899,7 @@ end</code>
 				without reloading Vagrant.
 				</p>
 				<code class="file">
-					for i in 49800..49900<br/>
+					for i in 49900..49999<br/>
 						<span class="indent1"/>config.vm.network "forwarded_port", guest: i, host: i<br/>
 						end
 				</code>
@@ -1107,6 +1114,8 @@ end</code>
 					<li><a href="
 https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 					<li><a href="http://www.fig.sh">Fig</a></li>
+					<li><a href="https://github.com/progrium/dokku">Dokku</a></li>
+					<li><a href="http://blog.clearbit.co/ec2-heroku">Create your own Heroku</a></li>
 					<li><a href="http://blog.xen.org/index.php/2014/09/08/xen-docker-made-for-each-other">xen-docker-made-for-each-other</a></li>
 					<li><a href="http://www.kstaken.com/blog/2013/07/06/how-to-run-apache-under-docker/">how-to-run-apache-under-docker</a></li>
 					<li><a href="http://blog.trifork.com/2013/08/15/using-docker-to-efficiently-create-multiple-tomcat-instances/">using-docker-to-efficiently-create-multiple-tomcat-instances</a></li>
