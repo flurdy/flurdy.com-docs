@@ -63,10 +63,11 @@
 			</script>
 			<div id="starboard">
 				<nav>
+					<h5>Contents</h5>
 					<ul>
 						<li><a href="#top">Why Docker</a></li>
 						<li>
-							<a href="">OSX + Docker</a>
+							<a href="#osxdocker">OSX + Docker</a>
 							<ul>
 								<li><a href="#boot2docker">boot2docker</a></li>
 								<li><a href="#osxvagrant">OSX + Vagrant</a></li>
@@ -802,9 +803,9 @@ end</code>
 				<p>
 					Docker can <a href="http://docs.docker.com/userguide/dockerlinks/">easily link these together</a>.
 				</p>
-				<code class="wide"><span class="host">dockerhost$</span> docker run -p 5432:5432 -name mydb -d mydbimage</code>
-				<code class="wide"><span class="host">dockerhost$</span> docker run -p 8080:80 -name myapp -link mydb:db -d myappimage</code>
-				<code class="wide"><span class="host">dockerhost$</span> docker run -p 80:80 -name myweb -link myapp:app -d mywebimage</code>
+				<code class="wide"><span class="host">dockerhost$</span> docker run -p 5432:5432 --name mydb -d mydbimage</code>
+				<code class="wide"><span class="host">dockerhost$</span> docker run -p 8080:80 --name myapp --link mydb:db -d myappimage</code>
+				<code class="wide"><span class="host">dockerhost$</span> docker run -p 80:80 --name myweb --link myapp:app -d mywebimage</code>
 
 				<p>
 					Note the <em>name</em> and <em>link</em> arguments.
@@ -816,6 +817,16 @@ end</code>
 					Once you are linked up,
 					there is a further abstraction called 
 					<a href="http://docs.docker.com/articles/ambassador_pattern_linking/">Ambassador Pattern Linking</a>.					
+				</p>
+
+				<h4>Restart</h4>
+				<code><span class="host">dockerhost$</span> docker start <em>992sasd</em></code>
+				<p>
+					Restarts a stopped container.
+				</p>
+				<p>
+					Instead of <em>CONTAINER ID</em>,
+					you can also use the names associated with a container.
 				</p>
 
 				<h4>Kill</h4>
@@ -944,6 +955,18 @@ end</code>
 				</p>
 				<code class="wide"><span class="host">anyhost$</span> export DOCKER_HOST=tcp://localhost:4243;</code>
 				<code class="wide"><span class="host">anyhost$</span> docker version</code>
+
+				<h4>Private registry</h4>
+				<p>
+					You may not want to upload all your images to the <a href="http://registry.hub.docker.com">public Docker registry</a>.
+					You may have experimental builds, builds containing sensitive data, etc. 
+					For that <a href="https://github.com/docker/docker-registry">Docker provides a registry</a> you can run locally.
+				</p>
+				<p>
+					As it just runs as another Docker container, please remember to export and backup your images.
+				</p>	
+				<code><span class="host">dockerhost$</span> docker export <em>myregistry</em> &gt;&gt; /<em>vagrant</em>/registry.tar</code>
+
 
 
 				<a name="whatdocker"></a>
@@ -1120,6 +1143,10 @@ https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 					<li><a href="http://www.kstaken.com/blog/2013/07/06/how-to-run-apache-under-docker/">how-to-run-apache-under-docker</a></li>
 					<li><a href="http://blog.trifork.com/2013/08/15/using-docker-to-efficiently-create-multiple-tomcat-instances/">using-docker-to-efficiently-create-multiple-tomcat-instances</a></li>
 					<li><a href="http://docs.docker.com/articles/basics/">Docker basics</a></li>
+					<li><a href="http://tersesystems.com/2013/11/20/building-a-development-environment-with-docker/">building-a-development-environment-with-docker</a></li>
+					<li><a href="https://github.com/docker/docker-registry">docker-registry</a></li>
+					<li><a href="http://shipyard-project.com/">shipyard</a></li>
+					<li><a href="https://crosbymichael.com/dockerfile-best-practices.html">dockerfile-best-practices</a></li>
 					<!--
 					<li><a href=""></a></li>
 					-->
