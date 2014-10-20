@@ -241,7 +241,7 @@
 					so you may want to directly download more up to date versions
 					of <a href="https://www.virtualbox.org/wiki/Downloads">Virtualbox</a> and <a href="http://www.vagrantup.com/downloads.html">Vagrant</a>.
 				</p>
-				<code><span class="host">ubuntuhost$</span> sudo apt-get install virtualbox</code>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get install virtualbox;</code>
 				<code><span class="host">ubuntuhost$</span> sudo apt-get install vagrant</code>
 				<p>Make sure you have the <a href="https://help.ubuntu.com/community/Repositories/Ubuntu">multiverse repository</a> enabled.</p>
 
@@ -258,7 +258,7 @@
 					that enable snapshotting vagrant boxes.
 				</p>
 
-				<code><span class="host">anyhost$</span> vagrant init ubuntu/trusty64;</code>
+				<code><span class="host">anyhost$</span> vagrant init ubuntu/trusty64</code>
 				<p>
 					This downloads a Vagrant Ubuntu 14.04 image,
 					and initialises a Vagrant instance for you.
@@ -292,8 +292,14 @@ VAGRANTFILE_API_VERSION = "2"<br />
 end</code>
 
 				<p>
-					This sets the provisioner as Docker and sets a hostname.
-					It disabled guest additions updates for this specific instance.
+					This sets the provisioner as Docker,
+					so Docker is installed and ready to use.
+					The Docker IP address will be displayed when logging in.
+					Vagrant will also resume all Docker containers when the VM restarts.
+				</p>
+				<p>
+					It sets a recognisable hostname.
+					Disabling guest additions updates for this specific instance is advisable.
 					It also includes examples for syncing folders
 					and increasing the allocated memory.
 				</p>
@@ -782,6 +788,7 @@ end</code>
 				<p>
 					If you use boot2docker you can't share paths easily.
 					You have to <a href="https://github.com/boot2docker/boot2docker#folder-sharing">set up a volume container</a>.
+					Docker are <a href="https://blog.docker.com/2014/10/docker-1-3-signed-images-process-injection-security-options-mac-shared-directories/">working on improving OSX volume sharing</a>.
 				</p>
 
 
@@ -864,6 +871,14 @@ end</code>
 					<li><a href="http://github.com/flurdy/Dockerfiles">github.com/flurdy/Dockerfiles</a></li>
 					<li><a href="http://github.com/search?q=Dockerfile">github.com/search?q=Dockerfile</a></li>
 				</ul>
+				<p>
+					Once familiar you will start to make sure the start of many Dockerfiles are exactly the same,
+					as Docker will then cache and reuse build steps up until the files differ.
+				</p>
+				<p>
+					Also chaining each <em>RUN</em> step to create fewer Docker layers will be appreciated,
+					and cleaning up each step to minimise image size.
+				</p>
 
 				<h4>Memory</h4>
 				<p>
@@ -915,6 +930,9 @@ end</code>
 					Note you can also find out Docker container's ip if needed.
 				</p>
 				<code><span class="host">dockerhost$</span> docker inspect <em>12345abcd</em> | grep IpAddress</code>
+				<p>
+					Vagrant will also display the Docker main IP network bridge address on logging in.
+				</p>
 
 				<h4>Dotfiles</h4>
 				<p>
@@ -947,16 +965,34 @@ end</code>
 				<code class="wide"><span class="host">anyhost$</span> export DOCKER_HOST=tcp://localhost:4243;</code>
 				<code class="wide"><span class="host">anyhost$</span> docker version</code>
 
+				<h4>Backup and share</h4>
+				<p>
+					To save a local image (not container) for purpose of backup, and to share with others.
+					Using <em>save</em> will retain layers and history of the image.
+				</p>
+				<code><span class="host">dockerhost$</span> docker save <em>abc12345</em> &gt; abc.tar</code>
+				<p> 
+					You can load it into Docker from anywhere.
+				</p>
+				<code><span class="host">dockerhost$</span> docker load &lt; <em>abc.tar</em></code>
+				<p>
+					Alternatively using <em>export</em> will squash all layers and remove historic data from a container (not image).
+				</p>
+				<code><span class="host">dockerhost$</span> docker export <em>abcs12345</em> &gt;&gt; <em>abc12345.tar</em></code>
+				<p>
+					This will create a smaller size footprint for the image if you reimport the exported image.
+				</p>
+				<code><span class="host">dockerhost$</span> docker export <em>abcs12345</em> | docker import - <em>myabc</em></code>
+
 				<h4>Private registry</h4>
 				<p>
 					You may not want to upload all your images to the <a href="http://registry.hub.docker.com">public Docker registry</a>.
 					You may have experimental builds, builds containing sensitive data, etc. 
-					For that <a href="https://github.com/docker/docker-registry">Docker provides a registry</a> you can run locally.
 				</p>
 				<p>
+					For that <a href="https://github.com/docker/docker-registry">Docker provides a registry</a> you can run locally.
 					As it just runs as another Docker container, please remember to export and backup your images.
 				</p>	
-				<code><span class="host">dockerhost$</span> docker export <em>myregistry</em> &gt;&gt; /<em>vagrant</em>/registry.tar</code>
 
 
 
