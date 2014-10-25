@@ -6,7 +6,6 @@
 	<meta name="keyword" content="docker,osx,ubuntu,vagrant,container,coreos,ubuntu,virtualisation,virtualization"/>
 	<meta name="description" content="Using Docker on OSX, Ubuntu or CoreOS, natively, with Vagrant or with boot2docker"/>
 	<link href="docs.css" rel="stylesheet" type="text/css" />
-	<!-- link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" -->
 	<link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
 	<style>
 	</style>
@@ -50,7 +49,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 18th Oct 2014.
+				Last updated: 25th Oct 2014.
 			</div>
 			<!-- docker doc leaderboard -->
 			<ins class="adsbygoogle"
@@ -117,6 +116,18 @@
 			</div>
 			<div id="cargo">
 
+				<h4>TL;DR</h4>
+
+				<p>
+					How to install and configure Docker on OSX and Ubuntu,
+					using Docker natively and within Vagrant.
+					What are the basic Docker commands,
+					then more useful example of how to build Docker images,
+					and includes many handy Docker tips.
+					In addition some suggestions for what to use Docker with
+					and how to host your containers.
+				</p>
+
 				<a name="why"></a>
 				<h3>Why Docker</h3>
 				<p>
@@ -157,6 +168,12 @@
 					But they resume really quickly.
 				</p>
 				<p>
+					A lot of this howto is based on
+					<a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a>
+					by <a href="https://twitter.com/fideloper">Chris Fidao</a>.
+				</p>
+				<!--
+				<p>
 					This document is as a developer how I set up and use Docker to develop my applications.
 					It describes setting up with OSX and Ubuntu,
 					using Docker natively and within Vagrant.
@@ -165,6 +182,7 @@
 					<a href="https://serversforhackers.com/articles/2014/03/20/getting-started-with-docker/">getting-started-with-docker</a>
 					by <a href="https://twitter.com/fideloper">Chris Fidao</a>.
 				</p>
+				-->
 
 				<a name="osxdocker"></a>
 				<h3>OSX + Docker</h3>
@@ -830,7 +848,7 @@ end</code>
 				<h4>Kill</h4>
 				<code><span class="host">dockerhost$</span> docker kill <em>992sasd</em></code>
 				<p>
-					Kills the container immediately.
+					Kills a running container immediately.
 				</p>
 				<h4>Remove</h4>
 				<code><span class="host">dockerhost$</span> docker rm <em>abcd1234</em></code>
@@ -846,22 +864,13 @@ end</code>
 					Removes an image.
 				</p>
 
-				<h4>Supervisor</h4>
-				<p>
-					If you want to run multiple processes in the same container,
-					or manage process lifecycle and automatic restarts,
-					then a
-					<a href="http://docs.docker.com/articles/using_supervisord/">Supervisor daemon</a>
-					is needed.
-				</p>
-
 				<h4>Dockerfile</h4>
 				<p>
 					As shown earlier <a href="http://docs.docker.com/reference/builder/">Dockerfile</a> describes how to build a container image.
 					Much like a <em>Vagrantfile</em> with an included provisioner (e.g. <a href="http://puppetlabs.com/">Puppet</a>).
 				</p>
 				<p>
-					Mostly you copy others or your own Dockerfiles and use them as a template to extend. 
+					Mostly you copy others or your own Dockerfiles and use them as a template to extend.
 					Combined with copying others or your own images to base the Dockerfile on.
 				</p>
 				<ul>
@@ -878,6 +887,15 @@ end</code>
 				<p>
 					Also chaining each <em>RUN</em> step to create fewer Docker layers will be appreciated,
 					and cleaning up each step to minimise image size.
+				</p>
+
+				<h4>Supervisor</h4>
+				<p>
+					If you want to run multiple processes in the same container,
+					or manage process lifecycle and automatic restarts,
+					then a
+					<a href="http://docs.docker.com/articles/using_supervisord/">Supervisor daemon</a>
+					is needed.
 				</p>
 
 				<h4>Memory</h4>
@@ -992,7 +1010,11 @@ end</code>
 				<p>
 					For that <a href="https://github.com/docker/docker-registry">Docker provides a registry</a> you can run locally.
 					As it just runs as another Docker container, please remember to export and backup your images.
-				</p>	
+				</p>
+				<p>
+					Commercial offerings are available via <a href="http://quay.io">Quay.io</a>.
+					Eventually there will be a sea of alternatives (<a href="http://github.com/flurdy/gantry">Gantry</a>...) similar to today's options for hosting Git repositories.
+				</p>
 
 
 
@@ -1072,30 +1094,6 @@ end</code>
 					Although I probably would investigate it with Vagrant initially.
 				</p>
 
-				<!--
-				<a name="mydocker"></a>
-				<h3>My Docker</h3>
-				<p>
-					I use Docker mostly for development,
-					and only experiment with actual hosting.
-					None of my important applications run
-					Docker in production. Yet.
-				</p>
-				<p>
-					I have containers for every tiny website I run,
-					with the folder added as volumes locally.
-					Containers for every Scala Play! and Akka application,
-					containers for Postgresql, Cassandra and Redis, etc.
-					I can easily and quickly swap which database copy I connect to, from integration to staging, to client A to client B.
-				</p>
-				<p>
-					I have development containers of each application
-					but also some production copy containers to compare locally.
-				</p>
-				<p>
-					And now I am testing scaling applications with CoreOS.
-				</p>
-				-->
 
 				<a name="dockerhosting"></a>
 				<h3>Docker Hosting</h3>
@@ -1174,6 +1172,7 @@ https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 					<li><a href="https://github.com/docker/docker-registry">docker-registry</a></li>
 					<li><a href="http://shipyard-project.com/">shipyard</a></li>
 					<li><a href="https://crosbymichael.com/dockerfile-best-practices.html">dockerfile-best-practices</a></li>
+					<li><a href="http://quay.io">Quay.io</a></li>
 					<!--
 					<li><a href=""></a></li>
 					-->
