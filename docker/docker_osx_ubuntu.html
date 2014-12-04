@@ -49,7 +49,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 13th Nov 2014.
+				Last updated: 3rd Dec 2014.
 			</div>
 			<!-- docker doc leaderboard -->
 			<ins class="adsbygoogle"
@@ -86,11 +86,11 @@
 						<li>
 							<a href="#baseubuntu">Docker + Ubuntu</a>
 							<ul>
-							<!-- 
+							<!--
 								<li><a href="#dockerubuntu">Docker's Ubuntu</a></li>
 							-->
 								<li><a href="#phusionubuntu">Phusion's Ubuntu</a></li>
-							</ul> 
+							</ul>
 						</li>
 						<li><a href="#docker">Initial Docker</a></li>
 						<li><a href="#usefuldocker">Useful Docker</a></li>
@@ -241,10 +241,23 @@
 					With Ubuntu you do not need to abstract via a VM
 					as Docker works directly.
 					Though note that there is an old unrelated package
-					that is already called docker.
+					that is already called docker so you need to install docker.io.
 				</p>
 				<code><span class="host">ubuntuhost$</span> sudo apt-get update;</code>
 				<code><span class="host">ubuntuhost$</span> sudo apt-get install docker.io</code>
+
+				<p>
+					If you want a more up to date version of docker then instead add their own apt repository and install lxc-docker.
+				</p>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get remove docker.io;</code>
+				<code class=""><span class="host">ubuntuhost$</span> sudo apt-key adv \<br/>
+					--keyserver hkp://keyserver.ubuntu.com:80 \<br/>
+					--recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9;</code>
+				<code class=""><span class="host">ubuntuhost$</span> sudo sh -c \<br/>
+					"echo deb https://get.docker.io/ubuntu docker main &gt;\<br/>
+					/etc/apt/sources.list.d/docker.list";</code>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get update;</code>
+				<code><span class="host">ubuntuhost$</span> sudo apt-get install lxc-docker</code>
 
 				<a name=""></a>
 				<h4>Ubuntu + Vagrant</h4>
@@ -796,11 +809,16 @@ end</code>
 					available as <em>/var/www</em> inside Vagrant.
 				</p>
 				<p>
-					Obviously if you use Docker natively you 
+					Obviously if you use Docker natively you
 					can share any path directly as a volume.
 				</p>
 				<p>
-					Another option is to <a href="http://docs.docker.com/reference/builder/#volume">hardcode volumes</a> inside the <em>Dockerfile</em>.	
+					Another option is to <a href="http://docs.docker.com/reference/builder/#volume">hardcode volumes</a> inside the <em>Dockerfile</em>.
+				</p>
+				<p>
+					A third option is <a href="http://docs.docker.com/userguide/dockervolumes/">volume containers</a>,
+					where you share the same volumes with other containers.
+					Such as sharing for example <a href="http://blog.flurdy.com/2014/11/dont-download-internet-share-maven-ivy-docker.html">maven repositories</a>.
 				</p>
 				<p>
 					If you use boot2docker you can't share paths easily.
@@ -830,8 +848,8 @@ end</code>
 
 				<p>
 					Once you are linked up,
-					there is a further abstraction called 
-					<a href="http://docs.docker.com/articles/ambassador_pattern_linking/">Ambassador Pattern Linking</a>.					
+					there is a further abstraction called
+					<a href="http://docs.docker.com/articles/ambassador_pattern_linking/">Ambassador Pattern Linking</a>.
 				</p>
 
 				<h4>Restart</h4>
@@ -988,7 +1006,7 @@ end</code>
 					Using <em>save</em> will retain layers and history of the image.
 				</p>
 				<code><span class="host">dockerhost$</span> docker save <em>abc12345</em> &gt; abc.tar</code>
-				<p> 
+				<p>
 					You can load it into Docker from anywhere.
 				</p>
 				<code><span class="host">dockerhost$</span> docker load &lt; <em>abc.tar</em></code>
@@ -1004,7 +1022,7 @@ end</code>
 				<h4>Private registry</h4>
 				<p>
 					You may not want to upload all your images to the <a href="http://registry.hub.docker.com">public Docker registry</a>.
-					You may have experimental builds, builds containing sensitive data, etc. 
+					You may have experimental builds, builds containing sensitive data, etc.
 				</p>
 				<p>
 					For that <a href="https://github.com/docker/docker-registry">Docker provides a registry</a> you can run locally.
@@ -1012,15 +1030,30 @@ end</code>
 				</p>
 				<p>
 					Commercial offerings are available via <a href="http://quay.io">Quay.io</a>.
-					Eventually there will be a sea of alternatives (<a href="http://github.com/flurdy/gantry">Gantry</a>...) similar to today's options for hosting Git repositories.
+					Eventually there will be a sea of alternatives similar to today's multiple options for hosting Git repositories.
 				</p>
 
-
+				<h4>Tools</h4>
+				<p>
+					Tooling for Docker is also a blossoming set of options.
+				</p>
+				<p>
+					<a href="http://fig.sh">Fig</a>, now part of Docker, and is very easy to use
+					orchestration of building, launching and linking Docker containers.
+					<a href="http://kubernetes.io/">Kubernetes</a>, <a href="https://github.com/citadel/citadel">Citadel</a>. and others allow clustering.
+					<a href="http://panamax.io/">Panamax</a>, <a href="https://github.com/clusterhq/flocker">Flocker</a> and <a href="http://shipyard-project.com/">Shipyard</a> all lets you compose, deploy and manage Docker containers in different ways.
+					<a href="https://github.com/progrium/dokku">Dokku</a> lets you easily deploy
+					you Git based application.
+					CoreOS has a  <a href="https://github.com/coreos">suite of applications</a> to extend their support for Docker, and now also <a href="https://github.com/coreos/rocket">Rocket</a>.
+				</p>
+				<p>
+					Every week I find new amazing tools for Docker.
+				</p>
 
 				<a name="whatdocker"></a>
 				<h3>What to Docker</h3>
 				<p>
-					Building on what you would often use virtual machines 
+					Building on what you would often use virtual machines
 					and Vagrant for already.
 				</p>
 
@@ -1032,9 +1065,9 @@ end</code>
 					With source code folders added as volumes locally.
 				</p>
 				<p>
-					You can use <em>linking</em> as explained earlier to 
+					You can use <em>linking</em> as explained earlier to
 					run a complex system of multiple containers locally.
-					Also using the previously mentioned idea of adding Docker IPs host files 
+					Also using the previously mentioned idea of adding Docker IPs host files
 					can make the separation clearer and assist
 					in virtual hosting and session cookie etc.
 				</p>
@@ -1044,12 +1077,12 @@ end</code>
 					One good aspect of Docker container images,
 					is that not just your application binary
 					is part of the delivery but the entire fully provisioned container image.
-					So no risk of wrong Java version being installed, 
+					So no risk of wrong Java version being installed,
 					no risk that staging and production environments are different,
 					etc.
 				</p>
 				<p>
-					You could achieve this already 
+					You could achieve this already
 					by e.g. <a href="http://flurdy.com/docs/ec2/ami/">baking AWS AMIs</a> containing your binary or <a href="https://github.com/sbt/sbt-native-packager">creating .deb packages</a>.
 					But a Docker image is a lot smaller,
 					so quicker to continuously build, ready to ship and scale.
@@ -1079,15 +1112,15 @@ end</code>
 				<h4>Clustering / horizontal scaling</h4>
 				<p>
 					As images can be spun up at any time, similar to other virtual machines,
-					you can scale your applications or databases horizontally easily. 
-					But with Docker this will be a much more lightweight burden 
+					you can scale your applications or databases horizontally easily.
+					But with Docker this will be a much more lightweight burden
 					on the CPU and memory requirements.
 				</p>
 
 				<h4>Exploration</h4>
 				<p>
 					If just testing out some new technology,
-					or installing an application you don't trust 
+					or installing an application you don't trust
 					on your host computer,
 					then just create a Docker image of it.
 					Although I probably would investigate it with Vagrant initially.
@@ -1097,9 +1130,9 @@ end</code>
 				<a name="dockerhosting"></a>
 				<h3>Docker Hosting</h3>
 				<p>
-					Docker opens up some exciting possibilities for rolling your own dynamic virtualised hosting, 
+					Docker opens up some exciting possibilities for rolling your own dynamic virtualised hosting,
 					also known as a private cloud and as IAAS and PAAS.
-					However the major public cloud / IAAS providers do also support Docker. 
+					However the major public cloud / IAAS providers do also support Docker.
 				</p>
 
 				<a name="digitalocean"></a>
