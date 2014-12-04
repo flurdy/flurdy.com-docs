@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2014-10-28</h6>
+<h6>Last Update: 2014-12-03</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -1115,11 +1115,17 @@ net             all             DROP            info
 all             all             REJECT          info</code>
 	</p>
 	<p>
-		For safety in case it goes down.
-	<code>sudo cp /usr/share/doc/shorewall/default-config/routestopped /etc/shorewall/;
+		For safety in case it goes down, you need a way for your own traffic to route to the server instead of denying everything.
+		Older versons of Shorwall will use <i>routestopped</i> file.
+		<code>sudo cp /usr/share/doc/shorewall/default-config/routestopped /etc/shorewall/;
 sudo vi /etc/shorewall/routestopped</code>
 		<code class="document">eth0            0.0.0.0                 routeback</code>
 		You may put in a netmask of your ip range if you are more concerned.
+	</p>
+	<p>
+		Newer version has replaced that with a <i>stoppedrules</i> file.
+		<code class="document">ACCEPT		eth0		-
+ACCEPT		-		eth0</code>
 	</p>
 	<p>
 		Now for the main firewall rules.
