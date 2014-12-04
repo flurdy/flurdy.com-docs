@@ -28,7 +28,7 @@
 	<p>
 		Easy to follow howto on setting up a mail server
 		with unlimited users and domains,
-		with IMAP/Pop access, anti-spam, anti-virus,
+		with IMAP access, anti-spam, anti-virus,
 		secure authentication, encrypted traffic,
 		web mail interface and more.
 	</p>
@@ -132,7 +132,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				<li><p><a href="#config-simple-firewall">Firewall (Shorewall)</a></p></li>
 				<li><p><a href="#config-simple-database">Database (MySQL)</a></p></li>
 				<li><p><a href="#config-simple-mta">MTA (Postfix)</a></p></li>
-				<li><p><a href="#config-simple-imap">Pop/IMAP (Courier)</a></p></li>
+				<li><p><a href="#config-simple-imap">IMAP (Courier)</a></p></li>
 				<li><p><a href="#config-adv-content">Content Checks (amivisd-new)</a></p>
 					<ul>
 						<li><p><a href="#config-adv-spam">Anti-Spam(SpamAssassin)</a></p></li>
@@ -199,7 +199,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 					<li><p><a href="#ext_list">White/Black lists</a></p></li>
 					<li><p><a href="#ext_pgp">PGP &amp; S/MIME</a></p></li>
 					<li><p><a href="#ext_reloc">Relocation notice</a></p></li>
-					<li><p><a href="#ext_pop">Pop-before-SMTP</a></p></li>
+					<li><p><a href="#ext_pop">POP</a></p></li>
+					<li><p><a href="#ext_popbefore">Pop-before-SMTP</a></p></li>
 					<li><p><a href="#ext_reply">Auto Reply</a></p></li>
 					<li><p><a href="#ext_block">Block Addresses</a></p></li>
 					<li><p><a href="#ext_throttle">Throttle Output</a></p></li>
@@ -1633,7 +1634,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 
 
 	<a name="config-simple-imap"></a>
-	<h3>Pop/IMAP</h3>
+	<h3>IMAP</h3>
 
 	<p>
 		A normal mail server will need IMAP,
@@ -1684,6 +1685,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<p>
 		Lastly you can have a look at the imapd file, but no changes is needed.
 		<code>vi /etc/courier/imapd</code>
+	</p>
+	<p>
+		Note please refer to the <a href="#ext_pop">POP section if you still need POP access</a>.
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
@@ -4102,6 +4106,19 @@ hosts=127.0.0.1</code>
 
 
 	<a name="ext_pop"></a>
+	<h3>POP</h3>
+	<p>
+		If you still need POP access to pull down email then simply:
+		<ul>
+			<li><p>Install the courier-pop* packages with apt-get</p></li>
+			<li><p>Enable insecure port 110 and/or secure port 995 in shorewall</p></li>
+			<li><p>Tweak pop configuration files in /etc/courier</p></li>
+		</ul>
+	</p>
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_popbefore"></a>
 	<h3>Pop-before-SMTP</h3>
 	<p>
 		If SASL didn't work, or you are using clients which
@@ -5234,13 +5251,16 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 		</p></li>
 		-->
 		<li><p>
-			2014-08-06: Added Sorting Office link
+			2014-12-04: Added small POP section.
+		</p></li>
+		<li><p>
+			2014-08-06: Added Sorting Office link.
 		</p></li>
 		<li><p>
 			2014-07-25: Tested every step with Ubuntu Trusty 14.04, and updated differences.
 		</p></li>
 		<li><p>
-			2014-05-31: Removed ec2 AMIs
+			2014-05-31: Removed ec2 AMIs.
 		</p></li>
 		<li><p>
 			2013-06-30: Added contribute section.
