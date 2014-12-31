@@ -49,7 +49,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 3rd Dec 2014.
+				Last updated: 31st Dec 2014.
 			</div>
 			<!-- docker doc leaderboard -->
 			<ins class="adsbygoogle"
@@ -95,6 +95,7 @@
 						<li><a href="#docker">Initial Docker</a></li>
 						<li><a href="#usefuldocker">Useful Docker</a></li>
 						<li><a href="#handydocker">Handy Docker</a></li>
+						<li><a href="#dockertools">Docker Tools</a></li>
 						<li><a href="#whatdocker">What to Docker</a></li>
 						<li><a href="#dockerhosting">Docker Hosting</a></li>
 						<li><a href="#reference">References</a></li>
@@ -193,35 +194,36 @@
 					to seamlessly run your Docker containers on OSX (and even Windows). This is the easiest option.
 				</p>
 				<p>
-					Alternatively you run a Vagrant VM with Linux as the container for all Docker images. This is my preferred option.
+					Alternatively you run a Vagrant VM with Linux as the container for all Docker images. 
 				</p>
 
 				<a name="boot2docker"></a>
 				<h4>boot2docker</h4>
 				<p>
-					Whilst you can install boot2docker via <a href="https://github.com/boot2docker/osx-installer/releases">normal OSX packages</a>,
-					I prefer <a href="http://brew.sh">Homebrew</a> (and <a href="http://caskroom.io">Cask</a>).
+					You can install boot2docker via <a href="https://github.com/boot2docker/osx-installer/releases">normal OSX packages</a>
+					or if you prefer via <a href="http://brew.sh">Homebrew</a> 
+					(and <a href="http://caskroom.io">Cask</a>).
 				</p>
 				<code><span class="host">osxhost$</span> brew install boot2docker;</code>
 				<code><span class="host">osxhost$</span> brew install docker</code>
 				<p>
-					This install docker in OSX,
+					This install Docker command line tools in OSX,
 					but relays all communications via a socket to the Docker daemon
 					running inside the boot2docker VM instead of the local machine.
 				</p>
+				<!--
 				<p>
 					To share local folders with boot2docker Docker images
 					there are <a href="https://github.com/boot2docker/boot2docker#folder-sharing">some complicated steps to set up a volume image</a>.
 				</p>
+				-->
 
 				<a name="osxvagrant"></a>
 				<h4>OSX + Vagrant</h4>
 				<p>
-					I prefer the Vagrant alternative
-					as you can easily share you local folders with your VM
-					and its containers.
-					And the host base is often very similar to my
-					application images which means smaller container sizes.
+					With the Vagrant alternative 
+					you can customise it more and have a layer of separation which might be comforting.
+					You can easily share you any local folders with your VM and its containers.
 				</p>
 				<code><span class="host">osxhost$</span> brew cask install virtualbox;</code>
 				<code><span class="host">osxhost$</span> brew install vagrant</code>
@@ -284,8 +286,8 @@
 				</p>
 				<code><span class="host">anyhost$</span> vagrant plugin install vagrant-vbox-snapshot</code>
 				<p>
-					Optionally <a href="https://github.com/dergachev/vagrant-vbox-snapshot">install this a plugin</a>
-					that enable snapshotting vagrant boxes.
+					Optionally <a href="https://github.com/dergachev/vagrant-vbox-snapshot">install a plugin</a>
+					that enable snapshotting of vagrant boxes.
 				</p>
 
 				<code><span class="host">anyhost$</span> vagrant init ubuntu/trusty64</code>
@@ -294,7 +296,7 @@
 					and initialises a Vagrant instance for you.
 				</p>
 				<p>
-					Edit the Vagrantfile it created in your folder.
+					Edit the <em>Vagrantfile</em> it created in your folder.
 				</p>
 				<code class="file"># -*- mode: ruby -*-<br />
 # vi: set ft=ruby :<br />
@@ -344,20 +346,20 @@ end</code>
 				<h4>Vagrant + CoreOS</h4>
 				<p>
 					<a href="http://core.os">CoreOS</a> is another Linux distribution that is designed to run and scale across multiple servers from the start.
-					CoreOS' philosophy views Docker as a core part of the offering.
+					CoreOS' philosophy views Docker as a core part of their offering.
 				</p>
 				<p>
-					I would suggest once you are comfortable with Ubuntu as host to try out CoreOS instead. Use <a href="https://github.com/coreos/coreos-vagrant">Vagrant with CoreOS</a> locally.
+					I would suggest once you are comfortable with Ubuntu as Docker host to try out CoreOS as well. Use <a href="https://github.com/coreos/coreos-vagrant">Vagrant with CoreOS</a> locally.
 				</p>
 				<p>
-					CoreOS is ideal as host only, you would probably still use Ubuntu as Docker base image
+					Note: CoreOS is ideal as host only, you would probably still use Ubuntu as Docker base image
 .				</p>
 
 				<a name="baseubuntu"></a>
 				<h3>Docker + Ubuntu</h3>
 				<p>
 					Your Docker applications will mostly be based of one base image.
-					In my case always Ubuntu.
+					In my case mostly Ubuntu, though sometimes <a href="http://debian.org">Debian</a>.
 				</p>
 
 				<h4>Recursive Ubuntu</h4>
@@ -394,6 +396,14 @@ end</code>
 					A majority of Docker examples and code you find online assumes this is the base image used.
 				</p>
 				<code><span class="host">dockerhost$</span> docker pull phusion/baseimage</code>
+
+				<a name="debian"></a>
+				<h4>Debian</h4>
+				<p>
+					Ubuntu is based on Debian, and the base Debian image is smaller than Ubuntu, 
+					which might make a difference.
+				</p>
+				<code><span class="host">dockerhost$</span> docker pull debian:wheezy</code>
 
 				<a name="docker"></a>
 				<h3>Basic Docker</h3>
@@ -770,12 +780,16 @@ end</code>
 				<a name="handydocker"></a>
 				<h3>Handy Docker</h3>
 
+				<p>
+					Some tips on how to make Docker even more useful.
+				</p>
+
 				<a name="volume"></a>
 				<h4>Folder volumes</h4>
 
 				<code>
 					<span class="host">dockerhost$</span> docker run \<br/>
-					-v /vagrant/www:/var/www:r \<br/>
+					-v /vagrant/www:/var/www:ro \<br/>
 					-v /vagrant/logs:/var/logs/apache2:rw \<br/>
 					-p 80:80 -d mycoolimages/apacheother
 				</code>
@@ -821,9 +835,11 @@ end</code>
 					Such as sharing for example <a href="http://blog.flurdy.com/2014/11/dont-download-internet-share-maven-ivy-docker.html">maven repositories</a>.
 				</p>
 				<p>
-					If you use boot2docker you can't share paths easily.
-					You have to <a href="https://github.com/boot2docker/boot2docker#folder-sharing">set up a volume container</a>.
+					If you use boot2docker you can't share any paths quite as easily.
 					Docker are <a href="https://blog.docker.com/2014/10/docker-1-3-signed-images-process-injection-security-options-mac-shared-directories/">working on improving OSX volume sharing</a>.
+					By default on OSX for example <em>/Users</em> are shared with your boot2docker VM
+					and its subfolders are ready to mounted via volumes.
+					Otherwise you have to <a href="https://github.com/boot2docker/boot2docker#folder-sharing">set up a volume container</a> for other paths.
 				</p>
 
 
@@ -968,6 +984,10 @@ end</code>
 				<p>
 					Vagrant will also display the Docker main IP network bridge address on logging in.
 				</p>
+				<p>
+					boot2docker VM's ip is available via:
+				</p>
+				<code><span class="host">osxhost$</span> boot2docker ip</code>
 
 				<h4>Dotfiles</h4>
 				<p>
@@ -980,7 +1000,7 @@ end</code>
 					If you need to add SSH keys to docker images,
 					then you are doing something wrong.
 					If it is to simple inspect files,
-					then there are other ways.
+					then there are <a href="http://docs.docker.com/reference/commandline/cli/#exec">other ways</a>.
 				</p>
 
 				<h4>Source control</h4>
@@ -1019,6 +1039,34 @@ end</code>
 				</p>
 				<code><span class="host">dockerhost$</span> docker export <em>abcs12345</em> | docker import - <em>myabc</em></code>
 
+				<a name="dockertools"></a>
+				<h3>Docker Tools</h3>
+				<p>
+					Tooling for Docker is also a blossoming set of options.
+				</p>
+				<p>
+					<a href="http://fig.sh">Fig</a> is now owned by Docker, and is a very easy to use
+					orchestration of building, launching and linking Docker containers.
+				</p>
+				<p>
+					Docker is also in a race to build their own ecosphere of tools around the core Docker engine.
+					Such as <a href="https://github.com/docker/swarm">Swarm</a> for clustering and  <a href="https://github.com/docker/machine">Machine</a> for container and VM management.
+				</p>
+				<p>
+					Google back their <a href="http://kubernetes.io/">Kubernetes</a> to manage clusters of
+					containers.
+					CoreOS has a  <a href="https://github.com/coreos">suite of applications</a> to extend their support for Docker, and now also <a href="https://github.com/coreos/rocket">Rocket</a> instead of Docker.
+				</p>
+				<p>
+					<a href="https://github.com/citadel/citadel">Citadel</a>,
+					<a href="http://panamax.io/">Panamax</a>, <a href="https://github.com/clusterhq/flocker">Flocker</a> and <a href="http://shipyard-project.com/">Shipyard</a> lets compose, deploy and/or manage Docker containers and clusters in many different ways.
+					<a href="https://github.com/progrium/dokku">Dokku</a> lets you easily deploy
+					your Git based applications into Docker containers.
+				</p>
+				<p>
+					Every week I find new amazing tools for Docker and containers in general.
+				</p>
+
 				<h4>Private registry</h4>
 				<p>
 					You may not want to upload all your images to the <a href="http://registry.hub.docker.com">public Docker registry</a>.
@@ -1031,23 +1079,6 @@ end</code>
 				<p>
 					Commercial offerings are available via <a href="http://quay.io">Quay.io</a>.
 					Eventually there will be a sea of alternatives similar to today's multiple options for hosting Git repositories.
-				</p>
-
-				<h4>Tools</h4>
-				<p>
-					Tooling for Docker is also a blossoming set of options.
-				</p>
-				<p>
-					<a href="http://fig.sh">Fig</a>, now part of Docker, and is very easy to use
-					orchestration of building, launching and linking Docker containers.
-					<a href="http://kubernetes.io/">Kubernetes</a>, <a href="https://github.com/citadel/citadel">Citadel</a> and others allow clustering.
-					<a href="http://panamax.io/">Panamax</a>, <a href="https://github.com/clusterhq/flocker">Flocker</a> and <a href="http://shipyard-project.com/">Shipyard</a> all lets you compose, deploy and manage Docker containers in different ways.
-					<a href="https://github.com/progrium/dokku">Dokku</a> lets you easily deploy
-					you Git based application.
-					CoreOS has a  <a href="https://github.com/coreos">suite of applications</a> to extend their support for Docker, and now also <a href="https://github.com/coreos/rocket">Rocket</a>.
-				</p>
-				<p>
-					Every week I find new amazing tools for Docker.
 				</p>
 
 				<a name="whatdocker"></a>
@@ -1214,6 +1245,9 @@ https://github.com/coreos/coreos-vagrant">coreos-vagrant</a></li>
 					<li><a href="https://cloud.google.com/container-engine/">Google Container Engine</a></li>
 					<li><a href="http://blog.flurdy.com/2014/11/dockerise-it-all-containerised-addiction.html">Dockerise it all - containerised addiction = CDD - Container Driven Development</a></li>
 					<li><a href="https://aws.amazon.com/ecs/">AWS EC2 Container Service</a></li>
+					<li><a href="https://github.com/coreos/rocket">CoreOS Rocket</a></li>
+					<li><a href="https://github.com/docker/swarm">Docker Swarm</a></li>
+					<li><a href="https://github.com/docker/machine">Docker Machine</a></li>
 					<!--
 					<li><a href=""></a></li>
 					-->
