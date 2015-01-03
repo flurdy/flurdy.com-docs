@@ -74,5 +74,11 @@ code .comment { color: #999999; }
 .addthis_toolbox { font-size: 9pt; }
 #starboard .addthis_toolbox { margin: 0;  }
 
+.warning {
+	background-color: #fee;
+	border: 3px dashed #f88;
+	margin: 1em;
+	padding: 0.5em;
 
+}
 
