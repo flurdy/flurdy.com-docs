@@ -49,7 +49,7 @@
 			</nav>
 			<div id="jib">
 				Started: September 2014.
-				Last updated: 31st Dec 2014.
+				Last updated: 3rd Jan 2015.
 			</div>
 			<!-- docker doc leaderboard -->
 			<ins class="adsbygoogle"
@@ -211,19 +211,13 @@
 					but relays all communications via a socket to the Docker daemon
 					running inside the boot2docker VM instead of the local machine.
 				</p>
-				<!--
-				<p>
-					To share local folders with boot2docker Docker images
-					there are <a href="https://github.com/boot2docker/boot2docker#folder-sharing">some complicated steps to set up a volume image</a>.
-				</p>
-				-->
 
 				<a name="osxvagrant"></a>
 				<h4>OSX + Vagrant</h4>
 				<p>
 					With the Vagrant alternative 
 					you can customise it more and have a layer of separation which might be comforting.
-					You can easily share you any local folders with your VM and its containers.
+					You can easily share any local folders with your VM and its containers.
 				</p>
 				<code><span class="host">osxhost$</span> brew cask install virtualbox;</code>
 				<code><span class="host">osxhost$</span> brew install vagrant</code>
@@ -936,41 +930,63 @@ end</code>
 					If you run your Docker on OSX or within a Vagrant VM then
 					you probably want to allocate more memory to it. For example 3GB.
 				</p>
-				<ul>
-					<li>
-						<h4>boot2docker</h4>
-						<code><span class="host">osxhost$</span> boot2docker delete</code>
-						<code><span class="host">osxhost$</span> boot2docker init -m 3072</code>
-						<code><span class="host">osxhost$</span> boot2docker info</code>
-						<p>
-							Note that this will destroy the Docker containers inside the VMs.
-							Make sure they are backed up.
-						</p>
-					</li>
-					<li>
-						<h4>Vagrant</h4>
-						<p>
-							Add/uncomment this to your <em>Vagrantfile</em>.
-						</p>
-						<code class="file">
-							config.vm.provider "virtualbox" do |vb|<br />
-							<span class="indent1"/>vb.customize ["modifyvm", :id, "--memory", "3072"]<br />
-							end
-						</code>
-						<code><span class="host">anyhost$</span> vagrant reload</code>
-					</li>
-				</ul>
+				<div class="indent1">
+					<h4>boot2docker</h4>
+					<code><span class="host">osxhost$</span> boot2docker delete</code>
+					<code><span class="host">osxhost$</span> boot2docker init -m 3072</code>
+					<code><span class="host">osxhost$</span> boot2docker info</code>
+					<p>
+						Note that this will destroy the Docker containers inside the VMs.
+						Make sure they are backed up.
+					</p>
+					<h4>Vagrant</h4>
+					<p>
+						Add/uncomment this to your <em>Vagrantfile</em>.
+					</p>
+					<code class="file">
+						config.vm.provider "virtualbox" do |vb|<br />
+						<span class="indent1"/>vb.customize ["modifyvm", :id, "--memory", "3072"]<br />
+						end
+					</code>
+					<code><span class="host">anyhost$</span> vagrant reload</code>
+				</div>
 
 				<h4>Port ranges</h4>
-				<p>
-					Add a range of forwarded ports to your <em>Vagrantfile</em> to easily connect to docker ports
-				without reloading Vagrant.
-				</p>
-				<code class="file">
-					for i in 49900..49999<br/>
-						<span class="indent1"/>config.vm.network "forwarded_port", guest: i, host: i<br/>
-						end
-				</code>
+				
+				<div class="indent1">
+					<p>
+						Add a range of forwarded ports to your VM to easily connect to new docker ports without restarting Vagrant or boot2docker.
+					</p>
+
+					<h4>boot2docker</h4>
+					<p>
+						For boot2docker shutdown the VM first. 
+					</p>
+					<code><span class="host">osxhost$</span> boot2docker stop;</code>
+					<code class="wide">
+						<span class="host">osxhost$</span> for i in {49900..49999}; do <br/>
+						<span class="host">osxhost$</span> VBoxManage modifyvm "boot2docker-vm" \<br/>
+						<span class="indent2"/> --natpf1 "tcp-port$i,tcp,,$i,,$i";<br/>
+						<span class="host">osxhost$</span> VBoxManage modifyvm "boot2docker-vm" \<br/>
+						<span class="indent2"/> --natpf1 "udp-port$i,udp,,$i,,$i";<br/>
+						<span class="host">osxhost$</span> done;
+					</code>
+					<code><span class="host">osxhost$</span> boot2docker start</code>
+					<p>
+						Note you will need to redo these commands every time you delete your boot2docker instance if you ever do that.
+					</p>
+
+					<h4>Vagrant</h4>
+					<p>
+						Add this to your <em>Vagrantfile</em>.
+					</p>
+					<code class="file">
+						for i in 49900..49999<br/>
+							<span class="indent1"/>config.vm.network "forwarded_port", guest: i, host: i<br/>
+							end
+					</code>
+
+				</div>
 
 				<h4>Host file</h4>
 				<p>
