@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Cordova (Phonegap) within Vagrant for Android</title>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <meta name="keyword" content="cordova,phonegap,vagrant,android,ios,mobile,smartphone,app,crossplatform"/>
+   <meta name="description" content="How to use Cordova (Phonegap) building cross platform apps inside a Vagrant VM for Android and other platforms. Cordova is the open source version of Phonegap."/>
+   <link href="/docs/docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+   <style>
+      code span.host { display: none; }
+      code { max-width: 50em; }
+      code.wide { max-width: 60em; }
+      code.file { max-width: 50em; }
+      #ship { min-width: 55em; max-width: 60em; }
+      #starboard { margin-top: 4em; width: 12em; }
+      #starboard .shirts { padding: 1em 1em 4em 4em; }
+      #starboard ul ul { display: block; }
+      code em { color: #bbffbb; }
+   </style>
+   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+   <script type="text/javascript">
+      var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-281408-1']);
+     _gaq.push(['_trackPageview']);
+
+      (function() {
+      if(location.host!='localhost'){
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      }
+     })(); 
+   </script>
+   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>Cordova (Phonegap) within Vagrant for Android</h1>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: Janurary 2015.
+            Last updated: 15th Jan 2015.
+         </div>
+         <!-- cordova leaderboard -->
+         <ins class="adsbygoogle"
+              style="display:inline-block;width:728px;height:90px"
+              data-ad-client="ca-pub-7805345644641760"
+              data-ad-slot="4727242885"></ins>
+         <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+         </script>
+         <div id="starboard">
+            <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#purpose">Purpose</a></li>
+                  <li>
+                     <a href="#vagrantinstall">Vagrant install</a>
+                     <ul>
+                        <li><a href="#vagrantosx">Vagrant on OSX</a></li>
+                        <li><a href="#osx11">OSX X11</a></li>
+                        <li><a href="#vagrantubuntu">Vagrant on Ubuntu</a></li>
+                        <li><a href="#vagrantplugins">Vagrant plugins</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#vagrantsetup">Vagrant setup</a></li>
+                  <li>
+                     <a href="#depinstall">Dependencies</a>
+                     <ul>
+                        <li><a href="#javainstall">Java install</a></li>
+                        <li><a href="#antinstall">Ant install</a></li>
+                        <li><a href="#nodeinstall">Node.js install</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#androidinstall">Android install</a>
+                     <ul>
+                        <li><a href="#androidupdate">Android update</a></li>
+                        <li><a href="#androiddevice">Android device</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#cordovainstall">Cordova install</a></li>
+                  <li>
+                     <a href="#project">Project setup</a>
+                     <ul>
+                        <li><a href="#cordovaproject">Create project</a></li>
+                        <li><a href="#cordovaplatform">Add platform</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#build">Build application</a></li>
+                  <li><a href="#emulate">Run emulator</a></li>
+                  <li><a href="#voila">Voila!</a></li>
+                  <li><a href="#whatnext">What next</a></li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+               </ul>
+            </nav>
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                     asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+         </div>
+         <div id="cargo">
+
+            <a name="purpose"></a>
+            <h3>Purpose</h3>
+            <p>
+              <a href="http://cordova.apache.org">Cordova</a> is cross platform for building applications for multiple smartphones OSes such as Android and iPhone's IOS.
+              It ustilises mostly HTML, CSS and Javascript and is easy to pick up.
+            </p>
+            <p>
+               Cordova is the open source version of <a href="http://phonegap.com">Phonegap</a>, 
+               and is all you need when starting out developing apps.
+               Phonegap do provide some nice bells and whistles
+               when you are really advanced, but I am nowhere needing that yet.
+            </p>
+            <p>
+               <a href="http://www.vagrantup.com">Vagrant</a> provides headless virtual machines for development environment.
+            </p>
+            <p>
+               <a href="http://www.android.com/">Android</a> provide a free development SDK for many OSes to build applications for Android based mobiles. 
+               At a later stage it would make sense to also initially test your application with Apple's <a href="https://www.apple.com/ios/">IOS</a> devices, but it is more restrictive in setting up initially. Due to market share the other platforms (Windows, Symbian, etc) can wait.
+            </p>
+            <p>
+               Together they provide an environment to develop mobile apps locally that is separate from your actual machine.
+            </p>
+
+
+            <a name="vagrantinstall"></a>
+            <h3>Vagrant Install</h3>
+
+            <p>
+               You need to install a Virtual Machine provider first. I always use <a href="http://virtualbox.org">VirtualBox</a>.
+               You can install via packages from <a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>'s and <a href="https://www.vagrantup.com/downloads.html">Vagrant</a>'s download pages.
+            </p>
+
+            
+            <a name="vagrantosx"></a>
+            <h4>Vagrant on OSX</h4>
+            <p>
+               If not direct from downloads you can install via <a href="http://brew.sh">Brew</a> and <a href="http://caskroom.io">Cask</a>.
+            </p>
+            <code><span class="host">osxhost$</span> brew cask install virtualbox;</code>
+            <code><span class="host">osxhost$</span> brew install vagrant</code>
+
+            <a name="osxx11"></a>
+            <h4>OSX X11</h4>
+            <p>
+               If you are running Mac OSX and not Linux then
+               you need to install the X11 support for OSX.
+               They are no longer installed by default but Apple provide a simple install
+               via <a href="http://xquartz.macosforge.org/landing/">XQuartz</a>. 
+               It allows X11 applications from a Vagrant VM to be displayed in OSX. 
+            </p>
+            <code><span class="host">osxhost$</span> wget http://xquartz.macosforge.org/downloads/SL/XQuartz-<em>2.7.7</em>.dmg;</code>
+            <code><span class="host">osxhost$</span> open XQuartz-<em>2.7.7</em>.dmg</code>
+            <p>
+               You need to restart your machine for the Xserver to work in your OSX session.
+            </p>
+            
+            <a name="vagrantubuntu"></a>
+            <h4>Vagrant on Ubuntu</h4>
+            <p>
+                If not direct from downloads you can install via apt-get packages. 
+                Note these packages might be slightly older.
+            </p>
+            <code><span class="host">ubuntuhost$</span> sudo apt-get install virtualbox vagrant</code>
+            <p>Make sure you have the <a href="https://help.ubuntu.com/community/Repositories/Ubuntu">multiverse repository</a> enabled.</p>
+
+            <a name="vagrantplugins"></a>
+            <h4>Vagrant plugins</h4>
+            <p>
+               Optional.
+            </p>
+
+            <code><span class="host">anyhost$</span> vagrant plugin install vagrant-vbguest;</code>
+            <code><span class="host">anyhost$</span> vagrant plugin install vagrant-vbox-snapshot</code>
+
+
+            <a name="vagrantsetup"></a>
+            <h3>Vagrant setup</h3>
+
+            <code><span class="host">anyhost$</span> mkdir cordova-vagrant &amp;&amp; cd cordova-vagrant;</code>
+            <code><span class="host">anyhost$</span> vagrant init ubuntu/trusty64</code>
+
+<p>
+               This downloads a Vagrant Ubuntu 14.04 image,
+               and initialises a Vagrant instance for you.
+            </p>
+            <p>
+               Edit the <em>Vagrantfile</em> it created in your folder.
+            </p>
+            <code><span class="host">anyhost$</span> vi Vagrantfile;</code>
+            <code class="file"># -*- mode: ruby -*-<br />
+# vi: set ft=ruby :<br />
+<br />
+VAGRANTFILE_API_VERSION = "2"<br />
+<br />
+<span class="indent1"></span>Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|<br />
+<br />
+<span class="indent1"></span>config.vm.box = "ubuntu/trusty64"<br />
+<br />
+<span class="indent1"></span>config.vm.hostname = "cordova"<br />
+<br />
+<span class="indent1"></span>config.vm.box_check_update = false<br/>
+<br/>
+<span class="indent1"></span>if Vagrant.has_plugin?("vagrant-vbguest") then<br/>
+<span class="indent2"></span>config.vbguest.auto_update = false<br/>
+<span class="indent1"></span>end<br/>
+<br/>
+<span class="indent1"></span>## Most likely you want to edit files locally in<br />
+<span class="indent1"></span>## an editor, but out of scope for this howto<br />
+<span class="indent1"></span># config.vm.synced_folder "../cordova-app", "/home/vagrant/cordova-app"<br />
+<br />
+<span class="indent1"></span> config.vm.provider "virtualbox" do |vb|<br />
+<span class="indent1"></span> <span class="indent1"></span>vb.customize ["modifyvm", :id, "--memory", "2048"]<br />
+<span class="indent1"></span> end<br />
+<br />
+<span class="indent1"></span>config.ssh.forward_agent = true<br />
+<span class="indent1"></span>config.ssh.forward_x11 = true<br />
+<br />
+end</code>
+            <p>
+               Then start up and log into the new vagrant instance.
+            </p>
+            <code><span class="host">anyhost$</span> vagrant up &amp;&amp; vagrant ssh</code>
+
+
+            <a name="depinstall"></a>
+            <h3>Dependencies</h3>
+            <p>
+               On this new Ubuntu inside Vagrant install the support for PPA repositories
+               and 64 bit to 32 bit support as Android SDK is in 32bit.
+            </p>
+            <code><span class="host">vagranthost$</span> sudo apt-get update 
+            &amp;&amp; sudo apt-get upgrade
+            &amp;&amp; sudo apt-get autoremove;</code>
+            <code><span class="host">vagranthost$</span> sudo apt-get install -yq python-software-properties;</code>
+            <code><span class="host">vagranthost$</span> sudo apt-get install -yq lib32z1 lib32ncurses5 lib32stdc++6</code>
+
+
+
+            <a name="javainstall"></a>
+            <h4>Java install</h4>
+            <p>
+               Add the ppa repository for Java by webupd8team,
+               and install Java 7 including
+               accepting the Oracle Java license.
+            </p>
+            <code><span class="host">vagranthost$</span> sudo add-apt-repository ppa:webupd8team/java;</code>
+            <code><span class="host">vagranthost$</span> sudo apt-get update;</code>
+            <code><span class="host">vagranthost$</span> sudo apt-get install oracle-java7-installer oracle-java7-set-default;</code>
+            <code><span class="host">vagranthost$</span> echo "JAVA_HOME=/usr/lib/jvm/java-7-oracle" >> ~/.bashrc;</code>
+            <p>
+               Test if it installed ok.
+            </p>
+            <code><span class="host">vagranthost$</span> java -version</code>
+
+
+
+            <a name="antinstall"></a>
+            <h4>Ant install</h4>
+            <p>
+               Ant is in Ubuntu's repositories but usually brings along too much dependency bagage,
+               so I prefer the <a href="http://ant.apache.org/bindownload.cgi">direct download version</a>.
+            </p>
+            <code class="wide"><span class="host">vagranthost$</span> wget http://www.mirrorservice.org/sites/ftp.apache.org//ant/binaries/apache-ant-<em>1.9.4</em>-bin.tar.gz;</code>
+            <code><span class="host">vagranthost$</span> tar xzf apache-ant-<em>1.9.4</em>-bin.tar.gz;</code>
+            <code><span class="host">vagranthost$</span> sudo mv apache-ant-<em>1.9.4</em> /opt/apache-ant;</code>
+            <code><span class="host">vagranthost$</span> echo "ANT_HOME=/opt/apache-ant" >> ~/.bashrc;</code>
+            <code><span class="host">vagranthost$</span> echo 'PATH=$PATH:$ANT_HOME/bin' >> ~/.bashrc;</code>
+            <code><span class="host">vagranthost$</span> source ~/.bashrc;</code>
+            <p>
+               Test if it installed ok.
+            </p>
+            <code><span class="host">vagranthost$</span> ant -version</code>
+
+
+            <a name="nodeinstall"></a>
+            <h4>Node.js install</h4>
+            <p>
+               Node.js is yet <a href="http://nodejs.org/download/">another download</a>.
+            </p>
+            <code><span class="host">vagranthost$</span> wget http://nodejs.org/dist/<em>v0.10.35</em>/node-<em>v0.10.35</em>-linux-x64.tar.gz;</code>
+            <code><span class="host">vagranthost$</span> tar xzf node-<em>v0.10.35</em>-linux-x64.tar.gz;</code>
+            <code><span class="host">vagranthost$</span> sudo mv node-<em>v0.10.35</em>-linux-x64 /opt/node;</code>
+            <code><span class="host">vagranthost$</span> echo "NODE_HOME=/opt/node" >> ~/.bashrc;</code>
+            <code><span class="host">vagranthost$</span> echo 'PATH=$PATH:$NODE_HOME/bin' >> ~/.bashrc;</code>
+            <code><span class="host">vagranthost$</span> source ~/.bashrc;</code>
+            <p>
+               Test if it installed ok.
+            </p>
+            <code><span class="host">vagranthost$</span> node --version;</code>
+            <code><span class="host">vagranthost$</span> npm --version</code>
+
+
+            <a name="androidinstall"></a>
+            <h3>Android install</h3>
+            <p>
+               Find the link to the <a href="https://developer.android.com/sdk/index.html#Other">latest Android SDK for Linux</a>.
+            </p>
+            <code><span class="host">vagranthost$</span> wget http://dl.google.com/android/android-sdk_<em>r24.0.2</em>-linux.tgz;</code>
+            <code><span class="host">vagranthost$</span>  tar xzf android-sdk_*.tgz;</code>
+            <code><span class="host">vagranthost$</span>  sudo mv android-sdk-linux /opt/android-sdk;</code>
+
+            <code><span class="host">vagranthost$</span> echo "ANDROID_HOME=/opt/android-sdk" >> ~/.bashrc;</code>
+            <code><span class="host">vagranthost$</span> echo 'PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools' >> ~/.bashrc;</code>
+            <code><span class="host">vagranthost$</span> source ~/.bashrc;</code>
+            <p>
+               Test if it installed ok.
+            </p>
+            <code><span class="host">vagranthost$</span> android -h</code>
+
+
+            <a name="androidupdate"></a>
+            <h4>Android update</h4>
+            <p>
+               Updating the SDK is how to download all the platform files for each version of Android.
+               You don't have to download all of them as Cordova only supports older versions
+               with more than 5% <a href="http://developer.android.com/about/dashboards/index.html">market share</a> and only the tools they need.
+            </p>
+            <p>
+               First to see which are available. Note the ids so which can be used to install each section.
+            </p>
+            <code><span class="host">vagranthost$</span> android list sdk --no-ui --all --extended</code>
+
+            <p>
+               Then we apply the filters relevant for us, split across a few commands for readability.
+               You will need to accept a few Android license prompts.
+            </p>
+            <code><span class="host">vagranthost$</span> android update sdk -u -a --filter "tools,platform-tools,build-tools-<em>21.1.2</em>";</code>
+            <code><span class="host">vagranthost$</span> android update sdk -u -a --filter "android-<em>21</em>,android-<em>20</em>,android-<em>19</em>"</code>
+            <!-- <code><span class="host">vagranthost$</span> android update sdk -u -a --filter "support"</code> -->
+
+
+            <a name="androiddevice"></a>
+            <h4>Android device</h4>
+            <p>
+               You need an Android emulated device (or more) to test you applications on.
+               These are installed via the same <emm>update</em> command and then created afterwards.
+            </p>
+            <code><span class="host">vagranthost$</span> android update sdk -u -a --filter "sys-img-<em>armeabi-v7a</em>-android-<em>21</em>";</code>
+            <p>
+               You need to find the target id for the device image(s) just downloaded.
+            </p>
+            <code><span class="host">vagranthost$</span> android list targets;</code>
+            <p>
+               Note the id of the target with a <em>Tag/ABIs</em> that does not say <em>no ABIs</em>, use that one.
+               Sometimes you also have to specify the Abi if there are several images (ARM,x86,etc) available 
+               per Android platform version.
+            </p>
+            <code><span class="host">vagranthost$</span> android create avd \<br/>
+                  --name cordovakitkat --target <em>android-21</em> --abi <em>default/armeabi-v7a</em></code>
+
+
+            <a name="cordovainstall"></a>
+            <h3>Cordova install</h3>
+            <p>
+               This often but not always will display some dependency not found errors,
+               but it should still install and for me has worked as expected.
+            </p>
+            <code><span class="host">vagranthost$</span> npm install -g cordova;</code>
+            <p>
+               Test if it installed ok.
+            </p>
+            <code><span class="host">vagranthost$</span> cordova --version</code>
+
+
+            <a name="project"></a>
+            <h3>Project setup</h3>
+
+            <a name="cordovaproject"></a>
+            <h4>Create project</h4>
+            <p>
+               Lets create the standard Hello World.
+            </p>
+            <code><span class="host">vagranthost$</span> cordova create hello com.example.hello HelloWord;</code>
+            <p>
+               First argument <em>hello</em> is the name of the folder.
+            </p>
+            <p>
+               Second argument <em>com.example.hello</em> is the namespace / package name.
+            </p>
+            <p>
+               Third argument <em>HelloWorld</em> is the name of the application.
+            </p>
+
+            <a name="cordovaplatform"></a>
+            <h4>Add platform</h4>
+            <p>
+               These define which platform the app will build for.
+               Initially we will just focus on Android.
+               Later you can expand these once everything works.
+            </p>
+            <code><span class="host">vagranthost$</span> cd hello;</code>
+            <code><span class="host">vagranthost$</span> cordova platform add android;</code>
+            <code><span class="host">vagranthost$</span> cordova platforms list</code>
+
+
+            <a name="build"></a>
+            <h3>Build application</h3>
+            <p>
+               Edit one page to show our changes are displayed later.               
+               Then build the application.
+            </p>
+            <code><span class="host">vagranthost$</span> sed -i 's/Ready/Wazzup/' www/index.html;</code>
+            <code><span class="host">vagranthost$</span> cordova build</code>
+
+
+            <a name="emulate"></a>
+            <h3>Run emulator</h3>
+            <p>
+               This should launch the emulator on your local machine.
+            </p>
+            <code><span class="host">vagranthost$</span> cordova emulate android</code>
+            <p>
+               It will take some time, especially on initial launch. 
+               It will need to create the device, boot the OS, log in and then finally install the application.
+               So please wait.
+            </p>
+            <p>
+               Note: I often on a fresh machine/project have to run this command 2-3 times including the waiting
+               before it works as expected.
+            </p>
+            <p>
+               Once fully loaded and app has been installed there should be a Cordova icon on the first page.
+            </p>
+            <p>
+               If you see the error below your X11 over SSH is not configured correctly.
+            </p>
+            <code class="output"><em>SDL init failure, reason is: No available video device</em></code>
+
+
+            <a name="voila"></a>
+            <h3>Voila!</h3>
+            <p>
+               That is it. 
+               You can now iterate over your application,
+               adding <a href="http://cordova.apache.org/docs/en/4.0.0/">Cordova features</a> and
+               adding <a href="http://cordova.apache.org/docs/en/4.0.0/guide_platforms_index.md.html#Platform%20Guides">more platforms</a>.
+            </p>
+
+            <a name="whatnext"></a>
+            <h3>What next</h3>
+            <p>
+               With a working standardised Vagrant set up,
+               doing a simular job for a <a href="http://www.docker.com">Docker</a> image should be possible.
+            </p>
+            <p>
+               This howto might/should be extended to describe IOS as a platform as well.
+            </p>
+            <p>
+               A separate howto might build on this to show 
+               basic database, server APIs 
+               and 3rd party API integration.
+            </p>
+
+            <a name="reference"></a>
+            <h3>References</h3>
+            <ul>
+               <li><a href="http://cordova.apache.org">Cordova</a></li>
+               <li><a href="http://vagrantup.com">Vagrant</a></li>
+               <li><a href="http://phonegap.com">Phonegap</a></li>
+               <li><a href="http://www.android.com/">Android</a></li>
+               <li><a href="http://www.apple.com/ios/">IOS</a></li>
+               <li><a href="http://www.appcelerator.com/titanium/titanium-sdk/">Titanium</a></li>
+               <li><a href="http://rhomobile.com/">Rhomobile</a></li>
+               <li><a href="http://www.sencha.com/products/touch/">Sensa Touch</a></li>
+               <li><a href="http://unity3d.com/">Unity</a></li>
+               <li><a href="http://virtualbox.org">VirtualBox</a></li>
+               <li><a href="http://brew.sh">Brew</a></li>
+               <li><a href="http://caskroom.io">Cask</a></li>
+               <li><a href="http://ant.apache.org">Ant</a></li>
+               <li><a href="http://www.oracle.com/technetwork/java/index.html">Java</a></li>
+               <li><a href="http://nodejs.org">Node.js</a></li>
+               <li><a href="http://docker.com">Docker</a></li>
+               <!--
+               <li><a href=""></a></li>
+               -->
+            </ul>
+
+            <a name="contact"></a>
+            <h3>Feedback</h3>
+            <p>
+               Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+            </p>
+            <p>
+               <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+               <a href="http://www.eray.co.uk">Hire Ivar</a> for short term advice or long term consultancy.
+            </p>
+            <p>
+               Otherwise <a href="/contact">contact flurdy</a>.
+               Especially for things factually incorrect.
+               Apologies for procrastinated replies.
+            </p>
+
+         </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <!-- <li><a href="#contact">feedback</a></li> -->
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+</body>
+</html>
