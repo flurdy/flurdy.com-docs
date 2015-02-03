@@ -2149,9 +2149,9 @@ sql_select: select crypt from users where id='%u@%r' and enabled = 1</code>
 	</p>
 	<code>sudo vi /etc/pam.d/smtp</code>
 	<p>These must be on 2 lines only, but I have broken them up for easier to read.</p>
-	<code class="document">auth required pam_mysql.so user=mail passwd=<i>aPASSWORD</i>
+	<code class="document">auth required pam_mysql.so user=mail passwd=<i>mailPASSWORD</i>
 			host=127.0.0.1 db=maildb table=users usercolumn=id passwdcolumn=crypt crypt=1
-account sufficient pam_mysql.so user=mail passwd=<i>aPASSWORD</i>
+account sufficient pam_mysql.so user=mail passwd=<i>mailPASSWORD</i>
 			host=127.0.0.1 db=maildb table=users usercolumn=id passwdcolumn=crypt crypt=1</code>
 
 	<p>
