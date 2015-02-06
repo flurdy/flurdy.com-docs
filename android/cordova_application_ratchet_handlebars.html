@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Cordova (Phonegap) application with Ratchet and Handlebars</title>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <meta name="keyword" content="cordova,phonegap,ratchet,handlebars,android,ios,mobile,smartphone,app,crossplatform"/>
+   <meta name="description" content="How to create a simple Cordova (Phonegap) application with Ratchet and Handlebars"/>
+   <link href="/docs/docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+   <style>
+		.shirts { display: none; }
+		header h3 { margin-top: 0.2em; }
+		#ship { min-width: 40em; max-width: 65em; }
+		.indent3 { padding: 0 3em; }
+   </style>
+</head>
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>Cordova (Phonegap) application with Ratchet and Handlebars</h1>
+            <h3>Create a simple cross platform smartphone application</h3>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: February 2015.
+            Last updated: 12th Feb 2015.
+				Draft version, not yet finished.
+         </div>
+			<div id="starboard">
+				<nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#purpose">Purpose</a></li>
+                  <li><a href="#cordova">Cordova</a></li>
+                  <li><a href="#ratchet">Ratchet</a></li>
+                  <li><a href="#handlebars">Handlebars</a></li>
+                  <li>
+                     <a href="#install_cordova">Setup</a>
+                     <ul>
+                        <li><a href="#install_cordova">Cordova</a></li>
+                        <li><a href="#create_app">Create application</a></li>
+                        <li><a href="#install_bower">Install Bower</a></li>
+                        <li><a href="#add_ratchet">Add Ratchet</a></li>
+                        <li><a href="#add_handlebars">Add Handlebars</a></li>
+                        <li><a href="#more_js">Additional libraries</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#helloworld">Hello World</a></li>
+                  <li>
+                     <a href="#pizzeria">Pizzeria</a>
+                     <ul>
+                        <li><a href="#pizzeria_scaffold">Scaffold</a></li>
+                        <li><a href="#pizzeria_menu">Menu</a></li>
+                        <li><a href="#pizzeria_details">Details</a></li>
+                        <li><a href="#pizzeria_order">Order</a></li>
+							</ul>
+                  </li>
+                  <li><a href="#next">What Next</a></li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+               </ul>
+				</nav>
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                     asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+			</div>
+         <div id="cargo">
+
+            <a name="purpose"></a>
+            <h3>Purpose</h3>
+            <p>
+					This howto guide shows in a few quick and easy steps
+					how to create an app that can run on multiple smartphone platforms.
+            </p>
+
+            <p>
+				We will use <a href="http://cordova.apache.org">Cordova</a> for cross platform support,
+				<a href="http://goratchet.com">Ratchet</a> for Android and IOS native style
+				and <a href="http:/handlebarsjs.com">Handlebars</a> for templating.
+            </p>
+
+            <a name="install_cordova"></a>
+            <h3>Cordova</h3>
+				<p>
+					Cordova is a framework that lets you write web applications
+					using HTML, CSS and javascript.
+					It provides basically a webserver to run the same application
+					natively on most smartphone operating systems.
+				</p>
+				<p>
+					Cordova was formerly known as <a href="http://www.phonegap.com">Phonegap</a>
+					before it was donated to <a href="http://apache.org">Apache</a> and open sourced.
+					A commercial version by Phonegap is available
+					which includes some nice features that are not needed for this howto.
+				</p>
+				<p>
+					Cordova also supplies a set of plugins that you
+					can use to utilise the phones camera, contacts, GPS etc.
+				</p>
+
+            <a name="ratchet"></a>
+            <h3>Ratchet</h3>
+				<p>
+					We use <a href="http://goratchet.com">Ratchet</a> for the look and feel of the app.
+					Think of Ratchet as a subset of <a href="http://getbootstrap.com">Bootstrap</a> (not entirely true),	
+					that are specificaly aimed at smartphone apps.
+					It provides stylesheets that make make the app look
+					like a native IOS, Android, etc app.
+					It also provides useful javascript libraries such as push and toggle.
+				</p>
+
+				<a name="handlebars"></a>
+            <h3>Handlebars</h3>
+				<p>
+			 		<a href="http://cordova.apache.org/docs/en/4.0.0/guide_next_index.md.html#Best%20Practices">Cordova recommend</a> for your app to use the <a href="https://en.wikipedia.org/wiki/Single-page_application">single page application</a> architecture style. 
+					Basically your entire app is only one html page and driven by a 
+					rich MVC-ish javascript application. 					
+				</p>
+				<p>
+					You could use full blown javascript frameworks such as 
+					<a href="http://angularjs.org">Angular.js</a>,
+               <a href="http://backbonejs.org">Backbone</a>,
+					<a href="http://emberjs.com">EmberJs</a> or 
+					among many others.
+				</p>
+				<p>
+					However in this howto we keep it simple and do not use any application framework.
+					We instead utilise the <a href="http://www.handlebarsjs.com">Handlebars</a> javascript templating framework.
+					It enables us to write little HTML snippets to compose our pages,
+					and keep these logic free.
+            </p>
+
+            <a name="install_cordova"></a>
+            <h3>Setup</h3>
+            <h4>Install Cordova</h4>
+            <p>
+               For detailed installation steps please read my 
+               <a href="cordova_vagrant_android.html">Cordova (Phonegap) within Vagrant for Android</a> howto.
+               It is a step by step guide on installing 
+               and setting up Cordova for building Android applications.
+               It optionally uses <a href="http://vagrantup.com">Vagrant</a> as a means of keeping it separate from your local machine.
+            </p>
+
+            <a name="create_app"></a>
+            <h4>Create Cordova application</h4>
+				<p>
+					Lets check if you have installed Cordova correctly.
+				</p>
+				<code>cordova --version</code>
+				<p>
+					If okay lets create a basic scaffold application.
+				</p>
+				<code>cordova create pizza com.example.pizza Pizzeria</code>
+
+            <a name="install_bower"></a>
+            <h4>Install Bower</h4>
+				<p>
+					You can manually find the javascript files 
+					for the libraries used in this application,
+					but I prefer to keep things tidy and use <a href="http://bower.io">Bower</a>.
+				</p>
+				<p>
+					Bower can be installed via <a href="http://nodejs.org">Node</a>.
+				</p>
+				<code>node install -g bower</code>
+				<p>
+					We then add each library with Bower.
+				</p>
+
+            <a name="add_ratchet"></a>
+            <h4>Add Ratchet</h4>
+				<code>cd www;</code>
+				<code>bower install -s ratchet</code>
+				<p>
+				</p>
+
+            <a name="add_handlebars"></a>
+            <h4>Add Handlebars</h4>
+				<code>bower install -s handlebars</code>
+				<p>
+				</p>
+
+            <a name="more_js"></a>
+            <h4>Install additional libraries</h4>
+				<p>
+					A couple of extra libraries will also make our lives easier.
+					<a href="http://jquery.com">JQuery</a> for simple page event handling.
+					<a href="http://ithub.com/ftlabs/fastclick/">Fastclick</a> to support touch click events better.
+
+				</p>
+				<code>bower install -s fastclick;</code>
+				<code>bower install -s jquery</code>
+				
+				<p>
+					You can keep the application lighter
+					by only keeping the required files inside <em>bower_components</em>.
+					Ie. remove source files and other non <em>dist</em> files etc. 
+					But it is often hard to be certain which files are needed
+					so for this howto we keep all of them.
+				</p>
+
+
+            <a name="hello_world"></a>
+            <h3>Hello World</h3>
+				<p>
+               Let's just knock up a quick hello world page as tracer bullet to check if everything installed ok.
+				</p>
+            <code>vi index.html;</code>
+            <code class="file">
+               &lt;!DOCTYPE html&gt;<br/>
+               &lt;html&gt;<br/>
+               &lt;head&gt;<br/>
+               <span class="indent1"/>&lt;title&gt;Hello world&lt;title&gt;</br/>
+               <span class="indent1"/>&lt;link rel="stylesheet" src="bower_components/ratchet/dist/ratchet.min.css" /&gt;<br/>
+               &lt;/head&gt;<br/>
+               &lt;body&gt;<br/>
+               <span class="indent1"/>&lt;div class="content"&gt;<br/>
+               <span class="indent2"/>&lt;h1&gt;Hello world&lt;/h1&gt;<br/>
+               <span class="indent1"/>&lt;/div&gt;<br/>
+               <span class="indent1"/>&lt;script id="header-template" type="text/template"&gt;<br/>
+               <span class="indent2"/>&lt;h1&gt;Good bye&lt;/h1&gt;</br>
+               <span class="indent1"/>&lt;/script&gt;<br/>
+               <span class="indent1"/>&lt;script src="cordova.js"&gt;&lt;/script&gt;<br/>
+               <span class="indent1"/>&lt;script type="text/javascript" <br/>
+					<span class="indent3"/>
+					src="bower_components/jquery/dist/jquery.min.js"&gt;&lt;/script&gt;<br/>
+               <span class="indent1"/>&lt;script type="text/javascript" <br/>
+					<span class="indent3"/>
+               src="bower_components/fastclick/lib/fastclick.js"&gt;&lt;/script&gt;<br/>
+               <span class="indent1"/>&lt;script type="text/javascript" <br/>
+					<span class="indent3"/>
+               src="bower_components/handlebars/handlebars.min.js"&gt;&lt;/script&gt;<br/>
+               <span class="indent1"/>&lt;script&gt;<br/>
+               <span class="indent2"/>$(function(){</br/>
+               <span class="indent3"/>var headerTemplate = Handlebars.compile("header-template");</br/>
+               <span class="indent3"/>$('.content').html(template.html());</br/>
+               <span class="indent2"/>});</br/>
+               <span class="indent1"/>&lt;/script&gt;<br/>
+               &lt;/body&gt;<br/>
+               &lt;/html&gt;
+            </code>
+				<p>
+					If you installed the Android SDK detailed in <a href="cordova_vagrant_android.html">my Cordova setup</a> howto,
+					then you can test this <em>hello world</em> on a emulator device.
+					Otherwise I will assume you test it directly from a normal browser 
+					as the feedback loop is obviously much faster.
+				</p>
+				<p>
+					Ps: If you test it in Chrome you can open developer tools and click on the
+					mobile icon to enable scaling to different phones. Quite useful.
+				</p>
+				<code>open index.html</code>
+				<p>
+					If the page says <em>Good bye</em> all is well. 
+					If not check the browser's developer console for errors.
+					If opened in a browser then console 404 errors for <em>cordova.js</em> is expected 
+					as that only exists if on a device.
+				</p>
+
+
+            <a name="pizzeria"></a>
+            <h3>Pizzeria Application</h3>
+				<p>
+					Lets create a simple Pizzeria app as a proper example.
+				</p>
+				<p>
+					It will list a menu, 
+					let you look up some pizza information 
+					and let you place an order.
+				</p>
+
+            <a name="pizzeria_scaffold"></a>
+            <h4>Scaffold</h4>
+				<p>
+					We will replace the hello world <em>index.html</em>.
+					And add 3 javascript files.
+				</p>
+
+				<code>touch js/data.js;</code>
+            <code>vi index.html;</code>
+            <code class="file">
+               &lt;!DOCTYPE html&gt;<br/>
+               &lt;html&gt;<br/>
+               &lt;head&gt;
+               <div class="indent1">
+                  &lt;meta charset="utf-8" /&gt;<br/>
+                  &lt;meta name="format-detection" content="telephone=no" /&gt;<br/>
+                  &lt;meta name="msapplication-tap-highlight" content="no" /&gt;<br/>
+                  &lt;meta name="viewport"<br/>
+                  <span class="indent1"/>content="initial-scale=1, maximum-scale=1, user-scalable=yes, minimal-ui"&gt;<br/>
+                  &lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;<br/>
+                  &lt;meta name="apple-mobile-web-app-status-bar-style" content="black"&gt;<br/>
+                  &lt;title&gt;Pizzeria&lt;title&gt;</br/>
+                  &lt;link rel="stylesheet" src="bower_components/ratchet/dist/ratchet.min.css" /&gt;<br/>
+                  &lt;link rel="stylesheet"<br/>
+                  <span class="indent1">src="bower_components/ratchet/dist/ratchet-theme-ios.min.css" /&gt;
+               </div>
+               &lt;/head&gt;<br/>
+               &lt;body&gt;<br/>
+					<div class="indent1">
+               	&lt;header id="header" class="bar bar-nav"&gt;<br/>
+						<div class="indent1">
+							&lt;h1&gt;Loading Pizzeria&lt;/h1&gt;
+						</div>
+               	&lt;/header&gt;<br/>
+               	&lt;nav id="footer" class="bar bar-tab"&gt;
+						<div class="indent1">
+                     &lt;ul class="tab-inner"&gt;
+                     <div class="indent1">
+                        &lt;li class="tab-item options-link"&gt;
+                        <div class="indent1">
+                           &lt;span class="icon icon-list"&gt;&lt;/span&gt;
+                        </div>
+                        &lt;/li&gt;<br/>
+                        &lt;li class="tab-item options-link"&gt;
+                        <div class="indent1">
+                           &lt;span class="icon icon-gear"&gt;&lt;/span&gt;
+                        </div>
+                        &lt;/li&gt;
+                     </div>
+						</div>
+               	&lt;/nav&gt;<br/>
+						&lt;div class="content"&gt;<br/>
+							<span class="indent1"/>Loading...<br/>
+              		&lt;/div&gt;<br/>
+               </br>
+					&lt;script type="text/javascript" src="cordova.js"&gt;&lt;/script&gt;<br/>
+               &lt;script type="text/javascript" <br/>
+					<span class="indent3"/>
+					src="bower_components/jquery/dist/jquery.min.js"&gt;&lt;/script&gt;<br/>
+               &lt;script type="text/javascript" <br/>
+					<span class="indent3"/>
+               src="bower_components/fastclick/lib/fastclick.js"&gt;&lt;/script&gt;<br/>
+               &lt;script type="text/javascript" <br/>
+					<span class="indent3"/>
+               src="bower_components/handlebars/handlebars.min.js"&gt;&lt;/script&gt;<br/>
+               &lt;script type="text/javascript" src="js/data.js"&gt;&lt;/script&gt;<br/>
+               &lt;script type="text/javascript" src="js/view.js"&gt;&lt;/script&gt;<br/>
+               &lt;script type="text/javascript" src="js/app.js"&gt;&lt;/script&gt;<br/>
+               &lt;script&gt;
+					<div class="indent1">
+					app.bindEvents();<br/>
+               $(function(){</br/>
+					<span class="indent1"/>app.initialize();<br/>
+               });
+					</div>
+               <span class="indent1"/>&lt;/script&gt;
+					</div>
+               &lt;/body&gt;<br/>
+               &lt;/html&gt;
+            </code>
+				<code>vi js/app.js;</code>
+				<code class="file">
+				var app = {
+				<div class="indent1">
+					isCordova: typeof cordova !== 'undefined',<br/>
+					messages: {
+					<div class="indent1">
+						title: "Pizzeria",</br>
+						order: "Order"
+					</div>	
+					},<br/>
+					initialize: function(){
+					<div class="indent1">
+						console.log('app initializing');<br/>
+					 	this.pizzeriaView.initialize();<br/>
+					</div>
+					},<br/>
+  				   bindEvents: function() {
+					<div class="indent1">
+						if(this.isCordova){<br/>
+					  	 <span class="indent1"/>document.addEventListener('deviceready', app.onDeviceReady, false);<br/>
+					 	}
+					</div>
+					},<br/>
+					onDeviceReady: function() {
+					<div class="indent1">
+						console.log('deviceready');<br/>
+						FastClick.attach(document.body);</br>
+					</div>
+					},<br/>
+					pizzzeriaView: new PizzeriaView()
+				</div>
+				};
+				</code>
+				<code>vi js/view.js;</code>
+				<code class="file">
+				var PizzeriaView = function(){
+					<div class="indent1">
+					this.initialize = function(){
+						<div class="indent1">
+						</div>
+					}<br/>
+					</div>
+				};
+				</code>
+				<p>
+					If you open this in your browser
+					then you should see a plain page with no errors in the console
+					(apart from 404 for the cordova.js file).
+				</p>
+
+            <a name="pizzeria_menu"></a>
+            <h4>Menu</h4>
+				<p>
+					Add some pizza as data.
+				</p>
+				<code>vi js/data.js;</code>
+				<code class="file">
+					var pizzas = {<br/>
+						<span class="indent1"/>"1": {<br/>
+							<span class="indent2"/>id: "1",<br/>
+							<span class="indent2"/>title: "Hawaii",<br/>
+							<span class="indent2"/>ingredients: ["Pinaple","Ham"],<br/>
+							<span class="indent2"/>price: 9.99<br/>
+						<span class="indent1"/>},<br/>
+						<span class="indent1"/>"2": {<br/>
+							<span class="indent2"/>id: "2",<br/>
+							<span class="indent2"/>title: "Pepperoni",<br/>
+							<span class="indent2"/>ingredients: ["Pepperoni"],<br/>
+							<span class="indent2"/>price: 8.99<br/>
+						<span class="indent1"/>},<br/>
+						<span class="indent1"/>"3": {<br/>
+							<span class="indent2"/>id: "3",<br/>
+							<span class="indent2"/>title: "Margerita",<br/>
+							<span class="indent2"/>ingredients: [],<br/>
+							<span class="indent2"/>price: 7.99<br/>
+						<span class="indent1"/>}<br/>
+					};
+				</code>
+				<p>
+					We modify the PizzeriaView and add a MenuView.
+				</p>
+				<code>vi js/view.js;</code>
+				<code class="file">
+				var MenuView = function(){
+					<div class="indent1">
+					this.header &nbsp;= "&lt;div/&gt;";<br/>
+					this.content = "&lt;div/&gt;";<br/>
+					this.initialize = function(){
+						<div class="indent1">
+							this.header &nbsp;= Handlebars.compile("menu-header-template").html();<br/>
+							this.content = Handlebars.compile("menu-content-template").html();<br/>
+						</div>
+					}<br/>
+					this.render = function(){
+					<div class="indent1">
+					 	var context = {
+						<div class="indent1">
+							messages: messages,<br/>
+							pizzas:  &nbsp;&nbsp;pizzas
+						</div>
+						}; <br/>
+						$('#header').html(this.header(context));<br/>
+						$('.content').html(this.content(context));
+					</div>
+					}
+					</div>
+				};<br/>
+				<br/>
+				var PizzeriaView = function(){
+				<div class="indent1">
+					this.menuView = new MenuView();<br/>
+					this.initialize = function();<br/>
+					<div class="indent1">
+						this.menuView.initialize();<br/>
+						this.menuView.render();
+					</div>
+					}
+				</div>
+				};
+				</code>
+				<p>
+					Add a menu template to the index.html file.
+					Just above the <em>cordova.js</em> script line.
+				</p>
+				<code>vi index.html;</code>
+				<code class="file">
+					&lt;script id="menu-header-template" type="text/template"&gt;<br/>
+					<div class="indent1">
+						&lt;h1&gt;{{messages.title}}&lt;/h1&gt;
+					</div>
+					&lt;/script&gt;<br/>
+					<br/>
+					&lt;script id="menu-content-template" type="text/template"&gt;
+					<div class="indent1">
+					   &lt;div class="card"&gt;
+						<div class="indent1">
+					   	&lt;ul class="table-view pizzas"&gt;<br/>
+							{{#each pizzas}}
+							<div class="indent1">
+									&lt;li class="table-view-cell &gt;
+                           <div class="indent1">
+                              &lt;a class="navigate-right" href="#" data-pizzaid="{{id}}"&gt;
+									   <div class="indent1">
+										  {{title}}
+                             </div>
+                             &lt;/a&gt;
+									</div>
+									&lt;/li&gt;	
+							</div>
+							{{/each}}<br/>
+							&lt;/ul&gt;
+						</div>
+						&lt;/div&gt;
+					</div>
+					&lt;/script&gt;
+				</code>
+				<p>
+					This should show a menu list of pizzas on the front page.
+				</p>
+
+            <a name="pizzeria_details"></a>
+            <h4>Detail</h4>
+				<p>
+					One way of interacting with the app is to enable
+					people to click on a pizza to find out more details.
+				</p>
+				
+				<p>
+					We add a PizzaView to the view.js.
+				</p>
+				<code>vi js/view.js;</code>
+				<code class="file">
+					var PizzaView = function(){
+					<div class="indent1">
+						this.header &nbsp;= "&lt;div/&gt;";<br/>
+						this.content = "&lt;div/&gt;";<br/>
+						this.initialize = function(){
+						<div class="indent1">
+							this.header &nbsp;= Handlebars.compile("details-header-template").html();<br/>
+							this.content = Handlebars.compile("details-content-template").html();
+						</div>
+						}<br/>
+						this.render = function(pizzaId){
+                  <div class="indent1">
+                     var pizza &nbsp;&nbsp;= pizzas[pizzaId];<br/>
+                     var context = {
+                     <div class="indent1">
+                        messages: messages,<br/>
+                        pizza:  &nbsp;&nbsp;pizza
+                     </div>
+                     }; <br/>
+                     $('#header').html(this.header(context));<br/>
+                     $('.content').html(this.content(context));<br/>
+                     $('.parent-link').click(function(){  
+                     <div class="indent1">
+                        app.pizzeriaView.menuView.render();
+                     </div>
+                     };
+                  </div>
+						}
+					</div>
+					};
+				</code>
+            <p>
+               Include templates for pizza detail.
+            </p>
+            <code>vi index.html;</code>
+            <code class="file">
+               &lt;script id="details-header-template" type="text/template"&gt;
+               <div class="indent1">
+                  &lt;a class="parent-link icon icon-left-nav pull-left" data-transition="slide-out" href="#item"&gt;&lt;/a&gt;<br/>
+                  &lt;h1&gt;{{messages.title}}&lt;/h1&gt;
+               </div>
+               &lt;/script&gt;<br/>
+               <br/>
+               &lt;script id="details-content-template" type="text/template"&gt;
+               <div class="indent1">
+                  &lt;div class="card"&gt;
+                  <div class="indent1">
+                     &lt;ul class="table-view"&gt;
+                     <div class="indent1">
+                        &lt;li class="table-view-cell"&gt;
+                        <div class="indent1">
+                           {{pizza.title}}
+                        </div>
+                        &lt;/li&gt;<br/>
+                        &lt;li class="table-view-cell"&gt;
+                        <div class="indent1">
+                           {{pizza.ingredients}}
+                        </div>
+                        &lt;/li&gt;<br/>
+                        &lt;li class="table-view-cell"&gt;
+                        <div class="indent1">
+                           {{pizza.price}}
+                        </div>
+                        &lt;/li&gt;
+                     </div>
+                     &lt;/ul&gt;
+                  </div>
+                  &lt;/div&gt;</br/>
+                  &lt;div class="content-padded"&gt;
+                  <div class="indent1">
+						   &lt;form action="#" class="order-form"&gt;
+							<div class="indent1">
+							  &lt;input type="hidden" name="pizzaId" value="{{pizza.id}}"/&gt;<br/>
+							  &lt;button class="btn btn-positive btn-block"<br/>
+							  <span class="indent1"/>type="submit"&gt;{{messages.order}}&lt;/button&gt;
+							</div>
+							&lt;/form&gt;
+                  </div>
+                  &lt;/div&gt;
+               </div>
+               &lt;/script&gt;
+            </code>
+				<p>
+					And then modify MenuView to call it when the correct event is triggered.
+				</p>
+				<code>vi js/view.js;</code>
+				<code class="file">
+				   var MenuView = function(){
+               <div class="indent1">
+                  this.header &nbsp;= "&lt;div/&gt;";<br/>
+                  this.content = "&lt;div/&gt;";<br/>
+                  this.pizzaView = new PizzaView();<br/>
+                  this.initialize = function(){
+                  <div class="indent1">
+                     this.pizzaView.initialize();<br/>
+                     this.header &nbsp;= Handlebars.compile("menu-header-template").html();<br/>
+                     this.content = Handlebars.compile("menu-content-template").html();<br/>
+                  </div>
+                  }<br/>
+                  this.render = function(){
+                  <div class="indent1">
+                     var context = {
+                     <div class="indent1">
+                        messages: messages,<br/>
+                        pizzas:  &nbsp;&nbsp;pizzas
+                     </div>
+                     }; <br/>
+                     $('#header').html(this.header(context));<br/>
+                     $('.content').html(this.content(context));<br/>
+                     $('.pizzas li a').click(function(){  
+                     <div class="indent1">
+                        var pizzaId = $(this).data("pizzaid");<br/>
+                        app.pizzeriaView.menuView.pizzaView.render(pizzaId);
+                     </div>
+                     };
+                  </div>
+                  }
+                  </div>
+               };
+				</code>
+            <p>
+               You should now able to list and view each pizza.
+            </p>
+
+
+            <a name="pizzeria_order"></a>
+            <h4>Order</h4>
+				<p>
+					To order a pizza
+					we need to intercept clicking the order button 
+					on the pizza details page.
+					And then show a confirmation page.
+				</p>
+				<p>
+					The pizza details already contains the button
+					and it is wrapped in a form with relevant information in it.
+				</p>
+				<p>
+					Lets add a form submission event handler to the PizzaView.
+					And create a OrderConfirmView as well.
+				</p>
+				<code>vi view.js;</code>
+				<code class="file">
+					var OrderConfirmView = function(){
+					<div class="indent1">
+						this.header &nbsp;= "&lt;div/&gt;";<br/>
+						this.content = "&lt;div/&gt;";<br/>
+						this.initialize = function(){
+						<div class="indent1">
+							this.header &nbsp;= Handlebars.compile("details-header-template").html();<br/>
+							this.content = Handlebars.compile("confirm-content-template").html();
+						</div>
+						};<br/>
+						this.render = function(pizzaId){
+						<div class="indent1">
+                     var pizza &nbsp;&nbsp;= pizzas[pizzaId];<br/>
+                     var context = {
+                     <div class="indent1">
+                        messages: messages,<br/>
+                        pizza:  &nbsp;&nbsp;pizza
+                     </div>
+                     $('#header').html(this.header(context));<br/>
+                     $('.content').html(this.content(context));<br/>
+                     $('.parent-link').click(function(){  
+                     <div class="indent1">
+                        app.pizzeriaView.menuView.pizzaView.render(pizzaId);
+                     </div>
+                     };<br/>
+						</div>
+						};
+					</div>
+					};<br/>
+					var PizzaView = function(){
+					<div class="indent1">
+						this.header &nbsp;= "&lt;div/&gt;";<br/>
+						this.content = "&lt;div/&gt;";<br/>
+						this.initialize = function(){
+						<div class="indent1">
+							this.header &nbsp;= Handlebars.compile("details-header-template").html();<br/>
+							this.content = Handlebars.compile("details-content-template").html();
+						</div>
+						}<br/>
+						this.render = function(pizzaId){
+                  <div class="indent1">
+                     var pizza &nbsp;&nbsp;= pizzas[pizzaId];<br/>
+                     var context = {
+                     <div class="indent1">
+                        messages: messages,<br/>
+                        pizza:  &nbsp;&nbsp;pizza
+                     </div>
+                     }; <br/>
+                     $('#header').html(this.header(context));<br/>
+                     $('.content').html(this.content(context));<br/>
+                     $('.parent-link').click(function(){  
+                     <div class="indent1">
+                        app.pizzeriaView.menuView.render();
+                     </div>
+                     };<br/>
+                     $('.order-form').submit(function(event){  
+                     <div class="indent1">
+								event.preventDefault();<br/>
+								var values = {};</br>
+								var form = $(this);</br>
+								$.each(form.serializeArray(), function(i, field) {
+								<div class="indent1">
+									values[field.name] = field.value;
+								</div>
+								});<br/>
+                        app.pizzeriaView.menuView.pizzaView.confirmView.render(values.pizzaId);
+                     </div>
+                     };
+                  </div>
+						}
+					</div>
+					};
+				</code>
+				<p>
+					Create a confirm page template.
+				</p>
+				<code>vi index.html</code>
+				<code class="file">
+					&lt;script id="confirm-content-template" type="text/template"&gt;<br/>
+					<div class="indent1">
+                  &lt;div class="card content-padded"&gt;
+                  <div class="indent1">
+							Pizza {{pizza.title}} ordered
+						</div>
+						&lt;/div&gt;
+					</div>
+					&lt;/script&gt;<br/>
+				</code>
+				<p>
+					You can now order a pizza!
+				</p>
+
+            <a name="next"></a>
+            <h3>What Next</h3>
+				<p>
+					Obviously this is just a rudementary example
+					and does not actually order any real pizzas!
+					But it does demonstrate the basics of 
+					iterating and displaying collections of data, 
+					passing parameters along,
+					and submitting forms.
+				</p>
+				<p>
+					From this you can expand to 
+					include storage, synchronising offline data,
+					external API calls, application resume etc.
+					You can add Ratchet's or other javascript libraries
+					to slide and fade in pages,
+					use the history API etc.
+					And also experiment with Cordova's <a href="">plugins</a>
+					to use other features available.
+				</p>
+
+
+            <a name="reference"></a>
+            <h3>References</h3>
+            <ul>
+               <li><a href="http://cordova.apache.org">Cordova</a></li>
+               <li><a href="http://phonegap.com">Phonegap</a></li>
+               <li><a href="http://goratchet.com">Ratchet</a></li>
+               <li><a href="http://handlebarsjs.com">Handlebars</a></li>
+               <li><a href="http://bower.io">Bower</a></li>
+               <li><a href="http://jquery.com">JQuery</a></li>
+               <li><a href="http://github.com/ftlabs/fastclick">Fastclick</a></li>
+               <li><a href="http://ccoenraets.github.io/cordova-tutorial/index.html">Apache Cordova Tutorial</a></li>
+               <li><a href="cordova_vagrant_android.html">Cordova with Vagrant for Android</a></li>
+               <!--
+               <li><a href=""></a></li>
+               -->
+            </ul>
+
+
+            <a name="contact"></a>
+            <h3>Feedback</h3>
+            <p>
+               Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+            </p>
+            <p>
+               <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+               <a href="http://www.eray.co.uk">Hire Ivar</a> for short term advice or long term consultancy.
+            </p>
+            <p>
+               Otherwise <a href="/contact">contact flurdy</a>.
+               Especially for things factually incorrect.
+               Apologies for procrastinated replies.
+            </p>
+
+			</div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+code span.host { display: none; }
+code { max-width: 50em; }
+code.wide { max-width: 60em; }
+code.file { max-width: 50em; }
+#ship { min-width: 55em; max-width: 60em; }
+#starboard { margin-top: 4em; width: 12em; }
+#starboard .shirts { padding: 1em 1em 4em 4em; }
+#starboard ul ul { display: block; }
+code em { color: #bbffbb; }
+
