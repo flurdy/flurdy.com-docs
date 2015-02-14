@@ -16,6 +16,21 @@
 		.screenshot { text-align: center; afloat: right; clear: left; margin: 1em; padding: 0.2em; }
 		.screenshot img { width: 10em; border: 3px dashed silver; padding: 0.2em; }
    </style>
+   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+   <script type="text/javascript">
+      var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-281408-1']);
+     _gaq.push(['_trackPageview']);
+
+      (function() {
+      if(location.host!='localhost'){
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      }
+     })(); 
+   </script>
+   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 <body>
    <div id="ocean">
@@ -46,6 +61,14 @@
             Last updated: 12th Feb 2015.
 				Draft version, not yet finished.
          </div>
+         <!-- cordova app leaderboard 2 -->
+         <ins class="adsbygoogle"
+              style="display:inline-block;width:728px;height:90px"
+              data-ad-client="ca-pub-7805345644641760"
+              data-ad-slot="8404002083"></ins>
+         <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+         </script>
 			<div id="starboard">
 				<nav>
                <h5>Contents</h5>
@@ -167,7 +190,8 @@
                <a href="cordova_vagrant_android.html">Cordova (Phonegap) within Vagrant for Android</a> howto.
                It is a step by step guide on installing 
                and setting up Cordova for building Android applications.
-               It optionally uses <a href="http://vagrantup.com">Vagrant</a> as a means of keeping it separate from your local machine.
+               It optionally uses <a href="http://vagrantup.com">Vagrant</a> as a means of keeping it separate from your local machine,
+               but you can install everything locally if you prefer.
             </p>
 
             <a name="create_app"></a>
@@ -191,21 +215,26 @@
 				<p>
 					Bower can be installed via <a href="http://nodejs.org">Node</a>.
 				</p>
-				<code>node install -g bower</code>
+				<code>node install -g bower;</code>
+				<p>
+					We then initialise Bower.
+					Set the name to Pizzeria and accept the default for  everything else.
+				</p>
+				<code>cd www;</code>
+				<code>bower init</code>
 				<p>
 					We then add each library with Bower.
 				</p>
 
             <a name="add_ratchet"></a>
             <h4>Add Ratchet</h4>
-				<code>cd www;</code>
-				<code>bower install -s ratchet</code>
+				<code>bower install -S -p ratchet</code>
 				<p>
 				</p>
 
             <a name="add_handlebars"></a>
             <h4>Add Handlebars</h4>
-				<code>bower install -s handlebars</code>
+				<code>bower install -S -p handlebars</code>
 				<p>
 				</p>
 
@@ -217,8 +246,8 @@
 					<a href="http://ithub.com/ftlabs/fastclick/">Fastclick</a> to support touch click events better.
 
 				</p>
-				<code>bower install -s fastclick;</code>
-				<code>bower install -s jquery</code>
+				<code>bower install -S -p fastclick;</code>
+				<code>bower install -S -p jquery</code>
 				
 				<p>
 					You can keep the application lighter
@@ -239,8 +268,8 @@
                &lt;!DOCTYPE html&gt;<br/>
                &lt;html&gt;<br/>
                &lt;head&gt;<br/>
-               <span class="indent1"/>&lt;title&gt;Hello world&lt;title&gt;</br/>
-               <span class="indent1"/>&lt;link rel="stylesheet" src="bower_components/ratchet/dist/ratchet.min.css" /&gt;<br/>
+               <span class="indent1"/>&lt;title&gt;Hello World&lt;/title&gt;</br/>
+               <span class="indent1"/>&lt;link rel="stylesheet" href="bower_components/ratchet/dist/css/ratchet.min.css" /&gt;<br/>
                &lt;/head&gt;<br/>
                &lt;body&gt;<br/>
                <span class="indent1"/>&lt;div class="content"&gt;<br/>
@@ -261,8 +290,8 @@
                src="bower_components/handlebars/handlebars.min.js"&gt;&lt;/script&gt;<br/>
                <span class="indent1"/>&lt;script&gt;<br/>
                <span class="indent2"/>$(function(){</br/>
-               <span class="indent3"/>var headerTemplate = Handlebars.compile("header-template");</br/>
-               <span class="indent3"/>$('.content').html(template.html());</br/>
+               <span class="indent3"/>var headerTemplate = Handlebars.compile($("#header-template").html());</br/>
+               <span class="indent3"/>$('.content').html(headerTemplate);</br/>
                <span class="indent2"/>});</br/>
                <span class="indent1"/>&lt;/script&gt;<br/>
                &lt;/body&gt;<br/>
@@ -285,6 +314,10 @@
 					If opened in a browser then console 404 errors for <em>cordova.js</em> is expected 
 					as that only exists if on a device.
 				</p>
+				<p>
+					The source files for this step is available at 
+					<a href="http://github.com/flurdy/cordova_ratchet_handlebars/tree/master/www-helloworld">github/flurdy/cordova-ratchet-handlebars/tree/master/www-helloworld</a>.
+				</p>
 
             <div class="screenshot">
                <img src="hello.png" alt="hello" title="How the Hello World should look like"/>
@@ -305,11 +338,11 @@
             <a name="pizzeria_scaffold"></a>
             <h4>Scaffold</h4>
 				<p>
-					We will replace the hello world <em>index.html</em>.
-					And add 3 javascript files.
+					We will replace the hello world <em>index.html</em>
+					with one that includes a header tab bar and a bottom navigation bar.
+					We will also link it to the 3 javascript files we will add.
 				</p>
 
-				<code>touch js/data.js;</code>
             <code>vi index.html;</code>
             <code class="file">
                &lt;!DOCTYPE html&gt;<br/>
@@ -323,17 +356,18 @@
                   <span class="indent1"/>content="initial-scale=1, maximum-scale=1, user-scalable=yes, minimal-ui"&gt;<br/>
                   &lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;<br/>
                   &lt;meta name="apple-mobile-web-app-status-bar-style" content="black"&gt;<br/>
-                  &lt;title&gt;Pizzeria&lt;title&gt;</br/>
-                  &lt;link rel="stylesheet" src="bower_components/ratchet/dist/ratchet.min.css" /&gt;<br/>
+                  &lt;title&gt;Pizzeria&lt;/title&gt;</br/>
                   &lt;link rel="stylesheet"<br/>
-                  <span class="indent1">src="bower_components/ratchet/dist/ratchet-theme-ios.min.css" /&gt;
+                  <span class="indent1">href="bower_components/ratchet/dist/css/ratchet.min.css" /&gt;<br/>
+                  &lt;link rel="stylesheet"<br/>
+                  <span class="indent1">href="bower_components/ratchet/dist/ratchet-theme-ios.min.css" /&gt;
                </div>
                &lt;/head&gt;<br/>
                &lt;body&gt;<br/>
 					<div class="indent1">
                	&lt;header id="header" class="bar bar-nav"&gt;<br/>
 						<div class="indent1">
-							&lt;h1&gt;Loading Pizzeria&lt;/h1&gt;
+							&lt;h1 class="title"&gt;Pizzeria&lt;/h1&gt;
 						</div>
                	&lt;/header&gt;<br/>
                	&lt;nav id="footer" class="bar bar-tab"&gt;
@@ -351,6 +385,7 @@
                         </div>
                         &lt;/li&gt;
                      </div>
+                     &lt;/ul&gt;
 						</div>
                	&lt;/nav&gt;<br/>
 						&lt;div class="content"&gt;<br/>
@@ -382,6 +417,11 @@
                &lt;/body&gt;<br/>
                &lt;/html&gt;
             </code>
+
+				<p>
+					<em>app.js</em> is where we configure our app.
+				</p>
+				<code>touch js/data.js;</code>
 				<code>vi js/app.js;</code>
 				<code class="file">
 				var app = {
@@ -412,10 +452,11 @@
 						FastClick.attach(document.body);</br>
 					</div>
 					},<br/>
-					pizzzeriaView: new PizzeriaView()
+					pizzeriaView: new PizzeriaView()
 				</div>
 				};
 				</code>
+
 				<code>vi js/view.js;</code>
 				<code class="file">
 				var PizzeriaView = function(){
@@ -429,8 +470,12 @@
 				</code>
 				<p>
 					If you open this in your browser
-					then you should see a plain page with no errors in the console
+					then you should see a plain loading page with no errors in the console
 					(apart from 404 for the cordova.js file).
+				</p>
+				<p>
+					The source files for this step is available at 
+					<a href="http://github.com/flurdy/cordova_ratchet_handlebars/tree/master/www-scaffold">github/flurdy/cordova-ratchet-handlebars/tree/master/www-scaffold</a>.
 				</p>
 
 				<div class="screenshot">
@@ -449,19 +494,19 @@
 						<span class="indent1"/>"1": {<br/>
 							<span class="indent2"/>id: "1",<br/>
 							<span class="indent2"/>title: "Hawaii",<br/>
-							<span class="indent2"/>ingredients: ["Pinaple","Ham"],<br/>
+							<span class="indent2"/>ingredients: ["Pineapple","Ham"],<br/>
 							<span class="indent2"/>price: 9.99<br/>
 						<span class="indent1"/>},<br/>
 						<span class="indent1"/>"2": {<br/>
 							<span class="indent2"/>id: "2",<br/>
-							<span class="indent2"/>title: "Pepperoni",<br/>
+							<span class="indent2"/>title: "Supreme",<br/>
 							<span class="indent2"/>ingredients: ["Pepperoni"],<br/>
 							<span class="indent2"/>price: 8.99<br/>
 						<span class="indent1"/>},<br/>
 						<span class="indent1"/>"3": {<br/>
 							<span class="indent2"/>id: "3",<br/>
 							<span class="indent2"/>title: "Margerita",<br/>
-							<span class="indent2"/>ingredients: [],<br/>
+							<span class="indent2"/>ingredients: ["Cheese"],<br/>
 							<span class="indent2"/>price: 7.99<br/>
 						<span class="indent1"/>}<br/>
 					};
@@ -477,15 +522,15 @@
 					this.content = "&lt;div/&gt;";<br/>
 					this.initialize = function(){
 						<div class="indent1">
-							this.header &nbsp;= Handlebars.compile("menu-header-template").html();<br/>
-							this.content = Handlebars.compile("menu-content-template").html();<br/>
+							this.header &nbsp;= Handlebars.compile($('#menu-header-template').html());<br/>
+							this.content = Handlebars.compile($('#menu-content-template').html());
 						</div>
 					}<br/>
 					this.render = function(){
 					<div class="indent1">
 					 	var context = {
 						<div class="indent1">
-							messages: messages,<br/>
+							messages: app.messages,<br/>
 							pizzas:  &nbsp;&nbsp;pizzas
 						</div>
 						}; <br/>
@@ -499,7 +544,7 @@
 				var PizzeriaView = function(){
 				<div class="indent1">
 					this.menuView = new MenuView();<br/>
-					this.initialize = function();<br/>
+					this.initialize = function(){
 					<div class="indent1">
 						this.menuView.initialize();<br/>
 						this.menuView.render();
@@ -509,14 +554,14 @@
 				};
 				</code>
 				<p>
-					Add a menu template to the index.html file.
+					Add menu header and content template to the index.html file.
 					Just above the <em>cordova.js</em> script line.
 				</p>
 				<code>vi index.html;</code>
 				<code class="file">
 					&lt;script id="menu-header-template" type="text/template"&gt;<br/>
 					<div class="indent1">
-						&lt;h1&gt;{{messages.title}}&lt;/h1&gt;
+						&lt;h1 class="title"&gt;{{messages.title}}&lt;/h1&gt;
 					</div>
 					&lt;/script&gt;<br/>
 					<br/>
@@ -527,7 +572,7 @@
 					   	&lt;ul class="table-view pizzas"&gt;<br/>
 							{{#each pizzas}}
 							<div class="indent1">
-									&lt;li class="table-view-cell &gt;
+									&lt;li class="table-view-cell"&gt;
                            <div class="indent1">
                               &lt;a class="navigate-right" href="#" data-pizzaid="{{id}}"&gt;
 									   <div class="indent1">
@@ -547,7 +592,10 @@
 				<p>
 					This should show a menu list of pizzas on the front page.
 				</p>
-
+				<p>
+					The source files for this step is available at 
+					<a href="http://github.com/flurdy/cordova_ratchet_handlebars/tree/master/www-menu">github/flurdy/cordova-ratchet-handlebars/tree/master/www-menu</a>.
+				</p>
 				<div class="screenshot">
 					<img src="menu.png" alt="menu" title="How the menu should look like"/>
 				</div>
@@ -571,8 +619,8 @@
 						this.content = "&lt;div/&gt;";<br/>
 						this.initialize = function(){
 						<div class="indent1">
-							this.header &nbsp;= Handlebars.compile("details-header-template").html();<br/>
-							this.content = Handlebars.compile("details-content-template").html();
+							this.header &nbsp;= Handlebars.compile($('#details-header-template').html());<br/>
+							this.content = Handlebars.compile($('#details-content-template').html());
 						</div>
 						}<br/>
 						this.render = function(pizzaId){
@@ -580,7 +628,7 @@
                      var pizza &nbsp;&nbsp;= pizzas[pizzaId];<br/>
                      var context = {
                      <div class="indent1">
-                        messages: messages,<br/>
+                        messages: app.messages,<br/>
                         pizza:  &nbsp;&nbsp;pizza
                      </div>
                      }; <br/>
@@ -590,7 +638,7 @@
                      <div class="indent1">
                         app.pizzeriaView.menuView.render();
                      </div>
-                     };
+                     });
                   </div>
 						}
 					</div>
@@ -603,8 +651,9 @@
             <code class="file">
                &lt;script id="details-header-template" type="text/template"&gt;
                <div class="indent1">
-                  &lt;a class="parent-link icon icon-left-nav pull-left" data-transition="slide-out" href="#item"&gt;&lt;/a&gt;<br/>
-                  &lt;h1&gt;{{messages.title}}&lt;/h1&gt;
+                  &lt;a class="parent-link icon icon-left-nav pull-left" 
+                     href="#"&gt;&lt;/a&gt;<br/>
+                  &lt;h1 class="title"&gt;{{messages.title}}&lt;/h1&gt;
                </div>
                &lt;/script&gt;<br/>
                <br/>
@@ -638,8 +687,9 @@
 						   &lt;form action="#" class="order-form"&gt;
 							<div class="indent1">
 							  &lt;input type="hidden" name="pizzaId" value="{{pizza.id}}"/&gt;<br/>
-							  &lt;button class="btn btn-positive btn-block"<br/>
-							  <span class="indent1"/>type="submit"&gt;{{messages.order}}&lt;/button&gt;
+							  &lt;button class="btn btn-positive btn-block" type="submit"&gt;<br/>
+							  <span class="indent1"/>{{messages.order}}</br>
+                       &lt;/button&gt;
 							</div>
 							&lt;/form&gt;
                   </div>
@@ -660,15 +710,15 @@
                   this.initialize = function(){
                   <div class="indent1">
                      this.pizzaView.initialize();<br/>
-                     this.header &nbsp;= Handlebars.compile("menu-header-template").html();<br/>
-                     this.content = Handlebars.compile("menu-content-template").html();<br/>
+                     this.header &nbsp;= Handlebars.compile($('#menu-header-template').html());<br/>
+                     this.content = Handlebars.compile($('#menu-content-template').html());
                   </div>
                   }<br/>
                   this.render = function(){
                   <div class="indent1">
                      var context = {
                      <div class="indent1">
-                        messages: messages,<br/>
+                        messages: app.messages,<br/>
                         pizzas:  &nbsp;&nbsp;pizzas
                      </div>
                      }; <br/>
@@ -679,7 +729,7 @@
                         var pizzaId = $(this).data("pizzaid");<br/>
                         app.pizzeriaView.menuView.pizzaView.render(pizzaId);
                      </div>
-                     };
+                     });
                   </div>
                   }
                   </div>
@@ -688,10 +738,15 @@
             <p>
                You should now able to list and view each pizza.
             </p>
+				<p>
+					The source files for this step is available at 
+					<a href="http://github.com/flurdy/cordova_ratchet_handlebars/tree/master/www-details">github/flurdy/cordova-ratchet-handlebars/tree/master/www-details</a>.
+				</p>
 
 				<div class="screenshot">
 					<img src="detail.png" alt="detail" title="How the pizza detail should look like"/>
 				</div>
+
 
             <a name="pizzeria_order"></a>
             <h4>Order</h4>
@@ -717,8 +772,8 @@
 						this.content = "&lt;div/&gt;";<br/>
 						this.initialize = function(){
 						<div class="indent1">
-							this.header &nbsp;= Handlebars.compile("details-header-template").html();<br/>
-							this.content = Handlebars.compile("confirm-content-template").html();
+							this.header &nbsp;= Handlebars.compile($('#details-header-template').html());<br/>
+							this.content = Handlebars.compile($('#confirm-content-template').html());
 						</div>
 						};<br/>
 						this.render = function(pizzaId){
@@ -726,28 +781,32 @@
                      var pizza &nbsp;&nbsp;= pizzas[pizzaId];<br/>
                      var context = {
                      <div class="indent1">
-                        messages: messages,<br/>
+                        messages: app.messages,<br/>
                         pizza:  &nbsp;&nbsp;pizza
                      </div>
+                     };</br>
                      $('#header').html(this.header(context));<br/>
                      $('.content').html(this.content(context));<br/>
                      $('.parent-link').click(function(){  
                      <div class="indent1">
                         app.pizzeriaView.menuView.pizzaView.render(pizzaId);
                      </div>
-                     };<br/>
+                     });
 						</div>
-						};
+						}
 					</div>
 					};<br/>
+               <br/>
 					var PizzaView = function(){
 					<div class="indent1">
 						this.header &nbsp;= "&lt;div/&gt;";<br/>
 						this.content = "&lt;div/&gt;";<br/>
+                  this.orderView = new OrderConfirmView();<br/>
 						this.initialize = function(){
 						<div class="indent1">
-							this.header &nbsp;= Handlebars.compile("details-header-template").html();<br/>
-							this.content = Handlebars.compile("details-content-template").html();
+                     this.orderView.initialize();</br>
+							this.header &nbsp;= Handlebars.compile($('#details-header-template').html());<br/>
+							this.content = Handlebars.compile($('#details-content-template').html());
 						</div>
 						}<br/>
 						this.render = function(pizzaId){
@@ -755,7 +814,7 @@
                      var pizza &nbsp;&nbsp;= pizzas[pizzaId];<br/>
                      var context = {
                      <div class="indent1">
-                        messages: messages,<br/>
+                        messages: app.messages,<br/>
                         pizza:  &nbsp;&nbsp;pizza
                      </div>
                      }; <br/>
@@ -765,7 +824,7 @@
                      <div class="indent1">
                         app.pizzeriaView.menuView.render();
                      </div>
-                     };<br/>
+                     });<br/>
                      $('.order-form').submit(function(event){  
                      <div class="indent1">
 								event.preventDefault();<br/>
@@ -776,9 +835,9 @@
 									values[field.name] = field.value;
 								</div>
 								});<br/>
-                        app.pizzeriaView.menuView.pizzaView.confirmView.render(values.pizzaId);
+                        app.pizzeriaView.menuView.pizzaView.orderView.render(values.pizzaId);
                      </div>
-                     };
+                     });
                   </div>
 						}
 					</div>
@@ -791,16 +850,24 @@
 				<code class="file">
 					&lt;script id="confirm-content-template" type="text/template"&gt;<br/>
 					<div class="indent1">
-                  &lt;div class="card content-padded"&gt;
+                  &lt;div class="card"&gt;
                   <div class="indent1">
-							Pizza {{pizza.title}} ordered
-						</div>
-						&lt;/div&gt;
+                     &lt;div class="content-padded"&gt;
+                     <div class="indent1">
+							  Pizza {{pizza.title}} ordered
+						   </div>
+						   &lt;/div&gt;
+                  </div>
+                  &lt;/div&gt;
 					</div>
 					&lt;/script&gt;<br/>
 				</code>
 				<p>
 					You can now order a pizza!
+				</p>
+				<p>
+					The source files for this step is available at 
+					<a href="http://github.com/flurdy/cordova_ratchet_handlebars/tree/master/www-order">github/flurdy/cordova-ratchet-handlebars/tree/master/www-order</a>.
 				</p>
 
 				<div class="screenshot">
@@ -825,7 +892,7 @@
 					to slide and fade in pages,
 					use the history API etc.
 					And also experiment with Cordova's <a href="">plugins</a>
-					to use other features available.
+					to use other device features available.
 				</p>
 
 
