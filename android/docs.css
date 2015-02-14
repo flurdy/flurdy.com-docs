@@ -7,4 +7,8 @@ code.file { max-width: 50em; }
 #starboard .shirts { padding: 1em 1em 4em 4em; }
 #starboard ul ul { display: block; }
 code em { color: #bbffbb; }
+header h3 { margin-top: 0.2em; }
+.indent3 { padding: 0 3em; }
+.screenshot { text-align: center; afloat: right; clear: left; margin: 1em; padding: 0.2em; }
+.screenshot img { width: 10em; border: 3px dashed silver; padding: 0.2em; }
 
