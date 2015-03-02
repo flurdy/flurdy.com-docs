@@ -175,4 +175,12 @@ table.output td {
 .indent2 {
 	padding: 0 2em;
 }
-
+@media all and (orientation: portrait) and (max-device-width: 600px) {
+	#starboard { display: none; }
+	header {
+		max-width: 23em;
+	}
+	#cargo {
+		max-width: 23em;	
+	}
+} 
