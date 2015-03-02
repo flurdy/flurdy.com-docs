@@ -16,6 +16,12 @@
     #starboard {
       width: 9em;
     }
+    p {
+      font-size: 0.8em;
+    }
+    code {
+      font-size: 0.8em;
+    }
    </style>
    <!-- Analytics -->
    <!-- Adsense -->
@@ -55,7 +61,7 @@
          <div id="jib">
             Started: March 2015.
             Last updated: 2nd Mar 2015.
-            Draft, not yet finished.
+            <em>Draft, not yet finished</em>.
          </div>
 
       <div id="starboard">
@@ -81,9 +87,13 @@
                       <li><a href="#setup_docker_swarm">Install Swarm</a></li>
                     </ul>
                   </li>
-                  <li><a href="#orchestrate_local">Orchestrate Locally</a></li>
+                  <li><a href="#orchestrate">Orchestrate</a>
+                    <ul>
+                      <li><a href="#local_machine">Local Machine</a></li>
+                    </ul>
+                  </li>
                   <li>
-                    <a href="#orchestrate_cloud">Push Orchestration to the Cloud</a>
+                    <a href="#orchestrate_cloud">Push to the Cloud</a>
                     <ul>
                       <li><a href="#swap_google">Google Container Engine</a></li>
                     </ul>
@@ -155,7 +165,7 @@
             </p>
             <p>
               Fig and its creators at <a href="http://www.orchardup.com">Orchard</a> got swallowed up by Docker,
-              and Docker has instead just released <a href="https://docs.docker.com/compose/">Docker Compose</a> as the tool to orchestrate containers to replace Fig <a href="">which is now deprecated</a>.
+              and Docker has instead just released <a href="https://docs.docker.com/compose/">Docker Compose</a> as the tool to orchestrate containers to replace Fig <a href="https://twitter.com/aanand/status/570957006523277312">which is now deprecated</a>.
             </p>
             <a name="what_docker_machine"></a>
             <h4>Docker Machine</h4>
@@ -199,7 +209,7 @@
             </p>
             <code>docker --version</code>
             <p>
-              (Read my <a href="docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a> howto for more etailed instructions and alternatives).
+              (Read my <a href="docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a> howto for more detailed instructions and alternatives).
             </p>
 
 
@@ -234,7 +244,7 @@
             <p>
               For OSX :
             </p>
-            <code>wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
+            <code class="wide">wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
             <code>chmod +x docker-machine_<em>darwin-amd64</em>;</code>
             <code>mv docker-machine_<em>darwin-amd64</em> /usr/local/bin/docker-machine</code>
             <p>
@@ -269,8 +279,8 @@
             <code>docker pull swarm</code>
 
 
-            <a name="orchestrate_local"></a>
-            <h3>Orchestrate locally</h3>
+            <a name="orchestrate"></a>
+            <h3>Orchestrate</h3>
             <p>
               Lets create a common basic 3 system architecture.
               One database based on <a href="http://postgresql.org">Postgres</a>.
@@ -278,21 +288,212 @@
               One simple frontend application based on <a href="http://www.playframework.com">Play</a>.
             </p>
             <p>
-              (My preference for all things <a href="http://scala-lang.org">Scala</a> is obvious, you might want to pull in other tech stacks).
-            </p>
-            <p>
               The frontend talks to the API and the API talks to the database.
             </p>
-            <code>?</code>
             <p>
-              The example code for this is available here <a href="http://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-example</a>.
+              My preference for all things <a href="http://scala-lang.org">Scala</a> is obvious, you might want to pull in other tech stacks instead. You can install a <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java JDK</a> and <a href="http://typesafe.com/get-started">Typesafe's Activator</a> to create the project, or just clone my example code for this is from <a href="http://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-example</a>. The example code use Java and Activator inside Docker images so you don't need to install them.
             </p>
+
+            <p>
+              The <em>frontend</em> application has a <em>Dockerfile</em> that describe it like this:
+            </p>
+            <code>vi frontend/Dockerfile</code>
+            <code class="file wide">
+              FROM flurdy/activator:latest<br/>
+              <br/>
+              MAINTAINER flurdy<br/>
+              <br/>
+              ENV DEBIAN_FRONTEND noninteractive<br/>
+              <br/>
+              ENV APPDIR /var/local/application<br/>
+              <br/>
+              ADD repositories /root/.sbt/<br/>
+              <br/>
+              ADD . /var/local/application<br/>
+              <br/>
+              WORKDIR /var/local/application<br/>
+              <br/>
+              RUN /usr/local/bin/activator stage<br/>
+              <br/>
+              WORKDIR /var/local/application<br/>
+              <br/>
+              ENTRYPOINT /var/local/application/target/universal/stage/bin/frontend<br/>
+              <br/>
+              CMD "-Dconfig.file=/etc/opt/frontend/docker.conf"<br/>
+              <br/>
+              EXPOSE 9000<br/>
+              EXPOSE 9999
+            </code>
+            <p>
+              This pulls in an Activator Docker image I have on <a href="http://hub.docker.com">Dockerhub</a>.
+              It adds a <em>repository</em> file to use local maven and ivy repositories to avoid 
+              constantly downloading the internet on each build.
+            </p>
+
+            <p>
+              The <em>service</em> application has a <em>Dockerfile</em> that describe it like this:
+            </p>
+            <code>vi service/Dockerfile</code>
+            <code class="file">
+              FROM flurdy/activator:latest
+              <br/>
+              MAINTAINER flurdy<br/>
+              <br/>
+              ENV DEBIAN_FRONTEND noninteractive<br/>
+              <br/>
+              ENV APPDIR /var/local/application<br/>
+              <br/>
+              ADD repositories /root/.sbt/<br/>
+              <br/>
+              ADD . /var/local/application<br/>
+              <br/>
+              WORKDIR /var/local/application<br/>
+              <br/>
+              ENTRYPOINT ["/usr/local/bin/activator"]<br/>
+              <br/>
+              EXPOSE 8880
+            </code>
+
+            <p>
+              The <em>docker-compose.yml</em> is what defines the orchestration for this system.
+            </p>
+            <code>vi docker-compose.yml;</code>
+            <code class="file">
+              frontend: 
+              <div class="indent1">   
+                 build: frontend <br/>
+                 entrypoint: /var/local/application/target/universal/stage/bin/frontend <br/>
+                 command: -Dconfig.file=/etc/opt/frontend/docker.conf <br/>
+                 links: 
+                  <div class="indent1">   
+                    - "service" 
+                 </div>
+                 ports: 
+                 <div class="indent1">   
+                    - "49950:9000" 
+                 </div>
+                 volumes: 
+                 <div class="indent1">   
+                    - ./frontend:/var/local/application:rw <br/>
+                    - frontend/conf:/etc/opt/frontend:ro
+                 </div>
+                 volumes_from: 
+                 <div class="indent1">   
+                    - maven
+                  </div>
+              </div>
+              service: 
+              <div class="indent1">   
+                 build: service <br/>
+                 command: run -Dconfig.file=/etc/opt/service/docker. <br/>
+                 links: 
+                 <div class="indent1">   
+                    - "database" 
+                 </div>
+                 ports:
+                 <div class="indent1">   
+                    - "49880:8880" 
+                 </div>
+                 expose: 
+                 <div class="indent1">   
+                    - "8880" 
+                 </div>
+                 volumes: 
+                 <div class="indent1">   
+                    - service:/var/local/application:rw <br/>
+                    - service/src/main/resources:/etc/opt/service:ro 
+                 </div> 
+                 volumes_from: 
+                 <div class="indent1">   
+                    - maven 
+                 </div>
+              </div>
+              database: 
+              <div class="indent1">   
+                 image: postgres:9.4 <br/>
+                 ports: 
+                 <div class="indent1">   
+                    - "49432:5432"
+                 </div>
+                 expose:
+                 <div class="indent1">   
+                    - "5432" 
+                 </div>
+              </div>
+              maven:
+              <div class="indent1">   
+                 image: debian:wheezy <br/>
+                 volumes: 
+                 <div class="indent1">   
+                    - ~/.m2:/root/.m2: <br/>
+                    - ~/.ivy2:/root/.ivy2:rw <br/>
+                    - frontend/repositories:/root/.sbt/repositories:ro
+                 </div>
+              </div>
+            </code>
+            <p>
+              It adds a database image, and also a maven image to <a href="http://blog.flurdy.com/2014/11/dont-download-internet-share-maven-ivy-docker.html">cache maven and ivy downloads</a>. 
+              The maven image does not even have to be running for the volumes to work with 
+              other containers.
+            </p>
+
+            <p>
+              Now lets build and run these. These steps are where you will spend a lot of time getting right....
+            </p>
+            <code>docker-compose build</code>
+            <p>
+              If buildt ok lets launch as a daemon.
+            </p>
+            <code>docker-compose run -d</code>
+            <p>
+              And check if it is running.
+            </p>
+            <code>docker-compose ps</code>
+            <p>
+              Some quick curl calls to see if it works ok.
+              Lets post a pizza order, and see if it is listed in the database afterwards.
+            </p>
+            <code>curl -x "{pizza: 'Pepperoni'}" "http://localhost:49950/pizza";</code>
+            <code>curl "http://localhost:49950/pizzas"</code>
+            <p>
+              Hopefull the response is something like this:
+            </p>
+            <code class="output">
+              [{ id: 1, title: "pepperoni", date: "2015-03-02"}]
+            </code>
+            <p>
+              (TODO: Make a more lightweight example...)
+            </p>
+
+
+
+            <h4>Local Machine</h4>
+            <p>
+              Lets create a local VM host with Machine.
+            </p>
+            <code>docker-machine create --driver virtualbox dev;</code>
+            <code>$(docker-machine env dev)</code>
+            <p>
+              This will download boot2docker as a local VM.
+              And suggest you update your default settings, 
+              basically replacing the original boot2docker settings.
+            </p>
+            <p>
+              Lets list current running machines, ie only the dev one.
+            </p>
+            <code>docker-machine ls</code>
+            <code class="output">
+              NAME   ACTIVE   DRIVER &nbsp;&nbsp;&nbsp;   STATE   &nbsp;  URL   
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SWARM<br/>
+              dev &nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtualbox   Running   tcp://192.168.99.100:2376
+             </code>   
 
 
             <a name="orchestrate_cloud"></a>
-            <h3>Push Orchestration to the cloud</h3>
+            <h3>Push to the cloud</h3>
             <p>
-              Once it works locally you can push it to integration, staging etc. 
+              Once the orchestration works locally in a Machine created VM you can push it to integration, staging etc. 
               Even you own hosting solution.
             </p>
             <a name="swap_google"></a>
@@ -328,8 +529,8 @@
             <a name="swap_aws"></a>
             <h4>Amazon AWS Container Service</h4>
             <p>
-              Lets try to push to <a href="https://aws.amazon.com/ecs/">Amazon AWS Container Service</a>.
-              First you need to register with the <a href="https://aws.amazon.com">Amazon AWS</a>,
+              To use <a href="https://aws.amazon.com/ecs/">Amazon AWS Container Service</a>
+              you need to first register with the <a href="https://aws.amazon.com">Amazon AWS</a>,
               if you do not already have an account.
               They do also give you a generous one month trial to experiment with.
               Unfortunately at the time of writing their Container Service is in a closed Beta,
@@ -340,8 +541,7 @@
             <a name="swap_digitalocean"></a>
             <h4>Digital Ocean</h4>
             <p>
-              And <a href="http://www.digitalocean.com">Digital Ocean</a>.
-              As with the others first create an account.
+              As with the others first create an account with <a href="http://www.digitalocean.com">Digital Ocean</a>.
             </p>
             <code>?</code>
 
@@ -383,6 +583,8 @@
                <li><a href="docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a></li>
                <li><a href="http://blog.flurdy.com/2014/11/dockerise-it-all-containerised-addiction.html">Dockerise it all - containerised addiction <br/>= CDD - Container Driven Development</a></li>
                <li><a href="https://github.com/progrium/dokku">Dokku</a></li>
+               <li><a href="http://panamax.io/">Panamax</a></li>
+               <li><a href="http://shipyard-project.com/">Shipyard</a></li>
                <!--
                <li><a href=""></a></li>
                -->
