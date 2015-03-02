@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Docker with Compose, Machine and Swarm,  easy steps from localhost to cloud providers</title>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <meta name="keyword" content="docker,container,virtualization,compose,fig,engine,swarm,machine,cluster,cloud,aws,amazon,google,digitalocean"/>
+   <meta name="description" content="Docker with Compose, Machine and Swarm, easy steps from localhost to cloud providers. Orchestrate applications, create VMs, cluster and scale, on AWS and Google Cloud and others"/>
+   <meta name="viewport" content="initial-scale=0.8"/>
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <style>
+    #ship {
+      min-width: 20em;
+      max-width: 50em;
+    }
+    #starboard {
+      width: 9em;
+    }
+   </style>
+   <!-- Analytics -->
+   <!-- Adsense -->
+</head>
+<body>
+
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>
+              Docker with Compose, Machine and Swarm, 
+              easy steps from localhost to cloud providers
+            </h1>
+            <h3>
+              Orchestrate applications, 
+              create VMs,
+              cluster and scale, 
+              on AWS and Google Cloud and others</h3>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: March 2015.
+            Last updated: 2nd Mar 2015.
+            Draft, not yet finished.
+         </div>
+
+      <div id="starboard">
+        <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#why">Why</a></li>
+                  <li>
+                    <a href="#what">What</a>
+                    <ul>
+                      <li><a href="#what_docker_engine">Docker Engine</a></li>
+                      <li><a href="#what_docker_compose">Docker Compose</a></li>
+                      <li><a href="#what_docker_machine">Docker Machine</a></li>
+                      <li><a href="#what_docker_swarm">Docker Swarm</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#setup">Setup</a>
+                    <ul>
+                      <li><a href="#setup_docker_engine">Install Docker</a></li>
+                      <li><a href="#setup_docker_compose">Install Compose</a></li>
+                      <li><a href="#setup_docker_machine">Install Machine</a></li>
+                      <li><a href="#setup_docker_swarm">Install Swarm</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#orchestrate_local">Orchestrate Locally</a></li>
+                  <li>
+                    <a href="#orchestrate_cloud">Push Orchestration to the Cloud</a>
+                    <ul>
+                      <li><a href="#swap_google">Google Container Engine</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#scale_cloud">Scale the Cloud</a></li>
+                  <li>
+                    <a href="#swap_cloud">Swap Cloud Providers</a>
+                    <ul>
+                      <li><a href="#swap_aws">Amazon AWS Container Service</a></li>
+                      <li><a href="#swap_digitalocean">Digital Ocean</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#summary">Summary</a></li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+               </ul>
+        </nav>
+              <!--
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                     asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+               -->
+      </div>
+         <div id="cargo">
+
+            <a name="why"></a>
+            <h3>Why</h3>
+            <p>
+              Create reproducible architecture of application containers
+              using Docker Engine, Docker Compose, Docker Machine and Docker Swarm.
+            </p>
+            <p>
+              Easy steps to create and deploy your applications locally 
+              and push to any cloud provider using the same toolset.
+            </p>
+
+            <a name="what"></a>
+            <a name="what_docker_engine"></a>
+            <h3>What</h3>
+            <h4>Docker Engine</h4>
+            <p>
+              <a href="http://docker.com">Docker</a>, more specifically Docker Engine,
+              is a popular framework to run applications in containers.
+            </p>
+            <p>
+              It however only gives to the tools to manage one container at time.
+              There is no way to associate containers with each other, 
+              beyond basic linking for IP and port aliasing,
+              and sharing folder volumes, nor ability to act on linked containers in one command.
+            </p>
+            <a name="what_docker_compose"></a>
+            <h4>Docker Compose</h4>
+            <p>
+              <a href="http://fig.sh">Fig.sh</a> was a great solution to this as it is
+              a tool to orchestrate multiple containers into one system architecture.
+              E.g. you might have a database container, 
+              a API based business application container
+              and a front end application container. 
+              You configure these as 3 containers, tell Fig how they connect and off you go.
+            </p>
+            <p>
+              Fig and its creators at <a href="http://www.orchardup.com">Orchard</a> got swallowed up by Docker,
+              and Docker has instead just released <a href="https://docs.docker.com/compose/">Docker Compose</a> as the tool to orchestrate containers to replace Fig <a href="">which is now deprecated</a>.
+            </p>
+            <a name="what_docker_machine"></a>
+            <h4>Docker Machine</h4>
+            <p>
+              Docker is usually running locally or hosted inside the excellent <a href="http://boot2docker.io">boot2docker</a>, 
+              or a <a href="http://vagrantup.com">Vagrant</a> instance, 
+              as detailed in my <a href="docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a> howto.
+              <a href="https://docs.docker.com/machine"/>Docker Machine</a> lets you create a Docker host VM locally and on a cloud provider in one command.            
+            </p>
+            <a name="what_docker_swarm"></a>
+            <h4>Docker Swarm</h4>
+            <p>
+              <a href="https://docs.docker.com/swarm/">Docker Swarm</a> lets you create a cluster of Docker Machine instances, so that they appear as one instance host.
+              This works locally as well as on cloud providers.
+            </p>
+
+
+
+
+            <a name="setup"></a>
+            <a name="setup_docker"></a>
+            <h3>Install</h3>
+            
+            <h4>Install Docker</h4>            
+            <p>For <a href="http://docs.docker.com/installation/mac/">OSX</a> install via the <a href="https://github.com/boot2docker/osx-installer/releases/tag/v1.5.0">Boot2Docker installer</a> which also installs Docker or via <a href="http://brew.sh">Brew</a>:</p>
+            <code>brew install docker;</code>
+            <code>brew install boot2docker;</code>
+            <code>boot2docker init</code>
+            
+            <p>For <a href="http://docs.docker.com/installation/ubuntulinux/">Ubuntu</a>:</p>
+            <code>sudo apt-key adv \<br/>
+              --keyserver hkp://keyserver.ubuntu.com:80 \<br/>
+              --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9;</code>
+            <code>sudo sh -c \<br/>
+              "echo deb https://get.docker.io/ubuntu docker main &gt;\<br/>
+              /etc/apt/sources.list.d/docker.list";</code>
+            <code>sudo apt-get update;</code>
+            <code>sudo apt-get install lxc-docker</code>
+            <p>
+              Test the install:
+            </p>
+            <code>docker --version</code>
+            <p>
+              (Read my <a href="docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a> howto for more etailed instructions and alternatives).
+            </p>
+
+
+            <a name="setup_docker_compose"></a>
+            <h4>Install Compose</h4>
+            <p>
+              Follow the script on the <a href="http://docs.docker.com/compose/install/">Compose Install</a> page.
+              At the time of writing it is this:
+            </p>
+            <code class="wide">curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` &gt;\<br/>
+              /usr/local/bin/docker-compose;</code>
+            <code>chmod +x /usr/local/bin/docker-compose</code>
+            <p>
+              Note the script only works in Bash, not in e.g. <a href="http://fish.sh">Fish</a>.
+              You can however replace the <em>uname -s</em> parts manually to get it to work.
+            </p>
+            <p>
+              I would also suggest installing the 
+              <a href="http://docs.docker.com/compose/completion/">command line completion for Compose</a> if using Bash.
+            </p>
+            <p>
+              Test the install:
+            </p>
+            <code>docker-compose --version</code>
+
+            <a name="setup_docker_machine"></a>
+            <h4>Install Machine</h4>
+            <p>
+              Machine require a binary download depending on your OS. 
+              Please download the <a href="https://github.com/docker/machine/releases">appropriate one</a> from <a href="https://docs.docker.com/machine/#installation">docs.docker.com/machine/#installation</a>.
+            </p>
+            <p>
+              For OSX :
+            </p>
+            <code>wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
+            <code>chmod +x docker-machine_<em>darwin-amd64</em>;</code>
+            <code>mv docker-machine_<em>darwin-amd64</em> /usr/local/bin/docker-machine</code>
+            <p>
+              Test the install:
+            </p>
+            <code>docker-machine --version</code>
+
+            <a name="setup_virtualbox"></a>
+            <h4>Install Virtualbox</h4>
+            <p>
+              We will also use Virtualbox to create VMs locally with Machine.
+            </p>
+            <p>
+              Either download and install it via the <a href="https://www.virtualbox.org/wiki/Downloads">Virtualbox installers</a>.
+            </p>
+            <p>
+              Or in OSX use Brew with <a href="http://caskroom.io">Cask</a>:
+            </p>
+            <code>brew cask install virtualbox;</code>
+            <p>
+              Or via apt-get in Ubuntu:
+            </p>
+            <code>sudo apt-get install virtualbox</code>
+
+
+
+            <a name="setup_docker_swarm"></a>
+            <h4>Install Swarm</h4>
+            <p>
+              Swarm is available as a Docker image so to install is simply:
+            </p>
+            <code>docker pull swarm</code>
+
+
+            <a name="orchestrate_local"></a>
+            <h3>Orchestrate locally</h3>
+            <p>
+              Lets create a common basic 3 system architecture.
+              One database based on <a href="http://postgresql.org">Postgres</a>.
+              One API service application based on <a href="http://spray.io">Spray</a>.
+              One simple frontend application based on <a href="http://www.playframework.com">Play</a>.
+            </p>
+            <p>
+              (My preference for all things <a href="http://scala-lang.org">Scala</a> is obvious, you might want to pull in other tech stacks).
+            </p>
+            <p>
+              The frontend talks to the API and the API talks to the database.
+            </p>
+            <code>?</code>
+            <p>
+              The example code for this is available here <a href="http://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-example</a>.
+            </p>
+
+
+            <a name="orchestrate_cloud"></a>
+            <h3>Push Orchestration to the cloud</h3>
+            <p>
+              Once it works locally you can push it to integration, staging etc. 
+              Even you own hosting solution.
+            </p>
+            <a name="swap_google"></a>
+            <h4>Google Container Engine</h4>
+            <p>
+              In this howto we will first push to <a href="https://cloud.google.com/container-engine/">Google Container Engine</a>.
+              First you need to register with the <a href="https://cloud.google.com">Google Cloud Engine</a>,
+              if you do not already have an account.
+              They do give you a generous one month trial to experiment with.
+            </p>
+            <p>
+            </p>
+            <code>?</code>
+
+            <a name="scale_cloud"></a>
+            <h3>Scale the cloud</h3>
+            <p>
+              We have created just one instance for Docker on Google Container Engine.
+              If you plan to keep adding orchestrations to it
+              or want to scale more horizontally for capacity and reliability
+              then you need more instances.
+              And as mentioned Swarm handles this and still exposes it as just one instance.
+            </p>
+            <code>?</code>
+
+
+            <a name="swap_cloud"></a>
+            <h3>Swap cloud provider</h3>
+            <p>
+              Machine and Swarm are designed to support any cloud provider, 
+              so lets try to push to a few more with the same orchestration.
+            </p>
+            <a name="swap_aws"></a>
+            <h4>Amazon AWS Container Service</h4>
+            <p>
+              Lets try to push to <a href="https://aws.amazon.com/ecs/">Amazon AWS Container Service</a>.
+              First you need to register with the <a href="https://aws.amazon.com">Amazon AWS</a>,
+              if you do not already have an account.
+              They do also give you a generous one month trial to experiment with.
+              Unfortunately at the time of writing their Container Service is in a closed Beta,
+              which you have to apply for. I presume this will be opened up to all very soon.
+            </p>
+            <code>?</code>
+
+            <a name="swap_digitalocean"></a>
+            <h4>Digital Ocean</h4>
+            <p>
+              And <a href="http://www.digitalocean.com">Digital Ocean</a>.
+              As with the others first create an account.
+            </p>
+            <code>?</code>
+
+
+
+            <a name="summary"></a>
+            <h3>Summary</h3>
+            <p>
+              You can now orchestrate applications, 
+              create machines locally and in several cloud providers
+              and scale this across multiple instances.
+            </p>
+            </p>
+              You are now free to automate and extend this progress, 
+              add other tools such as <a href="https://github.com/progrium/dokku">Dokku</a> etc.
+            </p>
+
+
+
+            <a name="reference"></a>
+            <h3>References</h3>
+            <ul>
+               <li><a href="https://www.docker.com">Docker</a></li>
+               <li><a href="https://docs.docker.com/swarm/">Docker Swarm</a></li>
+               <li><a href="https://docs.docker.com/machine/">Docker Machine</a></li>
+               <li><a href="https://docs.docker.com/compose/">Docker Compose</a></li>
+               <li><a href="http://fig.sh">Fig</a></li>
+               <li><a href="http://blog.docker.com/2015/02/announcing-docker-compose/">Announcing Docker Compose</a></li>
+               <li><a href="https://blog.docker.com/2015/02/announcing-docker-machine-beta/">Announcing Docker Machine</a></li>
+               <li><a href="http://blog.docker.com/2015/01/dockercon-eu-introducing-docker-swarm/">Introducing Docker Swarm</a></li>
+               <li><a href="http://blog.docker.com/2015/02/scaling-docker-with-swarm/">Scaling Docker with Swarm</a></li>
+               <li><a href="https://cloud.google.com/container-engine/">Google Container Engine</a></li>
+               <li><a href="https://aws.amazon.com/ecs/">AWS EC2 Container Service</a></li>
+               <li><a href="http://www.digitalocean.com">Digital Ocean</a></li>
+               <li><a href="http://kubernetes.io/">Kubernetes</a></li>
+               <li><a href="https://github.com/coreos/rocket">CoreOS Rocket</a></li>
+               <li><a href="https://github.com/boot2docker/boot2docker">Boot2docker</a></li>
+               <li><a href="http://vagrantup.com">Vagrant</a></li>
+               <li><a href="docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a></li>
+               <li><a href="http://blog.flurdy.com/2014/11/dockerise-it-all-containerised-addiction.html">Dockerise it all - containerised addiction <br/>= CDD - Container Driven Development</a></li>
+               <li><a href="https://github.com/progrium/dokku">Dokku</a></li>
+               <!--
+               <li><a href=""></a></li>
+               -->
+            </ul>
+
+
+            <a name="contact"></a>
+            <h3>Feedback</h3>
+            <p>
+               Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+            </p>
+            <p>
+               <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+               <a href="http://www.eray.uk">Hire Ivar</a> for short term advice or long term consultancy.
+            </p>
+            <p>
+               Otherwise <a href="/contact">contact flurdy</a>.
+               Especially for things factually incorrect.
+               Apologies for procrastinated replies.
+            </p>
+
+      </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+
+
+   <link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>
