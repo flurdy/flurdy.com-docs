@@ -4,7 +4,7 @@
    <title>Docker with Compose, Machine and Swarm,  easy steps from localhost to cloud providers</title>
    <link rel="shortcut icon" href="/favicon.ico" />
    <meta name="keyword" content="docker,container,virtualization,compose,fig,engine,swarm,machine,cluster,cloud,aws,amazon,google,digitalocean"/>
-   <meta name="description" content="Docker with Compose, Machine and Swarm, easy steps from localhost to cloud providers. Orchestrate applications, create VMs, cluster and scale, on AWS and Google Cloud and others"/>
+   <meta name="description" content="Docker with Compose, Machine and Swarm, easy steps from localhost to cloud providers. Orchestrate applications, create VMs, cluster and scale, on AWS EC2 and Google Compute Engine and others"/>
    <meta name="viewport" content="initial-scale=0.8"/>
    <link href="docs.css" rel="stylesheet" type="text/css" />
    <link href="../android/docs.css" rel="stylesheet" type="text/css" />
@@ -17,10 +17,19 @@
       width: 9em;
     }
     p {
-      font-size: 0.8em;
+      font-size: 0.85em;
+    }
+    code.wide {
+      max-width: 65em;
     }
     code {
       font-size: 0.8em;
+    }
+    code.tiny {
+      font-size: 0.6em;
+    }
+    code.output {
+      background-color: #36a;
     }
    </style>
    <!-- Analytics -->
@@ -46,7 +55,7 @@
               Orchestrate applications, 
               create VMs,
               cluster and scale, 
-              on AWS and Google Cloud and others</h3>
+              on AWS EC2 and Google Compute Engine and others</h3>
          </header>
          <nav id="lookout">
             <ul class="horizontal">
@@ -61,7 +70,7 @@
          <div id="jib">
             Started: March 2015.
             Last updated: 2nd Mar 2015.
-            <em>Draft, not yet finished</em>.
+            <b>Draft, not yet finished</b>.
          </div>
 
       <div id="starboard">
@@ -87,26 +96,18 @@
                       <li><a href="#setup_docker_swarm">Install Swarm</a></li>
                     </ul>
                   </li>
-                  <li><a href="#orchestrate">Orchestrate</a>
-                    <ul>
-                      <li><a href="#local_machine">Local Machine</a></li>
-                    </ul>
-                  </li>
+                  <li><a href="#orchestrate">Orchestrate</a></li>
                   <li>
                     <a href="#orchestrate_cloud">Push to the Cloud</a>
                     <ul>
-                      <li><a href="#swap_google">Google Container Engine</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="#scale_cloud">Scale the Cloud</a></li>
-                  <li>
-                    <a href="#swap_cloud">Swap Cloud Providers</a>
-                    <ul>
-                      <li><a href="#swap_aws">Amazon AWS Container Service</a></li>
+                      <li><a href="#swap_google">Google Compute Engine</a></li>
+                      <li><a href="#swap_aws">Amazon AWS EC2</a></li>
                       <li><a href="#swap_digitalocean">Digital Ocean</a></li>
                     </ul>
                   </li>
+                  <li><a href="#scale_cloud">Scale the Cloud</a></li>
                   <li><a href="#summary">Summary</a></li>
+                  <li><a href="#alternative">Alternatives</a></li>
                   <li><a href="#reference">References</a></li>
                   <li><a href="#contact">Feedback</a></li>
                </ul>
@@ -219,7 +220,7 @@
               Follow the script on the <a href="http://docs.docker.com/compose/install/">Compose Install</a> page.
               At the time of writing it is this:
             </p>
-            <code class="wide">curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` &gt;\<br/>
+            <code class="wide tiny">curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` &gt; \<br/>
               /usr/local/bin/docker-compose;</code>
             <code>chmod +x /usr/local/bin/docker-compose</code>
             <p>
@@ -244,7 +245,7 @@
             <p>
               For OSX :
             </p>
-            <code class="wide">wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
+            <code class="wide tiny">wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
             <code>chmod +x docker-machine_<em>darwin-amd64</em>;</code>
             <code>mv docker-machine_<em>darwin-amd64</em> /usr/local/bin/docker-machine</code>
             <p>
@@ -268,6 +269,32 @@
               Or via apt-get in Ubuntu:
             </p>
             <code>sudo apt-get install virtualbox</code>
+
+
+            <a name="local_machine"></a>
+            <h4>Local Machine</h4>
+            <p>
+              Lets create a local VM host with Machine.
+            </p>
+            <code>docker-machine create --driver virtualbox dev;</code>
+            <code>$(docker-machine env dev)</code>
+            <p>
+              This will download boot2docker as a local VM.
+              And suggest you update your default settings, 
+              basically replacing the original boot2docker settings,
+              and add these to your .bash_profile or config.fish.
+              (<a href="http://github.com/flurdy/dotfiles/blob/master/.bash_profile">my dotfile</a>)
+            </p>
+            <p>
+              Lets list current running machines, ie only the dev one.
+            </p>
+            <code>docker-machine ls</code>
+            <code class="output">
+              NAME   ACTIVE   DRIVER &nbsp;&nbsp;&nbsp;   STATE   &nbsp;  URL   
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SWARM<br/>
+              dev &nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtualbox   Running   tcp://192.168.99.100:2376
+             </code>   
 
 
 
@@ -325,7 +352,7 @@
               EXPOSE 9999
             </code>
             <p>
-              This pulls in an Activator Docker image I have on <a href="http://hub.docker.com">Dockerhub</a>.
+              This pulls in an Activator Docker image I have on <a href="https://registry.hub.docker.com/u/flurdy/activator/">Dockerhub</a>.
               It adds a <em>repository</em> file to use local maven and ivy repositories to avoid 
               constantly downloading the internet on each build.
             </p>
@@ -442,9 +469,9 @@
             </p>
             <code>docker-compose build</code>
             <p>
-              If buildt ok lets launch as a daemon.
+              If this builds ok we can can launch the orchestration as a daemon.
             </p>
-            <code>docker-compose run -d</code>
+            <code>docker-compose up -d</code>
             <p>
               And check if it is running.
             </p>
@@ -453,7 +480,7 @@
               Some quick curl calls to see if it works ok.
               Lets post a pizza order, and see if it is listed in the database afterwards.
             </p>
-            <code>curl -x "{pizza: 'Pepperoni'}" "http://localhost:49950/pizza";</code>
+            <code>curl -H "Content-Type: application/json" -d "{'pizza': 'Pepperoni'}" "http://localhost:49950/pizza";</code>
             <code>curl "http://localhost:49950/pizzas"</code>
             <p>
               Hopefull the response is something like this:
@@ -467,46 +494,75 @@
 
 
 
-            <h4>Local Machine</h4>
-            <p>
-              Lets create a local VM host with Machine.
-            </p>
-            <code>docker-machine create --driver virtualbox dev;</code>
-            <code>$(docker-machine env dev)</code>
-            <p>
-              This will download boot2docker as a local VM.
-              And suggest you update your default settings, 
-              basically replacing the original boot2docker settings.
-            </p>
-            <p>
-              Lets list current running machines, ie only the dev one.
-            </p>
-            <code>docker-machine ls</code>
-            <code class="output">
-              NAME   ACTIVE   DRIVER &nbsp;&nbsp;&nbsp;   STATE   &nbsp;  URL   
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SWARM<br/>
-              dev &nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtualbox   Running   tcp://192.168.99.100:2376
-             </code>   
-
-
             <a name="orchestrate_cloud"></a>
             <h3>Push to the cloud</h3>
             <p>
               Once the orchestration works locally in a Machine created VM you can push it to integration, staging etc. 
-              Even you own hosting solution.
+              Even you own hosting solution or cloud providers as described below. 
             </p>
+
             <a name="swap_google"></a>
-            <h4>Google Container Engine</h4>
+            <h4>Google Compute Engine</h4>
             <p>
-              In this howto we will first push to <a href="https://cloud.google.com/container-engine/">Google Container Engine</a>.
-              First you need to register with the <a href="https://cloud.google.com">Google Cloud Engine</a>,
-              if you do not already have an account.
+              Our first provider is <a href="https://cloud.google.com/compute/">Google Compute Engine</a>.
+              You need to register if you do not already have an account.
               They do give you a generous one month trial to experiment with.
             </p>
             <p>
+              Google will launch a browser window for OAuth authentication,
+              so make sure you are on a non headless environment.
             </p>
-            <code>?</code>
+            <code>
+              docker-machine create \<br/>
+              --driver google \<br/>
+              --google-project <em>your-project-name</em> \<br/>
+              --google-zone <em>europe-west1-c</em> \<br/>
+              <em>googleexample</em>
+            </code>
+
+
+            <a name="swap_aws"></a>
+            <h4>Amazon AWS</h4>
+            <p>
+              As alwasy, create an account with <a href="https://aws.amazon.com/ec2/">Amazon AWS EC2</a> if you do not already have one.
+              They do also give you a generous one month trial to experiment with.
+            </p>
+            <p>
+              I recommend a <a href="http://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">separate secondary credentials</a> to use for this
+              as these keys will be exposed in your shell history.
+            </p>
+            <code>
+              docker-machine create \<br/>
+              --driver amazonec2 \<br/>
+              --amazonec2-access-key <em>your-aws-access-key</em> \<br/>
+              --amazonec2-secret-key <em>your-aws-secret-key</em> \<br/>
+              --amazonec2-vpc-id <em>your-aws-vpc-id</em> \<br/>
+              --amazonec2-region <em>us-east-1</em> \<br/>
+              --amazonec2-zone <em>a</em> \<br/>
+              <em>ec2example</em>
+            </code>
+
+            <a name="swap_digitalocean"></a>
+            <h4>Digital Ocean</h4>
+            <p>
+              As with the others first create an account with <a href="http://www.digitalocean.com">Digital Ocean</a>.
+              Then create an API token in DO's admin panel.
+            </p>
+            <code>
+              docker-machine create \<br/>
+              --driver digitalocean \<br/>
+              --digitalocean-access-token <em>your-digitalocean-api-token</em> \<br/>
+              <em>digitaloceanexample</em>
+            </code>
+            <p>
+
+
+            <h4>Other providers</h4>
+            <p>
+              Machine and Swarm do support a range of <a href="https://docs.docker.com/machine/#drivers">other providers</a>.
+              If anyone want to send Pull Requests with examples, then please do.
+            </p>
+
 
             <a name="scale_cloud"></a>
             <h3>Scale the cloud</h3>
@@ -517,33 +573,48 @@
               then you need more instances.
               And as mentioned Swarm handles this and still exposes it as just one instance.
             </p>
-            <code>?</code>
-
-
-            <a name="swap_cloud"></a>
-            <h3>Swap cloud provider</h3>
+            <code>docker run swarm create;</code>
+            <code class="output">abcd098765</code>
             <p>
-              Machine and Swarm are designed to support any cloud provider, 
-              so lets try to push to a few more with the same orchestration.
+              Use the response token from above to create a swarm master.
             </p>
-            <a name="swap_aws"></a>
-            <h4>Amazon AWS Container Service</h4>
+            <code>
+              docker-machine create \<br/>
+              -d virtualbox \<br/>
+              --swarm \<br/>
+              --swarm-master \<br/>
+              --swarm-discovery token:<em>abcd09876</em> \<br/>
+              swarm-master
+            </code>
             <p>
-              To use <a href="https://aws.amazon.com/ecs/">Amazon AWS Container Service</a>
-              you need to first register with the <a href="https://aws.amazon.com">Amazon AWS</a>,
-              if you do not already have an account.
-              They do also give you a generous one month trial to experiment with.
-              Unfortunately at the time of writing their Container Service is in a closed Beta,
-              which you have to apply for. I presume this will be opened up to all very soon.
+              Then create a few swarm nodes
             </p>
-            <code>?</code>
+            <code>
+              docker-machine create \<br/>
+              -d virtualbox \<br/>
+              --swarm \<br/>
+              --swarm-discovery token://<em>abcd09876</em> \<br/>
+              swarm-node-00;
+            </code>
+            <code>
+              docker-machine create \<br/>
+              -d virtualbox \<br/>
+              --swarm \<br/>
+              --swarm-discovery token://<em>abcd09876</em> \<br/>
+              swarm-node-01;
+            </code>
+            <p>
+              And a simple check to see if it is running:
+            </p>
+            <code>$(docker-machine env --swarm swarm-master);</code>
+            <code>docker info</code>
 
-            <a name="swap_digitalocean"></a>
-            <h4>Digital Ocean</h4>
+            <h4>Compose &amp; Swarm Issues</h4>
             <p>
-              As with the others first create an account with <a href="http://www.digitalocean.com">Digital Ocean</a>.
+              Currently there are <a href="https://github.com/docker/compose/blob/master/SWARM.md">some significant issues</a> with using Compose with Swarm.
+              These will hopefully be resolved soon,
+              but there are <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">some workarounds</a> for now.
             </p>
-            <code>?</code>
 
 
 
@@ -554,15 +625,24 @@
               create machines locally and in several cloud providers
               and scale this across multiple instances.
             </p>
-            </p>
+            <p>
               You are now free to automate and extend this progress, 
               add other tools such as <a href="https://github.com/progrium/dokku">Dokku</a> etc.
             </p>
 
+            <a name="alternative"></a>
+            <h3>Alternatives</h3>
+            <p>
+              You can instead use specific Docker container services
+              such as AWS's closed beta <a href="https://aws.amazon.com/ecs/">Container Service</a> or Google's open beta <a href="https://cloud.google.com/container-engine/">Container Engine</a>.
+            </p>
 
 
             <a name="reference"></a>
             <h3>References</h3>
+            <p>
+              This howto was heavily influenced by Docker's own documentation and presentations. In time it will mix with other sources and extend with my own experiences.
+            </p>
             <ul>
                <li><a href="https://www.docker.com">Docker</a></li>
                <li><a href="https://docs.docker.com/swarm/">Docker Swarm</a></li>
@@ -573,8 +653,10 @@
                <li><a href="https://blog.docker.com/2015/02/announcing-docker-machine-beta/">Announcing Docker Machine</a></li>
                <li><a href="http://blog.docker.com/2015/01/dockercon-eu-introducing-docker-swarm/">Introducing Docker Swarm</a></li>
                <li><a href="http://blog.docker.com/2015/02/scaling-docker-with-swarm/">Scaling Docker with Swarm</a></li>
+               <li><a href="https://cloud.google.com/compute/">Google Compute Engine</a></li>
                <li><a href="https://cloud.google.com/container-engine/">Google Container Engine</a></li>
-               <li><a href="https://aws.amazon.com/ecs/">AWS EC2 Container Service</a></li>
+               <li><a href="https://aws.amazon.com/ec2/">AWS EC2</a></li>
+               <li><a href="https://aws.amazon.com/ecs/">AWS Container Service</a></li>
                <li><a href="http://www.digitalocean.com">Digital Ocean</a></li>
                <li><a href="http://kubernetes.io/">Kubernetes</a></li>
                <li><a href="https://github.com/coreos/rocket">CoreOS Rocket</a></li>
@@ -585,6 +667,7 @@
                <li><a href="https://github.com/progrium/dokku">Dokku</a></li>
                <li><a href="http://panamax.io/">Panamax</a></li>
                <li><a href="http://shipyard-project.com/">Shipyard</a></li>
+               <li><a href="https://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-cloud-example</a></li>
                <!--
                <li><a href=""></a></li>
                -->
