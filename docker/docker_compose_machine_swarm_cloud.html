@@ -32,7 +32,19 @@
       background-color: #36a;
     }
    </style>
-   <!-- Analytics -->
+   <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-281408-1']);
+    _gaq.push(['_trackPageview']);
+
+     (function() {
+     if(location.host!='localhost'){
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    }
+    })();
+  </script>
    <!-- Adsense -->
 </head>
 <body>
@@ -69,7 +81,7 @@
          </nav>
          <div id="jib">
             Started: March 2015.
-            Last updated: 2nd Mar 2015.
+            Last updated: 4th Mar 2015.
             <b>Draft, not yet finished</b>.
          </div>
 
@@ -100,19 +112,20 @@
                   <li>
                     <a href="#orchestrate_cloud">Push to the Cloud</a>
                     <ul>
-                      <li><a href="#swap_google">Google Compute Engine</a></li>
-                      <li><a href="#swap_aws">Amazon AWS EC2</a></li>
-                      <li><a href="#swap_digitalocean">Digital Ocean</a></li>
+                      <li><a href="#cloud_google">Google Compute Engine</a></li>
+                      <li><a href="#cloud_aws">Amazon AWS EC2</a></li>
+                      <li><a href="#cloud_digitalocean">Digital Ocean</a></li>
+                      <li><a href="#cloud_other">Other providers</a></li>
                     </ul>
                   </li>
                   <li><a href="#scale_cloud">Scale the Cloud</a></li>
                   <li><a href="#summary">Summary</a></li>
+                  <li><a href="#future">Future</a></li>
                   <li><a href="#alternative">Alternatives</a></li>
                   <li><a href="#reference">References</a></li>
                   <li><a href="#contact">Feedback</a></li>
                </ul>
         </nav>
-              <!--
             <div class="shirts">
                <div class="shirt">
                   <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
@@ -125,7 +138,6 @@
                </div>
                <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
             </div>
-               -->
       </div>
          <div id="cargo">
 
@@ -501,16 +513,28 @@
               Even you own hosting solution or cloud providers as described below. 
             </p>
 
-            <a name="swap_google"></a>
+            <a name="cloud_google"></a>
             <h4>Google Compute Engine</h4>
             <p>
               Our first provider is <a href="https://cloud.google.com/compute/">Google Compute Engine</a>.
-              You need to register if you do not already have an account.
-              They do give you a generous one month trial to experiment with.
+              Create an account if you have not already done so.
+              Configure billing or take advantage of their generous one month trial to experiment with.
+            </p>
+            <p>
+              Go to the <a href="https://console.developers.google.com/">Google Developers Console</a> and create a project. Take note of the generated project id, not the project name.
+            </p>
+            <p>
+              You also need to go into the <em>APIs &amp; auth</em>'s APIs settings 
+              and turn on the <em>Google Compute Engine</em> API.
             </p>
             <p>
               Google will launch a browser window for OAuth authentication,
               so make sure you are on a non headless environment.
+              It will provide a token for you to copy-paste into the shell.
+            </p>
+            <p>
+              Note Google Compute Engine with Machine requires a Docker Engine build
+              that includes <a href="https://github.com/docker/docker/pull/8265">identity support</a>.
             </p>
             <code>
               docker-machine create \<br/>
@@ -521,15 +545,22 @@
             </code>
 
 
-            <a name="swap_aws"></a>
+            <a name="cloud_aws"></a>
             <h4>Amazon AWS</h4>
             <p>
-              As alwasy, create an account with <a href="https://aws.amazon.com/ec2/">Amazon AWS EC2</a> if you do not already have one.
-              They do also give you a generous one month trial to experiment with.
+              As always, create an account with <a href="https://aws.amazon.com/ec2/">Amazon AWS EC2</a> if you do not already have one,
+              and log into to the <a href="https://console.aws.amazon.com">AWS console</a>.
+              AWS also give you a generous one month trial to experiment with.
             </p>
             <p>
-              I recommend a <a href="http://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">separate secondary credentials</a> to use for this
+              I recommend a <a href="http://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">separate IAM credentials</a> to use for this
               as these keys will be exposed in your shell history.
+              Depending on your security settings,
+              you may need to add the IAM user to an IAM group as well.
+            </p>
+            <p>
+              Create a normal VPC, noting the VPC id, the region and zone you created it in.
+              You will also need to find what the public subnet id that the vpc is in.
             </p>
             <code>
               docker-machine create \<br/>
@@ -537,12 +568,13 @@
               --amazonec2-access-key <em>your-aws-access-key</em> \<br/>
               --amazonec2-secret-key <em>your-aws-secret-key</em> \<br/>
               --amazonec2-vpc-id <em>your-aws-vpc-id</em> \<br/>
+              --amazonec2-subnet-id <em>your-aws-subnet-id</em> \<br/>
               --amazonec2-region <em>us-east-1</em> \<br/>
               --amazonec2-zone <em>a</em> \<br/>
               <em>ec2example</em>
             </code>
 
-            <a name="swap_digitalocean"></a>
+            <a name="cloud_digitalocean"></a>
             <h4>Digital Ocean</h4>
             <p>
               As with the others first create an account with <a href="http://www.digitalocean.com">Digital Ocean</a>.
@@ -557,17 +589,38 @@
             <p>
 
 
+            <a name="cloud_other"></a>
             <h4>Other providers</h4>
             <p>
               Machine and Swarm do support a range of <a href="https://docs.docker.com/machine/#drivers">other providers</a>.
               If anyone want to send Pull Requests with examples, then please do.
             </p>
 
+            <p>
+
+
+            <a name="cloud_stop"></a>
+            <h4>Stop and remove cloud machines</h4>
+            <p>
+              If you want stop machines, 
+              especially costly cloud based instances:
+            </p>
+            <code>docker-machine stop <em>ec2example</em></code>
+            <p>
+              If you want remove machines.
+            </p>
+            <code>docker-machine rm <em>ec2example</em></code>
+            <p>
+              If you want remove broken machines.
+            </p>
+            <code>docker-machine rm -f <em>googlexample</em></code>
+
+
 
             <a name="scale_cloud"></a>
             <h3>Scale the cloud</h3>
             <p>
-              We have created just one instance for Docker on Google Container Engine.
+              We have created just one instance for Docker in the cloud provider(s).
               If you plan to keep adding orchestrations to it
               or want to scale more horizontally for capacity and reliability
               then you need more instances.
@@ -630,11 +683,29 @@
               add other tools such as <a href="https://github.com/progrium/dokku">Dokku</a> etc.
             </p>
 
+            <a name="future"></a>
+            <h3>Future</h3>
+            <p>
+              The Machine and Swarm integration with Compose will get better.
+            </p>
+            <p>
+              A lot of tools will be created on top of these or added to existing toolsets.
+            </p>
+            <p>
+              A credentials registry to share between teams for multiple providers would be handy.
+            </p>
+            <p>
+              I am tempted to create a script that lets you promote a local swarm to another provider in one simple command.
+              This will let you quickly scale up/clone new environments and across providers at ease.
+            </p>
+
             <a name="alternative"></a>
             <h3>Alternatives</h3>
             <p>
-              You can instead use specific Docker container services
-              such as AWS's closed beta <a href="https://aws.amazon.com/ecs/">Container Service</a> or Google's open beta <a href="https://cloud.google.com/container-engine/">Container Engine</a>.
+              You can instead use the Docker specific container services
+              such as AWS's closed beta <a href="https://aws.amazon.com/ecs/">Container Service</a> 
+              or Google's open beta <a href="https://cloud.google.com/container-engine/">Container Engine</a>. 
+              You can use Google's <a href="http://kubernetes.io">Kubernetes</a> for a higher level cluster management.
             </p>
 
 
