@@ -409,11 +409,11 @@
                  </div>
                  ports: 
                  <div class="indent1">   
-                    - "49950:9000" 
+                    - "49910:9000" 
                  </div>
                  volumes: 
                  <div class="indent1">   
-                    - ./frontend:/var/local/application:rw <br/>
+                   # - ./frontend:/var/local/application:rw <br/>
                     - frontend/conf:/etc/opt/frontend:ro
                  </div>
                  volumes_from: 
@@ -431,7 +431,7 @@
                  </div>
                  ports:
                  <div class="indent1">   
-                    - "49880:8880" 
+                    - "49920:8880" 
                  </div>
                  expose: 
                  <div class="indent1">   
@@ -439,7 +439,7 @@
                  </div>
                  volumes: 
                  <div class="indent1">   
-                    - service:/var/local/application:rw <br/>
+                    # - service:/var/local/application:rw <br/>
                     - service/src/main/resources:/etc/opt/service:ro 
                  </div> 
                  volumes_from: 
@@ -452,7 +452,7 @@
                  image: postgres:9.4 <br/>
                  ports: 
                  <div class="indent1">   
-                    - "49432:5432"
+                    - "49932:5432"
                  </div>
                  expose:
                  <div class="indent1">   
@@ -475,6 +475,14 @@
               The maven image does not even have to be running for the volumes to work with 
               other containers.
             </p>
+            <p>
+              To speed up maven, ivy and sbt log into your local machine VM and create symlinks to your host folders. 
+              The boot2docker image does auto mount your <em>/Users</em> or <em>/Home</em> folders which is handy.
+            </p>
+            <code>docker-machine ssh;</code>
+            <code>ln -s /<em>Users/myuser/</em>.m2 ~/.m2;</code>
+            <code>ln -s /<em>Users/myuser/</em>.ivy2 ~/.ivy2;</code>
+            <code>exit</code>
 
             <p>
               Now lets build and run these. These steps are where you will spend a lot of time getting right....
@@ -488,6 +496,10 @@
               And check if it is running.
             </p>
             <code>docker-compose ps</code>
+            <p>
+              If you have problems, then logs are available.
+            </p>
+            <code>docker-compose logs</code>
             <p>
               Some quick curl calls to see if it works ok.
               Lets post a pizza order, and see if it is listed in the database afterwards.
@@ -603,7 +615,7 @@
             <h4>Stop and remove cloud machines</h4>
             <p>
               If you want stop machines, 
-              especially costly cloud based instances:
+              especially expensive cloud based instances:
             </p>
             <code>docker-machine stop <em>ec2example</em></code>
             <p>
