@@ -518,13 +518,13 @@
 
 
 
-            <a name="orchestrate_cloud"></a>
-            <h3>Push to the cloud</h3>
+            <a name="generate_cloud"></a>
+            <h3>Create clouds</h3>
             <p>
-              Once the orchestration works locally in a Machine created VM you can push it to integration, staging etc. 
-              Even you own hosting solution or cloud providers as described below. 
+              As you created a Machine locally,
+              you can easily create Machine(s) in a cloud/IAAS provider.
+              Or your own hosting solutions.
             </p>
-
             <a name="cloud_google"></a>
             <h4>Google Compute Engine</h4>
             <p>
@@ -553,7 +553,7 @@
               --driver google \<br/>
               --google-project <em>your-project-name</em> \<br/>
               --google-zone <em>europe-west1-c</em> \<br/>
-              <em>googleexample</em>
+              <em>gcebox</em>
             </code>
 
 
@@ -583,7 +583,7 @@
               --amazonec2-subnet-id <em>your-aws-subnet-id</em> \<br/>
               --amazonec2-region <em>us-east-1</em> \<br/>
               --amazonec2-zone <em>a</em> \<br/>
-              <em>ec2example</em>
+              <em>ec2box</em>
             </code>
 
             <a name="cloud_digitalocean"></a>
@@ -596,7 +596,7 @@
               docker-machine create \<br/>
               --driver digitalocean \<br/>
               --digitalocean-access-token <em>your-digitalocean-api-token</em> \<br/>
-              <em>digitaloceanexample</em>
+              <em>dobox</em>
             </code>
             <p>
 
@@ -608,7 +608,50 @@
               If anyone want to send Pull Requests with examples, then please do.
             </p>
 
+            
+
+
+            <a name="push_cloud"></a>
+            <h3>Push to the cloud</h3>
             <p>
+              You will now have your local dev machine
+              and one or more cloud based instances.
+            </p>
+            <code>docker-machine ls</code>
+            <code class="output">
+              NAME   &nbsp;ACTIVE   DRIVER &nbsp;&nbsp;&nbsp;   &nbsp;STATE   &nbsp;  URL   
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SWARM<br/>
+              dev &nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;virtualbox&nbsp;&nbsp;   Running   tcp://192.168.99.100:2376<br/>
+              ec2box&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;amazonec2&nbsp;&nbsp;&nbsp;   Running   tcp://<em>1.2.3.4:2376</em><br/>
+              gcebox&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;google&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Stopped<br/>
+              dobox&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalocean&nbsp;Stopped   
+             </code>  
+             <p>
+               Lets make the ec2 box active, which would be the box any docker or compose commands talk to.
+             </p>
+             <code>docker-machine active ec2box;</code>
+            <code>docker-machine ls</code>
+            <code class="output">
+              NAME   &nbsp;ACTIVE   DRIVER &nbsp;&nbsp;&nbsp;   &nbsp;STATE   &nbsp;  URL   
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SWARM<br/>
+              dev &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtualbox&nbsp;&nbsp;   Running   tcp://192.168.99.100:2376<br/>
+              ec2box&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;amazonec2&nbsp;&nbsp;&nbsp;   Running   tcp://<em>1.2.3.4:2376</em><br/>
+              gcebox&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;google&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Stopped<br/>
+              dobox&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalocean&nbsp;Stopped   
+            </code> 
+
+            <p>
+              Point Docker to the cloud machine.
+            </p>
+            <code>$(docker-machine env ec2box);</code>
+            <code>docker info</code>
+            <p>
+              And run our orchestration on the cloud machine.
+            </p>
+            <code>docker-compose up -d</code>
+
 
 
             <a name="cloud_stop"></a>
@@ -617,31 +660,41 @@
               If you want stop machines, 
               especially expensive cloud based instances:
             </p>
-            <code>docker-machine stop <em>ec2example</em></code>
+            <code>docker-machine stop <em>ec2box</em></code>
             <p>
               If you want remove machines.
             </p>
-            <code>docker-machine rm <em>ec2example</em></code>
+            <code>docker-machine rm <em>ec2box</em></code>
             <p>
               If you want remove broken machines.
             </p>
-            <code>docker-machine rm -f <em>googlexample</em></code>
+            <code>docker-machine rm -f <em>ec2box</em></code>
 
 
 
             <a name="scale_cloud"></a>
             <h3>Scale the cloud</h3>
             <p>
-              We have created just one instance for Docker in the cloud provider(s).
+              We have created just one machine instance for Docker in the cloud provider(s).
               If you plan to keep adding orchestrations to it
               or want to scale more horizontally for capacity and reliability
               then you need more instances.
               And as mentioned Swarm handles this and still exposes it as just one instance.
             </p>
-            <code>docker run swarm create;</code>
+            
+            <h4>Swarm locally</h4>
+            <p>
+              Lets scale up locally first.
+            </p>
+            <code>docker-machine active dev;</code>
+            <code>$(docker-machine env dev);</code>
+            <code>docker run swarm create</code>
+            <p>
+              Which should respond with a token to use when creating a swarm master and nodes.
+            </p>
             <code class="output">abcd098765</code>
             <p>
-              Use the response token from above to create a swarm master.
+              Then create a swarm master node.
             </p>
             <code>
               docker-machine create \<br/>
@@ -649,30 +702,84 @@
               --swarm \<br/>
               --swarm-master \<br/>
               --swarm-discovery token:<em>abcd09876</em> \<br/>
-              swarm-master
+              <em>swarm-master</em>
             </code>
             <p>
-              Then create a few swarm nodes
+              And create a few swarm nodes
             </p>
             <code>
               docker-machine create \<br/>
               -d virtualbox \<br/>
               --swarm \<br/>
               --swarm-discovery token://<em>abcd09876</em> \<br/>
-              swarm-node-00;
+              <em>swarm-node-00</em>;
             </code>
             <code>
               docker-machine create \<br/>
               -d virtualbox \<br/>
               --swarm \<br/>
               --swarm-discovery token://<em>abcd09876</em> \<br/>
-              swarm-node-01;
+              <em>swarm-node-01</em>
             </code>
             <p>
               And a simple check to see if it is running:
             </p>
             <code>$(docker-machine env --swarm swarm-master);</code>
             <code>docker info</code>
+
+
+            <h4>Swarm in the cloud</h4>
+            <p>
+              Swarming in the cloud is just about changing the driver,
+              and all the extra driver options. 
+            </p>
+            <code>docker-machine active ec2box;</code>
+            <code>$(docker-machine env ec2box);</code>
+            <code>docker run swarm create</code>
+            <code class="output">12321312</code>
+            <code>
+              docker-machine create \<br/>
+              -d amazonec2 \<br/>
+              --amazonec2-access-key <em>your-aws-access-key</em> \<br/>
+              --amazonec2-secret-key <em>your-aws-secret-key</em> \<br/>
+              --amazonec2-vpc-id <em>your-aws-vpc-id</em> \<br/>
+              --amazonec2-subnet-id <em>your-aws-subnet-id</em> \<br/>
+              --amazonec2-region <em>us-east-1</em> \<br/>
+              --amazonec2-zone <em>a</em> \<br/>
+              --swarm \<br/>
+              --swarm-master \<br/>
+              --swarm-discovery token:<em>12321312</em> \<br/>
+              <em>swarm-ec2-master;</em>
+            </code>
+            <code>
+              docker-machine create \<br/>
+              -d amazonec2 \<br/>
+              --amazonec2-access-key <em>your-aws-access-key</em> \<br/>
+              --amazonec2-secret-key <em>your-aws-secret-key</em> \<br/>
+              --amazonec2-vpc-id <em>your-aws-vpc-id</em> \<br/>
+              --amazonec2-subnet-id <em>your-aws-subnet-id</em> \<br/>
+              --amazonec2-region <em>us-east-1</em> \<br/>
+              --amazonec2-zone <em>a</em> \<br/>
+              --swarm \<br/>
+              --swarm-discovery token://<em>12321312</em> \<br/>
+              <em>swarm-ec2-node-00</em>;
+            </code>
+            <code>
+              docker-machine create \<br/>
+              -d amazonec2 \<br/>
+              --amazonec2-access-key <em>your-aws-access-key</em> \<br/>
+              --amazonec2-secret-key <em>your-aws-secret-key</em> \<br/>
+              --amazonec2-vpc-id <em>your-aws-vpc-id</em> \<br/>
+              --amazonec2-subnet-id <em>your-aws-subnet-id</em> \<br/>
+              --amazonec2-region <em>us-east-1</em> \<br/>
+              --amazonec2-zone <em>a</em> \<br/>
+              --swarm \<br/>
+              --swarm-discovery token://<em>12321312</em> \<br/>
+              <em>swarm-ec2-node-01;</em>
+            </code>
+            <code>$(docker-machine env --swarm swarm-ec2-master);</code>
+            <code>docker info</code>
+
 
             <h4>Compose &amp; Swarm Issues</h4>
             <p>
@@ -736,6 +843,7 @@
                <li><a href="https://blog.docker.com/2015/02/announcing-docker-machine-beta/">Announcing Docker Machine</a></li>
                <li><a href="http://blog.docker.com/2015/01/dockercon-eu-introducing-docker-swarm/">Introducing Docker Swarm</a></li>
                <li><a href="http://blog.docker.com/2015/02/scaling-docker-with-swarm/">Scaling Docker with Swarm</a></li>
+               <li><a href="http://blog.docker.com/2015/02/orchestrating-docker-with-machine-swarm-and-compose/">Orchestrating Docker with Machine Swarm and Compose</a></li>
                <li><a href="https://cloud.google.com/compute/">Google Compute Engine</a></li>
                <li><a href="https://cloud.google.com/container-engine/">Google Container Engine</a></li>
                <li><a href="https://aws.amazon.com/ec2/">AWS EC2</a></li>
