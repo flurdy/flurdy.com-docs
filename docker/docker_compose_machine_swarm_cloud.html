@@ -119,6 +119,7 @@
                       <li><a href="#cloud_aws">Amazon AWS EC2</a></li>
                       <li><a href="#cloud_digitalocean">Digital Ocean</a></li>
                       <li><a href="#cloud_other">Other providers</a></li>
+                      <li><a href="#cloud_stop">Stop and remove cloud machines</a></li>                      
                     </ul>
                   </li>
                   <li><a href="#push_cloud">Push to the cloud</a></li>
@@ -298,10 +299,14 @@
             <p>
               Lets create a local VM host with Machine.
             </p>
-            <code>docker-machine create --driver virtualbox dev;</code>
+            <code>
+              docker-machine create --driver virtualbox \ <br/>
+              --virtualbox-memory 3076 dev;
+              </code>
             <code>$(docker-machine env dev)</code>
             <p>
               This will download boot2docker as a local VM.
+              and allocate 3GB as memory.
               And suggest you update your default settings, 
               basically replacing the original boot2docker settings,
               and add these to your .bash_profile or config.fish.
@@ -540,7 +545,16 @@
               Hopefull the response is something like this:
             </p>
             <code class="output">
-              {"pizzas": { "id": 1, "title": "pepperoni"}}
+              {
+              <div class="indent1">
+                "pizzas": [{
+                <div class="indent1">
+                  "id": 1, <br/>
+                  "pizza": "pepperoni"
+                </div>
+                }]
+              </div>
+              }
             </code>
             <p>
               You can also see the pizza orders listed via the frontend.
@@ -566,7 +580,7 @@
             <p>
               Our first provider is <a href="https://cloud.google.com/compute/">Google Compute Engine</a>.
               Create an account if you have not already done so.
-              Configure billing or take advantage of their generous one month trial to experiment with.
+              Configure billing or take advantage of their generous two month trial to experiment with.
             </p>
             <p>
               Go to the <a href="https://console.developers.google.com/">Google Developers Console</a> and create a project. Take note of the generated project id, not the project name.
@@ -644,6 +658,22 @@
               If anyone want to send Pull Requests with examples, then please do.
             </p>
 
+
+            <a name="cloud_stop"></a>
+            <h4>Stop and remove cloud machines</h4>
+            <p>
+              If you want stop machines, 
+              especially expensive cloud based instances:
+            </p>
+            <code>docker-machine stop <em>ec2box</em></code>
+            <p>
+              If you want remove machines.
+            </p>
+            <code>docker-machine rm <em>ec2box</em></code>
+            <p>
+              If you want remove broken machines.
+            </p>
+            <code>docker-machine rm -f <em>ec2box</em></code>
             
 
 
@@ -686,32 +716,14 @@
             <p>
               And run our orchestration on the cloud machine.
             </p>
-            <code>docker-compose up -d</code>
-
-
-
-            <a name="cloud_stop"></a>
-            <h4>Stop and remove cloud machines</h4>
-            <p>
-              If you want stop machines, 
-              especially expensive cloud based instances:
-            </p>
-            <code>docker-machine stop <em>ec2box</em></code>
-            <p>
-              If you want remove machines.
-            </p>
-            <code>docker-machine rm <em>ec2box</em></code>
-            <p>
-              If you want remove broken machines.
-            </p>
-            <code>docker-machine rm -f <em>ec2box</em></code>
-
+            <code>docker-compose up -d;</code>
+            <code>docker-compose logs</code>
 
 
             <a name="scale_cloud"></a>
             <h3>Scale the cloud</h3>
             <p>
-              We have created just one machine instance for Docker in the cloud provider(s).
+              We have created just one machine instance for Docker in a cloud provider(s).
               If you plan to keep adding orchestrations to it
               or want to scale more horizontally for capacity and reliability
               then you need more instances.
@@ -738,7 +750,7 @@
               -d virtualbox \<br/>
               --swarm \<br/>
               --swarm-master \<br/>
-              --swarm-discovery token:<em>abcd09876</em> \<br/>
+              --swarm-discovery token://<em>abcd09876</em> \<br/>
               <em>swarm-master</em>
             </code>
             <p>
@@ -786,7 +798,7 @@
               --amazonec2-zone <em>a</em> \<br/>
               --swarm \<br/>
               --swarm-master \<br/>
-              --swarm-discovery token:<em>12321312</em> \<br/>
+              --swarm-discovery token://<em>12321312</em> \<br/>
               <em>swarm-ec2-master;</em>
             </code>
             <code>
