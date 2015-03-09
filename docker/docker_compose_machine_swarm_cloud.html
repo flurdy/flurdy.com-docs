@@ -31,6 +31,9 @@
     code.output {
       background-color: #36a;
     }
+    code a,code:visited { 
+      color: white; 
+    }
    </style>
    <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -110,7 +113,7 @@
                   </li>
                   <li><a href="#orchestrate">Orchestrate</a></li>
                   <li>
-                    <a href="#orchestrate_cloud">Push to the Cloud</a>
+                    <a href="#generate_cloud">Create Clouds</a>
                     <ul>
                       <li><a href="#cloud_google">Google Compute Engine</a></li>
                       <li><a href="#cloud_aws">Amazon AWS EC2</a></li>
@@ -118,7 +121,14 @@
                       <li><a href="#cloud_other">Other providers</a></li>
                     </ul>
                   </li>
-                  <li><a href="#scale_cloud">Scale the Cloud</a></li>
+                  <li><a href="#push_cloud">Push to the cloud</a></li>
+                  <li>
+                    <a href="#scale_cloud">Scale the Cloud</a>
+                    <ul>
+                      <li><a href="#swarm_local">Swarm locally</a></li>
+                      <li><a href="#swarm_cloud">Swarm in the cloud</a></li>
+                    </ul>
+                  </li>
                   <li><a href="#summary">Summary</a></li>
                   <li><a href="#future">Future</a></li>
                   <li><a href="#alternative">Alternatives</a></li>
@@ -330,8 +340,25 @@
               The frontend talks to the API and the API talks to the database.
             </p>
             <p>
-              My preference for all things <a href="http://scala-lang.org">Scala</a> is obvious, you might want to pull in other tech stacks instead. You can install a <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java JDK</a> and <a href="http://typesafe.com/get-started">Typesafe's Activator</a> to create the project, or just clone my example code for this is from <a href="http://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-example</a>. The example code use Java and Activator inside Docker images so you don't need to install them.
+              My preference for all things <a href="http://scala-lang.org">Scala</a> is obvious, you might want to pull in other tech stacks instead. 
             </p>
+            <p>
+              Clone my <a href="http://github.com/flurdy/docker-compose-machine-swarm-cloud-example">example code</a> or you can install a <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java JDK</a> 
+              and <a href="http://typesafe.com/get-started">Typesafe's Activator</a>
+               to manually create the project.
+               The example code use Java and Activator inside Docker images so you don't need to install them.
+            </p>
+            <code>
+               git clone https://github.com/flurdy/docker-compose-machine-swarm-cloud-example.git
+            </code>
+
+            <p>
+              Though the building process later would download them, 
+              you might as well pre download the following Docker images that this project uses.
+            </p>
+            <code>docker pull debian:wheezy;</code>
+            <code>docker pull postgres:9.4;</code>
+            <code>docker pull flurdy/activator:latest</code>
 
             <p>
               The <em>frontend</em> application has a <em>Dockerfile</em> that describe it like this:
@@ -364,7 +391,7 @@
               EXPOSE 9999
             </code>
             <p>
-              This pulls in an Activator Docker image I have on <a href="https://registry.hub.docker.com/u/flurdy/activator/">Dockerhub</a>.
+              This pulls in an <a href="https://registry.hub.docker.com/u/flurdy/activator/">Activator Docker image I have</a> on <a href="https://registry.hub.docker.com/">Dockerhub</a>.
               It adds a <em>repository</em> file to use local maven and ivy repositories to avoid 
               constantly downloading the internet on each build.
             </p>
@@ -450,9 +477,9 @@
               database: 
               <div class="indent1">   
                  image: postgres:9.4 <br/>
-                 ports: 
+                 # ports: 
                  <div class="indent1">   
-                    - "49932:5432"
+                 #   - "49932:5432"
                  </div>
                  expose:
                  <div class="indent1">   
@@ -504,13 +531,22 @@
               Some quick curl calls to see if it works ok.
               Lets post a pizza order, and see if it is listed in the database afterwards.
             </p>
-            <code>curl -H "Content-Type: application/json" -d "{'pizza': 'Pepperoni'}" "http://localhost:49950/pizza";</code>
-            <code>curl "http://localhost:49950/pizzas"</code>
+            <code>
+              curl -H 'Content-Type: application/json' \<br/>
+               -d '{"pizza": "Pepperoni"}' 
+               'http://<em>192.168.99.100</em>:49920/pizza';</code>
+            <code>curl "http://<em>192.168.99.100</em>:49920/pizzas"</code>
             <p>
               Hopefull the response is something like this:
             </p>
             <code class="output">
-              [{ id: 1, title: "pepperoni", date: "2015-03-02"}]
+              {"pizzas": { "id": 1, "title": "pepperoni"}}
+            </code>
+            <p>
+              You can also see the pizza orders listed via the frontend.
+            </p>
+            <code>
+              open <a href="http://192.168.99.100:49910">http://<em>192.168.99.100</em>:49910</a>
             </code>
             <p>
               (TODO: Make a more lightweight example...)
@@ -682,6 +718,7 @@
               And as mentioned Swarm handles this and still exposes it as just one instance.
             </p>
             
+            <a name="swarm_local"></a>
             <h4>Swarm locally</h4>
             <p>
               Lets scale up locally first.
@@ -728,6 +765,7 @@
             <code>docker info</code>
 
 
+            <a name="swarm_cloud"></a>
             <h4>Swarm in the cloud</h4>
             <p>
               Swarming in the cloud is just about changing the driver,
