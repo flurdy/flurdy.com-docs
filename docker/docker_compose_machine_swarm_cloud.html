@@ -636,11 +636,12 @@
               <em>ec2box</em>
             </code>
 
+
             <a name="cloud_digitalocean"></a>
             <h4>Digital Ocean</h4>
             <p>
               As with the others first create an account with <a href="http://www.digitalocean.com">Digital Ocean</a>.
-              Then create an API token in DO's admin panel.
+              Then create a personal API token in DO's admin panel.
             </p>
             <code>
               docker-machine create \<br/>
@@ -666,6 +667,11 @@
               especially expensive cloud based instances:
             </p>
             <code>docker-machine stop <em>ec2box</em></code>
+            <p>
+              Note if you stop and start remote cloud machines,
+              you may end up with different IPs and 
+              then that cloud machine certificate will have to be recreated.
+            </p>
             <p>
               If you want remove machines.
             </p>
