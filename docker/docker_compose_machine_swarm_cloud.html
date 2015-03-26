@@ -31,7 +31,7 @@
     code.output {
       background-color: #36a;
     }
-    code a,code:visited { 
+    code a,code a:visited { 
       color: white; 
     }
    </style>
@@ -84,7 +84,7 @@
          </nav>
          <div id="jib">
             Started: March 2015.
-            Last updated: 4th Mar 2015.
+            Last updated: 26th Mar 2015.
             <b>Draft, not yet finished</b>.
          </div>
 
@@ -612,7 +612,7 @@
             <p>
               As always, create an account with <a href="https://aws.amazon.com/ec2/">Amazon AWS EC2</a> if you do not already have one,
               and log into to the <a href="https://console.aws.amazon.com">AWS console</a>.
-              AWS also give you a generous one month trial to experiment with.
+              AWS also give you a generous trial to experiment with.
             </p>
             <p>
               I recommend a <a href="http://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">separate IAM credentials</a> to use for this
@@ -636,6 +636,11 @@
               <em>ec2box</em>
             </code>
 
+            <p>
+              You will need to log onto the EC2 console and edit the security group called <em>Docker+Machine</em>.
+              And add the tcp port range <em>49900-49999</em> for your ip.
+            </p>
+
 
             <a name="cloud_digitalocean"></a>
             <h4>Digital Ocean</h4>
@@ -647,6 +652,7 @@
               docker-machine create \<br/>
               --driver digitalocean \<br/>
               --digitalocean-access-token <em>your-digitalocean-api-token</em> \<br/>
+              --digitalocean-region <em></em> \<br/>
               <em>dobox</em>
             </code>
             <p>
@@ -723,7 +729,9 @@
               And run our orchestration on the cloud machine.
             </p>
             <code>docker-compose up -d;</code>
-            <code>docker-compose logs</code>
+            <code>docker-compose logs;</code>
+            <code>export DOCKER_IP=$(docker-machine ip);</code>
+            <code>curl "http://$DOCKER_IP:49910"  </code>
 
 
             <a name="scale_cloud"></a>
@@ -735,6 +743,15 @@
               then you need more instances.
               And as mentioned Swarm handles this and still exposes it as just one instance.
             </p>
+
+            <h4>Compose &amp; Swarm Issues</h4>
+            <p>
+              Currently there are <a href="https://github.com/docker/compose/blob/master/SWARM.md">some significant issues</a> with using Compose with Swarm.
+              These will be resolved very soon
+              and there are <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">some workarounds</a> for now.
+              So currently if using Swarm you may want to run normal Docker containers directly and not with Compose.
+            </p>
+
             
             <a name="swarm_local"></a>
             <h4>Swarm locally</h4>
@@ -782,6 +799,13 @@
             <code>$(docker-machine env --swarm swarm-master);</code>
             <code>docker info</code>
 
+            <!--  
+            <p>
+              Quick check to see if Compose works with the new swarms.
+            </p>
+            <code>docker-compose up -d;</code>
+            <code>docker-compose logs</code>
+            -->
 
             <a name="swarm_cloud"></a>
             <h4>Swarm in the cloud</h4>
@@ -837,14 +861,6 @@
             <code>docker info</code>
 
 
-            <h4>Compose &amp; Swarm Issues</h4>
-            <p>
-              Currently there are <a href="https://github.com/docker/compose/blob/master/SWARM.md">some significant issues</a> with using Compose with Swarm.
-              These will hopefully be resolved soon,
-              but there are <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">some workarounds</a> for now.
-            </p>
-
-
 
             <a name="summary"></a>
             <h3>Summary</h3>
@@ -881,6 +897,7 @@
               such as AWS's closed beta <a href="https://aws.amazon.com/ecs/">Container Service</a> 
               or Google's open beta <a href="https://cloud.google.com/container-engine/">Container Engine</a>. 
               You can use Google's <a href="http://kubernetes.io">Kubernetes</a> for a higher level cluster management.
+              Joyent's <a href="https://www.joyent.com/developers/triton-faq">Triton Container Service</a> across a whole data centre sounds awesome.
             </p>
 
 
@@ -914,6 +931,7 @@
                <li><a href="https://github.com/progrium/dokku">Dokku</a></li>
                <li><a href="http://panamax.io/">Panamax</a></li>
                <li><a href="http://shipyard-project.com/">Shipyard</a></li>
+               <li><a href="https://www.joyent.com/developers/triton-faq">Joyent Triton Elastic Container Service</a></li>
                <li><a href="https://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-cloud-example</a></li>
                <!--
                <li><a href=""></a></li>
