@@ -84,8 +84,8 @@
          </nav>
          <div id="jib">
             Started: March 2015.
-            Last updated: 26th Mar 2015.
-            <b>Draft, not yet finished</b>.
+            Last updated: 30th Mar 2015.
+            <b>Draft, not yet finished nor tested fully</b>.
          </div>
 
       <div id="starboard">
@@ -363,34 +363,41 @@
             </p>
             <code>docker pull debian:wheezy;</code>
             <code>docker pull postgres:9.4;</code>
-            <code>docker pull flurdy/activator:latest</code>
+            <code>docker pull flurdy/activator:1.3.2</code>
 
             <p>
               The <em>frontend</em> application has a <em>Dockerfile</em> that describe it like this:
             </p>
             <code>vi frontend/Dockerfile</code>
             <code class="file wide">
-              FROM flurdy/activator:latest<br/>
+              FROM flurdy/activator:1.3.2<br/>
               <br/>
               MAINTAINER flurdy<br/>
               <br/>
               ENV DEBIAN_FRONTEND noninteractive<br/>
               <br/>
-              ENV APPDIR /var/local/application<br/>
+              ENV APPDIR /opt/app<br/>
               <br/>
-              ADD repositories /root/.sbt/<br/>
+              RUN mkdir -p /etc/opt/app &amp;&amp; \<br/>
+				  &nbsp;&nbsp;mkdir -p $HOME/.sbt/0.13<br/>
               <br/>
-              ADD . /var/local/application<br/>
+              ADD . /opt/app<br/>
               <br/>
-              WORKDIR /var/local/application<br/>
+              WORKDIR /opt/app<br/>
+              <br/>
+              RUN rm -rf /opt/app/target /opt/app/project/project /opt/app/project/target<br/>
+              <br/>
+              RUN cp /opt/app/conf/* /etc/opt/app/ &amp;&amp; \<br/>
+              &nbsp;&nbsp;cp /opt/app/conf/repositories $HOME/.sbt/ &amp;&amp; \<br/>
+              &nbsp;&nbsp;cp /opt/app/conf/local.sbt $HOME/.sbt./0.13/<br/>
               <br/>
               RUN /usr/local/bin/activator stage<br/>
               <br/>
-              WORKDIR /var/local/application<br/>
+              WORKDIR /opt/app<br/>
               <br/>
-              ENTRYPOINT /var/local/application/target/universal/stage/bin/frontend<br/>
+              ENTRYPOINT /opt/app/target/universal/stage/bin/frontend<br/>
               <br/>
-              CMD "-Dconfig.file=/etc/opt/frontend/docker.conf"<br/>
+              CMD "-Dconfig.file=/etc/opt/app/docker.conf"<br/>
               <br/>
               EXPOSE 9000<br/>
               EXPOSE 9999
@@ -406,21 +413,33 @@
             </p>
             <code>vi service/Dockerfile</code>
             <code class="file">
-              FROM flurdy/activator:latest
+              FROM flurdy/activator:1.3.2<br/>
               <br/>
               MAINTAINER flurdy<br/>
               <br/>
               ENV DEBIAN_FRONTEND noninteractive<br/>
               <br/>
-              ENV APPDIR /var/local/application<br/>
+              ENV APPDIR /opt/app<br/>
               <br/>
-              ADD repositories /root/.sbt/<br/>
+              RUN mkdir -p /etc/opt/app &amp;&amp; \<br/>
+				  &nbsp;&nbsp;mkdir -p $HOME/.sbt/0.13<br/>
               <br/>
-              ADD . /var/local/application<br/>
+              ADD . /opt/app<br/>
               <br/>
-              WORKDIR /var/local/application<br/>
+              WORKDIR /opt/app<br/>
               <br/>
-              ENTRYPOINT ["/usr/local/bin/activator"]<br/>
+              RUN rm -rf /opt/app/target /opt/app/project/project /opt/app/project/target<br/>
+              <br/>
+              RUN cp /opt/app/src/main/resources/* /etc/opt/app/ &amp;&amp; \<br/>
+              &nbsp;&nbsp;cp /opt/app/src/main/resources/repositories $HOME/.sbt/ &amp;&amp; \<br/>
+              &nbsp;&nbsp;cp /opt/app/src/main/resources/local.sbt $HOME/.sbt./0.13/ &amp;&amp; \<br/>
+              &nbsp;&nbsp;chmod +x /opt/app/src/main/resources/start.sh<br/>
+              <br/>
+				  RUN /usr/local/bin/activator assembly<br/>
+              <br/>
+              ENTRYPOINT ["/opt/app/src/main/resources/start.sh"]<br/>
+              <br/>
+				  CMD "-config.file=/etc/opt/app/docker.conf"<br/>
               <br/>
               EXPOSE 8880
             </code>
@@ -433,8 +452,8 @@
               frontend: 
               <div class="indent1">   
                  build: frontend <br/>
-                 entrypoint: /var/local/application/target/universal/stage/bin/frontend <br/>
-                 command: -Dconfig.file=/etc/opt/frontend/docker.conf <br/>
+                 entrypoint: /opt/app/target/universal/stage/bin/frontend <br/>
+                 command: "-Dconfig.file=/etc/opt/frontend/docker.conf" <br/>
                  links: 
                   <div class="indent1">   
                     - "service" 
@@ -443,10 +462,9 @@
                  <div class="indent1">   
                     - "49910:9000" 
                  </div>
-                 volumes: 
+                 # volumes: 
                  <div class="indent1">   
-                   # - ./frontend:/var/local/application:rw <br/>
-                    - frontend/conf:/etc/opt/frontend:ro
+                    # - frontend/conf:/etc/opt/frontend:ro
                  </div>
                  volumes_from: 
                  <div class="indent1">   
@@ -456,7 +474,7 @@
               service: 
               <div class="indent1">   
                  build: service <br/>
-                 command: run -Dconfig.file=/etc/opt/service/docker. <br/>
+                 command: run -Dconfig.file=/etc/opt/service/docker.conf <br/>
                  links: 
                  <div class="indent1">   
                     - "database" 
@@ -469,10 +487,9 @@
                  <div class="indent1">   
                     - "8880" 
                  </div>
-                 volumes: 
+                 # volumes: 
                  <div class="indent1">   
-                    # - service:/var/local/application:rw <br/>
-                    - service/src/main/resources:/etc/opt/service:ro 
+						  # - service/src/main/resources:/etc/opt/service:ro 
                  </div> 
                  volumes_from: 
                  <div class="indent1">   
@@ -482,10 +499,6 @@
               database: 
               <div class="indent1">   
                  image: postgres:9.4 <br/>
-                 # ports: 
-                 <div class="indent1">   
-                 #   - "49932:5432"
-                 </div>
                  expose:
                  <div class="indent1">   
                     - "5432" 
@@ -498,7 +511,9 @@
                  <div class="indent1">   
                     - ~/.m2:/root/.m2: <br/>
                     - ~/.ivy2:/root/.ivy2:rw <br/>
-                    - frontend/repositories:/root/.sbt/repositories:ro
+                    - ~/.m2:/home/docker/.ivy2:rw <br/>
+                    - ~/.ivy2:/home/docker/.ivy2:rw <br/>
+                    - services/src/main/resources:/root/.sbt:ro
                  </div>
               </div>
             </code>
