@@ -48,7 +48,7 @@
     }
     })();
   </script>
-   <!-- Adsense -->
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 <body>
 
@@ -85,8 +85,17 @@
          <div id="jib">
             Started: March 2015.
             Last updated: 30th Mar 2015.
-            <b>Draft, not yet finished nor tested fully</b>.
          </div>
+
+    <!-- flurdy docker compose leaderboard -->
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-7805345644641760"
+      data-ad-slot="4707854483"
+      data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 
       <div id="starboard">
         <nav>
@@ -554,8 +563,8 @@
             <code>
               curl -H 'Content-Type: application/json' \<br/>
                -d '{"pizza": "Pepperoni"}' 
-               'http://<em>192.168.99.100</em>:49920/pizza';</code>
-            <code>curl "http://<em>192.168.99.100</em>:49920/pizzas"</code>
+               "http://<em>$(docker-machine ip)</em>:49920/pizza";</code>
+            <code>curl "http://<em>$(docker-machine ip)</em>:49920/pizzas"</code>
             <p>
               Hopefull the response is something like this:
             </p>
@@ -667,7 +676,7 @@
               docker-machine create \<br/>
               --driver digitalocean \<br/>
               --digitalocean-access-token <em>your-digitalocean-api-token</em> \<br/>
-              --digitalocean-region <em></em> \<br/>
+				  --digitalocean-size <em>2gb</em> \<br/>
               <em>dobox</em>
             </code>
             <p>
