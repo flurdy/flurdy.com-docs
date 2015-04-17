@@ -84,7 +84,7 @@
          </nav>
          <div id="jib">
             Started: March 2015.
-            Last updated: 30th Mar 2015.
+            Last updated: 17th Apr 2015.
          </div>
 
     <!-- flurdy docker compose leaderboard -->
@@ -449,7 +449,7 @@
               ENTRYPOINT ["/opt/app/src/main/resources/start.sh"]<br/>
               <br/>
 				  CMD "-config.file=/etc/opt/app/docker.conf"<br/>
-              <br/>
+				  <br/>
               EXPOSE 8880
             </code>
 
@@ -686,7 +686,7 @@
             <h4>Other providers</h4>
             <p>
               Machine and Swarm do support a range of <a href="https://docs.docker.com/machine/#drivers">other providers</a>.
-              If anyone want to send Pull Requests with examples, then please do.
+              If anyone want to send <a href="https://github.com/flurdy/flurdy.com-docs">Pull Requests</a> with examples, then please do.
             </p>
 
 
@@ -700,7 +700,7 @@
             <p>
               Note if you stop and start remote cloud machines,
               you may end up with different IPs and 
-              then that cloud machine certificate will have to be recreated.
+              then that cloud machine's certificate will be recreated automatically (since Machine 0.2). 
             </p>
             <p>
               If you want remove machines.
@@ -771,7 +771,7 @@
             <h4>Compose &amp; Swarm Issues</h4>
             <p>
               Currently there are <a href="https://github.com/docker/compose/blob/master/SWARM.md">some significant issues</a> with using Compose with Swarm.
-              These will be resolved very soon
+              These will be <a href="https://github.com/docker/docker/issues/9983">resolved</a> very soon
               and there are <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">some workarounds</a> for now.
               So currently if using Swarm you may want to run normal Docker containers directly and not with Compose.
             </p>
