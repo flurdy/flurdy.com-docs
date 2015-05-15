@@ -84,7 +84,7 @@
          </nav>
          <div id="jib">
             Started: March 2015.
-            Last updated: 17th Apr 2015.
+            Last updated: 15th May 2015.
          </div>
 
     <!-- flurdy docker compose leaderboard -->
@@ -249,7 +249,7 @@
             <a name="setup_docker_compose"></a>
             <h4>Install Compose</h4>
             <p>
-              Follow the script on the <a href="http://docs.docker.com/compose/install/">Compose Install</a> page.
+              Either follow the script on the <a href="http://docs.docker.com/compose/install/">Compose Install</a> page.
               At the time of writing it is this:
             </p>
             <code class="wide tiny">curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` &gt; \<br/>
@@ -260,8 +260,13 @@
               You can however replace the <em>uname -s</em> parts manually to get it to work.
             </p>
             <p>
+              Or use Brew:
+            </p>
+            <code>brew install docker-compose</code>
+            <p>
               I would also suggest installing the 
               <a href="http://docs.docker.com/compose/completion/">command line completion for Compose</a> if using Bash.
+              Note the Brew install also installs this by default.
             </p>
             <p>
               Test the install:
@@ -280,6 +285,10 @@
             <code class="wide tiny">wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
             <code>chmod +x docker-machine_<em>darwin-amd64</em>;</code>
             <code>mv docker-machine_<em>darwin-amd64</em> /usr/local/bin/docker-machine</code>
+            <p>
+              Or use Brew:
+            </p>
+            <code>brew install docker-machine</code>
             <p>
               Test the install:
             </p>
@@ -312,7 +321,15 @@
               docker-machine create --driver virtualbox \ <br/>
               --virtualbox-memory 3076 dev;
               </code>
+            <p>
+              And set the environment properties to tell docker which machine to use.
+              If you use Bash:
+            </p>
             <code>$(docker-machine env dev)</code>
+            <p>
+              Of alternatively if you use <a href="http://fishshell.com">Fish shell</a>:
+            </p>
+            <code>eval (docker-machine env dev)</code>
             <p>
               This will download boot2docker as a local VM.
               and allocate 3GB as memory.
@@ -340,6 +357,10 @@
               Swarm is available as a Docker image so to install is simply:
             </p>
             <code>docker pull swarm</code>
+            <p>
+              Or use Brew:
+            </p>
+            <code>brew install docker-swarm</code>
 
 
             <a name="orchestrate"></a>
@@ -956,6 +977,8 @@
                <li><a href="http://panamax.io/">Panamax</a></li>
                <li><a href="http://shipyard-project.com/">Shipyard</a></li>
                <li><a href="https://www.joyent.com/developers/triton-faq">Joyent Triton Elastic Container Service</a></li>
+               <li><a href="https://github.com/docker/libnetwork">Docker libnetwork</a></li>
+               <li><a href="http://weave.works">Weave works</a></li>
                <li><a href="https://github.com/flurdy/docker-compose-machine-swarm-cloud-example">github.com/flurdy/docker-compose-machine-swarm-cloud-example</a></li>
                <!--
                <li><a href=""></a></li>
