@@ -252,7 +252,7 @@
               Either follow the script on the <a href="http://docs.docker.com/compose/install/">Compose Install</a> page.
               At the time of writing it is this:
             </p>
-            <code class="wide tiny">curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` &gt; \<br/>
+            <code class="wide tiny">curl -L https://github.com/docker/compose/releases/download/1.2.0/docker-compose-`uname -s`-`uname -m` &gt; \<br/>
               /usr/local/bin/docker-compose;</code>
             <code>chmod +x /usr/local/bin/docker-compose</code>
             <p>
@@ -282,7 +282,7 @@
             <p>
               For OSX :
             </p>
-            <code class="wide tiny">wget https://github.com/docker/machine/releases/download/<em>v0.1.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
+            <code class="wide tiny">wget https://github.com/docker/machine/releases/download/<em>v0.2.0</em>/docker-machine_<em>darwin-amd64</em>;</code>
             <code>chmod +x docker-machine_<em>darwin-amd64</em>;</code>
             <code>mv docker-machine_<em>darwin-amd64</em> /usr/local/bin/docker-machine</code>
             <p>
@@ -322,7 +322,15 @@
               --virtualbox-memory 3076 dev;
               </code>
             <p>
-              And set the environment properties to tell docker which machine to use.
+              This will download boot2docker as a local VM.
+              and allocate 3GB as memory.
+              And suggest you update your default settings,
+              basically replacing the original boot2docker settings,
+              and add these to your .bash_profile or config.fish.
+              (<a href="http://github.com/flurdy/dotfiles/blob/master/.bash_profile">my dotfile</a>)
+            </p>
+            <p>
+              Set the environment properties for which machine's docker daemon to communicate with.
               If you use Bash:
             </p>
             <code>$(docker-machine env dev)</code>
@@ -330,14 +338,6 @@
               Of alternatively if you use <a href="http://fishshell.com">Fish shell</a>:
             </p>
             <code>eval (docker-machine env dev)</code>
-            <p>
-              This will download boot2docker as a local VM.
-              and allocate 3GB as memory.
-              And suggest you update your default settings, 
-              basically replacing the original boot2docker settings,
-              and add these to your .bash_profile or config.fish.
-              (<a href="http://github.com/flurdy/dotfiles/blob/master/.bash_profile">my dotfile</a>)
-            </p>
             <p>
               Lets list current running machines, ie only the dev one.
             </p>
