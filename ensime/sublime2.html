@@ -2,10 +2,10 @@
 <html>
 <head>
 	<title>Scala development in Sublime Text using Ensime</title>
-	<meta http-equiv="keywords" content="sublime,text,2,3,scala,ensime,sbt,editor,ide,plugin,howto,documentation,tups,play,framework,cucumber,gherkin,git,flurdy"/>
-	<meta http-equiv="description" content="Scala development in Sublime Text using Ensime. How to install Sublime Text, Ensime for SBT and sublime-ensime in OSX and Ubuntu Linux. Which gives you highighting, navigation and compilation errors inside Sublime. And other plugins such as cucumber, play! framework, repl, git etc."/>
+	<meta http-equiv="keywords" content="sublime,text,2,scala,ensime,sbt,editor,ide,plugin,howto,documentation,tups,play,framework,cucumber,gherkin,git,flurdy"/>
+	<meta http-equiv="description" content="Scala development in Sublime Text using Ensime. How to install Sublime Text 2, Ensime for SBT and sublime-ensime in OSX and Ubuntu Linux. Which gives you highighting, navigation and compilation errors inside Sublime. And other plugins such as cucumber, play! framework, repl, git etc."/>
 	<link rel="shortcut icon" href="/favicon.ico" />
-	<link href="../ec2/css/ec2.css" rel="stylesheet" type="text/css" />
+	<link href="/docs/ec2/css/ec2.css" rel="stylesheet" type="text/css" />
 	<style>
 		#starboard{ float: right; padding: 0.5em 1em; }
 		code{ margin: 1em; padding: 0.8em; min-width: 60em; }
@@ -13,7 +13,6 @@
 		body{ min-width: 50em; box-shadow: 10px -10px 15px -5px #333333; }
 		code.sbt { background-color: #004400; }
 		.ad-leader{ margin: 0.2em 1em; }
-		.note { font-style: italic; font-size: 0.8em; padding: 0 2em; }
 	</style>
 	<script type="text/javascript">
   var _gaq = _gaq || [];
@@ -63,12 +62,11 @@
 			<li><a href="#intro">Introduction</a></li>
 			<li><a href="#sublime">Install Sublime Text</a></li>
 			<li><a href="#ensime">Install Ensime within SBT</a></li>
-			<li><a href="#sublime-ensime">Install Ensime for Sublime</a></li>
-			<li><a href="#sublime">Configure Sublime</a></li>
+			<li><a href="#sublime-ensime">Install Sublime-ensime</a></li>
+			<li><a href="#server">Install Ensime server</a></li>
 			<li><a href="#start">Start Ensime</a></li>
-			<li><a href="#use">Use Ensime</a></li>
+			<li><a href="#start">Use Ensime</a></li>
 			<li><a href="#plugins">More plugins</a></li>
-			<li><a href="#notes">Notes</a></li>
 			<li><a href="#references">References</a></li>
 			<li><a href="#contact">Feedback</a></li>
 		</ol>
@@ -87,32 +85,34 @@
 <!-- AddThis Button END -->
 	</section>
 
-	<div class="note">
-	Created 2013-07-04. 
-	Updated 2015-06-20.
-	</div>
 
 	<a name="intro"></a>
 	<section>
 		<!-- <h3>Introduction</h3> -->
 		<p>
-			I love <a href="http://www.sublimetext.com">Sublime Text</a>, and whilst I do use <a href="http://www.jetbrains.com/idea">IntelliJ</a> for some of my <a href="http://scala-lang.org">Scala</a> development,
+			I love <a href="">Sublime Text 2</a>, and whilst I do use <a href="http://www.jetbrains.com/idea">IntelliJ</a> for some of my <a href="http://scala-lang.org">Scala</a> development,
 			I do find myself using Sublime more and more. And with that it is nice to have proper syntax highlighting and even compilation errors inside Sublime.
 		</p>
 		<p>
-			Enter <a href="https://github.com/ensime/ensime-server">Ensime</a>, the <i><strong>EN</strong>hanced <strong>S</strong>cala <strong>I</strong>nteraction <strong>M</strong>ode for <strong>E</strong>macs</i>, except I use it with Sublime.
+			Enter <a href="https://github.com/aemoncannon/ensime">Ensime</a>, the <i><strong>EN</strong>hanced <strong>S</strong>cala <strong>I</strong>nteraction <strong>M</strong>ode for <strong>E</strong>macs</i>, except I use it with Sublime.
 			Sprinkle some other helpful plugins and we have a lightweight but powerful development environment.
 		</p>
+		<p>
+			Note this is an older howo aimed at Sublime Text 2.
+			A <a href="sublime.html">newer version of this howto is available</a>, 
+			aimed at Sublime Text 3 and a newer Ensime plugin.
+		 </p>
 	</section>
 
 
 
 	<a name="sublime"></a>
 	<section>
-		<h3>Install Sublime Text</h3>
+		<h3>Install Sublime Text 2</h3>
+		<p><a href="http://www.sublimetext.com/3">Sublime Text 3</a> is (at the time of writing) just been released in beta mode. Until it matures a little, or rather until 3rd party plugins migrates I will stick to version 2.</p>
 
 		<p>
-			You probably already have Sublime installed, but if not go to <a href="http://www.sublimetext.com">Sublime Text's website</a> and <a href="http://www.sublimetext.com/3">download</a> the appropriate version. Currently version 3 is the valid version even though it is technically still called beta.
+			You probably already have Sublime installed, but if not go to <a href="http://www.sublimetext.com">Sublime Text's website</a> and <a href="http://www.sublimetext.com/2">download</a> the appropriate version.
 		</p>
 		<p>
 			Install it via your normal OS installation method.
@@ -139,38 +139,39 @@
 		<h3>Install Ensime within SBT</h3>
 
 		<p>
-			This assumes you already have Scala and <a href="https://github.com/sbt/sbt">SBT</a> (or <a href="https://www.typesafe.com/get-started">Typesafe's Activator</a>) installed. 
+			This assumes you already have Scala and <a href="https://github.com/sbt/sbt">SBT</a> installed.
 		</p>
 		<p>
-			Go to the plugin folder of SBT and add the <a href="https://github.com/ensime/ensime-server">Ensime plugin</a>:
+			Go to the plugin folder of SBT and add the <a href="https://github.com/aemoncannon/ensime">Ensime plugin</a>:
 		</p>
 		<p>
-			Open or create <i>~/.sbt/0.13/plugins/plugins.sbt</i> and append <i>addSbtPlugin("org.ensime" % "ensime-sbt" % "0.1.6")</i>.
+			Open or create <i>~/.sbt/plugins/plugins.sbt</i> and append <i>addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.1")</i>.
 		</p>
 		<code>
-			mkdir -p ~/.sbt/0.13/plugins;<br/>
-			echo "addSbtPlugin(\"org.ensime\" % \"ensime-sbt\" % \"0.1.6\")" &gt;&gt; ~/.sbt/0.13/plugins/plugins.sbt
+			mkdir -p ~/.sbt/plugins;<br/>
+			echo "addSbtPlugin(\"org.ensime\" % \"ensime-sbt-cmd\" % \"0.1.1\")" &gt;&gt; ~/.sbt/plugins/plugins.sbt
 		</code>
 		<p>
-			For more up-to-date version numbers, check <a href="https://github.com/ensime/ensime-server">github.com/ensime/ensime-server</a>.
+			For more up-to-date version numbers, check <a href="https://github.com/aemoncannon/ensime-sbt-cmd">github.com/aemoncannon/ensime-sbt-cmd</a>.
 		</p>
 
 		<p>
-			Go to your project folder and let Ensime generate its configuration files:
+			Go to your <a href="https://github.com/n8han/giter8">project folder</a> and let Ensime generate its configuration files:
 		</p>
 		<code>
 			cd <i>~/Code/myproject</i>;<br/>
-			sbt gen-ensime
+			sbt
 		</code>
-		<p>
-			Note, this will only work if the project is using SBT 0.13.5 or later.
-		</p>
+		<code class="sbt">
+			&nbsp;&nbsp;ensime generate
+		</code>
+
 	</section>
 
 
 	<a name="sublime-ensime"></a>
 	<section>
-		<h3>Install Ensime for Sublime</h3>
+		<h3>Install sublime-ensime</h3>
 
 		<p>
 			Go to the packages folder of Sublime:
@@ -179,64 +180,52 @@
 			For OSX:
 		</p>
 		<code>
-			cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages
+			cd ~/Library/Application\ Support/Sublime\ Text\ 2/Packages
 		</code>
 		<p>
 			For Linux:
 		</p>
 		<code>
-			cd ~/.config/sublime-text-3/Packages<br/>
+			cd ~/.config/sublime-text-2/Packages<br/>
 		</code>
 		<p>
-			And clone the <a href="https://github.com/ensime/ensime-sublime">Ensime-Sublime plugin</a> into this folder as <i>Ensime</i>:
+			And clone the <a href="https://github.com/sublimescala/sublime-ensime">Sublime-Ensime plugin</a> into this folder as <i>Ensime</i>:
 		</p>
 		<code>
-			git clone https://github.com/ensime/ensime-sublime.git Ensime
+			git clone https://github.com/sublimescala/sublime-ensime.git Ensime
 		</code>
 	</section>
 
-	<a name="sublime"></a>
+
+	<a name="server"></a>
 	<section>
-		<h3>Configure Sublime</h3>
+		<h3>Install Ensime server</h3>
 		<p>
-			(Re)start Sublime and add this to your user preferences
-			(<i>Preferences/Package Settings/Ensime/Settings User</i>):
+			Next you need to install the server into this Sublime Ensime folder.
+			The <a href="http://download.sublimescala.org/">sublime scala project</a> has a <a href="https://www.dropbox.com/sh/ryd981hq08swyqr/V9o9rDvxkS/ENSIME%20Releases">list of suitable downloads</a>.
+			Assuming you are within "Sublime Text 2/Packages" folder still,
+			extract the latest server with:
 		</p>
 		<code>
-		    "connect_to_external_server": true,<br/>
-  			"error_highlight": true,<br/>
-  			"external_server_port_file": "<i>YourProjectPath</i>/.ensime_cache/port",
+			tar xzf ~/Downloads/ensime_*;</br>
+			mv ensime_* Ensime/server
 		</code>
-		<p>
-			Unfortunately this hard codes the port to one project.
-			This will be fixed soon I hope.
-		</p>
 	</section>
+
+
 
 
 	<a name="start"></a>
 	<section>
 		<h3>Start Ensime</h3>
 		<p>
-			Start an Ensime instance:
-		</p>
-		<code>
-			~/Library/Application\ Support/Sublime\ Text\ 3/Packages/Ensime/serverStart.sh <i>YourProjectPath</i>/.ensime
-		</code>
-		
-		<h4>Start Project Ensime Server</h4>
-		<p>
-			Open Sublime's command palette (Cmd/Ctrl+Shift+p) and find and run <i>Ensime: Startup</i>
+			Start Sublime, then start Ensime by either right click and choose <strong>Ensime/Maintenance/Startup</strong>.
 		</p>
 		<p>
 			This is usually the point you realise you <a href="http://devopsreactions.tumblr.com">missed a step or typoed</a> somewhere...
 		</p>
-		
-	</section>
 
-	<a name="use"></a>
-	<section>
-		<h3>Use Ensime</h3>
+		<h4>Use Ensime</h3>
 		<p>
 			Ensime will now highlight compilation errors.
 		</p>
@@ -252,44 +241,22 @@
 	<a name="plugins"></a>
 	<section>
 		<h3>More plugins</h3>
-
-		<p>There are <a href="https://packagecontrol.io/">a lot of plugins</a>, such as:</p>
-		<ul>
-			<li>
-				<h5>Play! 2</h5>
-				<p>
-					If you use <a href="http://www.playframework.org">Play! framework</a>, then <a href="https://github.com/guillaumebort/play2-sublimetext2">Guillaume Bort's excellent Sublime package</a> is usefull for syntax and error highlighting, even in templates.
-				</p>
-			</li>
-			<li>
-				<h5>REPL</h5>
-				<p>
-					For a scala REPL inside Sublime have a look at <a href="https://github.com/laughedelic/SublimeREPL">github.com/laughedelic/SublimeREPL</a>.
-				</p>
-			</li>	
-			<li>
-				<h5>Git</h5>
-				<p>
-					For simple interaction with Git have a look at <a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a>.
-					I use <a href="https://github.com/jisaacks/GitGutter">GitGutter</a> which marks changes in the left margin (and then the excellent <a href="http://www.sourcetreeapp.com/">SourceTree</a> for Git interactions).
-				</p>
-			</li>
-			<li>
-				<h5>Gherkin</h5>
-				<p>
-					For simple Cucumber and Gherkin highlighting have a look at <a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a>.
-				</p>
-			</li>
-		</ul>
-	</section>
-
-
-	<a name="notes"></a>
-	<section>
-		<h3>Notes</h3>
-		<p>The latest update to the Sublime Ensime plugin's <a href="http://github.com/ensime/ensime-sublime/blob/master/README.md">README</a> now also explains parts of this setup.</p>
+		<h4>Play! 2</h4>
 		<p>
-			An older version of this howto is <a href="sublime2.html">available here</a>. It is aimed at Sublime Text 2 and an older ensime plugin.
+			If you use <a href="http://www.playframework.org">Play! framework</a>, then <a href="https://github.com/guillaumebort/play2-sublimetext2">Guillaume Bort's excellent Sublime package</a> is usefull for syntax and error highlighting, even in templates.
+		</p>
+		<h4>REPL</h4>
+		<p>
+			For a scala REPL inside Sublime have a look at <a href="https://github.com/laughedelic/SublimeREPL">github.com/laughedelic/SublimeREPL</a>.
+		</p>
+		<h4>Git</h4>
+		<p>
+			For simple interaction with Git have a look at <a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a>.
+			I use <a href="https://github.com/jisaacks/GitGutter">GitGutter</a> which marks changes in the left margin (and then the excellent <a href="http://www.sourcetreeapp.com/">SourceTree</a> for Git interactions).
+		</p>
+		<h4>Gherkin</h4>
+		<p>
+			For simple Cucumber and Gherkin highlighting have a look at <a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a>.
 		</p>
 	</section>
 
@@ -298,14 +265,13 @@
 	<section>
 		<h3>References</h3>
 		<ul>
+			<li><a href="http://www.sublimetext.com">www.sublimetext.com</a></li>
 			<li><a href="http://www.scala-lang.org">www.scala-lang.org</a></li>
 			<li><a href="https://github.com/sbt/sbt">github.com/sbt/sbt</a></li>
-			<li><a href="https://github.com/ensime/ensime-sbt">github.com/ensime/ensime-sbt</a></li>
-			<li><a href="https://github.com/ensime/ensime-server">github.com/ensime/ensime-server</a></li>
+			<li><a href="https://github.com/aemoncannon/ensime-sbt-cmd">github.com/aemoncannon/ensime-sbt-cmd</a></li>
+			<li><a href="https://github.com/aemoncannon/ensime">github.com/aemoncannon/ensime</a></li>
 			<li><a href="https://github.com/sublimescala/sublime-ensime">github.com/sublimescala/sublime-ensime</a></li>
-			<li><a href="https://github.com/ensime/ensime-sublime">github.com/ensime/ensime-sublime</a></li>
-			<li><a href="https://gitter.im/ensime/ensime-server">gitter.im/ensime/ensime-server</a></li>
-			<li><a href="https://github.com/n8han/giter8">github.com/n8han/giter8</a></li>
+			<li><a href="https://github.com/n8han/giter8">github.com/n8han/giter8</a>
 			<li><a href="https://github.com/guillaumebort/play2-sublimetext2">github.com/guillaumebort/play2-sublimetext2</a></li>
 			<li><a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a></li>
 			<li><a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a></li>
@@ -321,7 +287,6 @@
 			<li><a href="http://www.sourcetreeapp.com/">www.sourcetreeapp.com</a></li>
 			<li><a href="http://www.jetbrains.com/idea">www.jetbrains.com/idea</a></li>
 			<li><a href="http://devopsreactions.tumblr.com">devopsreactions.tumblr.com</a></li>
-			<li><a href="http://www.caniswitchtosublimetext3.com/">caniswitchtosublimetext3.com</a></li>
 		</ul>
 	</section>
 
