@@ -789,12 +789,20 @@
               And as mentioned Swarm handles this and still exposes it as just one instance.
             </p>
 
-            <h4>Compose &amp; Swarm Issues</h4>
+            <h4>Compose &amp; Swarm issues</h4>
+
             <p>
-              Currently there are <a href="https://github.com/docker/compose/blob/master/SWARM.md">some significant issues</a> with using Compose with Swarm.
-              These will be <a href="https://github.com/docker/docker/issues/9983">resolved</a> very soon
-              and there are <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">some workarounds</a> for now.
-              So currently if using Swarm you may want to run normal Docker containers directly and not with Compose.
+              Using Swarm with Compose has had <a href="https://github.com/docker/compose/blob/master/SWARM.md">some issues</a>,
+              mostly due to routing requests correctly and efficiently between Compose apps across macine instances.
+              There has been some <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">temporary work arounds</a>.
+            </p>
+            <p>
+              With <a href="http://blog.docker.com/2015/06/networking-receives-an-upgrade/">the announcement of the new Docker Network</a>
+              this should be <a href="https://github.com/docker/docker/issues/9983">resolved</a> and  
+              integrated with <a href="http://blog.docker.com/2015/06/compose-1-3-swarm-0-3-machine-0-3/">Swarm 0.3 and Compose 1.3</a>.
+              It is still experimental,
+              but <a href="https://github.com/docker/docker/blob/master/experimental/compose_swarm_networking.md">follow this guide</a> to use Network with Swarm and Compose.
+              Alternatively run normal Docker containers directly, and not with Compose.
             </p>
 
             
