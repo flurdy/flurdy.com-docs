@@ -84,7 +84,7 @@
          </nav>
          <div id="jib">
             Started: March 2015.
-            Last updated: 25th June 2015.
+            Last updated: 14th July 2015.
          </div>
 
     <!-- flurdy docker compose leaderboard -->
@@ -425,9 +425,7 @@
               <br/>
               WORKDIR /opt/app<br/>
               <br/>
-              ENTRYPOINT /opt/app/target/universal/stage/bin/frontend<br/>
-              <br/>
-              CMD "-Dconfig.file=/etc/opt/app/docker.conf"<br/>
+              ENTRYPOINT ["/opt/app/target/universal/stage/bin/frontend"]<br/>
               <br/>
               EXPOSE 9000<br/>
               EXPOSE 9999
@@ -482,7 +480,6 @@
               frontend: 
               <div class="indent1">   
                  build: frontend <br/>
-                 entrypoint: /opt/app/target/universal/stage/bin/frontend <br/>
                  command: "-Dconfig.file=/etc/opt/frontend/docker.conf" <br/>
                  links: 
                   <div class="indent1">   
@@ -793,7 +790,7 @@
 
             <p>
               Using Swarm with Compose has had <a href="https://github.com/docker/compose/blob/master/SWARM.md">some issues</a>,
-              mostly due to routing requests correctly and efficiently between Compose apps across macine instances.
+              mostly due to routing requests correctly and efficiently between Compose apps across Machine instances.
               There has been some <a href="https://github.com/docker/swarm/blob/master/scheduler/filter/README.md#affinity-filter">temporary work arounds</a>.
             </p>
             <p>
