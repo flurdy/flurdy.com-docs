@@ -750,7 +750,7 @@
              <p>
                Lets make the ec2 box active, which would be the box any docker or compose commands talk to.
              </p>
-             <code>docker-machine active ec2box;</code>
+             <code>eval $(docker-machine env ec2box);</code>
             <code>docker-machine ls</code>
             <code class="output">
               NAME   &nbsp;ACTIVE   DRIVER &nbsp;&nbsp;&nbsp;   &nbsp;STATE   &nbsp;  URL   
