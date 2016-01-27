@@ -88,8 +88,8 @@
 	</section>
 
 	<div class="note">
-	Created 2013-07-04. 
-	Updated 2015-06-20.
+	Created 2013-07-04.
+	Updated 2016-01-24.
 	</div>
 
 	<a name="intro"></a>
@@ -119,6 +119,7 @@
 		</p>
 
 		<p>Note: Sublime Text is not open source nor free, whilst you can keep using it for free it will nag you to purchase the full version.</p>
+		<p>Ensime plugins for exists for other editors as well, Atom, Emacs and Vim.</p>
 	</section>
 
 	<div class="ad-leader">
@@ -139,20 +140,18 @@
 		<h3>Install Ensime within SBT</h3>
 
 		<p>
-			This assumes you already have Scala and <a href="https://github.com/sbt/sbt">SBT</a> (or <a href="https://www.typesafe.com/get-started">Typesafe's Activator</a>) installed. 
+			This assumes you already have Scala and <a href="https://github.com/sbt/sbt">SBT</a> (or <a href="https://www.typesafe.com/get-started">Typesafe's Activator</a>) installed.
 		</p>
 		<p>
-			Go to the plugin folder of SBT and add the <a href="https://github.com/ensime/ensime-server">Ensime plugin</a>:
-		</p>
-		<p>
-			Open or create <i>~/.sbt/0.13/plugins/plugins.sbt</i> and append <i>addSbtPlugin("org.ensime" % "ensime-sbt" % "0.1.6")</i>.
+			Go to the plugin folder of SBT and add the <a href="https://github.com/ensime/ensime-sbt">Ensime SBT plugin</a> by
+			appending the Ensime SBT plugin to <i>~/.sbt/0.13/plugins/plugins.sbt</i>.
 		</p>
 		<code>
 			mkdir -p ~/.sbt/0.13/plugins;<br/>
-			echo "addSbtPlugin(\"org.ensime\" % \"ensime-sbt\" % \"0.1.6\")" &gt;&gt; ~/.sbt/0.13/plugins/plugins.sbt
+			echo "addSbtPlugin(\"org.ensime\" % \"ensime-sbt\" % \"0.3.3\")" &gt;&gt; ~/.sbt/0.13/plugins/plugins.sbt
 		</code>
 		<p>
-			For more up-to-date version numbers, check <a href="https://github.com/ensime/ensime-server">github.com/ensime/ensime-server</a>.
+			For more up-to-date version numbers, check <a href="https://github.com/ensime/ensime-sbt/releases">github.com/ensime/ensime-sbt</a>.
 		</p>
 
 		<p>
@@ -163,7 +162,8 @@
 			sbt gen-ensime
 		</code>
 		<p>
-			Note, this will only work if the project is using SBT 0.13.5 or later.
+			Note Ensime requires you project to be using <b>SBT 0.13.5</b> or later.
+			(check your project's <i>project/build.properties</i>)
 		</p>
 	</section>
 
@@ -173,65 +173,33 @@
 		<h3>Install Ensime for Sublime</h3>
 
 		<p>
-			Go to the packages folder of Sublime:
+			For older versions you cloned the sublime-ensime package into Sublime's package folder.
+			And <a href="sublime2.html">a whole lot more</a>.<br/>
+			(<i>~/Library/Application\ Support/Sublime\ Text\ 3/Packages</i> or <i>~/.config/sublime-text-3/Packages</i>)
 		</p>
 		<p>
-			For OSX:
+			But the current versions are all available via Sublime's <a href="https://packagecontrol.io/packages/Ensime">package manager</a>.
+			Ensure you have <a href="https://packagecontrol.io/installation">package manager</a> installed.
+			In Sublime open the package manager's install package menu by pressing <i>cmd+shift+p</i> in OSX or <i>ctrl+shift+p</i> in Linux,
+			and look for "Install packges". In its dropdown search for and select <i>Ensime</i>.
 		</p>
-		<code>
-			cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages
-		</code>
-		<p>
-			For Linux:
-		</p>
-		<code>
-			cd ~/.config/sublime-text-3/Packages<br/>
-		</code>
-		<p>
-			And clone the <a href="https://github.com/ensime/ensime-sublime">Ensime-Sublime plugin</a> into this folder as <i>Ensime</i>:
-		</p>
-		<code>
-			git clone https://github.com/ensime/ensime-sublime.git Ensime
-		</code>
+
 	</section>
 
-	<a name="sublime"></a>
-	<section>
-		<h3>Configure Sublime</h3>
-		<p>
-			(Re)start Sublime and add this to your user preferences
-			(<i>Preferences/Package Settings/Ensime/Settings User</i>):
-		</p>
-		<code>
-		    "connect_to_external_server": true,<br/>
-  			"error_highlight": true,<br/>
-  			"external_server_port_file": "<i>YourProjectPath</i>/.ensime_cache/port",
-		</code>
-		<p>
-			Unfortunately this hard codes the port to one project.
-			This will be fixed soon I hope.
-		</p>
-	</section>
+
 
 
 	<a name="start"></a>
 	<section>
 		<h3>Start Ensime</h3>
 		<p>
-			Start an Ensime instance:
-		</p>
-		<code>
-			~/Library/Application\ Support/Sublime\ Text\ 3/Packages/Ensime/serverStart.sh <i>YourProjectPath</i>/.ensime
-		</code>
-		
-		<h4>Start Project Ensime Server</h4>
-		<p>
-			Open Sublime's command palette (Cmd/Ctrl+Shift+p) and find and run <i>Ensime: Startup</i>
+			You no longer need to launch external scripts or configure anything,
+			simply open Sublime's command palette (<i>cmd/ctrl+shift+p</i>) and find and run <i>Ensime: Startup</i>
 		</p>
 		<p>
+			Note this may take a little awhile. Logs are available to debug what is going on.
 			This is usually the point you realise you <a href="http://devopsreactions.tumblr.com">missed a step or typoed</a> somewhere...
 		</p>
-		
 	</section>
 
 	<a name="use"></a>
@@ -256,29 +224,30 @@
 		<p>There are <a href="https://packagecontrol.io/">a lot of plugins</a>, such as:</p>
 		<ul>
 			<li>
-				<h5>Play! 2</h5>
-				<p>
+				<b>Play! 2</b>
 					If you use <a href="http://www.playframework.org">Play! framework</a>, then <a href="https://github.com/guillaumebort/play2-sublimetext2">Guillaume Bort's excellent Sublime package</a> is usefull for syntax and error highlighting, even in templates.
-				</p>
 			</li>
 			<li>
-				<h5>REPL</h5>
-				<p>
+				<b>REPL</b>
 					For a scala REPL inside Sublime have a look at <a href="https://github.com/laughedelic/SublimeREPL">github.com/laughedelic/SublimeREPL</a>.
-				</p>
-			</li>	
-			<li>
-				<h5>Git</h5>
-				<p>
-					For simple interaction with Git have a look at <a href="https://github.com/kemayo/sublime-text-2-git">github.com/kemayo/sublime-text-2-git</a>.
-					I use <a href="https://github.com/jisaacks/GitGutter">GitGutter</a> which marks changes in the left margin (and then the excellent <a href="http://www.sourcetreeapp.com/">SourceTree</a> for Git interactions).
-				</p>
 			</li>
 			<li>
-				<h5>Gherkin</h5>
-				<p>
+				<b>Git</b>
+					For simple interaction with Git have a look at <a href="https://github.com/kemayo/sublime-text-git">github.com/kemayo/sublime-text-git</a>.
+			</li>
+			<li>
+				<b>GitGutter</b>
+					I use <a href="https://github.com/jisaacks/GitGutter">GitGutter</a> which marks changes in the left margin (and then the excellent <a href="http://www.sourcetreeapp.com/">SourceTree</a> for Git interactions).
+			</li>
+			<li>
+				<b>Gherkin</b>
 					For simple Cucumber and Gherkin highlighting have a look at <a href="https://github.com/npverni/cucumber-sublime2-bundle">github.com/npverni/cucumber-sublime2-bundle</a>.
-				</p>
+			</li>
+			<li>
+				<b>Origami</b> Split and organise window panes via <a href="https://github.com/SublimeText/Origami">Origami</a>.
+			</li>
+			<li>
+				<b>Diffy</b> Compare files and commits with <a href="https://github.com/zsong/diffy">Diffy</a>.
 			</li>
 		</ul>
 	</section>
@@ -287,10 +256,7 @@
 	<a name="notes"></a>
 	<section>
 		<h3>Notes</h3>
-		<p>The latest update to the Sublime Ensime plugin's <a href="http://github.com/ensime/ensime-sublime/blob/master/README.md">README</a> now also explains parts of this setup.</p>
-		<p>
-			An older version of this howto is <a href="sublime2.html">available here</a>. It is aimed at Sublime Text 2 and an older ensime plugin.
-		</p>
+		<p>The latest update to the Sublime Ensime plugin's <a href="http://github.com/ensime/ensime-sublime/blob/master/README.md">README</a> and <a href="http://ensime.org">website</a> now also explains parts of this setup.</p>
 	</section>
 
 
@@ -322,6 +288,7 @@
 			<li><a href="http://www.jetbrains.com/idea">www.jetbrains.com/idea</a></li>
 			<li><a href="http://devopsreactions.tumblr.com">devopsreactions.tumblr.com</a></li>
 			<li><a href="http://www.caniswitchtosublimetext3.com/">caniswitchtosublimetext3.com</a></li>
+			<li><a href="https://gitter.im/ensime/ensime-server">gitter.im/ensime/ensime-server</a></li>
 		</ul>
 	</section>
 
