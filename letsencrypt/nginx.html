@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Let's Encrypt with Nginx</title>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <meta name="keyword" content="letsencrypt,ssl,tsl,nginx,aws,heroku"/>
+   <meta name="description" content="How to setup Let's Encrypt certificates for https with Ngnix"/>
+   <meta name="viewport" content="initial-scale=0.8"/>
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <style>
+   </style>
+   <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-281408-1']);
+    _gaq.push(['_trackPageview']);
+
+     (function() {
+     if(location.host!='localhost'){
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    }
+    })();
+  </script>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>
+              Let's Encrypt with Nginx
+            </h1>
+            <h4>
+               How to setup Let's Encrypt certificates for https with Ngnix,
+               using AWS and proxying to Heroku
+            </h4>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: February 2016.
+            Last updated: 24th February 2016.
+         </div>
+
+<!-- git-pair leaderboard -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-7805345644641760"
+     data-ad-slot="8599939280"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+        <div id="starboard">
+          <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#top">Introduction</a></li>
+                  <li><a href="#instance">Launch instance</a></li>
+                  <li><a href="#nginx">Setup Nginx</a></li>
+                  <li><a href="#letsencrypt">Setup Let's Encrypt</a></li>
+                  <li><a href="#certificates">Certificates</a></li>
+                  <li><a href="#https">Setup HTTPS</a></li>
+                  <li><a href="#redirect">Redirect to HTTPS</a></li>
+                  <li><a href="#heroku">Proxy Heroku</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+               </ul>
+              </nav>
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                     asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+         </div>
+         <div id="cargo">
+
+
+
+
+
+            <a name="purpose"></a>
+            <h3>Why Let's Encrypt</h3>
+            <p>
+               Traffic online can today easily be intercepted by criminals, stalkers, dodgy governments, nerdy neighbours or suspect employers. If this traffic is not encrypted then people can quickly make your life a misery (bullying, black mail, huge debts, false imprisonment, etc).
+            </p>
+            <p>
+               Previously setting up encrypted traffic with HTTPS web servers have been a tedious chore.
+               Encryption has also been mixed with identification complicating the process.
+               And was also very expensive.
+               So I and many others have used self signed certificates to achieve encryption but
+               they also cause browsers to prompt massive warnings of how dodgy your site is as there was no trusted
+               identification of the certificate. So I rarely encrypted any sites, and I was not alone.
+            </p>
+            <p>
+               <a href="https://letsencrypt.org">Let's Encrypt</a> solves these problems. Formed in 2014 and launched in beta in 2015 by ISRG, Mozilla, Cisco, Akamai, EFF and others, Let's Encrypt offer properly signed certificates for free.
+               Without any authentication. And with a lot of automation.
+               And it is great.
+            </p>
+            <p>
+               This howto shows how to set up Nginx on an Ubuntu box,
+               then install the Let's Encrypt's certification tools and set up a https website.
+               Also includes an example on how to proxy SSL traffic to a Heroku application.
+            </p>
+
+
+            <a name="instance"></a>
+            <h3>Launch instance</h3>
+            <p>
+               Launch any server you prefer, locally, in Vagrant, Digital Ocean, Google Cloud Engine, etc.
+               I will assume a nano instance on Amazon AWS with an Ubuntu 14.04 image.
+               I also add a 2Gb EBS volume as swap to it as nano's only have 0.5Gb RAM.
+               For me that is cheapest but if you have a popular site where the IO will be expensive obviously go for a higher memory instance instead with no swap.
+            </p>
+            <p>
+               Make sure the instance is up to date.
+            </p>
+            <code>sudo apt-get update &amp;&amp; sudo apt-get upgrade</code>
+            <p>
+               And also point the dns or local hosts file for your domain to the new server's ip.
+               Temporarily with AWS you can CNAME your dns to the public ip AWS name for your instance.
+            </p>
+
+            <a name="nginx"></a>
+            <h3>Setup Nginx</h3>
+            <p>
+               Install Nginx
+            </p>
+            <code>sudo apt-get install nginx</code>
+            <p>
+               Then lets create a simple web page
+               (replace <i>example.com</i> with your domain
+               and <i>ubuntu</i> with your username)
+            </p>
+            <code>
+               sudo mkdir -p /var/www/<i>example.com</i>/html;<br/>
+               sudo chown -R <i>ubuntu</i>:<i>ubuntu</i> /var/www/<i>example.com</i>/html;<br/>
+               vi /var/www/<i>example.com</i>/html/index.html
+            </code>
+            <code class="file">
+               &lt;html&gt;<br/>
+               <span class="indent1"></span>   &lt;head&gt;<br/>
+                  <span class="indent2"></span>  &lt;title&gt;Hello world&lt;/title&gt;<br/>
+                <span class="indent1"></span>  &lt;/head&gt;<br/>
+               <span class="indent1"></span>   &lt;body&gt;<br/>
+                  <span class="indent2"></span>  &lt;h1&gt;Hello world&lt;/h1&gt;<br/>
+                <span class="indent1"></span>  &lt;/body&gt;<br/>
+               &lt;/html&gt;
+            </code>
+            <p>
+               Its configuration is under <i>/etc/nginx</i>.
+               We will add one configuration by copying the default one.
+            </p>
+            <code>
+               cd /etc/nginx/sites-available;<br/>
+               sudo cp default <i>example.com</i>;<br/>
+               sudo vi <i>example.com</i>
+            </code>
+            <p>
+               You can leave the comments or stream line into something like:
+            </p>
+            <code class="file">
+               server {<br/>
+               <span class="indent1"></span> listen 80;<br/>
+               <span class="indent1"></span> listen [::]:80;<br/>
+               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <br/>
+               <span class="indent1"></span> root /var/www/<i>example.com</i>/html;<br/>
+               <span class="indent1"></span> index index.html index.htm;<br/>
+               <br/>
+               <span class="indent1"></span>  location / {<br/>
+               <span class="indent2"></span>  try_files $uri uri/ =404;<br/>
+               <span class="indent1"></span>  }<br/>
+               }
+            </code>
+            <p>
+               Activate the configuration and reload Nginx:
+            </p>
+            <code>
+               cd ../sites-enabled;<br/>
+               sudo ln -s ../sites-available/<i>example.com</i>;<br/>
+               sudo nginx -t &amp;&amp; sudo service nginx reload;
+            </code>
+            <p>
+               Test via curl or browser on another and you should see the render of the simple page above.
+            </p>
+            <code>curl <i>www.example.com</i></code>
+
+            <a name="redirect"></a>
+            <h3>Redirect other domains</h3>
+            <p>
+               Optionally add a few other domain names that redirects to the main server.
+               Append it to the file we created above.
+            </p>
+            <code>sudo vi /etc/nginx/sites-available/<i>example.com</i></code>
+            <code class="file">
+               server {<br/>
+               <span class="indent1"></span> listen 80;<br/>
+               <span class="indent1"></span> listen [::]:80;<br/>
+               <span class="indent1"></span> servername <i>example.com</i> <i>example.org</i> <i>www.example.org</i>;<br/>
+               <br/>
+               <span class="indent1"></span>  return 302 http://<i>www.example.com</i>$request_uri;<br/>
+               }
+            </code>
+            <code>
+               sudo nginx -t &amp;&amp; sudo service nginx reload;<br/>
+               curl <i>example.org</i>
+            </code>
+
+            <a name="letsencrypt"></a>
+            <h3>Setup Let's Encrypt</h3>
+            <p>
+               The official tools for Let's Encrypt moves along very fast.
+               At the time of writing it was v0.0.4&beta;, undoubtedly it is already on a newer version.
+               And for each iteration is more and more automatic ,
+               better default conventions, more and more useful features.
+            </p>
+            <p>
+               Linux distributions such as debian/Ubuntu can use apt-get to install the tools,
+               but as it moves along so fast I prefer to just clone the git repo,
+               which is also what they recommend at the time of writing.
+            </p>
+            <code>
+               cd /tmp;<br/>
+               sudo apt-get install git;<br/>
+               git clone https://github.com/letsencrypt/letsencrypt.git;<br/>
+               sudo mv letsencrypt /opt/;<br/>
+               sudo /opt/letsencrypt/letsencrypt-auto --help
+            </code>
+
+            <a name="certificate"></a>
+            <h3>Create certificates</h3>
+            <p>
+               Depending on which web server you use there are different options,
+               but also the tools are getting automatic integration with the most popular ones.
+               For now to do this to create your certificate with Nginx.
+            </p>
+            <code>
+               sudo /opt/letsencrypt/letsencrypt-auto certonly --webroot \<br/>
+                --agree-tos --email <i>me@example.com</i> \<br/>
+               -w /var/www/<i>example.com</i>/html -d <i>www.example.com</i> \<br/>
+               -d <i>example.com</i> -d <i>example.org</i> -d <i>www.example.org</i>
+            </code>
+            <p>
+               This creates certificates and configuration in <i>/etc/letsencrypt</i>.
+            </p>
+            <code>ls -l /etc/letsencrypt/live/<i>example.com</i></code>
+            <p>
+               That command which takes seconds to run,
+               has replaced weeks of work to create certificates,
+               sending them to an authority to sign,
+               paying them, retrieving the signed certificates, etc etc.
+            </p>
+
+            <a name="https"></a>
+            <h3>Setup HTTPS</h3>
+            <p>
+               Now that we have certificates we append further to the Nginx configuration file we created earlier.
+            </p>
+            <code>sudo vi /etc/nginx/sites-available/<i>example.com</i></code>
+            <code class="file wide">
+               server {<br/>
+               <span class="indent1"></span> listen 443;<br/>
+               <span class="indent1"></span> listen [::]:443;<br/>
+               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <br/>
+               <span class="indent1"></span> root /var/www/<i>example.com</i>/html;<br/>
+               <span class="indent1"></span> index index.html index.htm;<br/>
+               <br/>
+               <span class="indent1"></span> ssl on;<br/>
+               <span class="indent1"></span> ssl_certificate /etc/letsencrypt/live/<i>example.com</i>/fullchain.pem;<br/>
+               <span class="indent1"></span> ssl_certificate_key /etc/letsencrypt/live/<i>example.com</i>/privkey.pem;<br/>
+               <br/>
+               <span class="indent1"></span> location / {<br/>
+               <span class="indent2"></span> try_files $uri uri/ =404;<br/>
+               <span class="indent1"></span> }<br/>
+               }
+            </code>
+            <code>
+               sudo nginx -t &amp;&amp; sudo service nginx reload;<br/>
+               curl <i>https://www.example.com</i>
+            </code>
+
+            <a name="redirect"></a>
+            <h3>Redirect to HTTPS</h3>
+            <p>
+               We should now redirect the unencrypted site to encrypted site.
+               Edit the initial first server block of the Nginx configuration.
+            </p>
+            <code>sudo vi /etc/nginx/sites-available/<i>example.com</i></code>
+            <code class="file">
+               server {<br/>
+               <span class="indent1"></span> listen 80;<br/>
+               <span class="indent1"></span> listen [::]:80;<br/>
+               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <br/>
+               <span class="indent1"></span> location '/.well-known/acme-challenge' {<br/>
+               <span class="indent2"></span> root /var/www/<i>example.com</i>/html;<br/>
+               <span class="indent2"></span> index index.html index.htm;<br/>
+               <span class="indent2"></span> try_files $uri uri/ =404;<br/>
+               <span class="indent1"></span> }<br/>
+               <br/>
+               <span class="indent1"></span> location / {<br/>
+               <span class="indent2"></span> return 302 https://<i>www.example.com</i>$request_uri;<br/>
+               <span class="indent1"></span> }<br/>
+               }
+            </code>
+            <code>
+               sudo nginx -t &amp;&amp; sudo service nginx reload;<br/>
+               curl <i>www.example.com</i>
+            </code>
+            <p>
+               The <i>'/.well-known/acme-challenge'</i> section
+               is to allow <i>letsencrypt</i> command's <i>webroot</i> option
+               to check if you own the domain by putting a directory and files
+               in your websites path. In the future you need to ensure that it still can do that.
+            </p>
+            <p>
+               You probably want to be a good citizen and redirect the encrypted alternative domains
+               to <i>https://www.example.com</i> as well, so append this:
+            </p>
+            <code>sudo vi /etc/nginx/sites-available/<i>example.com</i></code>
+            <code class="file wide">
+               server {<br/>
+               <span class="indent1"></span> listen 443;<br/>
+               <span class="indent1"></span> listen [::]:443;<br/>
+               <span class="indent1"></span> servername <i>example.com</i> <i>example.org</i> <i>www.example.org</i>;<br/>
+               <br/>
+               <span class="indent1"></span> ssl on;<br/>
+               <span class="indent1"></span> ssl_certificate /etc/letsencrypt/live/<i>example.com</i>/fullchain.pem;<br/>
+               <span class="indent1"></span> ssl_certificate_key /etc/letsencrypt/live/<i>example.com</i>/privkey.pem;<br/>
+               <br/>
+               <span class="indent1"></span> location / {<br/>
+               <span class="indent2"></span> return 302 https://<i>www.example.com</i>$request_uri;<br/>
+               <span class="indent1"></span> }<br/>
+               }
+            </code>
+            <code>
+               sudo nginx -t &amp;&amp; sudo service nginx reload;<br/>
+               curl <i>https://example.org</i>
+            </code>
+
+
+            <a name="renew"></a>
+            <h3>Renew certificates</h3>
+            <p>
+               Let' Encrypt certificates by design are only valid for 90 days.
+               This is to avoid the problem of stale old expired certificates,
+               which often happen when they are valid for years,
+               and people that know how to renew either forget how or leave the company.
+            </p>
+            <p>
+               But again Let's Encrypt can automate this with a one line command.
+            </p>
+            <code>sudo /opt/letsencrypt/letsencrypt-auth renew</code>
+            <p>
+               Append this to crontab to run every few weeks will ensure these certificates newer expire.
+               There are more elaborate error logging versions available but this works for me.
+            </p>
+            <code>sudo crontab -e</code>
+            <code class="file">
+               11  11  4/15  *  *  /opt/letsencrypt/letsencrypt-auto renew
+            </code>
+            <p>
+               Future versions of the tools will even create a crontab entry for you
+               (probably already released by the time you read this).
+            </p>
+
+            <h3>Voila</h3>
+            <p>
+               That is it. You now have an encrypted site for free (apart from the server hosting costs).
+            </p>
+
+
+            <a name="heroku"></a>
+            <h3>Proxy Heroku</h3>
+            <p>
+               Applications on Heroku can use https, and it is free as it is under <i>*.herokuapp.com</i> certificate.
+               However if you want to use your own custom domain, they would need a separate certificate
+               and as such charge you $20 per month for essentially a load balancer in front of your
+               application that encrypts the traffic.
+               As a business that charge is negligible but as a hobby project it is not an option.
+            </p>
+            <p>
+               With this guide you can proxy this encrypted traffic and pay just ~$5 or less per month.
+               And can share this across as many applications.
+            </p>
+            <p>
+               Open the previous main http server block in your Nginx configuration.
+               And replace the static website parts with a proxypass.
+            </p>
+            <code>sudo vi /etc/nginx/sites-available/<i>example.com</i></code>
+            <code class="file wide">
+               server {<br/>
+               <span class="indent1"></span> listen 443;<br/>
+               <span class="indent1"></span> listen [::]:443;<br/>
+               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <br/>
+               <span class="indent1"></span> ssl on;<br/>
+               <span class="indent1"></span> ssl_certificate /etc/letsencrypt/live/<i>example.com</i>/fullchain.pem;<br/>
+               <span class="indent1"></span> ssl_certificate_key /etc/letsencrypt/live/<i>example.com</i>/privkey.pem;<br/>
+               <br/>
+               <span class="indent1"></span> location / {<br/>
+               <span class="indent2"></span> proxy_pass https://<i>example-live-01</i>.herokuapp.com;<br/>
+               <span class="indent1"></span> }<br/>
+               }
+            </code>
+            <code>
+               sudo nginx -t &amp;&amp; sudo service nginx reload;<br/>
+               curl <i>https://www.example.com</i>
+            </code>
+
+
+
+            <a name="contact"></a>
+            <h3>Feedback</h3>
+            <p>
+               Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+            </p>
+            <p>
+               <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+               <a href="http://www.eray.uk">Hire Ivar</a> for short term advice or long term consultancy.
+            </p>
+            <p>
+               Otherwise <a href="/contact">contact flurdy</a>.
+               Especially for things factually incorrect.
+               Apologies for procrastinated replies.
+            </p>
+
+         </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>

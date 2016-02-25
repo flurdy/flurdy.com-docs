@@ -1,1 +1,405 @@
-git-pair.html
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Git pair commit attribution</title>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <meta name="keyword" content="git,pair,commit,source,control"/>
+   <meta name="description" content="Attribute both pair members in git commit history"/>
+   <meta name="viewport" content="initial-scale=0.8"/>
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <style>
+    #ship {
+      min-width: 20em;
+      max-width: 50em;
+    }
+    #starboard {
+      width: 9em;
+    }
+    p {
+      font-size: 0.85em;
+    }
+    code.wide {
+      max-width: 65em;
+    }
+    code {
+      font-size: 1.1em;
+    }
+    code.tiny {
+      font-size: 0.6em;
+    }
+    code.output {
+      background-color: #36a;
+      margin-bottom: 1em;
+    }
+    code a,code a:visited {
+      color: white;
+    }
+    ul.links li { font-size: 0.85em; }
+    p {
+      margin-right: 0.5em;
+    }
+    #starboard {
+      margin-top: 1em;
+    }
+   </style>
+   <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-281408-1']);
+    _gaq.push(['_trackPageview']);
+
+     (function() {
+     if(location.host!='localhost'){
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    }
+    })();
+  </script>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>
+              Git Pair Commit Attribution
+            </h1>
+            <h3>
+              Attributing both members of a pair in the commit history of git based project.
+            </h3>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: January 2016.
+            Last updated: 27th January 2016.
+         </div>
+
+<!-- git-pair leaderboard -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-7805345644641760"
+     data-ad-slot="8599939280"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        <div id="starboard">
+          <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#top">Introduction</a></li>
+                  <li><a href="#alternate">Alternate commits</a></li>
+                  <li><a href="#separate">Separate author and committer</a></li>
+                  <li><a href="#git_scripts">Git_scripts by Pivotal</a></li>
+                  <li><a href="#merge">Merge the committers</a></li>
+                  <li><a href="#install">Install git_scripts</a></li>
+                  <li><a href="#configuration">Configuration</a></li>
+                  <li><a href="#start">Start paring</a></li>
+                  <li><a href="#commit">Commit code</a></li>
+                  <li><a href="#finish">Finish pairing</a></li>
+                  <li><a href="#pair-commit">Alternate commits with git_scripts</a></li>
+                  <li><a href="#avatar">Avatar</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+               </ul>
+              </nav>
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                     asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+         </div>
+         <div id="cargo">
+
+<p>
+  <a href="https://en.wikipedia.org/wiki/Pair_programming">Pair programming</a>, which is a common practice in modern software teams,
+  means two people are responsible for the work developed.
+  But all the commits in <a href="http://git-scm.org">Git</a>'s history are normally only in one persons details.
+</p>
+<p>
+  By attributing both pair members praise (and blame ;p) and most likely future questions can be
+  directed to both, instead of just the owner of the machine it was developed on.
+</p>
+
+<p>
+  As Git does not support this out of the box, there are several work-arounds:
+</p>
+
+<a name="alternate"></a>
+<a name="separate"></a>
+<ul>
+  <li>
+    <h4>Alternate commits</h4>
+    <p>
+      Alternate commits between the members randomly or in alternate order.
+    </p>
+  </li>
+  <li>
+    <h4>Separate author and commiter</h4>
+    <p>
+      Use the separate author and committer git settings to split attributions. E.g.:
+    </p>
+
+    <code class="output">
+      GIT_AUTHOR_NAME="John Smith"<br/>
+      GIT_AUTHOR_EMAIL="john.smith@example.com"<br/>
+      GIT_COMMITTER_NAME="Sue Jones"<br/>
+      GIT_COMMITTER_EMAIL="sue.jones@example.com"
+    </code>
+
+  </li>
+</ul>
+
+<p>
+  There are many alternative tools to accomplish this:
+</p>
+
+<ul class="links">
+  <li><a href="http://github.com/therubymug/hitch">github.com/therubymug/hitch</a></li>
+  <li><a href="http://github.com/git-duet/git-duet">github.com/git-duet/git-duet</a></li>
+  <li><a href="http://github.com/glg/git-pairing">github.com/glg/git-pairing</a></li>
+  <li><a href="http://thepugautomatic.com/2013/11/git-pairing/"> thepugautomatic.com/2013/11/git-pairing/</a></li>
+  <li><a href="http://github.com/chrisk/git-pair"> github.com/chrisk/git-pair</a></li>
+  <li><a href="http://github.com/mynewsdesk/git-pair">github.com/mynewsdesk/git-pair</a></li>
+</ul>
+
+<a name="git_scripts"></a>
+<h3>Git_scripts by Pivotal</h3>
+
+<p>
+  This howto will show how to use <a href="http://github.com/pivotal/git_scripts">github.com/pivotal/git_scripts</a>
+  by <a href="http://pivotal.io/">Pivotal</a>, which do support the alternate commit authors solution,
+  but more importantly it also supports a 3rd option: <b>Merge</b>.
+</p>
+
+<a name="merge"></a>
+<h4>Merge the committers</h4>
+
+<p>
+  Merging the both pair members as one committer means combining both names as one, 
+  and a still valid email address that represents both members. E.g.
+</p>
+
+<code class="output">
+  GIT_COMMITTER_NAME="Sue Jones and John Smith"<br />
+  GIT_COMMITTER_EMAIL="sue.jones+john.smith@example.com"
+</code>
+
+<p>
+  As you can see the merge option combines the names and appends the email alias with a + separating.
+  This makes it a valid email address which is still <i>Sue</i>'s as all mail servers will ignore what is between + and @.
+</p>
+
+<a name="install"></a>
+<h4>Install Git_scripts</h4>
+
+<p>
+  The scripts are available as a Ruby Gem:
+</p>
+
+<code>gem install pivotal_git_scripts</code>
+
+<p>
+  You may need to sudo this command if root privileges is required.
+</p>
+
+<a name="configuration"></a>
+<h4>Configuration</h4>
+
+<p>
+  Create a <i>~/.pairs</i> file.
+</p>
+
+<code>vi ~/.pairs</code>
+
+<code class="file">
+  # .pairs - configuration for 'git pair'<br/>
+  pairs:<br/>
+  # &lt;initials&gt;: &lt;Firstname&gt; &lt;Lastname&gt;[; &lt;email-id&gt;]<br/>
+  <span class="indent1"></span>js: John Smith; john.smith<br/>
+  <span class="indent1"></span>sj: Sue Jones; sue.jones<br/>
+  <span class="indent1"></span>aw: Alun Wilson; alun.wilson<br/>
+  email:<br/>
+  <span class="indent1"></span>prefix: devs<br/>
+  <span class="indent1"></span>domain: example.com<br/>
+  <span class="indent1"></span># no_solo_prefix: true<br/>
+   global: false
+</code>
+
+<p>
+  If <i>prefix</i> is not empty it will prefix emails with its value. E.g. in the above <i>devs</i> will result in:
+</p>
+
+<code class="output">
+  GIT_COMMITTER_EMAIL="devs+sue.jones+john.smith@example.com"
+</code>
+
+<p>
+  So that all emails will end up in <i>devs@example.com</i>, which may be an alias for the whole dev team.
+  A blank prefix may be preferable so that the email addresses generated are sent to at least one of the pair. (The pair order is alphabetic)
+</p>
+
+<p>
+  If <i>global</i> is true, this will set these values globally across all git repositories on your machine.
+  Using the <i>--global</i> option will do the same.
+</p>
+<p>
+  Alternatively <a href="https://github.com/flurdy/dotfiles/blob/master/.config/fish/functions/git-pairall.fish">create another script</a> that loops around an environment variable of projects or root folder to pair on.
+</p>
+
+
+<a name="start"></a>
+<h4>Start pairing</h4>
+
+<p>
+  If <i>John</i> and <i>Alun</i> are pairing on a project then use their initials with <i>Git pair</i>:
+</p>
+
+<code>
+  cd <i>/path/to/project</i>;<br/>
+  git pair js au
+</code>
+
+<p>
+  The pair has now been set up.
+</p>
+
+<code>git config user.name</code>
+
+<code class="output">GIT_COMMITTER_NAME="Alun Wilson and John Smith"</code>
+
+<code>git config user.email</code>
+
+<code class="output">GIT_COMMITTER_EMAIL="alun.wilson+john.smith@example.com"</code>
+
+
+<a name="commit"></a>
+<h4>Commit code</h4>
+
+<p>
+  All commits in this project will now be attributed to Alun and John.
+</p>
+
+<code>
+  echo blaaaaah > aha.txt;<br/>
+  git add aha.txt;<br/>
+  git commit -m "paired";<br/>
+  git show --name-status
+</code>
+
+<code class="output wide">
+  commit 2e2dasdsadasdasdasdasdas<br/>
+  Author: Alun Wilson and John Smith &lt;alun.wilson+john.smith@example.com&gt;<br/>
+  Date:   Wed Feb 29 20:36:33 2013 +0000<br/>
+  ....
+</code>
+
+
+<a name="finish"></a>
+<h4>Finish pairing</h4>
+
+<p>
+  At the end reset back to just yourself (<i>John Smith</i>) with:
+</p>
+
+<code>git pair -u;</code>
+
+<code>git config user.email</code>
+
+<code class="output">GIT_COMMITTER_EMAIL="john.smith@example.com"</code>
+
+<p>
+  You may want to create a git alias like <i>git solo</i> to accomplish the same thing.
+</p>
+
+
+<a name="pair-commit"></a>
+<h4>Alternate commits with git_scripts</h4>
+
+<p>
+  If you want to have commit history to be real people and only one person per commit, then you can instead use:
+</p>
+
+<code>git pair-commit</code>
+
+<p>
+  This does not merge the details but chooses a pair member randomly to be the committer.
+</p>
+
+
+<a name="avatar"></a>
+<h4>Avatar</h4>
+
+<p>
+  Optionally you may want to add the merged email addresses to <a href="http://gravatar.com">Gravatar</a> so that <a href="http://sourcetreeapp.com">SourceTree</a>, GitHub and other GUI git tools will show a relevant avatar.
+</p>
+
+<p>
+  You might create morphed or merged avatars from both members photos.
+</p>
+
+<ul class="links">
+  <li><a href="http://robots.thoughtbot.com/how-to-create-github-avatars-for-pairs">robots.thoughtbot.com/how-to-create-github-avatars-for-pairs</a></li>
+  <li><a href="http://photofunia.com/effects/face_swap">photofunia.com/effects/face_swap</a></li>
+  <li><a href="http://pairicon.herokuapp.com">pairicon.herokuapp.com</a></li>
+</ul>
+
+
+            <a name="contact"></a>
+            <h3>Feedback</h3>
+            <p>
+               Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+            </p>
+            <p>
+               <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+               <a href="http://www.eray.uk">Hire Ivar</a> for short term advice or long term consultancy.
+            </p>
+            <p>
+               Otherwise <a href="/contact">contact flurdy</a>.
+               Especially for things factually incorrect.
+               Apologies for procrastinated replies.
+            </p>
+
+      </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>

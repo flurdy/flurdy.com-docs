@@ -1,0 +1,39 @@
+
+#ship {
+  min-width: 20em;
+  max-width: 50em;
+  min-height: 40em;
+}
+#starboard {
+  width: 9em;
+}
+p {
+  font-size: 0.85em;
+}
+code.wide {
+  max-width: 45em;
+}
+code {
+  font-size: 1.1em;
+}
+code.tiny {
+  font-size: 0.6em;
+}
+code.output {
+  background-color: #36a;
+  margin-bottom: 1em;
+}
+code a,code a:visited {
+  color: white;
+}
+ul.links li { font-size: 0.85em; }
+p {
+  margin-right: 0.5em;
+}
+#starboard {
+  margin-top: 1em;
+}
+
+code i {
+  color: #bbbbff;
+}
