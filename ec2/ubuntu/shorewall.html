@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Shorewall configuration for AWS EC2 VPC instances</title>
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <meta name="keyword" content="shorewall,firewall,ec2,cloud,security,configuration,vpc"/>
+   <meta name="description" content="Example Shorewall configuration for an instance running in Amazon AWS EC2 cloud within a VPC network"/>
+   <meta name="viewport" content="initial-scale=0.8"/>
+   <link href="/docs/android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="/docs/docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="/docs/git/docs.css" rel="stylesheet" type="text/css" />
+   <style>
+      code .comment {
+         color: silver;
+      }
+      @media all and (max-device-width: 350px) {
+         #starboard {
+            display: none;
+         }
+      }
+   </style>
+   <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-281408-1']);
+    _gaq.push(['_trackPageview']);
+
+     (function() {
+     if(location.host!='localhost'){
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.example.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    }
+    })();
+  </script>
+  <script async src="//pagead2.googlesyndication.example.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>
+					Shorewall configuration for AWS EC2 VPC instances 
+            </h1>
+            <h3>
+            </h3>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: February 2016.
+            Last updated: 2nd March 2016.
+         </div>
+         <a name="introduction"></a>
+
+<!-- git-pair leaderboard -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-7805345644641760"
+     data-ad-slot="8599939280"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        <div id="starboard">
+          <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#top">Introduction</a></li>
+                  <li><a href="#install">Install</a></li>
+                  <li><a href="#configure">Configure</a></li>
+                  <li><a href="#activate">Activate</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+               </ul>
+              </nav>
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                     asrc="http://image.spreadshirt.com/image-server/v1/compositions/3938270/views/1,width=280,height=280,appearanceId=70.png/no-i-will-not-fix-your-computer_design.png" asrc="http://image.spreadshirt.com/image-server/v1/products/4169056/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-351.png" ssrc="http://image.spreadshirt.com/image-server/v1/compositions/4169056/views/1,width=280,height=280,appearanceId=2.png/no-i-will-not-fix-your-computer_design.png" alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/i-see-dumb-people-A3764115/customize/color/2"><img class="dumb"
+                     src="http://image.spreadshirt.com/image-server/v1/products/110889074/views/1,width=280,height=280.png/i-see-dumb-people-1850.png" asrc="http://image.spreadshirt.com/image-server/v1/compositions/110889074/views/1,width=280,height=280,appearanceId=2.png/i-see-dumb-people_design.png" alt="I see dumb people" title="I see dumb people"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+         </div>
+         <div id="cargo">
+
+            <p>
+               This is how I set up my <a href="http://www.shorewall.net">Shorewall</a> firewall on <a href="http://aws.amazon.com/ec2">AWS EC2</a> instances
+               within a <a href="http://aws.amazon.com/vpc">VPC</a>.
+            </p>
+            <p>
+               I am not security nor Shorewall expert, but this set up seems to work for me.
+               This is not as a replacement for AWS's <a href=""http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html>security groups</a>.
+               More as an common sense extension.
+            </p>
+
+            <a name="install"></a>
+            <h3>Install Shorewall</h3>
+
+            <p>This assumes a Ubuntu Linux instance</p>
+
+            <code>
+               sudo apt-get update &amp;&amp; sudo apt-get upgrade;<br/>
+               sudo apt-get install shorewall shorewall-core shorewall-docs
+            </code>
+
+            <a name="configure"></a>
+            <h3>Configure</h3>
+
+            <p>
+               <i>/usr/share/doc/shorewall/examples</i> contains example configuration in various scenarios.
+               We will copy a few of those and modify them slightly.
+            </p>
+
+            <code>
+               cd /usr/share/doc/shorewall/examples
+            </code>
+
+            <h4>Interfaces</h4>
+            <code>
+               sudo cp one-interface/interfaces /etc/shorewall/;<br/>
+               sudo vi /etc/shorewall/interfaces
+            </code>
+            <code class="file">
+               <span class="comment">#ZONE INTERFACE &nbsp;OPTIONS </span><br/>
+               - &nbsp;&nbsp;&nbsp; eth0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0
+            </code>
+
+            <h4>Zones</h4>
+            <code>
+               sudo cp one-interface/zones /etc/shorewall/;<br/>
+               sudo vi /etc/shorewall/zones
+            </code>
+            <code class="file">
+               <span class="comment">#ZONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;&nbsp;OPTIONS&nbsp;&nbsp;&nbsp;IN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OUT <br/>
+               # &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               OPTIONS&nbsp;&nbsp;&nbsp;OPTIONS</span><br/>
+               fw &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;firewall<br/>
+               net &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ipv4<br/>
+               vpc:net&nbsp;&nbsp;&nbsp;ipv4<br/>
+            </code>
+
+            <h4>Hosts</h4>
+            <p>
+               Change the last row to the two blocks of whatever is your VPC local IP range.
+            </p>
+            <code>
+               sudo vi /etc/shorewall/hosts
+            </code>
+            <code class="file">
+               <span class="comment">#ZONE&nbsp;&nbsp;HOSTS(S)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OPTIONS</span><br/>
+               net&nbsp;&nbsp;&nbsp;&nbsp;eth0:0.0.0.0/0<br/>
+               vpc&nbsp;&nbsp;&nbsp;&nbsp;eth0:<i>10.69</i>.0.0/<i>16</i>
+            </code>
+
+            <h4>Policy</h4>
+            <code>
+               sudo cp one-interface/policy /etc/shorewall/;<br/>
+               sudo vi /etc/shorewall/policy
+            </code>
+            <code class="file">
+               <span class="comment">#SOURCE&nbsp;&nbsp;DEST&nbsp;&nbsp;&nbsp;&nbsp;POLICY&nbsp;&nbsp;&nbsp;&nbsp;LOG&nbsp;LEVEL&nbsp;&nbsp;LIMIT:BURST</span><br/>
+               $FW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vpc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCEPT<br/>
+               $FW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCEPT<br/>
+               vpc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONTINUE<br/>
+               net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DROP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;info<br/>
+               <span class="comment"># The FOLLOWING POLICY MUST BE LAST</span><br/>
+               all&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REJECT&nbsp;&nbsp;&nbsp;&nbsp;info
+            </code>
+
+            <h4>Rules</h4>
+            <p>
+               If for example this is a web server then also uncomment the two <i>Web</i> lines
+               which allows traffic on port 80 and 443.
+            </p>
+            <code>
+               sudo cp one-interface/rules /etc/shorewall/;<br/>
+               sudo vi /etc/shorewall/rules
+            </code>
+            <code class="file">
+               SECTION NEW<br/>
+               <br/>
+               Invalid(DROP)&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;$FW&nbsp;&nbsp;&nbsp;tcp<br/>
+               <br/>
+               Ping(ACCEPT)&nbsp;&nbsp;&nbsp;vpc&nbsp;&nbsp;&nbsp;$FW<br/>
+               Ping(DROP)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;$FW<br/>
+               <br/>
+               Trcrt(ACCEPT)&nbsp;&nbsp;vpc&nbsp;&nbsp;&nbsp;$FW<br/>
+               Trcrt(DROP)&nbsp;&nbsp;&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;$FW<br/>
+               <br/>
+               DNS(ACCEPT)&nbsp;&nbsp;&nbsp;&nbsp;vpc&nbsp;&nbsp;&nbsp;$FW<br/>
+               DNS(DROP)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;$FW<br/>
+               <br/>
+               <span class="comment">
+                  # Web(ACCEPT)&nbsp;&nbsp;&nbsp;&nbsp;vpc&nbsp;&nbsp;&nbsp;&nbsp;$FW<br/>
+                  # Web(ACCEPT)&nbsp;&nbsp;&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;&nbsp;$FW
+               </span><br/>
+               <br/>
+               ACCEPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$FW&nbsp;&nbsp;&nbsp;vpc&nbsp;&nbsp;&nbsp;&nbsp;icmp<br/>
+               ACCEPT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$FW&nbsp;&nbsp;&nbsp;net&nbsp;&nbsp;&nbsp;&nbsp;icmp
+            </code>
+
+            <h4>Stoppedroutes</h4>
+            <p>
+               What is the default state for when shorewall is stopped.
+            </p>
+            <code>
+               sudo cp one-interface/stoppedroutes /etc/shorewall/;<br/>
+               sudo vi /etc/shorewall/stoppedroutes
+            </code>
+            <code class="file">
+               <span class="comment">
+                  #ACTION&nbsp;&nbsp;&nbsp;SOURCE&nbsp;&nbsp;&nbsp;DEST&nbsp;&nbsp;&nbsp;PROTO&nbsp;DEST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SOURCE<br/>
+                  #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  PORT(S)&nbsp;&nbsp;&nbsp;PORT(S)
+               </span><br/>
+               ACCEPT&nbsp;&nbsp;&nbsp;&nbsp;eth0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-<br/>
+               ACCEPT&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eth0
+            </code>
+
+
+            <a name="activate"></a>
+            <h3>Activate new configuration</h3>
+
+            <h4>Check configuration</h4>
+            <p>
+               Make sure there is no typos that prevents Shorewall from starting.
+            </p>
+            <code>sudo shorewall check</code>
+
+
+            <h4>(Re)start Shorewall</h4>
+
+            <code>sudo shorewall status</code>
+
+            <p>If stopped</p>
+            <code>sudo shorewall safe-start</code>
+
+            <p>If started</p>
+            <code>sudo shorewall safe-restart</code>
+
+
+            <h4>Start on reboot</h4>
+            <code>sudo vi /etc/default/shorewall</code>
+            <code class="file">
+               startup=1
+            </code>
+
+
+
+
+            <a name="contact"></a>
+            <h3>Feedback</h3>
+            <p>
+               Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+            </p>
+            <p>
+               <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+               <a href="http://www.eray.uk">Hire Ivar</a> for short term advice or long term consultancy.
+            </p>
+            <p>
+               Otherwise <a href="/contact">contact flurdy</a>.
+               Especially for things factually incorrect.
+               Apologies for procrastinated replies.
+            </p>
+
+      </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='http://fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>
