@@ -59,7 +59,7 @@
          </nav>
          <div id="jib">
             Started: February 2016.
-            Last updated: 24th February 2016.
+            Last updated: 12th March 2016.
          </div>
 
 <!-- git-pair leaderboard -->
@@ -131,6 +131,20 @@
             </p>
 
 
+            <a name="dns"></a>
+            <h3>DNS</h3>
+            <p>
+               I am not here to tell how manage do your DNS as everyone has different requirements.
+            </p>
+            <p>
+               In general your first step is in advance to reduce the relevant records TTL time (to e.g. 1 minute) so that any changes are quickly propagated.
+            </p>
+            <p>
+               Also you should probably test this setup with a non important domain initially or even a subdomain.
+               Once comfortable with each step and it is proven to work then apply it to more important websites/domain names.
+            </p>
+
+
             <a name="instance"></a>
             <h3>Launch instance</h3>
             <p>
@@ -144,8 +158,8 @@
             </p>
             <code>sudo apt-get update &amp;&amp; sudo apt-get upgrade</code>
             <p>
-               And also point the dns or local hosts file for your domain to the new server's ip.
-               Temporarily with AWS you can CNAME your dns to the public ip AWS name for your instance.
+               Point the dns for your domain to the new server's ip if you use an Elastic IP.
+               Temporarily with AWS you can CNAME your dns record to the public ip AWS name for your instance.
             </p>
 
             <a name="nginx"></a>
@@ -277,6 +291,13 @@
                has replaced weeks of work to create certificates,
                sending them to an authority to sign,
                paying them, retrieving the signed certificates, etc etc.
+            </p>
+            <p>
+               You can append more domains to the command with the <i>-d</i> argument.
+               If you rerun the command on an existing certificate with more domains,
+               the tool will allow that but will ask if you approve the expansion of domains
+               covered by this certificate. Useful when you test initially with a lesser domain.
+               Note as these certificates are free you can have as many separate certificates as you need.
             </p>
 
             <a name="https"></a>
