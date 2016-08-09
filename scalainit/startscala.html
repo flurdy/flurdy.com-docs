@@ -140,7 +140,12 @@
 					<li><a href="#logging">Logging</a></li>
 				</ol>
 			</li>
-			<li><a href="#extensions">Extensions</a></li>
+			<li>
+        <a href="#extensions">Extensions</a>
+        <ol type="a">
+          <a href="#library">Daemon library</a>
+        </ol>
+      </li>
 			<li><a href="#todo">To&nbsp;do</a></li>
 			<li><a href="#alternatives">Alternatives</a></li>
 			<li><a href="#contact">Feedback</a></li>
@@ -526,12 +531,18 @@ exit 0</code>
 		So an obvious extension is to add the above configuration and scripts to the these configurations as well.
 	</p>
 
+  	<a name="library"></a>
 	<h4>Daemon library</h4>
 
 	<p>
 		The daemon classes that are common between your applications
 		can easily be extracted to a shared library.
 	</p>
+	<p>
+    I have made one for myself at <a href="https://github.com/flurdy/sander">github.com/flurdy/sander</a>'s
+    <a href="https://github.com/flurdy/sander/blob/master/src/main/scala/lifecycle.scala">lifecycle.scala</a>.
+  </p>
+
 
 
 
