@@ -59,7 +59,7 @@
          </nav>
          <div id="jib">
             Started: February 2016.
-            Last updated: 12th March 2016.
+            Last updated: 3rd September 2016.
          </div>
 
 <!-- git-pair leaderboard -->
@@ -205,7 +205,7 @@
                server {<br/>
                <span class="indent1"></span> listen 80;<br/>
                <span class="indent1"></span> listen [::]:80;<br/>
-               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <span class="indent1"></span> server_name <i>www.example.com</i>;<br/>
                <br/>
                <span class="indent1"></span> root /var/www/<i>example.com</i>/html;<br/>
                <span class="indent1"></span> index index.html index.htm;<br/>
@@ -239,7 +239,7 @@
                server {<br/>
                <span class="indent1"></span> listen 80;<br/>
                <span class="indent1"></span> listen [::]:80;<br/>
-               <span class="indent1"></span> servername <i>example.com</i> <i>example.org</i> <i>www.example.org</i>;<br/>
+               <span class="indent1"></span> server_name <i>example.com</i> <i>example.org</i> <i>www.example.org</i>;<br/>
                <br/>
                <span class="indent1"></span>  return 302 http://<i>www.example.com</i>$request_uri;<br/>
                }
@@ -311,7 +311,7 @@
                server {<br/>
                <span class="indent1"></span> listen 443;<br/>
                <span class="indent1"></span> listen [::]:443;<br/>
-               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <span class="indent1"></span> server_name <i>www.example.com</i>;<br/>
                <br/>
                <span class="indent1"></span> root /var/www/<i>example.com</i>/html;<br/>
                <span class="indent1"></span> index index.html index.htm;<br/>
@@ -341,7 +341,7 @@
                server {<br/>
                <span class="indent1"></span> listen 80;<br/>
                <span class="indent1"></span> listen [::]:80;<br/>
-               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <span class="indent1"></span> server_name <i>www.example.com</i>;<br/>
                <br/>
                <span class="indent1"></span> location '/.well-known/acme-challenge' {<br/>
                <span class="indent2"></span> root /var/www/<i>example.com</i>/html;<br/>
@@ -373,7 +373,7 @@
                server {<br/>
                <span class="indent1"></span> listen 443;<br/>
                <span class="indent1"></span> listen [::]:443;<br/>
-               <span class="indent1"></span> servername <i>example.com</i> <i>example.org</i> <i>www.example.org</i>;<br/>
+               <span class="indent1"></span> server_name <i>example.com</i> <i>example.org</i> <i>www.example.org</i>;<br/>
                <br/>
                <span class="indent1"></span> ssl on;<br/>
                <span class="indent1"></span> ssl_certificate /etc/letsencrypt/live/<i>example.com</i>/fullchain.pem;<br/>
@@ -443,7 +443,7 @@
                server {<br/>
                <span class="indent1"></span> listen 443;<br/>
                <span class="indent1"></span> listen [::]:443;<br/>
-               <span class="indent1"></span> servername <i>www.example.com</i>;<br/>
+               <span class="indent1"></span> server_name <i>www.example.com</i>;<br/>
                <br/>
                <span class="indent1"></span> ssl on;<br/>
                <span class="indent1"></span> ssl_certificate /etc/letsencrypt/live/<i>example.com</i>/fullchain.pem;<br/>
