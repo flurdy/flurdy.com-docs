@@ -1,14 +1,429 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Pizza in the cloud, using Scala, Play Framework, Docker and Docker-Cloud</title>
+	<title>Pizza in the cloud, with Scala, Play and Docker Cloud</title>
 	<link rel="shortcut icon" href="/favicon.ico">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content="scala,play,framework,docker,cloud,pizza"/>
+   <meta http-equiv="description" content="Pizza in the cloud. Using Scala and Play Framework to create a application hosted with Docker Cloud"/>
+   <meta name="viewport" content="initial-scale=0.8"/>
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <!-- <link href="docs.css" rel="stylesheet" type="text/css" /> -->
+   <style>
+      #starboard ul li ul { display: block; }
+      footer { margin-top: 2em; }
+      li { font-size: 0.9em; }
+      code .tiny-code { font-size: 0.7em; }
+      #cargo .paragraph { margin: 3em 0.5em 0.5em 0.5em; }
+      #cargo h3 + .paragraph { margin: 0.5em  }
+      #cargo > .paragraph {  }
+      #cargo .paragraph .paragraph { margin-left: 1em; }
+      code.app { background-color: #005020; }
+   </style>
+   <script type="text/javascript">
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-281408-1']);
+     _gaq.push(['_trackPageview']);
+
+     // Include Analytics
+
+   </script>
+	<meta http-equiv="Refresh" content="15; URL=pizza-scala-play-docker-cloud.html">
 </head>
 <body>
 
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>
+               Pizza in the cloud
+            </h1>
+            <h3>
+               with Scala, Play and Docker Cloud
+            </h3>
+            <h4>
+               How  to create a pizza ordering service application
+               using Scala and the Play Framework.
+               Wrap it in a Docker container and deploy it with Docker Cloud.
+            </h4>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: November 2016.
+            Last updated: 24th Nov 2016.
+            <h4>Draft, not yet finished</h4>
+         </div>
+
+<!-- Google adsense -->
 
 
+        <div id="starboard">
+          <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <!-- <li><a href="#top">Purpose</a></li> -->
+                  <li><a href="#dejavue">Deja-Vue</a></li>
+                  <li><a href="#environment">Build&nbsp;environment</a></li>
+                  <li><a href="#play">Play scaffold</a></li>
+                  <li><a href="#docker">Dockerise</a></li>
+                  <li><a href="#pizza">Pizzeria</a></li>
+                  <li>
+                     <a href="#docker-cloud">Docker&nbsp;Cloud</a>
+                     <ul>
+                        <li><a href="#aws">Amazon&nbsp;AWS</a></li>
+                        <li><a href="#google-cloud">Google&nbsp;Cloud</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#alt">Alternatives</a></li>
+                  <li><a href="#contact">Feedback</a></li>
+                  <li><a href="#refrences">Refrences</a></li>
+               </ul>
+              </nav>
+            <div class="shirts">
+               <div class="shirt">
+                  <a href="http://flurdy.spreadshirt.com/no-i-will-not-fix-your-computer-A3797075/customize/color/2"><img id="wontfix"
+                     src="//image.spreadshirt.com/image-server/v1/products/110865579/views/1,width=280,height=280.png/no-i-will-not-fix-your-computer-1850.png"
+                      alt="wont fix" title="No, I will not fix your computer"/></a>
+               </div>
+               <div class="link"><a href="http://shirts.flurdy.com">shirts.flurdy.com</a></div>
+            </div>
+         </div>
+
+         <div id="cargo">
+
+            <div id="dejavue-box" class="paragraph">
+               <a name="dejavue"></a>
+               <h3>Deja-Vue</h3>
+               <p>
+                  My pizza service analogy works well as an example as it covers showing pages,
+                  posting forms, and reading changed data. And I have over time written several howtos that use the pizza service analogy,
+                  the <a href="https://www.playframework.com">Play framework</a>, and hosting with various cloud providers:
+               </p>
+               <ul >
+                  <li>
+                     <a href="/docs/herokuplay/play1.html">Play! &amp; Heroku (develop quickly &amp; deploy easily to the cloud)</a>.<br/>
+                     My first pizza app, using Play v1.2 and <a href="https://en.wikipedia.org/wiki/Java_(programming_language)">Java</a>.
+                      And deploying to <a href="http://www.heroku.com">Heroku</a>.
+                  </li>
+                  <li>
+                     <a href="/docs/herokuplay/play2.html">Play! 2.0 + Scala + Heroku (develop even quicker &amp; deploy easily to the cloud)</a>.<br/>
+                     This time with Play v2.0 and <a href="http://www.scala-lang.org">Scala</a>.
+                  </li>
+                  <li>
+                     <a href="/docs/docker/docker_compose_machine_swarm_cloud.html">Docker with Compose, Machine and Swarm, easy steps from localhost to cloud providers</a>.<br/>
+                     Using <a href="https://www.docker.com/products/docker-compose">Docker Compose</a> to orchestrate a pizza ordering frontend with Play v2.3, a <a href="http://spray.io">Spray</a> backend with a <a href="https://www.postgresql.org">PostgreSQL</a> database.
+                  </li>
+               </ul>
+            </div>
+
+            <div class="paragraph">
+               <a name="environment"></a>
+               <h3>Build environment</h3>
+
+               <div class="paragraph">
+                  <h4>Java and Scala</h4>
+                  <p>
+                     You do need Java JDK v8 installed. Scala can be installed but the build tool below will download a Scala SDK instance so not neccessary.
+                     You can use <a href="http://openjdk.java.net">OpenJDK</a> or <a href="http://oracle.com">Oracle</a>'s own JDK version.
+                  </p>
+
+                  <h4>Oracle JDK</h4>
+                  <p>
+                     For <a href="http://www.apple.com/uk/macos/">macOS</a> go to <a href="http://www.oracle.com/technetwork/java/javase/downloads/">Oracle's JDK page</a>,
+                     choose the latest JDK8 version, accept the license, download and run the <em>dmg</em> file.
+                  </p>
+                  <p>
+                     For <a href="http://ubuntu.com">Ubuntu</a> users <a href="http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html">install Oracle JDK8 via apt-get</a>:
+                  </p>
+                  <code>
+                     sudo add-apt-repository ppa:webupd8team/java;<br/>
+                     sudo apt-get update;<br/>
+                     sudo apt-get install oracle-java8-installer;<br/>
+                     sudo apt-get install oracle-java8-set-default
+                  </code>
+                  <h4>OpenJDK</h4>
+                  <p>
+                     For macOS use <a href="http://brew.sh">Homebrew</a>:
+                  </p>
+                  <code>brew cask install java</code>
+                  <p>
+                     On Ubuntu v14.04 &amp; v12.04,
+                     you need to add a <a href="">PPA</a>,
+                     for v14.10 and later its in the standard repositories.
+                  </p>
+                  <code>
+                     sudo add-apt-repository ppa:openjdk-r/ppa;<br/>
+                     sudo apt-get update;
+                  </code>
+                  <p>
+                     Then for all Ubuntu versions:
+                  </p>
+                  <code>
+                     sudo apt-get install openjdk-8-jdk
+                  </code>
+                  <p>
+                     Then also on Ubuntu run and choose JDK 8 for both of these:
+                  </p>
+                  <code>
+                     sudo update-alternatives --config java
+                  </code>
+                  <code>
+                     sudo update-alternatives --config javac
+                  </code>
+               </div>
+
+               <div class="paragraph">
+                  <h4>Activator</h4>
+                  <p>
+                     Download and install <a href="https://www.lightbend.com/activator/download">Activator</a>, <a href="https://www.lightbend.com">Lightbend</a>'s (né Typesafe) extension of <a href="http://www.scala-sbt.org/">SBT</a>, the near default Scala build tool.
+                     Activator includes a UI which you do not need,
+                     but does include the handy <em>new</em> command to scaffold Play and <a href="http://akka.io/">Akka</a> applications.
+                  </p>
+                  <p>
+                     Activator comes in two flavours: <em>full</em> and <em>mini</em>. <em>Full</em> includes common dependencies for Play and Akka. <em>Full</em> will save you a little time initially, but soon the dependencies versions will move along and you have to download them all like <em>mini</em> via SBT's use of <a href="http://ant.apache.org/ivy/">Ivy</a> anyway.
+                  </p>
+                  <p>
+                     On macOS:
+                  </p>
+                  <code>brew install typesafe-activator</code>
+                  <p>
+                     On Linux download and extract the Zip:
+                  </p>
+                  <code class="wide">
+                     wget
+                     <span class="tiny-code">https://downloads.typesafe.com/typesafe-activator/<em>1.3.12</em>/typesafe-activator-<em>1.3.12</em>-minimal.zip;</span><br/>
+                     unzip typesafe-activator-<em>1.3.12</em>-minimal.zip;<br/>
+                     sudo mv activator-<em>1.3.12</em>-minimal /opt/activator
+                  </code>
+                  <p>
+                     then add <em>/opt/activator/bin</em> to your <em>$PATH</em> environment variable.
+                  </p>
+               </div>
+               <div class="paragraph">
+                  <h4>SBT</h4>
+                  <p>
+                     I recommend also installing SBT, as 99% of the time you don't need the extra cruft of Activator.
+                     There are other Scala build tools such as <a href="https://maven.apache.org/">Maven</a> and <a href="https://gradle.org/">Gradle</a>,
+                     but there is little reason to use those with Scala and again you will painfully swim against the current of 99% of projects and companies that defaults to SBT.
+                  </p>
+                  <p>
+                     On macOS:
+                  </p>
+                  <code>brew install sbt</code>
+                  <p>
+                     Or on Ubuntu/<a href="https://www.debian.org/">debian</a> <a href="http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html">install SBT via apt-get</a>.
+                  </p>
+                  <code class="wide">
+                     echo "deb https://dl.bintray.com/sbt/debian /" | \<br/>
+                     sudo tee -a /etc/apt/sources.list.d/sbt.list;<br/>
+                     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \<br/>
+                      --recv <span class="tiny-code">2EE0EA64E40A89B84B2DF73499E82A75642AC823;</span><br/>
+                     sudo apt-get update;<br/>
+                     sudo apt-get install sbt
+                  </code>
+               </div>
+            </div>
+
+            <div class="paragraph">
+               <a name="play"></a>
+               <h3>Play scaffold</h3>
+               <p>
+                  Since v2.4 Play has used <a href="https://en.wikipedia.org/wiki/Dependency_injection">dependency injection</a>, which is the most significant difference
+                  in my pizza ordering application compared to my previous iterations.
+                  <a href="https://www.playframework.com/documentation/2.5.x/ScalaDependencyInjection">Play's choice of run time DI</a> with <a href="https://github.com/google/guice">Guice</a>
+                  goes against my strong preference for
+                  <a href="https://www.playframework.com/documentation/2.5.x/ScalaCompileTimeDependencyInjection">compile time DI</a>,
+                  but it is futile to swim against the current.
+               </p>
+
+               <div class="paragraph">
+                  <h4>Scaffold</h3>
+                  <p>
+                     Create the new application:
+                  </p>
+                  <code>activator new pizzeria</code>
+                  <p>
+                     Choose option 6, the <em>play-scala</em> option.
+                  </p>
+                  <p>
+                     You now have a basic play application folder structure:
+                  </p>
+                  <ul>
+                     <li>
+                        <em>pizzeria/conf/build.sbt</em>
+                        is where you define you libraries, versions and name of application.
+                     </li>
+                     <li>
+                        <em>pizzeria/conf/routes</em>
+                        is where you define the routing of url paths request to the controllers.
+                     </li>
+                     <li>
+                        <em>pizzeria/app/controllers/HomeController</em>
+                        is one example controller that currently shows the home page.
+                     </li>
+                     <li>
+                        <em>pizzeria/app/views/main.scala.html</em>
+                        is the shared common template for most views.
+                     </li>
+                     <li>
+                        <em>pizzeria/app/views/index.scala.html</em>
+                        is the example template for the home page contents.
+                     </li>
+                  </ul>
+               </div>
+               <div class="paragraph">
+                  <h4>Download the internet</h3>
+                  <p>
+                     Since we used the mini flavour of Activator we need to download all the dependencies.
+                  </p>
+                  <p>
+                     Launch SBT (and make some tea):
+                  </p>
+                  <code>sbt</code>
+                  <p>
+                     Compile and test the code (drink the tea and fetch some biscuits)
+                  </p>
+                  <code class="app">
+                     ;compile;test
+                  </code>
+                  <p>
+                     Then run the application (and make some more tea)
+                  </p>
+                  <code class="app">
+                     run
+                  </code>
+                  <p>
+                     Thankfully you will not need to download the internet from now on.
+                  </p>
+                  <p>
+                     Since we haven't changed anything this should all work,
+                     and the application will now be available on the default port of 9000.
+                  </p>
+                  <code>curl localhost:9000</code>
+                  <p>
+                     Press <em>ctrl+d</em> to stop. Then exit SBT:
+                  </p>
+                  <code class="app">exit</code>
+                  <p>
+                     You now have a working scaffold.
+                     Note you always shortcut running the app by typing:
+                  </p>
+                  <code>sbt run</code>
+               </div>
+            </div>
+
+            <div class="paragraph">
+               <a name="docker"></a>
+               <h3>Dockerise</h3>
+               <p>
+               </p>
+            </div>
+
+            <div class="paragraph">
+               <a name="pizza"></a>
+               <h3>Pizzeria service</h3>
+               <p>
+               </p>
+            </div>
+
+            <div class="paragraph">
+               <a name="docker-cloud"></a>
+               <h3>Docker Cloud</h3>
+               <p>
+               </p>
+
+               <div class="paragraph">
+                  <a name="aws"></a>
+                  <h4>Amazon AWS</h4>
+                  <p>
+                  </p>
+               </div>
+
+               <div class="paragraph">
+                  <a name="google-cloud"></a>
+                  <h4>Google Cloud</h4>
+                  <p>
+                  </p>
+               </div>
+
+            </div>
+
+            <div class="paragraph">
+               <a name="alt"></a>
+               <h3>Alternatives</h3>
+               <p>
+               </p>
+            </div>
+
+            <div class="paragraph">
+               <a name="contact"></a>
+               <h3>Feedback</h3>
+               <p>
+                  Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+               </p>
+               <p>
+                  <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+                  <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+               </p>
+               <p>
+                  Otherwise <a href="/contact">contact me</a>.
+                  Especially for things factually incorrect.
+                  Apologies for procrastinated replies.
+               </p>
+            </div>
+
+            <div class="paragraph">
+               <a name="references"></a>
+               <h3>References</h3>
+               <p>
+               </p>
+               <ul>
+                  <li><a href="http://www.scala-lang.org">Scala</a>
+                     <a href="https://en.wikipedia.org/wiki/Scala_(programming_language)"><sup>wiki</sup></a></li>
+                  <li><a href="https://www.playframework.com">Play Framework</a> <a href="https://en.wikipedia.org/wiki/play_framework"><sup>wiki</sup></a></li>
+                  <li><a href="https://www.docker.com">Docker</a> <a href="https://en.wikipedia.org/wiki/Docker_(software)"><sup>wiki</sup></a></li>
+                  <li><a href="http://cloud.docker.com">Docker Cloud</a></li>
+                  <li><a href="http://cloud.google.com">Google Cloud</a> <a href="https://en.wikipedia.org/wiki/Google_Cloud_Platform"><sup>wiki</sup></a></li>
+                  <li><a href="http://aws.amazon.com">Amazon AWS</a> <a href="https://en.wikipedia.org/wiki/Amazon_Web_Services"><sup>wiki</sup></a></li>
+                  <li><a href="http://www.heroku.com">Heroku</a> <a href="https://en.wikipedia.org/wiki/heroku"><sup>wiki</sup></a></li>
+            </div>
+
+         </div>
+
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
 
 </body>
 </html>
