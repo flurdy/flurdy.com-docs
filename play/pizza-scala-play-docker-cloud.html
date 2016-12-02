@@ -16,12 +16,15 @@
       #starboard ul li ul { display: block; }
       footer { margin-top: 2em; }
       li { font-size: 0.9em; }
-      code .tiny-code { font-size: 0.7em; }
+      code { font-size: 0.9em; }
+      code .tiny-code { font-size: 0.8em; }
       #cargo .paragraph { margin: 3em 0.5em 0.5em 0.5em; }
       #cargo h3 + .paragraph { margin: 0.5em  }
       #cargo > .paragraph {  }
       #cargo .paragraph .paragraph { margin-left: 1em; }
       code.app { background-color: #005020; }
+      code.wide { max-width: 55em; min-width: 50em; }
+      code.file { padding-bottom: 1.5em; }
    </style>
    <script type="text/javascript">
      var _gaq = _gaq || [];
@@ -108,306 +111,991 @@
             </div>
          </div>
 
-         <div id="cargo">
+<div id="cargo">
 
-            <div id="dejavue-box" class="paragraph">
-               <a name="dejavue"></a>
-               <h3>Deja-Vue</h3>
-               <p>
-                  My pizza service analogy works well as an example as it covers showing pages,
-                  posting forms, and reading changed data. And I have over time written several howtos that use the pizza service analogy,
-                  the <a href="https://www.playframework.com">Play framework</a>, and hosting with various cloud providers:
-               </p>
-               <ul >
-                  <li>
-                     <a href="/docs/herokuplay/play1.html">Play! &amp; Heroku (develop quickly &amp; deploy easily to the cloud)</a>.<br/>
-                     My first pizza app, using Play v1.2 and <a href="https://en.wikipedia.org/wiki/Java_(programming_language)">Java</a>.
-                      And deploying to <a href="http://www.heroku.com">Heroku</a>.
-                  </li>
-                  <li>
-                     <a href="/docs/herokuplay/play2.html">Play! 2.0 + Scala + Heroku (develop even quicker &amp; deploy easily to the cloud)</a>.<br/>
-                     This time with Play v2.0 and <a href="http://www.scala-lang.org">Scala</a>.
-                  </li>
-                  <li>
-                     <a href="/docs/docker/docker_compose_machine_swarm_cloud.html">Docker with Compose, Machine and Swarm, easy steps from localhost to cloud providers</a>.<br/>
-                     Using <a href="https://www.docker.com/products/docker-compose">Docker Compose</a> to orchestrate a pizza ordering frontend with Play v2.3, a <a href="http://spray.io">Spray</a> backend with a <a href="https://www.postgresql.org">PostgreSQL</a> database.
-                  </li>
-               </ul>
-            </div>
+   <div id="dejavue-box" class="paragraph">
+      <a name="dejavue"></a>
+      <h3>Deja-Vue</h3>
+      <p>
+         My pizza service analogy works well as an example as it covers showing pages,
+         posting forms, and reading changed data. And I have over time written several howtos that use the pizza service analogy,
+         the <a href="https://www.playframework.com">Play framework</a>, and hosting with various cloud providers:
+      </p>
+      <ul >
+         <li>
+            <a href="/docs/herokuplay/play1.html">Play! &amp; Heroku (develop quickly &amp; deploy easily to the cloud)</a>.<br/>
+            My first pizza app, using Play v1.2 and <a href="https://en.wikipedia.org/wiki/Java_(programming_language)">Java</a>.
+             And deploying to <a href="http://www.heroku.com">Heroku</a>.
+         </li>
+         <li>
+            <a href="/docs/herokuplay/play2.html">Play! 2.0 + Scala + Heroku (develop even quicker &amp; deploy easily to the cloud)</a>.<br/>
+            This time with Play v2.0 and <a href="http://www.scala-lang.org">Scala</a>.
+         </li>
+         <li>
+            <a href="/docs/docker/docker_compose_machine_swarm_cloud.html">Docker with Compose, Machine and Swarm, easy steps from localhost to cloud providers</a>.<br/>
+            Using <a href="https://www.docker.com/products/docker-compose">Docker Compose</a> to orchestrate a pizza ordering frontend with Play v2.3, a <a href="http://spray.io">Spray</a> backend with a <a href="https://www.postgresql.org">PostgreSQL</a> database.
+         </li>
+      </ul>
+   </div>
 
-            <div class="paragraph">
-               <a name="environment"></a>
-               <h3>Build environment</h3>
+   <div class="paragraph">
+      <a name="environment"></a>
+      <h3>Build environment</h3>
 
-               <div class="paragraph">
-                  <h4>Java and Scala</h4>
-                  <p>
-                     You do need Java JDK v8 installed. Scala can be installed but the build tool below will download a Scala SDK instance so not neccessary.
-                     You can use <a href="http://openjdk.java.net">OpenJDK</a> or <a href="http://oracle.com">Oracle</a>'s own JDK version.
-                  </p>
+      <div class="paragraph">
+         <h4>Java and Scala</h4>
+         <p>
+            You do need Java JDK v8 installed. Scala however can be installed but the build tool below will download a Scala SDK instance so not neccessary.
+            You can use <a href="http://openjdk.java.net">OpenJDK</a> or <a href="http://oracle.com">Oracle</a>'s own JDK version.
+         </p>
 
-                  <h4>Oracle JDK</h4>
-                  <p>
-                     For <a href="http://www.apple.com/uk/macos/">macOS</a> go to <a href="http://www.oracle.com/technetwork/java/javase/downloads/">Oracle's JDK page</a>,
-                     choose the latest JDK8 version, accept the license, download and run the <em>dmg</em> file.
-                  </p>
-                  <p>
-                     For <a href="http://ubuntu.com">Ubuntu</a> users <a href="http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html">install Oracle JDK8 via apt-get</a>:
-                  </p>
-                  <code>
-                     sudo add-apt-repository ppa:webupd8team/java;<br/>
-                     sudo apt-get update;<br/>
-                     sudo apt-get install oracle-java8-installer;<br/>
-                     sudo apt-get install oracle-java8-set-default
-                  </code>
-                  <h4>OpenJDK</h4>
-                  <p>
-                     For macOS use <a href="http://brew.sh">Homebrew</a>:
-                  </p>
-                  <code>brew cask install java</code>
-                  <p>
-                     On Ubuntu v14.04 &amp; v12.04,
-                     you need to add a <a href="">PPA</a>,
-                     for v14.10 and later its in the standard repositories.
-                  </p>
-                  <code>
-                     sudo add-apt-repository ppa:openjdk-r/ppa;<br/>
-                     sudo apt-get update;
-                  </code>
-                  <p>
-                     Then for all Ubuntu versions:
-                  </p>
-                  <code>
-                     sudo apt-get install openjdk-8-jdk
-                  </code>
-                  <p>
-                     Then also on Ubuntu run and choose JDK 8 for both of these:
-                  </p>
-                  <code>
-                     sudo update-alternatives --config java
-                  </code>
-                  <code>
-                     sudo update-alternatives --config javac
-                  </code>
-               </div>
+         <h4>Oracle JDK</h4>
+         <p>
+            For <a href="http://www.apple.com/uk/macos/">macOS</a> go to <a href="http://www.oracle.com/technetwork/java/javase/downloads/">Oracle's JDK page</a>,
+            choose the latest JDK8 version, accept the license, download and run the <em>dmg</em> file.
+         </p>
+         <p>
+            For <a href="http://ubuntu.com">Ubuntu</a> users <a href="http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html">install Oracle JDK8 via apt-get</a>:
+         </p>
+         <code>
+            sudo add-apt-repository ppa:webupd8team/java;<br/>
+            sudo apt-get update;<br/>
+            sudo apt-get install oracle-java8-installer;<br/>
+            sudo apt-get install oracle-java8-set-default
+         </code>
+         <h4>OpenJDK</h4>
+         <p>
+            For macOS use <a href="http://brew.sh">Homebrew</a>:
+         </p>
+         <code>brew cask install java</code>
+         <p>
+            On Ubuntu v14.04 &amp; v12.04,
+            you need to add a <a href="">PPA</a>,
+            for v14.10 and later its in the standard repositories.
+         </p>
+         <code>
+            sudo add-apt-repository ppa:openjdk-r/ppa;<br/>
+            sudo apt-get update;
+         </code>
+         <p>
+            Then for all Ubuntu versions:
+         </p>
+         <code>
+            sudo apt-get install openjdk-8-jdk
+         </code>
+         <p>
+            Then also on Ubuntu run and choose JDK 8 for both of these:
+         </p>
+         <code>
+            sudo update-alternatives --config java
+         </code>
+         <code>
+            sudo update-alternatives --config javac
+         </code>
+      </div>
 
-               <div class="paragraph">
-                  <h4>Activator</h4>
-                  <p>
-                     Download and install <a href="https://www.lightbend.com/activator/download">Activator</a>, <a href="https://www.lightbend.com">Lightbend</a>'s (né Typesafe) extension of <a href="http://www.scala-sbt.org/">SBT</a>, the near default Scala build tool.
-                     Activator includes a UI which you do not need,
-                     but does include the handy <em>new</em> command to scaffold Play and <a href="http://akka.io/">Akka</a> applications.
-                  </p>
-                  <p>
-                     Activator comes in two flavours: <em>full</em> and <em>mini</em>. <em>Full</em> includes common dependencies for Play and Akka. <em>Full</em> will save you a little time initially, but soon the dependencies versions will move along and you have to download them all like <em>mini</em> via SBT's use of <a href="http://ant.apache.org/ivy/">Ivy</a> anyway.
-                  </p>
-                  <p>
-                     On macOS:
-                  </p>
-                  <code>brew install typesafe-activator</code>
-                  <p>
-                     On Linux download and extract the Zip:
-                  </p>
-                  <code class="wide">
-                     wget
-                     <span class="tiny-code">https://downloads.typesafe.com/typesafe-activator/<em>1.3.12</em>/typesafe-activator-<em>1.3.12</em>-minimal.zip;</span><br/>
-                     unzip typesafe-activator-<em>1.3.12</em>-minimal.zip;<br/>
-                     sudo mv activator-<em>1.3.12</em>-minimal /opt/activator
-                  </code>
-                  <p>
-                     then add <em>/opt/activator/bin</em> to your <em>$PATH</em> environment variable.
-                  </p>
-               </div>
-               <div class="paragraph">
-                  <h4>SBT</h4>
-                  <p>
-                     I recommend also installing SBT, as 99% of the time you don't need the extra cruft of Activator.
-                     There are other Scala build tools such as <a href="https://maven.apache.org/">Maven</a> and <a href="https://gradle.org/">Gradle</a>,
-                     but there is little reason to use those with Scala and again you will painfully swim against the current of 99% of projects and companies that defaults to SBT.
-                  </p>
-                  <p>
-                     On macOS:
-                  </p>
-                  <code>brew install sbt</code>
-                  <p>
-                     Or on Ubuntu/<a href="https://www.debian.org/">debian</a> <a href="http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html">install SBT via apt-get</a>.
-                  </p>
-                  <code class="wide">
-                     echo "deb https://dl.bintray.com/sbt/debian /" | \<br/>
-                     sudo tee -a /etc/apt/sources.list.d/sbt.list;<br/>
-                     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \<br/>
-                      --recv <span class="tiny-code">2EE0EA64E40A89B84B2DF73499E82A75642AC823;</span><br/>
-                     sudo apt-get update;<br/>
-                     sudo apt-get install sbt
-                  </code>
-               </div>
-            </div>
+      <div class="paragraph">
+         <h4>Activator</h4>
+         <p>
+            Download and install <a href="https://www.lightbend.com/activator/download">Activator</a>, <a href="https://www.lightbend.com">Lightbend</a>'s (né Typesafe) extension of <a href="http://www.scala-sbt.org/">SBT</a>, the near default Scala build tool.
+            Activator includes a UI which you do not need,
+            but does include the handy <em>new</em> command to scaffold Play and <a href="http://akka.io/">Akka</a> applications.
+         </p>
+         <p>
+            Activator comes in two flavours: <em>full</em> and <em>mini</em>. <em>Full</em> includes common dependencies for Play and Akka. <em>Full</em> will save you a little time initially, but soon the dependencies versions will move along and you have to download them all like <em>mini</em> via SBT's use of <a href="http://ant.apache.org/ivy/">Ivy</a> anyway.
+         </p>
+         <p>
+            On macOS:
+         </p>
+         <code>brew install typesafe-activator</code>
+         <p>
+            On Linux download and extract the Zip:
+         </p>
+         <code class="wide">
+            wget
+            <span class="tiny-code">https://downloads.typesafe.com/typesafe-activator/<em>1.3.12</em>/typesafe-activator-<em>1.3.12</em>-minimal.zip;</span><br/>
+            unzip typesafe-activator-<em>1.3.12</em>-minimal.zip;<br/>
+            sudo mv activator-<em>1.3.12</em>-minimal /opt/activator
+         </code>
+         <p>
+            then add <em>/opt/activator/bin</em> to your <em>$PATH</em> environment variable.
+         </p>
+      </div>
+      <div class="paragraph">
+         <h4>SBT</h4>
+         <p>
+            I recommend also installing SBT, as 99% of the time you don't need the extra cruft of Activator.
+            There are other Scala build tools such as <a href="https://maven.apache.org/">Maven</a> and <a href="https://gradle.org/">Gradle</a>,
+            but there is little reason to use those with Scala and again you will painfully swim against the current of 99% of projects and companies that defaults to SBT.
+         </p>
+         <p>
+            On macOS:
+         </p>
+         <code>brew install sbt</code>
+         <p>
+            Or on Ubuntu/<a href="https://www.debian.org/">debian</a> <a href="http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html">install SBT via apt-get</a>.
+         </p>
+         <code class="wide">
+            echo "deb https://dl.bintray.com/sbt/debian /" | \<br/>
+            &nbsp;sudo tee -a /etc/apt/sources.list.d/sbt.list;<br/>
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \<br/>
+            &nbsp;--recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823;<br/>
+            sudo apt-get update;<br/>
+            sudo apt-get install sbt
+         </code>
+      </div>
+   </div>
 
-            <div class="paragraph">
-               <a name="play"></a>
-               <h3>Play scaffold</h3>
-               <p>
-                  Since v2.4 Play has used <a href="https://en.wikipedia.org/wiki/Dependency_injection">dependency injection</a>, which is the most significant difference
-                  in my pizza ordering application compared to my previous iterations.
-                  <a href="https://www.playframework.com/documentation/2.5.x/ScalaDependencyInjection">Play's choice of run time DI</a> with <a href="https://github.com/google/guice">Guice</a>
-                  goes against my strong preference for
-                  <a href="https://www.playframework.com/documentation/2.5.x/ScalaCompileTimeDependencyInjection">compile time DI</a>,
-                  but it is futile to swim against the current.
-               </p>
+   <div class="paragraph">
+      <a name="play"></a>
+      <h3>Play scaffold</h3>
+      <p>
+         Since v2.4 Play has used <a href="https://en.wikipedia.org/wiki/Dependency_injection">dependency injection</a>, which is the most significant difference
+         in my pizza ordering application compared to my previous iterations.
+         <a href="https://www.playframework.com/documentation/2.5.x/ScalaDependencyInjection">Play's choice of run time DI</a> with <a href="https://github.com/google/guice">Guice</a>
+         goes against my strong preference for
+         <a href="https://www.playframework.com/documentation/2.5.x/ScalaCompileTimeDependencyInjection">compile time DI</a>,
+         but it is futile to swim against the current.
+      </p>
 
-               <div class="paragraph">
-                  <h4>Scaffold</h3>
-                  <p>
-                     Create the new application:
-                  </p>
-                  <code>activator new pizzeria</code>
-                  <p>
-                     Choose option 6, the <em>play-scala</em> option.
-                  </p>
-                  <p>
-                     You now have a basic play application folder structure:
-                  </p>
-                  <ul>
-                     <li>
-                        <em>pizzeria/conf/build.sbt</em>
-                        is where you define you libraries, versions and name of application.
-                     </li>
-                     <li>
-                        <em>pizzeria/conf/routes</em>
-                        is where you define the routing of url paths request to the controllers.
-                     </li>
-                     <li>
-                        <em>pizzeria/app/controllers/HomeController</em>
-                        is one example controller that currently shows the home page.
-                     </li>
-                     <li>
-                        <em>pizzeria/app/views/main.scala.html</em>
-                        is the shared common template for most views.
-                     </li>
-                     <li>
-                        <em>pizzeria/app/views/index.scala.html</em>
-                        is the example template for the home page contents.
-                     </li>
-                  </ul>
-               </div>
-               <div class="paragraph">
-                  <h4>Download the internet</h3>
-                  <p>
-                     Since we used the mini flavour of Activator we need to download all the dependencies.
-                  </p>
-                  <p>
-                     Launch SBT (and make some tea):
-                  </p>
-                  <code>sbt</code>
-                  <p>
-                     Compile and test the code (drink the tea and fetch some biscuits)
-                  </p>
-                  <code class="app">
-                     ;compile;test
-                  </code>
-                  <p>
-                     Then run the application (and make some more tea)
-                  </p>
-                  <code class="app">
-                     run
-                  </code>
-                  <p>
-                     Thankfully you will not need to download the internet from now on.
-                  </p>
-                  <p>
-                     Since we haven't changed anything this should all work,
-                     and the application will now be available on the default port of 9000.
-                  </p>
-                  <code>curl localhost:9000</code>
-                  <p>
-                     Press <em>ctrl+d</em> to stop. Then exit SBT:
-                  </p>
-                  <code class="app">exit</code>
-                  <p>
-                     You now have a working scaffold.
-                     Note you always shortcut running the app by typing:
-                  </p>
-                  <code>sbt run</code>
-               </div>
-            </div>
+      <div class="paragraph">
+         <h4>Scaffold</h3>
+         <p>
+            Create the new application:
+         </p>
+         <code>activator new pizzeria</code>
+         <p>
+            Choose option 6, the <em>play-scala</em> option.
+         </p>
+         <p>
+            You now have a basic play application folder structure inside <em>pizzeria</em>:
+         </p>
+         <ul>
+            <li>
+               <em>conf/build.sbt</em>
+               is where you define your libraries, versions and name of the application.
+            </li>
+            <li>
+               <em>conf/routes</em>
+               is where you define the routing of request's url paths to the controllers.
+            </li>
+            <li>
+               <em>app/controllers/HomeController</em>
+               is one example controller that currently shows the home page.
+            </li>
+            <li>
+               <em>app/views/main.scala.html</em>
+               is the shared common template for most views.
+            </li>
+            <li>
+               <em>app/views/index.scala.html</em>
+               is the example template for the home page content.
+            </li>
+            <li>
+               <em>public/stylesheets/main.css</em>
+               is the default style sheet.
+               Feel free to rename or add more.
+            </li>
+         </ul>
+      </div>
+      <div class="paragraph">
+         <h4>Download the internet</h3>
+         <p>
+            Since we used the mini flavour of Activator we need to download all the dependencies.
+         </p>
+         <p>
+            Launch Activator or SBT (and make some tea):
+         </p>
+         <code>sbt</code>
+         <p>
+            Compile and test the code (drink the tea and fetch some biscuits)
+         </p>
+         <code class="app">
+            ;compile;test
+         </code>
+         <p>
+            Then run the application (and make some more tea)
+         </p>
+         <code class="app">
+            run
+         </code>
+         <p>
+            Thankfully you will not need to download the internet from now on,
+            as your local <em>~/.ivy2</em> folder is now enormous.
+         </p>
+         <p>
+            Since we haven't changed anything this should all work,
+            and the application will now be available on the default port of 9000.
+         </p>
+         <code>curl localhost:9000</code>
+         <p>
+            Press <em>ctrl+d</em> to stop. Then exit SBT:
+         </p>
+         <code class="app">exit</code>
+         <p>
+            You now have a working scaffold.
+            Note a shortcut to run the app:
+         </p>
+         <code>sbt run</code>
+      </div>
+   </div>
 
-            <div class="paragraph">
-               <a name="docker"></a>
-               <h3>Dockerise</h3>
-               <p>
-               </p>
-            </div>
+   <div class="paragraph">
+      <a name="docker"></a>
+      <h3>Dockerise</h3>
 
-            <div class="paragraph">
-               <a name="pizza"></a>
-               <h3>Pizzeria service</h3>
-               <p>
-               </p>
-            </div>
+      <div class="paragraph">
+         <h4>Install Docker</h4>
+         <p>
+            On macOS you can install <a href="https://www.docker.com/products/docker">Docker</a> via Brew, which I used to do.
+            But the "new" <a href="https://docs.docker.com/docker-for-mac/">Docker for Mac</a> is a better choice.
+            Download and run the <a href="https://download.docker.com/mac/stable/Docker.dmg">dmg</a> file.
+            Launch the Docker app via <a href="https://en.wikipedia.org/wiki/Launchpad_(OS_X)">Launchpad</a>.
+         </p>
+         <p>
+            For Linux it <a href="https://docs.docker.com/engine/installation/linux/">depends on the distrobution</a>, for <a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/">Ubuntu 16.04</a>:
+         </p>
+         <code class="wide">
+            sudo apt-get install apt-transport-https ca-certificates;<br/>
+            sudo apt-key adv \<br/>
+            &nbsp;--keyserver hkp://ha.pool.sks-keyservers.net:80 \<br/>
+            &nbsp;--recv-keys 58118E89F3A912897C070ADBF76221572C52609D;<br/>
+            echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | \<br/>
+            &nbsp;sudo tee /etc/apt/sources.list.d/docker.list;<br/>
+            sudo apt-get update;<br/>
+            sudo apt-get install linux-image-extra-$(uname -r) \<br/>
+            &nbsp;linux-image-extra-virtual;<br/>
+            sudo apt-get install docker-engine;<br/>
+            sudo service docker start
+         </code>
+      </div>
 
-            <div class="paragraph">
-               <a name="docker-cloud"></a>
-               <h3>Docker Cloud</h3>
-               <p>
-               </p>
 
-               <div class="paragraph">
-                  <a name="aws"></a>
-                  <h4>Amazon AWS</h4>
-                  <p>
-                  </p>
-               </div>
+      <div class="paragraph">
+         <h4>Dockerfile</h4>
+         <p>
+            You have a few options of how you build your images.
+            Mostly due to relatively slowness of downloading all Ivy dependencies from scratch on every build.
+         </p>
+         <p>
+            You can build the <a href="https://en.wikipedia.org/wiki/JAR_(file_format)">jar</a> file outside of Docker.
+            Then just add the jar or <em>target/stage</em> folder to the Dockerfile. This is result in very fast Docker image builds,
+            but adds another step that is just as slow before it.
+         </p>
+         <p>
+            For that you either build manually in the project folder via <em>sbt package</em> or <em>sbt stage</em> (for Play apps).
+         </p>
+         <p>
+            Or via a build/<a href="https://en.wikipedia.org/wiki/Continuous_integration">continuous integration</a> server that
+            uploads it to a <a href="https://en.wikipedia.org/wiki/Software_repository">Maven/Ivy repository</a>.
+         </p>
+         <p>
+            Or you build it inside Docker.
+         </p>
+         <p>
+            Either on every build, this is the least complicated method but also very, very slow.
+            This is the method we will use in this document.
+         </p>
+         <p>
+            Or you depend on a base image with all the dependencies preload in <em>~/.ivy2</em>.
+            Similar to <a href="https://github.com/flurdy/Dockerfiles/tree/master/play-framework-base">my play-framework-base</a>.
+            You then extend your Dockerfile from this base image.
+            Note the versions of the dependencies in the base and your project must match for it to be of use.
+         </p>
+         <p>
+            Create a <em>Dockerfile</em> in the root folder.
+         </p>
+         <code class="file wide">
+            FROM openjdk:8u111-jdk-alpine<br/>
+            <br/>
+            MAINTAINER Ivar Abrahamsen <@flurdy><br/>
+            <br/>
+            RUN apk update &amp;&amp; apk add bash wget unzip<br/>
+            <br/>
+            RUN mkdir -p /etc/app &amp;&amp; \<br/>
+               &nbsp;&nbsp;mkdir -p /opt/build &amp;&amp; \<br/>
+               &nbsp;&nbsp;mkdir -p $HOME/.sbt/0.13<br/>
+            <br/>
+            ENV AVERSION <em>1.3.12</em><br/>
+            <br/>
+            WORKDIR /opt<br/>
+            <br/>
+            RUN wget -q --show-progress \<br/>
+            &nbsp;&nbsp;<span class="tiny-code">http://downloads.typesafe.com/typesafe-activator/$AVERSION/typesafe-activator-$AVERSION-minimal.zip</span> &amp;&amp; \<br/>
+               &nbsp;&nbsp;unzip -qq typesafe-activator-$AVERSION-minimal.zip &amp;&amp; \<br/>
+               &nbsp;&nbsp;rm -f typesafe-activator-$AVERSION-minimal.zip &amp;&amp; \<br/>
+               &nbsp;&nbsp;mv activator-$AVERSION-minimal activator<br/>
+            <br/>
+            WORKDIR /opt/build<br/>
+            <br/>
+            ADD . /opt/build/<br/>
+            <br/>
+            RUN /opt/activator/bin/activator stage &amp;&amp; \<br/>
+                &nbsp;&nbsp;rm -rf /opt/build<br/>
+            <br/>
+            #### Dependency base ready ####<br/>
+            <br/>
+            COPY conf /etc/app/<br/>
+            <br/>
+            ADD . /opt/build/<br/>
+            <br/>
+            WORKDIR /opt/build<br/>
+            <br/>
+            RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+               &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+               &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+               &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+               &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+               &nbsp;&nbsp;rm -rf /opt/build &amp;&amp; \<br/>
+               &nbsp;&nbsp;rm -rf /root/.ivy2<br/>
+            <br/>
+            WORKDIR /opt/app<br/>
+            <br/>
+            ADD . /opt/build/<br/>
+            <br/>
+            ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+            <br/>
+            EXPOSE 9000
+         </code>
+         <p>
+            (As commented everything above "Dependency base ready" can later be moved into a base image if desired)
+         </p>
+      </div>
 
-               <div class="paragraph">
-                  <a name="google-cloud"></a>
-                  <h4>Google Cloud</h4>
-                  <p>
-                  </p>
-               </div>
+      <div class="paragraph">
+         <h4>Build Docker Image</h4>
+         <p>
+            Build the image and name it <em>pizzeria</em>:
+         </p>
+         <code>docker build -t pizzeria .</code>
+         <p>
+            This will take a while. You will need to get more than a cup of tea.
+         </p>
+         <p>
+            Run the new image and map the port to <em>9020</em>.
+         </p>
+         <code>docker run -ti --rm -p 9000:9020 pizzeria:latest</code>
+         <p>
+            In another terminal window:
+         </p>
+         <code>curl localhost:9020</code>
+      </div>
+   </div>
 
-            </div>
+   <div class="paragraph">
+      <a name="pizza"></a>
+      <h3>Pizzeria service</h3>
+      <p>
+         Lets create the actual pizzeria service.
+         We will create a normal landing page that in our case shows the pizza menu and order form.
+         We will have a <a href="https://en.wikipedia.org/wiki/POST_(HTTP)">POST</a> endpoint to send our order to,
+         and a confirmation page to confirm our pizza order has been received.
+      </p>
+      <p>
+         Though first lets remove some parts we are not using in this application.
+         (of course in your future applications you may use these, so be aware of them)
+      </p>
+      <code>
+         rm -f app/controllers/AsyncController.scala;<br/>
+         rm -f app/controllers/CountController.scala;<br/>
+         rm -rf app/filters app/services;<br/>
+         rm -f app/Filters.scala app/Module.scala;<br/>
+         rm -rf bin libexec;<br/>
+         <!-- rm -f public/javascripts/hello.js;<br/> -->
+         rm -rf test
+      </code>
 
-            <div class="paragraph">
-               <a name="alt"></a>
-               <h3>Alternatives</h3>
-               <p>
-               </p>
-            </div>
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Show menu</h4>
+         <p>
+            Lets edit the routes file.
+            We will remove the references to <em>Async</em>, <em>Home</em> and <em>CountControllers</em>.
+            And add a PizzaController.
+            Open <em>conf/routes</em> in your editor of choice.
+         </p>
+         <code><em>vi</em> conf/routes</code>
+         <code class="file wide">
+            # Routes<br/>
+            # ~~~~<br/>
+            <br/>
+            GET&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.PizzaController.showMenu<br/>
+            <br/>
+            GET&nbsp;&nbsp;&nbsp;/assets/*file&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.Assets.versioned(path="/public", file: Asset)
+         </code>
+         <p>
+            You can cheat a little by just renaming <em>HomeController</em> to <em>PizzaController</em>,
+            then editing it.
+         </p>
+         <code>
+            mv -f app/controllers/HomeController.scala \<br/>
+            &nbsp;&nbsp;app/controllers/PizzaController.scala;<br/>
+            <em>vi</em> app/controllers/PizzaController.scala
+         </code>
+         <p>
+            Lets rename the class, and then rename the <em>index</em> function to <em>showMenu</em>,
+            and return the <em>pizzamenu</em> template.
+         </p>
+         <code class="file wide">
+            package controllers<br/>
+            <br/>
+            import javax.inject._<br/>
+            import play.api._<br/>
+            import play.api.mvc._<br/>
+            <br/>
+            @Singleton<br/>
+            class <strong>PizzaController</strong> @Inject() () extends Controller {<br/>
+            <br/>
+            &nbsp;&nbsp;def showMenu = Action {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Ok(views.html.pizzamenu)<br/>
+            &nbsp;&nbsp;}<br/>
+            <br/>
+            }
+         </code>
+         <p>
+            Again we can cheat by renaming the <em>index</em> template,
+            and removing some cruft.
+         </p>
+         <code>
+            mv -f app/views/index.scala.html app/views/pizzamenu.scala.html;<br/>
+            <em>vi</em> app/views/pizzamenu.scala.html
+         </code>
+         </p>
+         <code class="file wide">
+            @()<br/>
+            <br/>
+            @main("Pizza Menu") {<br/>
+            <br/>
+               &nbsp;&nbsp;&lt;h1&gt;Pizza Menu&lt;/h1&gt;<br/>
+            <br/>
+            }
+         </code>
+         <p>
+            Running the app,
+            and testing it in another terminal or browser should display the "Pizza Menu" headline.
+         </p>
+         <code>sbt run</code>
+         <code>curl localhost:9000</code>
+         <p>
+            Ok that is nice, but there is still no actual pizzas shown!
+            Lets create the domain object:
+         </p>
+         <code>
+            mkdir app/models;<br/>
+            touch app/models/pizza.scala;<br/>
+            <em>vi</em> app/models/pizza.scala
+         </code>
+         <code class="file wide">
+            package models<br/>
+            <br/>
+            case class Pizza(name: String)
+         </code>
+         <p>
+            And a repository lookup,
+            this could query a database,
+            or use some connector/adapter to talk to some middleware or backend services.
+         </p>
+         <code>
+            mkdir app/repositories;<br/>
+            touch app/repositories/PizzaRepository.scala;<br/>
+            <em>vi</em> app/repositories/PizzaRepository.scala
+         </code>
+         <code class="file wide">
+            package repositories<br/>
+            <br/>
+            import com.google.inject.ImplementedBy<br/>
+            import javax.inject.Inject</br>
+            import play.api.libs.concurrent.Execution.Implicits._</br>
+            import scala.concurrent.Future<br/>
+            import models._<br/>
+            <br/>
+            <br/>
+            @ImplementedBy(classOf[DefaultPizzaRepository])<br/>
+            trait PizzaRepository {<br/>
+            <br/>
+            &nbsp;&nbsp;def findPizzas() = Future { <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;List( Pizza("Hawaii"), Pizza("Pepperoni") )<br/>
+            &nbsp;&nbsp;}<br/>
+            <br/>
+            }<br/>
+            <br/>
+            class DefaultPizzaRepository @Inject() () extends PizzaRepository
+         </code>
+         <p>
+            The <em>ImplementedBy</em> and <em>Inject</em> is the additional cruft required by the <em>Guice</em>
+            runtime dependency injection.
+            Lets inject the repository into the pizza controller:
+         </p>
+         <code><em>vi</em> app/controllers/PizzaController.scala</code>
+         <code class="file wide">
+            package controllers<br/>
+            <br/>
+            import javax.inject._<br/>
+            import play.api._<br/>
+            <em>import play.api.libs.concurrent.Execution.Implicits._</em><br/>
+            import play.api.mvc._<br/>
+            <em>import repositories._</em><br/>
+            <br/>
+            @Singleton<br/>
+            class PizzaController @Inject() (<em>val pizzaRepository: PizzaRepository</em>)<br/>
+            extends Controller {<br/>
+            <br/>
+            &nbsp;&nbsp;def showMenu = Action<em>.async</em> {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<em>pizzaRepository.findPizzas().map{ pizzas =&gt;</em><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ok(views.html.pizzamenu(<em>pizzas</em>))<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<em>}</em><br/>
+            &nbsp;&nbsp;}<br/>
+            <br/>
+            }
+         </code>
+         <p>
+            You will notice the <em>.async</em> postfix to the <em>Action</em>.
+            This means this will return a future of result, so not blocking, and is because
+            the call to the repository returns a future as well.
+         </p>
+         <p>
+            We need to modify the pizza menu view as we now pass in a list of pizzas.
+         </p>
+         <code>
+            <em>vi</em> app/views/pizzamenu.scala.html
+         </code>
+         </p>
+         <code class="file wide">
+            @(<em>pizzas: List[Pizza]</em>)<br/>
+            <br/>
+            @main("Pizza Menu") {<br/>
+            <br/>
+               &nbsp;&nbsp;&lt;h1&gt;Pizza Menu&lt;/h1&gt;<br/>
+               <br/><em>
+               &nbsp;&nbsp;&lt;ul&gt;<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;@for(pizza &lt;- pizzas){<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pizza: @pizza.name<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+               &nbsp;&nbsp;&lt;/ul&gt;</em><br/>
+            <br/>
+            }
+         </code>
+         <p>
+            This should now list the pizzas in the application:
+         </p>
+         <code>sbt run</code>
+         <code>curl localhost:9000</code>
+      </div>
 
-            <div class="paragraph">
-               <a name="contact"></a>
-               <h3>Feedback</h3>
-               <p>
-                  Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
-               </p>
-               <p>
-                  <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
-                  <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
-               </p>
-               <p>
-                  Otherwise <a href="/contact">contact me</a>.
-                  Especially for things factually incorrect.
-                  Apologies for procrastinated replies.
-               </p>
-            </div>
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Send order</h4>
+         <p>
+            Now lets order the pizza!
+         </p>
+         <p>
+            First lets modify the menu view.
+         </p>
+         <code><em>vi</em> app/views/pizzamenu.scala.html</code>
+         <code class="file wide">
+            @(pizzas: List[Pizza])<br/>
+            <br/>
+            <em>@import helper._</em><br/>
+            <br/>
+            @main("Pizza Menu") {<br/>
+            <br/>
+               &nbsp;&nbsp;&lt;h1&gt;Pizza Menu&lt;/h1&gt;<br/>
+               <br/>
+               &nbsp;&nbsp;&lt;ul&gt;<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;@for(pizza &lt;- pizzas){<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>@form(action=routes.controllers.PizzaController.orderPizza){</em><br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pizza: @pizza.name<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&lt;button type="submit"&gt;order&lt;/button&gt;</em><br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&lt;input type="hidden" name="name" value="@pizza.name"/&gt;</em><br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>}</em><br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+               &nbsp;&nbsp;&lt;/ul&gt;<br/>
+            <br/>
+            }
+         </code>
+         <p>
+            Then reflect the new <em>orderPizza</em> call in the routes file:
+         </p>
+         <code><em>vi</em> conf/routes</code>
+         <code class="file wide">
+            # Routes<br/>
+            # ~~~~<br/>
+            <br/>
+            GET&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.PizzaController.showMenu<br/>
+            <em>POST&nbsp;&nbsp;/order&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.PizzaController.orderPizza</em><br/>
+            <br/>
+            GET&nbsp;&nbsp;&nbsp;/assets/*file&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.Assets.versioned(path="/public", file: Asset)
+         </code>
+         <p>
+            And create the <em>orderPizza</em> function in the pizza controller to simple return a success page.
+         </p>
+         <code><em>vi</em> app/controllers/PizzaController.scala</code>
+         <code class="file wide">
+            .....<br/>
+            <br/>
+            &nbsp;&nbsp;def orderPizza = Action {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Ok<br/>
+            &nbsp;&nbsp;}<br/>
+            <br/>
+            .....
+         </code>
+         <p>
+            You can test the order button now, it should respond in a blank success page.
+         </p>
+         <p>
+            When ready lets create a pizza order domain object in our models file:
+         </p>
+         <code>
+            <em>vi</em> app/models/pizza.scala
+         </code>
+         <code class="file wide">
+            case class PizzaOrder(id: Option[Long], pizza: Pizza)
+         </code>
+         <p>
+            And in the controller a <a href="https://playframework.com/documentation/2.5.x/ScalaForms">form mapping</a> transformer.
+         </p>
+         <code><em>vi</em> app/controllers/PizzaController.scala</code>
+         <code class="file wide">
+            package controllers<br/>
+            <br/>
+            import javax.inject._<br/>
+            import play.api._<br/>
+            <em>import play.api.data._<br/>
+            import play.api.data.Forms._</em><br/>
+            import play.api.libs.concurrent.Execution.Implicits._<br/>
+            import play.api.mvc._<br/>
+            <em>import scala.concurrent.Future</em><br/>
+            <em>import models._</em><br/>
+            import repositories._<br/>
+            <br/>
+            @Singleton<br/>
+            class PizzaController @Inject() (val pizzaRepository: PizzaRepository)<br/>
+            extends Controller {<br/>
+            <br/>
+            <em>
+            &nbsp;&nbsp;val orderForm = Form( mapping (<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id" -> ignored(None: Option[Long]),<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"pizza" -> mapping (<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name" -> nonEmptyText<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)(Pizza.apply)(Pizza.unapply)<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;)(PizzaOrder.apply)(PizzaOrder.unapply)<br/>
+            &nbsp;&nbsp;)<br/>
+            </em>
+            <br/>
+            .....<br/>
+            <br/>
+            }
+         </code>
+         <p>
+            Then we extend the <em>orderPizza</em> method to
+            bind the request to this mapping.
+         </p>
+         <code class="file wide">
+            .....<br/>
+            <br/>
+            def orderPizza = Action { <em>implicit request =&gt;<br/>
+            &nbsp;&nbsp;orderForm.bindFromRequest.fold(<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;errors&nbsp;=&gt; BadRequest,<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;order&nbsp;&nbsp;=&gt; Created<br/>
+            &nbsp;&nbsp;)</em><br/>
+            }<br/>
+            <br/>
+            .....
+         </code>
+         <p>
+            This can now be tested via a browser by clicking on the <em>order</em>
+            buttons on the menu, or directly via <em>curl</em>.
+         </p>
+         <p>
+            This still doesn't really do anything,
+            it just returns blank pages as we havent specified a template.
+            It only returns the expected <a href="https://httpstatus.es">http error code</a>.
+            We could also include the erroneous form in the <em>BadRequest</em> response
+            but we are keeping it simple for now.
+         </p>
+         <code>
+            curl --data "{\"wrongfield\"=\"wrongdata\"}" \<br/>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br/>
+            &nbsp;&nbsp;-v http://localhost:9000/order
+         </code>
+         <p>
+            This should not work as wrong field name, and will return amongst others:
+         </p>
+         <code class="output">&lt; HTTP/1.1 400 Bad Request</code>
+         </p>
+         <p>
+            But this should order a pizza:
+         </p>
+         <code>
+            curl --data "{\"pizza.name\":\"Hawaii\"}" \<br/>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br/>
+            &nbsp;&nbsp;-v http://localhost:9000/order
+         </code>
+         <code class="output">&lt; HTTP/1.1 201 Created</code>
 
-            <div class="paragraph">
-               <a name="references"></a>
-               <h3>References</h3>
-               <p>
-               </p>
-               <ul>
-                  <li><a href="http://www.scala-lang.org">Scala</a>
-                     <a href="https://en.wikipedia.org/wiki/Scala_(programming_language)"><sup>wiki</sup></a></li>
-                  <li><a href="https://www.playframework.com">Play Framework</a> <a href="https://en.wikipedia.org/wiki/play_framework"><sup>wiki</sup></a></li>
-                  <li><a href="https://www.docker.com">Docker</a> <a href="https://en.wikipedia.org/wiki/Docker_(software)"><sup>wiki</sup></a></li>
-                  <li><a href="http://cloud.docker.com">Docker Cloud</a></li>
-                  <li><a href="http://cloud.google.com">Google Cloud</a> <a href="https://en.wikipedia.org/wiki/Google_Cloud_Platform"><sup>wiki</sup></a></li>
-                  <li><a href="http://aws.amazon.com">Amazon AWS</a> <a href="https://en.wikipedia.org/wiki/Amazon_Web_Services"><sup>wiki</sup></a></li>
-                  <li><a href="http://www.heroku.com">Heroku</a> <a href="https://en.wikipedia.org/wiki/heroku"><sup>wiki</sup></a></li>
-            </div>
 
-         </div>
+      </div>
+
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Confirm order</h4>
+         <p>
+            Ok lets show a more usefull pizza ordered confirmation page,
+            than just a blank page with http status code.
+         </p>
+
+         <p>
+            Lets add a confirmation page route,
+            which includes an order id in its path.
+         </p>
+         <code><em>vi</em> conf/routes</code>
+         <code class="file wide">
+            # Routes<br/>
+            # ~~~~<br/>
+            <br/>
+            GET&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.PizzaController.showMenu<br/>
+            POST&nbsp;/order&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            controllers.PizzaController.orderPizza<br/>
+            <em>GET&nbsp;&nbsp;/order/:orderId
+            controllers.PizzaController.showConfirmation(orderId: Int)</em><br/>
+            <br/>
+            GET&nbsp;&nbsp;/assets/*file&nbsp;&nbsp;
+            controllers.Assets.versioned(path="/public", file: Asset)
+         </code>
+         <p>
+            Lets add the <em>showConfirmation</em> method to <em>PizzaController</em>.
+            It will try to find the order,
+            and either display a confirmation page with it,
+            or a blank page with a 404 not found http status code
+            if there was no orders found with the supplied id.
+         </p>
+         <code><em>vi</em> app/controllers/PizzaController.scala</code>
+         <code class="file wide">
+            .....<br/>
+            <br/>
+            <em>
+            &nbsp;&nbsp;
+            def showConfirmation(orderId: Int) = Action.async {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            pizzaRepository.findPizzaOrder(orderId).map{<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            case Some(order) =&gt; Ok(views.html.confirmation(order))<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            case _&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            =&gt; NotFound<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+            &nbsp;&nbsp;}<br/>
+            </em>
+            <br/>
+            .....
+         </code>
+         <p>
+            We will need to create the <em>findPizzaOrder</em> method in the pizza repository,
+            and hard code its response for now:
+         </p>
+         <code><em>vi</em> app/repositories/PizzaRepository.scala</code>
+         <code class="file wide">
+            .....<br/>
+            <br/>
+            &nbsp;&nbsp;def findPizzaOrder(orderId) = Future { <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Some(PizzaOrder(Some(orderId),Pizza("Hawaii")))<br/>
+            &nbsp;&nbsp;}<br/>
+            <br/>
+            .....
+         </code>
+         <p>
+            And the view
+         </p>
+         <code>
+            cp app/views/pizzamenu.scala.html \<br/>
+            &nbsp;&nbsp;app/views/confirmation.scala.html;<br/>
+            <em>vi</em> app/views/confirmation.scala.html
+         </code>
+         <code class="file wide">
+            @(pizzaOrder: PizzaOrder)<br/>
+            <br/>
+            @main("Pizza order confirmation") {<br/>
+            <br/>
+               &nbsp;&nbsp;&lt;h1&gt;Pizza ordered!&lt;/h1&gt;<br/>
+               <br/>
+               &nbsp;&nbsp;&lt;p&gt;<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;You have ordered a &lt;em&gt;@pizzaOrder.pizza.name&lt;/em&gt; pizza!</br>
+               &nbsp;&nbsp;&lt;/p&gt;</br>
+            <br/>
+            }
+         </code>
+         <p>
+            You can test this via:
+         </p>
+         <code>curl localhost:9000/order/123</code>
+
+         <p>
+            Lets add a correct response form the order post we created before,
+            and a call to the repositry to simulate storing the order.
+            Edit the <em>orderPizza</em> in the pizza controller:
+         </p>
+         <code><em>vi</em> app/controllers/PizzaController.scala</code>
+         <code class="file wide">
+            .....<br/>
+            <br/>
+            &nbsp;&nbsp;def orderPizza = Action<em>.async</em> { implicit request =&gt;<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;orderForm.bindFromRequest.fold(<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errors&nbsp;=&gt;
+            <em>Future.successful( BadRequest )</em>,<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order&nbsp;&nbsp;=&gt;
+            <em>{<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pizzaRepository.addPizzaOrder(order) map {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case PizzaOrder(Some(orderId), _) =&gt;<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Redirect(routes.PizzaController.showConfirmation(orderId))<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case _ =&gt; InternalServerError("Could not add pizza order")<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</em><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+            &nbsp;&nbsp;}<br/>
+            <br/>
+            .....
+         </code>
+
+         <p>
+            And then add the <em>addPizzaOrder</em> to the pizza repository:
+         </p>
+         <code><em>vi</em> app/repositories/PizzaRepository.scala</code>
+         <code class="file wide">
+            .....<br/>
+            <br/>
+            <em>
+            &nbsp;&nbsp;def addPizzaOrder(pizzaOrder: PizzaOrder): Future[PizzaOrder] = Future {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;pizzaOrder.copy(id = Some(123)<br/>
+            &nbsp;&nbsp;}<br/>
+            </em>
+            <br/>
+            .....
+         </code>
+         <p>
+            Test the order pizza call:
+         </p>
+         <code>
+            curl --data "{\"pizza.name\":\"Hawaii\"}" \<br/>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br/>
+            &nbsp;&nbsp;-v http://localhost:9000/order
+         </code>
+         <p>
+            Which response should now include a redirect to the confirmation page:
+         </p>
+         <code class="output">
+            .....<br/>
+            <br/>
+            &lt; HTTP/1.1 303 See Other<br/>
+            &lt; Location: /order/123<br/>
+            <br/>
+            .....
+         </code>
+
+      </div>
+   </div>
+
+   <div class="paragraph">
+      <a name="docker-cloud"></a>
+      <h3>Docker Cloud</h3>
+      <p>
+      </p>
+
+      <div class="paragraph">
+         <a name="aws"></a>
+         <h4>Amazon AWS</h4>
+         <p>
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name="google-cloud"></a>
+         <h4>Google Cloud</h4>
+         <p>
+         </p>
+      </div>
+
+   </div>
+
+   <div class="paragraph">
+      <a name="persist"></a>
+      <h3>Persist</h3>
+
+   </div>
+
+   <div class="paragraph">
+      <a name="alt"></a>
+      <h3>Alternatives</h3>
+
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Spray / Akka http</h4>
+         <p>
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Heroku</h4>
+         <p>
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Amazon ECS</h4>
+         <p>
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name=""></a>
+         <h4>Google Container Enginer </h4>
+         <p>
+            Kubernetes
+         </p>
+      </div>
+   </div>
+
+   <div class="paragraph">
+      <a name="contact"></a>
+      <h3>Feedback</h3>
+      <p>
+         Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+      </p>
+      <p>
+         <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+         <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+      </p>
+      <p>
+         Otherwise <a href="/contact">contact me</a>.
+         Especially for things factually incorrect.
+         Apologies for procrastinated replies.
+      </p>
+   </div>
+
+   <div class="paragraph">
+      <a name="references"></a>
+      <h3>References</h3>
+      <p>
+      </p>
+      <ul>
+         <li><a href="http://www.scala-lang.org">Scala</a>
+            <a href="https://en.wikipedia.org/wiki/Scala_(programming_language)"><sup>wiki</sup></a></li>
+         <li><a href="https://www.playframework.com">Play Framework</a> <a href="https://en.wikipedia.org/wiki/play_framework"><sup>wiki</sup></a></li>
+         <li><a href="https://www.docker.com">Docker</a> <a href="https://en.wikipedia.org/wiki/Docker_(software)"><sup>wiki</sup></a></li>
+         <li><a href="http://cloud.docker.com">Docker Cloud</a></li>
+         <li><a href="http://cloud.google.com">Google Cloud</a> <a href="https://en.wikipedia.org/wiki/Google_Cloud_Platform"><sup>wiki</sup></a></li>
+         <li><a href="http://aws.amazon.com">Amazon AWS</a> <a href="https://en.wikipedia.org/wiki/Amazon_Web_Services"><sup>wiki</sup></a></li>
+         <li><a href="http://www.heroku.com">Heroku</a> <a href="https://en.wikipedia.org/wiki/heroku"><sup>wiki</sup></a></li>
+   </div>
+
+</div>
 
          <footer>
             <nav>
