@@ -88,7 +88,15 @@
                   <li><a href="#environment">Build&nbsp;environment</a></li>
                   <li><a href="#play">Play scaffold</a></li>
                   <li><a href="#docker">Dockerise</a></li>
-                  <li><a href="#pizza">Pizzeria</a></li>
+                  <li>
+                     <a href="#pizza">Pizzeria</a>
+                     <ul>
+                        <li><a href="#pizza_menu">Show menu</a></li>
+                        <li><a href="#pizza_order">Order pizza</a></li>
+                        <li><a href="#pizza_confirm">Confirm order</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#persist">Persist</a></li>
                   <li>
                      <a href="#docker-cloud">Docker&nbsp;Cloud</a>
                      <ul>
@@ -505,8 +513,33 @@
          rm -rf test
       </code>
 
+      <p>
+         In the project's <em>build.sbt</em> file lets remove some dependencies we won't need in this example (<em>cache, ws, scalatest</em>),
+         keeping <em>jdbc</em> as we will need that later.
+         And also add a hack with <em>devnull</em> to support docker restarts.
+      </p>
+      <code><em>vi</em> build.sbt</code>
+      <code class="file wide">
+         name := """pizzeria"""<br/>
+         <br/>
+         version := "<em>1.0-SNAPSHOT</em>"<br/>
+         <br/>
+         lazy val root = (project in file(".")).enablePlugins(PlayScala)<br/>
+         <br/>
+         scalaVersion := "<em>2.11.8</em>"<br/>
+         <br/>
+         libraryDependencies ++= Seq(<br/>
+           <em>&nbsp;&nbsp;jdbc</em><br/>
+         )<br/>
+         <br/>
+         <em>javaOptions in Universal ++= Seq(<br/>
+           &nbsp;&nbsp;"-Dpidfile.path=/dev/null"<br/>
+         )
+         </em>
+      </code>
+
       <div class="paragraph">
-         <a name=""></a>
+         <a name="pizza_menu"></a>
          <h4>Show menu</h4>
          <p>
             Lets edit the routes file.
@@ -685,8 +718,8 @@
       </div>
 
       <div class="paragraph">
-         <a name=""></a>
-         <h4>Send order</h4>
+         <a name="pizza_order"></a>
+         <h4>Order pizza</h4>
          <p>
             Now lets order the pizza!
          </p>
@@ -708,7 +741,7 @@
                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>@form(action=routes.controllers.PizzaController.orderPizza){</em><br/>
                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pizza: @pizza.name<br/>
                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&lt;button type="submit"&gt;order&lt;/button&gt;</em><br/>
-               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&lt;input type="hidden" name="name" value="@pizza.name"/&gt;</em><br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&lt;input type="hidden" name="pizza.name" value="@pizza.name"/&gt;</em><br/>
                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>}</em><br/>
                &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
                &nbsp;&nbsp;&lt;/ul&gt;<br/>
@@ -842,7 +875,7 @@
       </div>
 
       <div class="paragraph">
-         <a name=""></a>
+         <a name="pizza_confirm"></a>
          <h4>Confirm order</h4>
          <p>
             Ok lets show a more usefull pizza ordered confirmation page,
@@ -863,7 +896,7 @@
             POST&nbsp;/order&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             controllers.PizzaController.orderPizza<br/>
             <em>GET&nbsp;&nbsp;/order/:orderId
-            controllers.PizzaController.showConfirmation(orderId: Int)</em><br/>
+            controllers.PizzaController.showConfirmation(orderId: Long)</em><br/>
             <br/>
             GET&nbsp;&nbsp;/assets/*file&nbsp;&nbsp;
             controllers.Assets.versioned(path="/public", file: Asset)
@@ -881,7 +914,7 @@
             <br/>
             <em>
             &nbsp;&nbsp;
-            def showConfirmation(orderId: Int) = Action.async {<br/>
+            def showConfirmation(orderId: Long) = Action.async {<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;
             pizzaRepository.findPizzaOrder(orderId).map{<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -903,8 +936,8 @@
          <code class="file wide">
             .....<br/>
             <br/>
-            &nbsp;&nbsp;def findPizzaOrder(orderId) = Future { <br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;Some(PizzaOrder(Some(orderId),Pizza("Hawaii")))<br/>
+            &nbsp;&nbsp;def findPizzaOrder(orderId: Long) = Future { <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Some(PizzaOrder(Some(orderId), Pizza("Hawaii")))<br/>
             &nbsp;&nbsp;}<br/>
             <br/>
             .....
@@ -971,7 +1004,7 @@
             <br/>
             <em>
             &nbsp;&nbsp;def addPizzaOrder(pizzaOrder: PizzaOrder): Future[PizzaOrder] = Future {<br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;pizzaOrder.copy(id = Some(123)<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;pizzaOrder.copy(id = Some(123L)<br/>
             &nbsp;&nbsp;}<br/>
             </em>
             <br/>
@@ -1001,6 +1034,314 @@
    </div>
 
    <div class="paragraph">
+      <a name="persist"></a>
+      <h3>Persist</h3>
+      <p>
+         The hard coded responses in <em>PizzaRepository</em> is not satisfactory.
+         Lets add some persistant database support.
+      </p>
+      <p>
+         For this we will use the <a href="http://www.h2database.com">H2 in-memory database</a>.
+         Which is ideal unit tests and when developing locally.
+      </p>
+      <p>
+         Then perhaps a docker based <a href="https://www.postgresql.org/">PostgreSQL</a> database when developing and testing
+         a larger stack via <a href="https://docs.docker.com/compose/">Docker Compose</a> and in staging environments.
+         See my <a href="https://flurdy.com/docs/docker/docker_compose_machine_swarm_cloud.html">Docker machine
+            &amp; compose pizzeria howto</a> for an example.
+      </p>
+      <p>
+         When in production I do recommend using proper database instance(s) outside Docker.
+         For example clustered <em>PostgreSQL</em>, <a href="aws.amazon.com/rds‎">Amazon RDS</a>,
+         <a href="https://cloud.google.com/bigtable/">Google Bigtable</a>, <a href="https://elements.heroku.com/addons/heroku-redis">Redis on Heroku</a>,
+         <a href="http://cassandra.apache.org/">Cassandra</a> on <a href="http://mesos.apache.org/">Mesos</a> etc.
+      </p>
+      <p>
+         For persistance library this Pizzeria uses <a href="https://www.playframework.com/documentation/2.5.x/ScalaAnorm">Anorm</a>.
+         Anorm is very thin wrapper around normal <a href="https://en.wikipedia.org/wiki/SQL">SQL</a> made by the original Play developers themselves.
+         A more common framework is <a href="http://slick.lightbend.com/">Slick</a>, and is the default for Play these days.
+         Slick is functional relational mapper,
+         and often involves more compexity that is needed by too many layers of abstractions.
+      </p>
+      <p>
+         In the project's <em>build.sbt</em> file we will add some dependencies we will need,
+         and actually use the <em>jdbc</em> alias we kept earlier.
+      </p>
+      <code><em>vi</em> build.sbt</code>
+      <code class="file wide">
+         .....<br/>
+         <br/>
+         libraryDependencies ++= Seq(<br/>
+           &nbsp;&nbsp;jdbc<em>,<br/>
+           &nbsp;&nbsp;evolutions,<br/>
+           &nbsp;&nbsp;"com.h2database" &nbsp;&nbsp;&nbsp;%&nbsp;&nbsp;"h2"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% "1.4.192",<br/>
+           &nbsp;&nbsp;"com.typesafe.play" %% "anorm"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% "2.5.0",<br/>
+           &nbsp;&nbsp;"joda-time" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;&nbsp;"joda-time" % "2.9.4"<br/>
+           </em>
+         )<br/>
+         <br/>
+         .....
+      </code>
+      <p>
+         Play's default main configuration file has evolved into a huge blob
+         of configurations.
+         But lets remove 99% which is just cruft,
+         add some jdbc properties,
+         and end up with a config file like this:
+      </p>
+      <code><em>vi</em> conf/application.conf</code>
+      <code class="file wide">
+         ## Secret key<br/>
+         play.crypto.secret = "<em>changemechangemechangemechangeme</em>"<br/>
+         play.crypto.secret=${?APPLICATION_SECRET}<br/>
+         <br/>
+         <!--
+         ## Internationalisation<br/>
+         play.i18n {<br/>
+           langs = [ "en" ]<br/>
+         }<br/>
+         <br/>
+         -->
+         ## Evolutions<br/>
+         play.evolutions.db.default.autoApply = true<br/>
+         <br/>
+         ## JDBC Datasource<br/>
+         db.default {<br/>
+            &nbsp;&nbsp;driver = org.h2.Driver<br/>
+            &nbsp;&nbsp;url = <span class="tiny-code">"jdbc:h2:mem:play;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"</span><br/>
+            &nbsp;&nbsp;username = sa<br/>
+            &nbsp;&nbsp;password = ""<br/>
+            &nbsp;&nbsp;logSql = true<br/>
+         }  
+      </code>
+      <p>
+         Above we have enabled <a href="https://www.playframework.com/documentation/2.5.x/Evolutions">evolutions</a> which lets us create and evolve our database
+         schema and data. Our first evolution file creates the initial schema:
+      </p>
+      <code>
+         mkdir -p conf/evolutions/default;<br/>
+         touch conf/evolutions/default/1.sql;<br/>
+         <em>vi</em> conf/evolutions/default/1.sql
+      </code>
+      <code class="file wide">
+         # Pizzeria schema<br/>
+         <br/>
+         # --- !Ups<br/>
+         <br/>
+         CREATE TABLE pizza (<br/>
+            &nbsp;&nbsp;id serial NOT NULL,<br/>
+            &nbsp;&nbsp;name varchar(128) NOT NULL,<br/>
+            &nbsp;&nbsp;PRIMARY KEY (id)<br/>
+         );<br/>
+         <br/>
+         CREATE TABLE pizza_order (<br/>
+            &nbsp;&nbsp;id serial NOT NULL,<br/>
+            &nbsp;&nbsp;pizza_id int NOT NULL REFERENCES pizza (id),<br/>
+            &nbsp;&nbsp;order_date TIMESTAMP NOT NULL DEFAULT NOW(),<br/>
+            &nbsp;&nbsp;PRIMARY KEY (id)<br/>
+         );<br/>
+         <br/>
+         <br/>
+         # --- !Downs<br/>
+         <br/>
+         DROP TABLE pizza_order;<br/>
+         DROP TABLE pizza;
+      </code>
+
+      <p>
+         Our <em>PizzaRepository</em> can now be modified to use an actual database.
+      </p>
+      <code><em>vi</em> app/repositories/PizzaRepository.scala</code>
+      <code class="file wide">
+         package repositories<br/>
+         <br/>
+         <em>import anorm._</em><br/>
+         <em>import anorm.SqlParser._</em><br/>
+         <!-- <em>import anorm.JodaParameterMetaData._</em><br/> -->
+         import com.google.inject.ImplementedBy<br/>
+         import javax.inject.Inject</br>
+         <em>import play.api.db._</em><br/>
+         import play.api.libs.concurrent.Execution.Implicits._</br>
+         <!-- import org.joda.time.DateTime<br/> -->
+         import scala.concurrent.Future<br/>
+         import models._<br/>
+         <br/>
+         <br/>
+         @ImplementedBy(classOf[DefaultPizzaRepository])<br/>
+         trait PizzaRepository {<br/>
+         <br/>
+         <em>
+         &nbsp;&nbsp;def dbApi: DBApi</br>
+         <br/>
+         &nbsp;&nbsp;private lazy val db: Database = dbApi.database("default")<br/>
+         </em>
+         <br/>
+         &nbsp;&nbsp;.....<br/>
+         <br/>
+         }<br/>
+         <br/>
+         class DefaultPizzaRepository @Inject() (<em>val dbApi: DBApi</em>) extends PizzaRepository
+      </code>
+      <p>
+         Modify the existing trait's methods, starting with <em>findPizzas</em>:
+      </p>
+      <code class="file wide">
+         .....<br/>
+         <br/>
+         &nbsp;&nbsp;<em>val pizzaParser: RowParser[Pizza] = Macro.namedParser[Pizza]</em><br/>
+         <br/>
+         &nbsp;&nbsp;def findPizzas(): Future[List[Pizza]] = Future {<br/>
+         <em>
+            &nbsp;&nbsp;&nbsp;&nbsp;db.withConnection { implicit connection =&gt;<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               SQL"""<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     select name from pizza
+                     order by name<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  """<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  .as( pizzaParser.* )<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+         </em>
+         &nbsp;&nbsp;}<br/>
+         <br/>
+         .....
+      </code>
+      <p>
+         And a much more comples <em>addPizzaOrder</em> that uses internal functions
+         (mostly as we have not exposed the database id in the <em>Pizza</em> domain model):
+      </p>
+      <code class="file wide">
+         .....<br/>
+         <br/>
+         &nbsp;&nbsp;def addPizzaOrder(pizzaOrder: PizzaOrder): Future[PizzaOrder] = <em>{<br/>
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;def findPizzaId(pizzaName: String) = Future {<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;db.withConnection { implicit connection =><br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SQL"""<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        select id from pizza
+                        where name = $pizzaName<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     """<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.as( scalar[Long].single )<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;def addOrder(pizzaId: Int) = Future {<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;db.withConnection { implicit connection =><br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SQL"""<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        insert into pizza_order(pizza_id)
+                        values ($pizzaId)<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     """<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     .executeInsert()<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;for {<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pizzaId <- findPizzaId(pizzaOrder.pizza.name)<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orderId <- addOrder(pizzaId)<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;} yield pizzaOrder.copy( id = orderId )<br/>
+         </em>
+         &nbsp;&nbsp;}<br/>
+         <br/>
+         .....
+      </code>
+      <p>
+         And finally <em>findPizzaOrder</em>:
+      </p>
+      <code class="file wide">
+         .....<br/>
+         <br/>
+         &nbsp;&nbsp;def findPizzaOrder(orderId: Long): Future[Option[PizzaOrder]] = Future {<br/>
+         <em>
+            &nbsp;&nbsp;&nbsp;&nbsp;db.withConnection { implicit connection =&gt;<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               SQL"""<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     select p.id as pizza_id, p.name as pizza_name<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     from pizza_order o<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     inner join pizza p on p.id = o.pizza_id<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     where o.id = $orderId<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  """<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  .as( ( get[Long]("pizza_id") ~<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                         get[String]("pizza_name")<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     ).singleOpt )<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  .map{ case pizzaId ~ pizzaName =&gt;<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     PizzaOrder( Some(orderId), Pizza(pizzaName) )<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  }<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+         </em>
+         &nbsp;&nbsp;}<br/>
+         <br/>
+         .....
+      </code>
+      <p>
+         Lets add the default pizzas to the menu:
+      </p>
+      <code>
+         touch conf/evolutions/default/2.sql;<br/>
+         <em>vi</em> conf/evolutions/default/2.sql
+      </code>
+      <code class="file wide">
+         # Pizzeria Menu<br/>
+         <br/>
+         # --- !Ups<br/>
+         <br/>
+         INSERT INTO pizza (name) values<br/>
+         &nbsp;&nbsp;('Margherita'),<br/>
+         &nbsp;&nbsp;('Hawaii'),<br/>
+         &nbsp;&nbsp;('Quattro Stagioni'),<br/>
+         &nbsp;&nbsp;('Pepperoni');<br/>
+         <br/>
+         <br/>
+         # --- !Downs<br/>
+         <br/>
+         DELETE FROM pizza;
+      </code>
+      <p>
+         We can now test the full flow with persisted data.
+      </p>
+      <code>sbt run</code>
+      <code>curl localhost:9000</code>
+      <p>
+         This should show the extended menu.
+      </p>
+      <code>
+         curl --data "{\"pizza.name\":\"Margherita\"}" \<br/>
+         &nbsp;&nbsp;-H "Content-Type: application/json" \<br/>
+         &nbsp;&nbsp;-v localhost:9000/order/code
+      </code>
+      <p>
+         This should show a redirect to confimation page.
+         And if we <em>GET</em> that it should show we ordered a <em>Margherita</em>.
+      </p>
+      <code>curl localhost:9000/order/1</code>
+      <p>
+         Build a Docker image of our finished Pizzeria service.
+         And tag it.
+      </p>
+      <code>
+         docker build -t pizzeria .;<br/>
+         docker tag pizzeria:latest pizzeria:1.0
+      </code>
+   </div>
+
+   <div class="paragraph">
       <a name="docker-cloud"></a>
       <h3>Docker Cloud</h3>
       <p>
@@ -1019,12 +1360,6 @@
          <p>
          </p>
       </div>
-
-   </div>
-
-   <div class="paragraph">
-      <a name="persist"></a>
-      <h3>Persist</h3>
 
    </div>
 
