@@ -1,0 +1,12 @@
+#starboard ul li ul { display: block; }
+footer { margin-top: 2em; }
+li { font-size: 0.9em; }
+code { font-size: 0.9em; }
+code .tiny-code { font-size: 0.8em; }
+#cargo .paragraph { margin: 3em 0.5em 0.5em 0.5em; }
+#cargo h3 + .paragraph { margin: 0.5em  }
+#cargo > .paragraph {  }
+#cargo .paragraph .paragraph { margin-left: 1em; }
+code.app { background-color: #005020; }
+code.wide { max-width: 55em; min-width: 50em; }
+code.file { padding-bottom: 1.5em; }

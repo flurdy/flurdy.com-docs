@@ -11,30 +11,23 @@
    <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
    <link href="../git/docs.css" rel="stylesheet" type="text/css" />
    <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
-   <!-- <link href="docs.css" rel="stylesheet" type="text/css" /> -->
+   <link href="docs.css" rel="stylesheet" type="text/css" />
    <style>
-      #starboard ul li ul { display: block; }
-      footer { margin-top: 2em; }
-      li { font-size: 0.9em; }
-      code { font-size: 0.9em; }
-      code .tiny-code { font-size: 0.8em; }
-      #cargo .paragraph { margin: 3em 0.5em 0.5em 0.5em; }
-      #cargo h3 + .paragraph { margin: 0.5em  }
-      #cargo > .paragraph {  }
-      #cargo .paragraph .paragraph { margin-left: 1em; }
-      code.app { background-color: #005020; }
-      code.wide { max-width: 55em; min-width: 50em; }
-      code.file { padding-bottom: 1.5em; }
+
    </style>
    <script type="text/javascript">
      var _gaq = _gaq || [];
      _gaq.push(['_setAccount', 'UA-281408-1']);
      _gaq.push(['_trackPageview']);
 
-     // Include Analytics
-
+     (function() {
+      if(location.host!='localhost'){
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      }
+     })();
    </script>
-	<meta http-equiv="Refresh" content="15; URL=pizza-scala-play-docker-cloud.html">
 </head>
 <body>
 
@@ -72,18 +65,23 @@
          </nav>
          <div id="jib">
             Started: November 2016.
-            Last updated: 24th Nov 2016.
-            <h4>Draft, not yet finished</h4>
+            Last updated: 6th Dec 2016.
          </div>
 
-<!-- Google adsense -->
-
+         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+         <!-- flurdy.com play docker cloud leaderboard -->
+         <ins class="adsbygoogle"
+              style="display:inline-block;width:728px;height:90px"
+              data-ad-client="ca-pub-7805345644641760"
+              data-ad-slot="2454112886"></ins>
+         <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+         </script>
 
         <div id="starboard">
           <nav>
                <h5>Contents</h5>
                <ul>
-                  <!-- <li><a href="#top">Purpose</a></li> -->
                   <li><a href="#dejavue">Deja-Vue</a></li>
                   <li><a href="#environment">Build&nbsp;environment</a></li>
                   <li><a href="#play">Play scaffold</a></li>
@@ -98,10 +96,11 @@
                   </li>
                   <li><a href="#persist">Persist</a></li>
                   <li>
-                     <a href="#docker-cloud">Docker&nbsp;Cloud</a>
+                     <a href="#docker_cloud">Docker&nbsp;Cloud</a>
                      <ul>
-                        <li><a href="#aws">Amazon&nbsp;AWS</a></li>
-                        <li><a href="#google-cloud">Google&nbsp;Cloud</a></li>
+                        <li><a href="#docker_cloud_repository">Repository</a></li>
+                        <li><a href="#docker_cloud_node">Node(s)</a></li>
+                        <li><a href="#docker_cloud_service">Service</a></li>
                      </ul>
                   </li>
                   <li><a href="#alt">Alternatives</a></li>
@@ -412,36 +411,13 @@
          </p>
          <p>
             Create a <em>Dockerfile</em> in the root folder.
+            This will use my <a href="https://github.com/flurdy/Dockerfiles/tree/master/play-framework">my play-framework image</a>,
+            so the default dependencies for <em>Play</em> is already part of the image but not any other dependencies.
          </p>
          <code class="file wide">
-            FROM openjdk:8u111-jdk-alpine<br/>
+            FROM flurdy/play-framework:2.5.10-alpine<br/>
             <br/>
             MAINTAINER Ivar Abrahamsen <@flurdy><br/>
-            <br/>
-            RUN apk update &amp;&amp; apk add bash wget unzip<br/>
-            <br/>
-            RUN mkdir -p /etc/app &amp;&amp; \<br/>
-               &nbsp;&nbsp;mkdir -p /opt/build &amp;&amp; \<br/>
-               &nbsp;&nbsp;mkdir -p $HOME/.sbt/0.13<br/>
-            <br/>
-            ENV AVERSION <em>1.3.12</em><br/>
-            <br/>
-            WORKDIR /opt<br/>
-            <br/>
-            RUN wget -q --show-progress \<br/>
-            &nbsp;&nbsp;<span class="tiny-code">http://downloads.typesafe.com/typesafe-activator/$AVERSION/typesafe-activator-$AVERSION-minimal.zip</span> &amp;&amp; \<br/>
-               &nbsp;&nbsp;unzip -qq typesafe-activator-$AVERSION-minimal.zip &amp;&amp; \<br/>
-               &nbsp;&nbsp;rm -f typesafe-activator-$AVERSION-minimal.zip &amp;&amp; \<br/>
-               &nbsp;&nbsp;mv activator-$AVERSION-minimal activator<br/>
-            <br/>
-            WORKDIR /opt/build<br/>
-            <br/>
-            ADD . /opt/build/<br/>
-            <br/>
-            RUN /opt/activator/bin/activator stage &amp;&amp; \<br/>
-                &nbsp;&nbsp;rm -rf /opt/build<br/>
-            <br/>
-            #### Dependency base ready ####<br/>
             <br/>
             COPY conf /etc/app/<br/>
             <br/>
@@ -465,9 +441,6 @@
             <br/>
             EXPOSE 9000
          </code>
-         <p>
-            (As commented everything above "Dependency base ready" can later be moved into a base image if desired)
-         </p>
       </div>
 
       <div class="paragraph">
@@ -1051,10 +1024,12 @@
             &amp; compose pizzeria howto</a> for an example.
       </p>
       <p>
-         When in production I do recommend using proper database instance(s) outside Docker.
+         When in production it is recommend using proper database instance(s) outside Docker.
          For example clustered <em>PostgreSQL</em>, <a href="aws.amazon.com/rds‎">Amazon RDS</a>,
          <a href="https://cloud.google.com/bigtable/">Google Bigtable</a>, <a href="https://elements.heroku.com/addons/heroku-redis">Redis on Heroku</a>,
          <a href="http://cassandra.apache.org/">Cassandra</a> on <a href="http://mesos.apache.org/">Mesos</a> etc.
+         I am on the fence on this one, I understand why due to Docker's ephemeral nature and historic issue with data persistence,
+         but I do run many databases in containers, especially less ciritical system...
       </p>
       <p>
          For persistance library this Pizzeria uses <a href="https://www.playframework.com/documentation/2.5.x/ScalaAnorm">Anorm</a>.
@@ -1342,25 +1317,144 @@
    </div>
 
    <div class="paragraph">
-      <a name="docker-cloud"></a>
+      <a name="docker_cloud"></a>
       <h3>Docker Cloud</h3>
       <p>
+         <a href="https://cloud.docker.com/">Docker Cloud</a> is a handy way to manage your public docker containers.
+         It enables you to easily build and host your images.
+         It lets you orchestrate and deploy your container stacks.
+         And monitor and scale as appropriate.
+      </p>
+      <p>
+         Docker Cloud does not actually host your actual running containers.
+         Hosting is still done with normal
+         <a href="https://en.wikipedia.org/wiki/Cloud_computing#Infrastructure_as_a_service_.28IaaS.29">IAAS</a> cloud providers.
+         Such as <a href="http://aws.amazon.com">Amazon AWS</a>, etc.
+         Docker Cloud instead manages the containers on these instances for you.
+         It can directly create instances for you on some of the <em>IAAS</em> providers,
+         or you can connect an existing node to Docker Cloud
+         by installing an agent service.
+         You can also spread your containers horizontally across nodes on different <em>IAAS</em> providers.
+      </p>
+      <p>
+         There is a reasonable free tier that lets your experiment and run quite a few containers for free.
+         (As I am <a href="https://en.wikipedia.org/wiki/Grandfather_clause">grand-fathered</a> in as
+         a user of Docker Cloud's predecessor, <a href="https://blog.docker.com/2015/10/docker-acquires-tutum/">Tutum</a> so my free tier is slightly more generous).
+         Combine this with the free tiers at many IAAS providers you can experiment for quite some time totally free.
       </p>
 
       <div class="paragraph">
-         <a name="aws"></a>
-         <h4>Amazon AWS</h4>
+         <h4>Introduction</h4>
          <p>
+            Go to <a href="http://cloud.docker.com">cloud.docker.com</a>, sign up or log in with your <em>Docker id</em> of you already have one.
+            If signing up click on the activation email, and log in.
+         </p>
+         <p>
+            Please follow the excellent <a href="https://docs.docker.com/docker-cloud/getting-started/intro_cloud/">Docker Cloud's own intro to itself</a>.
          </p>
       </div>
 
+      <a name="docker_cloud_repository"></a>
       <div class="paragraph">
-         <a name="google-cloud"></a>
-         <h4>Google Cloud</h4>
+         <h4>Repository</h4>
          <p>
+            We need to store the Docker image of our Pizzeria service, so we need a <a href="https://docs.docker.com/registry/">Docker registry</a>
+            There are many providers, <a href="https://quay.io/">Quay</a>, <a href="https://aws.amazon.com/ecr/">Amazon EC2 Container Registry</a>,
+            <a href="https://cloud.google.com/container-registry/">Google Platform Container Registry</a>, etc.
+            You can even host a registry yourself inside a container.
+            But for our pizzeria we will use the <a href="https://hub.docker.com/">Docker Hub</a>.
          </p>
+         <p>
+            Go to <a href="https://hub.docker.com/">Docker Hub</a>, log in with same id as Docker Cloud if required.
+            Create a new repository for the pizzeria service.
+         </p>
+         <p>
+            Lets push up our local Docker image to the public one you just created.
+         </p>
+         <code>docker push <em>yourUsername</em>/<em>yourRepositoryName</em>:latest</code>
       </div>
 
+      <a name="docker_cloud_node"></a>
+      <div class="paragraph">
+         <h4>Node(s)</h4>
+         <p>
+            Start by <a href="https://docs.docker.com/docker-cloud/getting-started/connect-infra/">integrating your IAAS / cloud service provider</a>.
+            At the time of writing, December 2016, Docker Cloud supports out of the box <em>AWS</em>,
+            <a href="http://www.digitalocean.com">Digital Ocean</a>,
+            <a href="https://azure.microsoft.com">Microsoft Azure</a>,
+            <a href="http://www.softlayer.com">SoftLayer</a> and
+            <a href="https://www.packet.net/">Packet.net</a>.
+            It does not yet support <a href="http://cloud.google.com">Google Cloud</a>  directly.
+         </p>
+         <p>
+            <em>DigitalOcean</em> is the easiest to integrate with.
+            <em>Amazon AWS</em> I would guess is the most popular as many will already have a presence there.
+            I prefer <em>Google Cloud</em> as provider,
+            via the <a href="https://docs.docker.com/docker-cloud/infrastructure/byoh/">Bring Your Own Node</a> feature.
+         </p>
+         <p>
+            <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_node/">Create a node</a> or two.
+            Keep in mind the pizzeria service is a JVM based image so will be memory hungry,
+            and for now compute shy. So the <em>t2.nano</em> and <em>t2.micro</em> instances on AWS will be too small
+            where
+            as a $20 instance on DigitalOcean or a <em>t2.small</em> instance on AWS is a good start, and <em>R4</em> instances better suited later on.
+            For example I mostly use 6.5GB with 1 cpu <a href="https://cloud.google.com/custom-machine-types/">custom instances</a> on Google Cloud to host 4-5 containers per node.
+         </p>
+         <p>
+            <strong>Note unless you are within the free tier on your IAAS, the node choices will cost you money.</strong>
+         </p>
+      </div>
+      <a name="docker_cloud_service"></a>
+      <div class="paragraph">
+         <h4>Service</h4>
+         <p>
+            <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/">Create a service</a>,
+            which is basically your application. There are lots of options you dont need to worry about right now but essentialy:
+         </p>
+         <ul>
+            <li>Specify the docker image and version to use (the latest of the pizzeria repository)</li>
+            <li>Think of a nickname for the service (pizzeria)</li>
+            <li>Set how many containers to scale across (1 for now)</li>
+            <li>Toggle whether to auto deploy updates to the image tag (yes)</li>
+            <li>
+               Decide whether to expose a port as published, and if that is dynamic or static.<br/>
+               (We will publish port 9010 for our pizzeria).
+            </li>
+         </ul>
+      </div>
+      <a name="docker_cloud_deploy"></a>
+      <div class="paragraph">
+         <h4>Deploy</h4>
+         <p>
+            Once the service is configured you press the
+            <a href="https://docs.docker.com/docker-cloud/getting-started/your_first_service/#/create-and-deploy">Create &amp; Deploy</a> button.
+         </p>
+         <p>
+            If that works, then you should be forwarded to the final screen where a summary of the service is shown.
+            Note the <em>Endpoints</em> section, where you shold have a <em>Service</em> and a <em>Container</em> endpoints.
+            The service endpoint should look something like:
+         </p>
+         <code class="output">tcp://pizzeria.12abcd34.svc.dockerapp.io:9010</a></code>
+         <p>
+            The service endpoint is clickable, but change the protocol from <em>tcp</em> to <em>http</em>.
+         </p>
+         <p>
+            Note: If you plan to add SSL to your apps by following my
+            <a href="https://flurdy.com/docs/letsencrypt/nginx.html">Let's Encrypt with Nginx</a>,
+            then this service endpoint is the one you need to proxy to.
+         </p>
+      </div>
+      <a name="docker_cloud_stack"></a>
+      <div class="paragraph">
+         <h4>Stack</h4>
+         <p>
+            <a href="https://docs.docker.com/docker-cloud/getting-started/deploy-app/11_service_stacks/">Stacks</a>
+            are not need in this pizzeria example.
+            But if you were to separate the service into e.g. a back-end, front-end and database,
+            like <a href="http://flurdy.com/docs/docker/docker_compose_machine_swarm_cloud.html">my docker compose based example</a>,
+            then <em>Stacks</em> is where you define the separate services within Docker Cloud.
+         </p>
+      </div>
    </div>
 
    <div class="paragraph">
@@ -1368,31 +1462,92 @@
       <h3>Alternatives</h3>
 
       <div class="paragraph">
-         <a name=""></a>
-         <h4>Spray / Akka http</h4>
+         <a name="spray"></a>
+         <h4>Spray / Akka HTTP</h4>
          <p>
+            <a href="http://spray.io">Spray</a> and its successor <a href="https://github.com/akka/akka-http">Akka HTTP</a>
+            are alternatives to Play.
+            It is a good choice for a service without UI such as the backend in <a href="http://flurdy.com/docs/docker/docker_compose_machine_swarm_cloud.html">my docker compose example</a>.
          </p>
       </div>
 
       <div class="paragraph">
-         <a name=""></a>
+         <a name="heroku"></a>
          <h4>Heroku</h4>
          <p>
+            <a href="http://heroku.com/">Heroku</a> is a <a href="https://en.wikipedia.org/wiki/Platform_as_a_service">PAAS</a>.
+            And is the smoothest and quiest way to deploy a pizzeria service to a cloud/hosting provider.
+            I love Heroku, and run many applications with it, but it is not perfect.
+            They do support a Docker build flow, but mostly you do not use Docker with Heroku.
+            Instead you push your code (via <a href="https://git-scm.com/">Git</a> <em>remote</em>)
+            and use their build flow to generate and host their own containers.
          </p>
       </div>
 
       <div class="paragraph">
-         <a name=""></a>
+         <a name="amazon_ecs"></a>
          <h4>Amazon ECS</h4>
          <p>
+            The <a href="https://aws.amazon.com/ecs/">EC2 Container Service</a>
+            is a full and extensive Docker container service.
          </p>
       </div>
 
       <div class="paragraph">
-         <a name=""></a>
-         <h4>Google Container Enginer </h4>
+         <a name="google_gke"></a>
+         <h4>Google Container Engine</h4>
          <p>
-            Kubernetes
+            The <a href="https://cloud.google.com/container-engine/">Container Engine</a>
+            is an extensive Docker container service.
+            It is a commercial offering that uses <a href="http://kubernetes.io/">Kubernetes</a> clusters.
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name="tectonic"></a>
+         <h4>Tectonic</h4>
+         <p>
+            <a href="https://tectonic.com">Tectonic</a> is a commercial offering by
+            <a href="http://coreos.com">CoreOS</a> that uses
+            <a href="http://kubernetes.io/">Kubernetes</a> clusters.
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name="cloud66"></a>
+         <h4>Cloud 66</h4>
+         <p>
+            <a href="https://cloud66.com">Cloud 66</a> offer Docker management of containers
+            on other IAAS providers.
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name="triton"></a>
+         <h4>Triton</h4>
+         <p>
+            <a href="https://www.joyent.com/triton">Triton</a> by
+            <a href="https://www.joyent.com">Joyent</a> offer containers as a service.
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name="docker_machine"></a>
+         <h4>Docker Machine</h4>
+         <p>
+            At a lower level <a href="https://www.docker.com/products/docker-machine">Docker Machine</a>
+            lets you create instances in cloud providers.
+            You can then manually deploy your containers to it.
+            You can also scale horizontally with <a href="https://www.docker.com/products/docker-swarm">Docker Swarm</a>.
+         </p>
+      </div>
+
+      <div class="paragraph">
+         <a name="docker_aws"></a>
+         <h4>Docker for AWS</h4>
+         <p>
+            A recently annouced product you can also deploy containers directly to AWS with
+            <a href="https://beta.docker.com/docs/aws/">Docker for AWS</a>.
          </p>
       </div>
    </div>
