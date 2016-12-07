@@ -487,6 +487,10 @@
       </code>
 
       <p>
+			Note: There is an example <a href="http://github.com/flurdy/pizzeria">pizzeria project on my Github</a>.
+      </p>
+
+      <p>
          In the project's <em>build.sbt</em> file lets remove some dependencies we won't need in this example (<em>cache, ws, scalatest</em>),
          keeping <em>jdbc</em> as we will need that later.
          And also add a hack with <em>devnull</em> to support docker restarts.
@@ -1050,8 +1054,7 @@
            &nbsp;&nbsp;jdbc<em>,<br/>
            &nbsp;&nbsp;evolutions,<br/>
            &nbsp;&nbsp;"com.h2database" &nbsp;&nbsp;&nbsp;%&nbsp;&nbsp;"h2"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% "1.4.192",<br/>
-           &nbsp;&nbsp;"com.typesafe.play" %% "anorm"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% "2.5.0",<br/>
-           &nbsp;&nbsp;"joda-time" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;&nbsp;"joda-time" % "2.9.4"<br/>
+           &nbsp;&nbsp;"com.typesafe.play" %% "anorm"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% "2.5.0"<br/>
            </em>
          )<br/>
          <br/>
@@ -1343,42 +1346,32 @@
          Combine this with the free tiers at many IAAS providers you can experiment for quite some time totally free.
       </p>
 
-      <div class="paragraph">
-         <h4>Introduction</h4>
-         <p>
-            Go to <a href="http://cloud.docker.com">cloud.docker.com</a>, sign up or log in with your <em>Docker id</em> of you already have one.
-            If signing up click on the activation email, and log in.
-         </p>
-         <p>
-            Please follow the excellent <a href="https://docs.docker.com/docker-cloud/getting-started/intro_cloud/">Docker Cloud's own intro to itself</a>.
-         </p>
-      </div>
-
       <a name="docker_cloud_repository"></a>
       <div class="paragraph">
          <h4>Repository</h4>
          <p>
             We need to store the Docker image of our Pizzeria service, so we need a <a href="https://docs.docker.com/registry/">Docker registry</a>
-            There are many providers, <a href="https://quay.io/">Quay</a>, <a href="https://aws.amazon.com/ecr/">Amazon EC2 Container Registry</a>,
+            There are many providers, <a href="https://quay.io/">Quay.io</a>, <a href="https://aws.amazon.com/ecr/">Amazon EC2 Container Registry</a>,
             <a href="https://cloud.google.com/container-registry/">Google Platform Container Registry</a>, etc.
             You can even host a registry yourself inside a container.
             But for our pizzeria we will use the <a href="https://hub.docker.com/">Docker Hub</a>.
          </p>
          <p>
-            Go to <a href="https://hub.docker.com/">Docker Hub</a>, log in with same id as Docker Cloud if required.
+            Go to <a href="https://hub.docker.com/">Docker Hub</a>, log in with your <em>Docker id</em> or sign up.
             Create a new repository for the pizzeria service.
          </p>
          <p>
             Lets push up our local Docker image to the public one you just created.
          </p>
-         <code>docker push <em>yourUsername</em>/<em>yourRepositoryName</em>:latest</code>
+         <code>docker push <em>yourUsername</em>/<em>pizzeria</em>:latest</code>
       </div>
 
       <a name="docker_cloud_node"></a>
       <div class="paragraph">
          <h4>Node(s)</h4>
          <p>
-            Start by <a href="https://docs.docker.com/docker-cloud/getting-started/connect-infra/">integrating your IAAS / cloud service provider</a>.
+				As part of the excellent <a href="https://docs.docker.com/docker-cloud/getting-started/intro_cloud/">Docker Cloud's own intro to itself</a>
+				we will start by <a href="https://docs.docker.com/docker-cloud/getting-started/connect-infra/">integrating your IAAS / cloud service provider</a>.
             At the time of writing, December 2016, Docker Cloud supports out of the box <em>AWS</em>,
             <a href="http://www.digitalocean.com">Digital Ocean</a>,
             <a href="https://azure.microsoft.com">Microsoft Azure</a>,
@@ -1575,14 +1568,20 @@
       <p>
       </p>
       <ul>
+         <li><a href="http://github.com/flurdy/pizzeria">Pizzeria project</a></li>
          <li><a href="http://www.scala-lang.org">Scala</a>
-            <a href="https://en.wikipedia.org/wiki/Scala_(programming_language)"><sup>wiki</sup></a></li>
-         <li><a href="https://www.playframework.com">Play Framework</a> <a href="https://en.wikipedia.org/wiki/play_framework"><sup>wiki</sup></a></li>
-         <li><a href="https://www.docker.com">Docker</a> <a href="https://en.wikipedia.org/wiki/Docker_(software)"><sup>wiki</sup></a></li>
+					<a href="https://en.wikipedia.org/wiki/Scala_(programming_language)"><sup>wiki</sup></a></li>
+         <li><a href="https://www.playframework.com">Play Framework</a>
+					<a href="https://en.wikipedia.org/wiki/play_framework"><sup>wiki</sup></a></li>
+         <li><a href="https://www.docker.com">Docker</a>
+					<a href="https://en.wikipedia.org/wiki/Docker_(software)"><sup>wiki</sup></a></li>
          <li><a href="http://cloud.docker.com">Docker Cloud</a></li>
-         <li><a href="http://cloud.google.com">Google Cloud</a> <a href="https://en.wikipedia.org/wiki/Google_Cloud_Platform"><sup>wiki</sup></a></li>
-         <li><a href="http://aws.amazon.com">Amazon AWS</a> <a href="https://en.wikipedia.org/wiki/Amazon_Web_Services"><sup>wiki</sup></a></li>
-         <li><a href="http://www.heroku.com">Heroku</a> <a href="https://en.wikipedia.org/wiki/heroku"><sup>wiki</sup></a></li>
+         <li><a href="http://cloud.google.com">Google Cloud</a>
+					<a href="https://en.wikipedia.org/wiki/Google_Cloud_Platform"><sup>wiki</sup></a></li>
+         <li><a href="http://aws.amazon.com">Amazon AWS</a>
+					<a href="https://en.wikipedia.org/wiki/Amazon_Web_Services"><sup>wiki</sup></a></li>
+         <li><a href="http://www.heroku.com">Heroku</a>
+					<a href="https://en.wikipedia.org/wiki/heroku"><sup>wiki</sup></a></li>
    </div>
 
 </div>
