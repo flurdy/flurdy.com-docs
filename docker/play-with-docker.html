@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title></title>
+	<link rel="shortcut icon" href="/favicon.ico">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../play/docs.css" rel="stylesheet" type="text/css" />
+   <!-- <link href="docs.css" rel="stylesheet" type="text/css" /> -->
+   <style>
+      #cargo img#downloading-meme {
+         width: 16em;
+         float: right;
+         margin: 1em;
+      }
+   </style>
+   <meta http-equiv="refresh" content="10;play-with-docker.html"/>
+   <!-- Analytics -->
+</head>
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img
+               src="/images/cc-by-sa-small.png" alt="cc by-sa"
+               title="Creative Commons Attributions-ShareAlike"
+               border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right" alt="flurdy" title="" class="flurdySmall"/></a>
+         </div>
+         <header>
+            <h1>
+               Play with Docker
+            </h1>
+            <h4>
+               Building Docker images of applications
+               that uses the Play &nbsp;Framework.
+            </h4>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: December 2016.
+            Last updated: 11th Dec 2016.
+            <h4>Draft, not yet finished</h4>
+         </div>
+         <div id="starboard">
+            <nav>
+                 <h5>Contents</h5>
+                 <ul>
+                    <li><a href="#"></a></li>
+                    <li>
+                       <a href="#"></a>
+                       <ul>
+                          <li><a href="#"></a></li>
+                       </ul>
+                    </li>
+                    <li><a href="#contact">Feedback</a></li>
+                    <li><a href="#refrences">Refrences</a></li>
+                 </ul>
+             </nav>
+         </div>
+         <div id="cargo">
+
+            <div class="paragraph">
+
+               <p>
+                  Advice on how to build
+                  <a href="https://www.playframework.com">Play Framework</a>
+                  <a href="https://www.docker.com">Docker</a> images.
+                  What are the potential issues,
+                  and suggested solutions and alternatives.
+               </p>
+
+               <div class="paragraph">
+                  <h4>Play Framework</h4>
+                  <p>
+                     What is the <a href="https://www.playframework.com">Play Framework</a>?
+                     Play is an application framework
+                     popular for web applications and
+                     web services.
+                  </p>
+                  <p>
+                     It offers non blocking requests,
+                     and many other innovative features
+                     and sub projects.
+                     The application code can be in either
+                     <a href="https://www.oracle.com/java/index.html">Java</a> or
+                     <a href="https://www.scala-lang.org">Scala</a>.
+                     And it runs on the <a href="https://en.wikipedia.org/wiki/Java_virtual_machine">JVM</a>.
+                  </p>
+               </div>
+
+               <div class="paragraph">
+                  <h4>Docker</h4>
+                  <p>
+                     What is <a href="https://www.docker.com">Docker</a>?
+                     Docker is a virtualisation technology
+                     that create a simple abstraction layer
+                     to run containers for single use applications.
+                  </p>
+                  <p>
+                     An application is <em>dockerised</em>
+                     by a <a href="https://docs.docker.com/engine/reference/builder/">DockerFile</a>.
+                     The <em>DockerFile</em> describes what base image the application is built upon.
+                     E.g. a plain OS image such as <a href="https://hub.docker.com/_/ubuntu/">Ubuntu Linux</a>,
+                     or an image built on top of that with certain framework(s) already installed, e.g.
+                     <a href="https://hub.docker.com/_/node/">Node.js</a>, <a href="https://hub.docker.com/_/django/">Django</a>, etc.
+                     The <em>DockerFile</em> then describes further steps to build and run the application.
+                     Such as what further tools and frameworks to install,
+                     environment variables, what executable to run and ports to expose.
+                  </p>
+               </p>
+            </div>
+         </div>
+
+            <div class="paragraph">
+
+               <h3>The problem</h3>
+
+               <div class="paragraph">
+                  <h4>Downloading the internet</h4>
+                  <p>
+                     Play depends on a set of <a href="http://ant.apache.org/ivy/">Ivy</a> and <a href="https://maven.apache.org/">Maven</a> dependencies.
+                     And the application most likely depends on a further set of dependencies.
+                     And these dependencies have further transient dependencies.
+                  </p>
+                  <img id="downloading-meme" src="downloading.jpg" alt="" />
+                  <p>
+                     These dependencies will all have to downloaded from central repositories.
+                     And you might need beyond 100 dependencies of a few megabytes each,
+                     so the total is often several hundred magabytes.
+                     On a fresh install where you need to download everything
+                     this is what is populary is called <em>downloading the internet</em>.
+                  </p>
+                  <p>
+                     Downloading this on a poor/slow internet connection is when you discover new profanities.
+                  </p>
+                  <p>
+                     Obviously that is inefficient and on a local computer
+                     these dependencies are cached within a <em>~/.m2</em> or <em>~/.ivy2</em> folder.
+                     That way you only download new dependencies which is rare.
+                  </p>
+                  <p>
+                     And at a organisational level you even prevent fresh installs from needing to
+                     download across the internet by using a <a href="https://maven.apache.org/guides/introduction/introduction-to-repositories.html">local repository cache server</a>, such as <a href="https://www.jfrog.com/open-source/#os-arti">Artifactory</a>, <a href="http://www.sonatype.org/nexus/">Nexus</a>, etc.
+                  </p>
+               </div>
+
+               <div class="paragraph">
+
+                  <h4>
+                     Downloading the internet inside a Docker container
+                  </h4>
+                  <p>
+                     But when building a Play application with Docker,
+                     you do not have a pre populated <em>~/ivy2</em> folder.
+                     And if this is a public project you would not hard code in a dependency
+                     on a local maven repository server either.
+                  </p>
+                  <p>
+                     So on each build it will <em>download the internet</em>.
+                  </p>
+                  <p>
+                     Which is like frequently watching paint dry.
+                     And very frustrating when neededing to test a new version if relying it on
+                     for <a href="https://en.wikipedia.org/wiki/Continuous_integration">Continuous Integeration</a>.
+                     It is also costly on network bandwith.
+                  </p>
+                  <p>
+                     This tutorial will discuss the possible solutions and work arounds to this problem.
+                  </p>
+               </div>
+            </div>
+
+            <div class="paragraph">
+
+               <h3>Full</h3>
+
+            </div>
+
+            <div class="paragraph">
+
+               <h3>Pre buildt</h3>
+
+            </div>
+
+            <div class="paragraph">
+
+               <h3>Caching</h3>
+               <h4>Ivy</h4>
+               <h4>repostiory</h4>
+            </div>
+
+            <div class="paragraphs">
+
+               <h3>Base</h3>
+
+            </div>
+
+            <div class="paragraphs">
+
+               <h3>Application base</h3>
+
+            </div>
+
+            <div class="paragraphs">
+
+               <h3>References</h3>
+
+               <ul>
+                  <li><a href="https://www.playframework.com">Play Framework</a></li>
+                  <li><a href="https://www.docker.com/">Docker</a></li>
+                  <li><a href="https://alpinelinux.org/">Alpine Linux</a></li>
+                  <li><a href="https://www.oracle.com/java/index.html">Java</a></li>
+                  <li><a href="https://www.scala-lang.org">Scala</a></li>
+                  <li><a href="https://hub.docker.com/_/java/">Docker Java</a></li>
+                  <li><a href="https://hub.docker.com/r/flurdy/play-framework/">Docker Play by Flurdy</a></li>
+               </ul>
+
+               <p>
+                  I have previously written some tutorials
+                  based on both Play and Docker:
+               </p>
+               <ul>
+                  <li><a href="https://flurdy.com/docs/docker/docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a> (a little outdated)</li>
+                  <li><a href="https://flurdy.com/docs/docker/docker_compose_machine_swarm_cloud.html">Docker with Compose, Machine and Swarm</a> (Play 2.4)</li>
+                  <li><a href="http://flurdy.com/docs/herokuplay/play1.html">Play! + Heroku</a> (Play 1)</li>
+                  <li><a href="http://flurdy.com/docs/herokuplay/play2.html">Play! 2.0 + Scala + Heroku</a> (Play 2)</li>
+                  <li><a href="http://flurdy.com/docs/play/pizza-scala-play-docker-cloud.html">Pizza in the cloud</a> (Play 2.5 &amp; Docker Cloud)</li>
+               </ul>
+            </div>
+
+            <div class="paragraph">
+               <a name="contact"></a>
+               <h3>Feedback</h3>
+               <p>
+                  Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+               </p>
+               <p>
+                  <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+                  <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+               </p>
+               <p>
+                  Otherwise <a href="/contact">contact me</a>.
+                  Especially for things factually incorrect.
+                  Apologies for procrastinated replies.
+               </p>
+            </div>
+
+         </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>
