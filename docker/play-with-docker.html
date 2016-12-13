@@ -16,6 +16,10 @@
          float: right;
          margin: 1em;
       }
+      #cargo code.wide {
+         max-width: 65em;
+      }
+      #starboard{ width: 11em; }
    </style>
    <meta http-equiv="refresh" content="10;play-with-docker.html"/>
    <!-- Analytics -->
@@ -51,22 +55,47 @@
          </nav>
          <div id="jib">
             Started: December 2016.
-            Last updated: 11th Dec 2016.
+            Last updated: 12th Dec 2016.
             <h4>Draft, not yet finished</h4>
          </div>
          <div id="starboard">
             <nav>
                  <h5>Contents</h5>
                  <ul>
-                    <li><a href="#"></a></li>
+                    <li><a href="#problem">The&nbsp;problem</a></li>
+                    <li><a href="#full">Full&nbsp;Play Docker&nbsp;build</a></li>
                     <li>
-                       <a href="#"></a>
+                       <a href="#base-image">Better&nbsp;base&nbsp;image</a>
                        <ul>
-                          <li><a href="#"></a></li>
+                          <li><a href="#base-java">Java base image</a></li>
+                          <li><a href="#base-activator">Activator base image</a></li>
                        </ul>
                     </li>
+                    <li>
+                       <a href="#caching">Caching</a>
+                       <ul>
+                          <li><a href="#caching-folders">Mount Ivy &amp; Maven folders</a></li>
+                          <li><a href="#caching-repository">Local repository</a></li>
+                       </ul>
+                    </li>
+                    <li>
+                       <a href="#pre-populated">Pre-populated Ivy</a>
+                       <ul>
+                          <li><a href="#pre-play-base">Play base image</a></li>
+                          <li><a href="#pre-app-base">Application base image</a></li>
+                       </ul>
+                    </li>
+                    <li>
+                       <a href="#two-step">Two&nbsp;step build</a>
+                       <ul>
+                          <li><a href="#two-step-manual">Manual binary build</a></li>
+                          <li><a href="#two-step-integration">Integration&nbsp;server binary build</a></li>
+                       </ul>
+                    </li>
+                    <li><a href="#environment">Environment configuration</a></li>
+                    <li><a href="#alternatives">Alternatives</a></li>
+                    <li><a href="#references">References</a></li>
                     <li><a href="#contact">Feedback</a></li>
-                    <li><a href="#refrences">Refrences</a></li>
                  </ul>
              </nav>
          </div>
@@ -80,6 +109,7 @@
                   <a href="https://www.docker.com">Docker</a> images.
                   What are the potential issues,
                   and suggested solutions and alternatives.
+                  Is also relevant for any other <a href="https://www.scala-lang.org">Scala</a> based application images.
                </p>
 
                <div class="paragraph">
@@ -96,7 +126,7 @@
                      and sub projects.
                      The application code can be in either
                      <a href="https://www.oracle.com/java/index.html">Java</a> or
-                     <a href="https://www.scala-lang.org">Scala</a>.
+                     <em>Scala</em>.
                      And it runs on the <a href="https://en.wikipedia.org/wiki/Java_virtual_machine">JVM</a>.
                   </p>
                </div>
@@ -124,6 +154,7 @@
             </div>
          </div>
 
+            <a name="problem"></a>
             <div class="paragraph">
 
                <h3>The problem</h3>
@@ -169,7 +200,7 @@
                      on a local maven repository server either.
                   </p>
                   <p>
-                     So on each build it will <em>download the internet</em>.
+                     So on each build it will <em>download the internet</em>. Every time.
                   </p>
                   <p>
                      Which is like frequently watching paint dry.
@@ -183,38 +214,655 @@
                </div>
             </div>
 
+            <a name="full"></a>
             <div class="paragraph">
 
-               <h3>Full</h3>
+               <h3>Full Play Docker build</h3>
+
+               <p>
+                  Ignoring the problem above here is a full <em>Dockerfile</em>,
+                  that will have <em>Java</em> installed, download <em>Activator</em>, and build the application.
+               </p>
+               <code class="file wide">
+                  FROM alpine:3.4<br/>
+                  <br/>
+                  MAINTAINER <em>YOURNAME</em> &lt;<em>EMAIL/HANDLE</em>&gt;<br/>
+                  <br/>
+                  RUN apk update &amp;&amp; apk add bash wget unzip openjdk8<br/>
+                  <br/>
+                  ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin<br/>
+                  ENV ACTIVATOR_VERSION <em>1.3.12</em><br/>
+                  <br/>
+                  RUN mkdir -p /opt/build &amp;&amp; \<br/>
+                     <!-- &nbsp;&nbsp;mkdir -p $HOME/.sbt/0.13 &amp;&amp; \<br/> -->
+                     &nbsp;&nbsp;mkdir -p /etc/app &amp;&amp; \<br/>
+                     &nbsp;&nbsp;mkdir -p /opt/build <br/>
+                  <br/>
+                  WORKDIR /opt<br/>
+                  <br/>
+                  RUN wget -q --show-progress \<br/>
+                     &nbsp;&nbsp;<span class="tiny-code">http://downloads.typesafe.com/typesafe-activator/$ACTIVATOR_VERSION/typesafe-activator-$ACTIVATOR_VERSION-minimal.zip</span> &amp;&amp; \<br/>
+                     &nbsp;&nbsp;unzip -qq typesafe-activator-$ACTIVATOR_VERSION-minimal.zip &amp;&amp; \<br/>
+                     &nbsp;&nbsp;mv activator-$ACTIVATOR_VERSION-minimal activator &amp;&amp; \<br/>
+                     &nbsp;&nbsp;ln -s /opt/activator/bin/activator /usr/local/bin/activator &amp;&amp; \<br/>
+                     &nbsp;&nbsp;rm -f typesafe-activator-$ACTIVATOR_VERSION-minimal.zip<br/>
+                  <br/>
+                  COPY conf /etc/app/<br/>
+                  <br/>
+                  ADD . /opt/build/<br/>
+                  <br/>
+                  WORKDIR /opt/build<br/>
+                  <br/>
+                  RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                     &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+                     &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+                     &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+                     &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+                     &nbsp;&nbsp;rm -rf /opt/build /opt/activator $HOME/.ivy2<br/>
+                  <br/>
+                  WORKDIR /opt/app<br/>
+                  <br/>
+                  ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                  <br/>
+                  EXPOSE 9000
+               </code>
+
+               <div class="paragraph">
+                  <h4>Base image (FROM)</h4>
+                  <p>
+                     This bases the image on <em>alpine:3.4</em> with <a href="https://alpinelinux.org/">Alpine Linux</a> as the OS.
+                     Alpine is a very barebones OS with a small footprint and has become a very popular as a base Docker image.
+                  </p>
+                  <p>
+                     Alternatives base images are:
+                  </p>
+                  <ul>
+                     <li>
+                        OS images:
+                        <ul>
+                           <li><em>ubuntu:16.04</em> from <a href="https://hub.docker.com/_/ubuntu/">Docker Ubuntu</a></li>
+                           <li><em>debian:jessie-slim</em> from <a href="https://hub.docker.com/_/debian/">Docker Debian</a></li>
+                           <li><em>phusion/baseimage:0.9.19</em> from <a href="http://phusion.github.io/baseimage-docker/">Phusion</a>.</li>
+                        </ul>
+                     </li>
+                     <li>
+                        With Java:
+                        <ul>
+                           <li><em>openjdk:8u111-jdk-alpine</em> with <a href="https://en.wikipedia.org/wiki/OpenJDK">OpenJDK</a> 8 preinstalled</li>
+                           <li><em>openjdk:8u111-jdk</em> with <em>Debian Jessie</em> as base OS</li>
+                           <li><em>flurdy/oracle-java8:8u66</em> from <a href="https://hub.docker.com/r/flurdy/oracle-java8/">JDK 8 by Oracle</a></li>
+                           <!-- <li><em>flurdy/oracle-java8:8u111</em> from <a href="https://hub.docker.com/r/flurdy/oracle-java8/">JDK 8 by Oracle</a></li> -->
+                        </ul>
+                     </li>
+                     <li>
+                        With Activator:
+                        <ul>
+                           <li><em>flurdy/activator-mini:1.3.12-alpine</em> with <a href="https://hub.docker.com/r/flurdy/activator-mini/">Activator pre-downloaded</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        With Play:
+                        <ul>
+                           <li>
+                              <em>flurdy/play-framework:2.5.10-alpine</em> from <a href="https://hub.docker.com/r/flurdy/play-framework/">my Docker Play Framework</a>
+                           </li>
+                        </ul>
+                     </li>
+                  </ul>
+               </div>
+
+               <div class="paragraph">
+                  <h4>Download and install Activator</h4>
+                  <p>
+                     The <em>RUN wget ...</em> part downloads <em>Activator</em> and install it.
+                     It removes the zip file to keep the footprint low.
+                     It also does this all in one <a href="https://docs.docker.com/engine/reference/run/">RUN</a> command to keep the changes within one <a href="https://www.ctl.io/developers/blog/post/caching-docker-images/">Docker layer</a>
+                  </p>
+                  <p>
+                     You could include a pre downloaded zip file in your project folder.
+                     But for a public utility Dockerfile to avoid the suspicion of tampering of the zip file,
+                     I recommend the image downloads it from the source.
+                  </p>
+               </div>
+
+               <div class="paragraph">
+
+                  <h4>Application folders</h4>
+                  <ul>
+                     <li><em>/opt/build</em>: The application is built here and then later removed</li>
+                     <li><em>/opt/app</em>: The compiled application is located here</li>
+                     <li><em>/etc/app</em>: The configuration is copied here for ease of overriding</li>
+                     <li><em>/var/log/app</em>: The application's logs</li>
+                  </ul>
+               </div>
+
+               <div class="paragraph">
+
+                  <h4>Executable</h4>
+                  <p>
+                     If you build Play with the <em>stage</em> command then
+                     Play framework creates executables in its <em>target/universal/stage/bin</em> folder.
+                     This Dockerfile renames the non Windows script and moves it to <em>/opt/app/stage/bin/app</em>.
+                  </p>
+                  <p>
+                     Alternatively you can use the <em>dist</em> command, or
+                     <a href="https://github.com/sbt/sbt-assembly">SBT Assembly plugin</a> to create a binary to execute.
+                  </p>
+                  <p>
+                     You can extend the <a href="https://docs.docker.com/engine/reference/builder/#/entrypoint">Entrypoint</a>
+                     to include more configurations.
+                     E.g. an alternative conf file:
+                  </p>
+                  <code class="wide">ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/alternative.conf"]</code>
+               </div>
+
+               <div class="paragraph">
+
+                  <h4>Port</h4>
+                  <p>
+                     The application is available on port <em>9000</em>.
+                     You can map that port to something else wherever you host your container.
+                     Port <em>9999</em> can also be exposed as a debug port.
+                  </p>
+               </div>
+            </div>
+
+            <a name="base-image"></a>
+            <a name="base-java"></a>
+            <div class="paragraph">
+
+               <h3>Better base image</h3>
+
+               <p>
+                  If you built the above image you would have noticed as expected it took forever, if not timed out.
+                  You would have to download all the Docker layers of the <em>Alpine</em> base layer first
+                  (though this will now be cached by the local Docker client).
+                  Then download <em>Java</em>,
+                  then download <em>Activator</em>,
+                  then the core <a href="http://www.scala-sbt.org/">SBT</a> jars,
+                  then the applications dependencies jars
+                  and finally compile it all.
+               </p>
+               <p>
+                  It would save you a lot of time to base your image off a more defined image,
+                  such as the ones mentioned in the <em>Base image</em> paragraph above.
+               </p>
+
+               <div class="paragraph">
+                  <h4>Java base image</h4>
+                  <p>
+                     Instead of the OS only <em>alpine</em> image,
+                     you could use the <em>OpenJDK</em> one.
+                  </p>
+                  <code class="file wide">
+                     FROM openjdk:<em>8u111</em>-jdk<em>-alpine</em><br/>
+                     <br/>
+                     MAINTAINER <em>YOURNAME</em> &lt;<em>EMAIL/HANDLE</em>&gt;<br/>
+                     <br/>
+                     RUN apk update &amp;&amp; apk add bash wget unzip<br/>
+                     <br/>
+                     ENV ACTIVATOR_VERSION <em>1.3.12</em><br/>
+                     <br/>
+                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p /etc/app<br/>
+                     <br/>
+                     WORKDIR /opt<br/>
+                     <br/>
+                     RUN wget -q --show-progress \<br/>
+                        &nbsp;&nbsp;<span class="tiny-code">http://downloads.typesafe.com/typesafe-activator/$ACTIVATOR_VERSION/typesafe-activator-$ACTIVATOR_VERSION-minimal.zip</span> &amp;&amp; \<br/>
+                        &nbsp;&nbsp;unzip -qq typesafe-activator-$ACTIVATOR_VERSION-minimal.zip &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv activator-$ACTIVATOR_VERSION-minimal activator &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/activator/bin/activator /usr/local/bin/activator &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -f typesafe-activator-$ACTIVATOR_VERSION-minimal.zip<br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     ADD . /opt/build/<br/>
+                     <br/>
+                     WORKDIR /opt/build<br/>
+                     <br/>
+                     RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build /opt/activator $HOME/.ivy2<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+               </div>
+
+               <a name="base-activator"></a>
+               <div class="paragraph">
+                  <h4>Activator base image</h4>
+                  <p>
+                     If you trust <a href="https://github.com/flurdy/Dockerfiles/blob/master/activator/mini/alpine/Dockerfile">my Activator image</a> you could save a further step by using it as a base image:
+                  </p>
+                  <code class="file wide">
+                     FROM flurdy/activator-mini:<em>1.3.12-alpine</em><br/>
+                     <br/>
+                     MAINTAINER <em>YOURNAME</em> &lt;<em>EMAIL/HANDLE</em>&gt;<br/>
+                     <br/>
+                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p /etc/app<br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     ADD . /opt/build/<br/>
+                     <br/>
+                     WORKDIR /opt/build<br/>
+                     <br/>
+                     RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build /opt/activator $HOME/.ivy2<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+               </div>
 
             </div>
 
-            <div class="paragraph">
-
-               <h3>Pre buildt</h3>
-
-            </div>
-
+            <a name="caching"></a>
+            <a name="caching-folders"></a>
             <div class="paragraph">
 
                <h3>Caching</h3>
-               <h4>Ivy</h4>
-               <h4>repostiory</h4>
+
+               <p>
+                  With the <em>Activator</em> base image you have removed the need to download Java and Activator.
+                  But still will need to <em>download the internet</em> for all the <em>Ivy/Maven</em> dependencies.
+               </p>
+               <div class="paragraph">
+                  <h4>Mount Ivy &amp; Maven folders</h4>
+                  <p>
+                     <em>SBT</em> will try to download all dependencies that it can not find
+                     in the local <em>~/ivy2</em> or <em>~/.m2</em> folders.
+                     If the binaries needed are present somehow in these folders you avoid <em>downloading the internet</em>.
+                  </p>
+                  <p>
+                     I have <a href="http://blog.flurdy.com/2014/11/dont-download-internet-share-maven-ivy-docker.html">with mixed success accomplished this</a>
+                     by mounting my local <em>~/ivy2</em> or <em>~/.m2</em> folders into Docker.
+                  </p>
+                  <p>
+                     It is not as simple as using the <a href="https://docs.docker.com/engine/tutorials/dockervolumes/">Volume</a> parameter for Docker containers
+                     as it is the special Docker builder container that needs the folders present.
+                     Doing this varies on a <em>Linux</em> box,
+                     inside <a href="https://www.vagrantup.com/">Vagrant</a>
+                     and on a <em>macOS/OSX</em> machine with either <a href="http://boot2docker.io/">boot2docker</a>
+                     or <a href="https://github.com/mist64/xhyve/">xhyve</a>.
+                  </p>
+                  <p>
+                     The problem is that you would have to do this on all clients that may build this image.
+                     So I do not recommend it.
+                  </p>
+                  <p>
+                     I think some <a href="https://en.wikipedia.org/wiki/Continuous_integration">Continuous Integration</a> providers
+                     such as <a href="https://circleci.com/">CircleCI</a> does this caching somehow in a better way.
+                  </p>
+               </div>
+               <a name="caching-repository"></a>
+               <div class="paragraph">
+                  <h4>Local repository</h4>
+                  <p>
+                     A better way is to tell SBT to first look in other locations before
+                     going across the internet to find dependencies.
+                     Such as a local maven repository server.
+                  </p>
+                  <p>
+                     You can hard code in your projects <em>build.sbt</em> file the location of proxy repository resolvers:
+                  </p>
+                  <code class="wide">resolvers += "My Special Repository" at "http://repository.example.com/path/"</code>
+                  <p>
+                     But that is not very flexible so the prefered option is a special <em>~/.sbt/repositories</em> file.
+                     The contents of this file depends on your set up.
+                     See <a href="http://www.scala-sbt.org/0.13/docs/Proxy-Repositories.html">the reference for examples.</a>
+                  </p>
+                  <p>
+                     Create such a file in your projects <em>conf</em> folder. Then your Dockerfile may be altered like this:
+                  </p>
+                  <code class="file wide">
+                     FROM flurdy/activator-mini:1.3.12-alpine<br/>
+                     <br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
+                     <br/>
+                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p /etc/app <em>&amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p $HOME/.sbt</em><br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     <em>COPY conf/repositories /root/.sbt/</em><br/>
+                     <br/>
+                     ADD . /opt/build/<br/>
+                     <br/>
+                     WORKDIR /opt/build<br/>
+                     <br/>
+                     RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build /opt/activator $HOME/.ivy2<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+                  <p>
+                     Make sure the "<em>COPY conf/repositories /root/.sbt/</em>" line is before any Activator/SBT <em>RUN</em> commands.
+                  </p>
+               </div>
             </div>
 
-            <div class="paragraphs">
+            <a name="pre-populated"></a>
+            <a name="pre-play-base"></a>
+            <div class="paragraph">
 
-               <h3>Base</h3>
+               <h3>Pre-populated Ivy</h3>
+               <p>
+                  An better caching solution is to make sure the real <em>Ivy</em> folder
+                  is populated already from a Play build.
+                  That way the dependencies will already be cached locally for the real application build.
+               </p>
+
+               <div class="paragraph">
+                  <h4>Play base image</h4>
+                  <p>
+                     If you base your application of my <a href="">Play Framework</a> image,
+                     the dependencies for a plain Play application will be present.
+                     Which can be 80-100% of the dependencies you need.
+                     Your Dockerfile might look like:
+                  </p>
+                  <code class="file wide">
+                     FROM <em>flurdy/play-framework:2.5.10-alpine</em><br/>
+                     <br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
+                     <br/>
+                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p /etc/app<br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     ADD . /opt/build/<br/>
+                     <br/>
+                     WORKDIR /opt/build<br/>
+                     <br/>
+                     RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build /opt/activator $HOME/.ivy2<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+                  <p>
+                     If you don't want to use the image above you can create your own Play base image if you include the steps.
+                  </p>
+                  <code class="file wide">
+                     RUN /opt/activator/bin/activator new playframework-base play-scala &amp;&amp; \<br/>
+                        &nbsp;&nbsp;cd playframework-base &amp;&amp; \<br/>
+                        &nbsp;&nbsp;/opt/activator/bin/activator stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build<br/>
+                  </code>
+                  <p>
+                     Which creates a plain <em>play-scala</em> application, builds it,
+                     downloads all dependencies for Play into <em>~/.ivy2</em>,
+                     then deletes the application.
+                  </p>
+               </div>
+
+               <a name="pre-app-base"></a>
+               <div class="paragraph">
+                  <h4>Application base image</h4>
+                  <p>
+                     If your application includes a lot of further dependencies,
+                     you might want to split the Dockerfile into a "application base"
+                     and a "application-main" image.
+                     That way the <em>base</em> is only built when framework or dependencies change,
+                     whilst the frequent code changes are only causing the <em>main</em> image to be built.
+                     Which should be a lot quicker.
+                  </p>
+                  <p>
+                     Your <em>base</em> Dockerfile which might be located in sub folder of the project.
+                     It needs a <em>build.sbt</em> file which matches the projects, at least for the dependencies.
+                     The <em>base</em> Dockerfile might look something like this:
+                  </p>
+                  <code class="file wide">
+                     FROM flurdy/play-framework:2.5.10-alpine<br/>
+                     <br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
+                     <br/>
+                     RUN mkdir -p /opt/build<br/>
+                     <br/>
+                     ADD . /opt/build/<br/>
+                     <br/>
+                     WORKDIR /opt/build<br/>
+                     <br/>
+                     RUN /opt/activator/bin/activator new application-base play-scala &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv -f build.sbt application-base/build.sbt &amp;&amp; \<br/>
+                        &nbsp;&nbsp;cd application-base &amp;&amp; \<br/>
+                        &nbsp;&nbsp;/opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build<br/>
+                  </code>
+                  <p>
+                     You may build and tag this as e.g.: <em>yourorg/my-application-base</em>.
+                     If many applications use the same dependencies this base image could be shared across these.
+                     The <em>main</em> Dockerfile might look something like:
+                  </p>
+                  <code class="file wide">
+                     FROM <em>yourorg/my-application-base:latest</em><br/>
+                     <br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     ADD . /opt/build/<br/>
+                     <br/>
+                     WORKDIR /opt/build<br/>
+                     <br/>
+                     RUN /opt/activator/bin/activator clean stage &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -f target/universal/stage/bin/*.bat &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal/stage/bin/* target/universal/stage/bin/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv target/universal /opt/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;rm -rf /opt/build /opt/activator $HOME/.ivy2<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+                  <p>
+                     This should now no longer download anything.
+                     As long as no dependencies are <em>snapshots</em>
+                     or different versions from the base image.
+                     It should only compile the application binary.
+                  </p>
+               </div>
 
             </div>
 
-            <div class="paragraphs">
 
-               <h3>Application base</h3>
+            <a name="two-step"></a>
+            <a name="two-step-manual"></a>
+            <div class="paragraph">
 
+               <h3>Two step build</h3>
+               <p>
+                  Another way to avoid <em>downloading the internet</em> on each Docker build,
+                  is to build the JAR binary outside of Docker.
+               </p>
+
+               <div class="paragraph">
+
+                  <h4>Manual binary build</h4>
+                  <p>
+                     You can build the JAR manually with e.g.:
+                  </p>
+                  <code>sbt stage</code>
+                  <p>
+                     Then a Dockerfile like this:
+                  </p>
+                  <code class="file wide">
+                     FROM openjdk:8u111-jdk-alpine<br/>
+                     <br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
+                     <br/>
+                     RUN apk update &amp;&amp; apk add bash<br/>
+                     <br/>
+                     RUN mkdir -p /etc/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p /opt/app<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     ADD target/universal /opt/app/<br/>
+                     <br/>
+                     RUN rm -f stage/bin/*.bat &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv stage/bin/* stage/bin/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;ln -s /opt/app/stage/logs /var/log/app<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+                  <p>
+                     This is a much simpler Dockerfile.
+                     But is also much more fragile build as it depends on people
+                     and integration servers
+                     having pre-built the binary.
+                  </p>
+               </div>
+
+               <a name="two-step-integration"></a>
+               <div class="paragraph">
+                  <h4>Integration server binary build</h4>
+                  <p>
+                     Most organisations will already be practicing the <a href="http://blog.arungupta.me/build-binaries-only-once-continuous-deployment/">one-binary</a>
+                     principle of building the JAR with continuous delivery processes.
+                     The project binary is built on a continuous ingegration server and
+                     uploaded to a Maven artifact repository.
+                     To include that as part of the Docker build the Dockerfile might look like this:
+                  </p>
+                  <code class="file wide">
+                     FROM openjdk:8u111-jdk-alpine<br/>
+                     <br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
+                     <br/>
+                     ENV ARTREPOSITORY <em>http://example.com/artifactory/libs-release-local</em><br/>
+                     ENV ARTNAME    <em>myapplication</em><br/>
+                     ENV ARTPATH    <em>com/example/$ARTNAME</em><br/>
+                     ENV ARTVERSION <em>1.0-SNAPSHOT</em><br/>
+                     ENV ARTURL     <em>$ARTREPOSITORY/$ARTPATH/$ARTVERSION/$ARTNAME-$ARTVERSION.jar</em><br/>
+                     <br/>
+                     RUN mkdir -p /etc/app &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mkdir -p /opt/app<br/>
+                     <br/>
+                     WORKDIR /opt/app<br/>
+                     <br/>
+                     COPY conf /etc/app/<br/>
+                     <br/>
+                     <em>ADD bin /opt/app/</em><br/>
+                     <br/>
+                     <em>RUN wget -q --show-progress $ARTURL &amp;&amp; \<br/>
+                        &nbsp;&nbsp;mv $ARTNAME.jar /opt/app/</em><br/>
+                     <br/>
+                     ENTRYPOINT ["<em>/opt/app/bin/start.sh</em>"]<br/>
+                     <br/>
+                     EXPOSE 9000
+                  </code>
+                  <p>
+                     Though many new projects are rethinking the process and
+                     move the <em>one-binary</em> principle
+                     from one JAR to one Docker image to avoid a two stage build process for each commit
+                     amongs other things.
+                  </p>
+
+               </div>
             </div>
 
-            <div class="paragraphs">
+            <a name="environment"></a>
+            <div class="paragraph">
+
+               <h3>Environment configuration</h3>
+
+               <p>
+                  To specify configurations and secrets for the Docker image you have a few options.
+               </p>
+               <ul>
+                  <li>
+                     Run time overrides:
+                     <ul>
+                        <li>
+                           conf/<em>some-environment</em>.conf:
+                           You tell Docker to run the file with "<em>-Dconfig.file=conf/some-environment.conf</em>".
+                           You can specify a <a href="https://www.playframework.com/documentation/2.5.x/ProductionConfiguration">seperate configuration file</a> for each environment.
+                           Then either include this as part of the project source code,
+                           or as a mounted Docker volume.
+                           Often includes a <em>include application.conf</em> inheritance.
+                           Usefull of several properties change per environment.
+                        </li>
+                        <li>
+                           Docker environment variables.
+                           E.g. <em>MY-PROPERTY=some-value</em>.
+                           Then inside the <em>application.conf</em>:
+                           <code class="file">
+                              my-property=<em>some-default-value</em><br/>
+                              my-property=<em>${MY_PROPERTY}</em>
+                           </code>
+                        </li>
+                     </ul>
+                  </li>
+                  <li>
+                     Alternatively you can bake different Docker images per environment.
+                     Include an <em>ARG</em> command in your Dockerfile:
+                     <code class="file wide">
+                        ARG targetenv<br/>
+                        <br/>
+                        RUN mv /etc/app/${targetenv:-docker}.conf /etc/app/active.conf<br/>
+                        <br/>
+                        ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/active.conf"]
+                     </code>
+                  </li>
+               </ul>
+            </div>
+
+            <a name="alternatives"></a>
+            <div class="paragraph">
+
+               <h3>Alternatives</h3>
+
+               <p>
+                  Instead of these Play &amp; Docker configurations you might consider:
+               </p>
+               <ul>
+                  <li><a href="https://github.com/sbt/sbt-native-packager">SBT Native Packager</a></li>
+                  <li><a href="https://github.com/marcuslonnberg/sbt-docker">SBT-Docker</a></li>
+               </ul>
+            </div>
+
+            <a name="references"></a>
+            <div class="paragraph">
 
                <h3>References</h3>
 
@@ -229,8 +877,8 @@
                </ul>
 
                <p>
-                  I have previously written some tutorials
-                  based on both Play and Docker:
+                  I have previously written some related tutorials
+                  based on Play, Scala and/or Docker:
                </p>
                <ul>
                   <li><a href="https://flurdy.com/docs/docker/docker_osx_ubuntu.html">Docker with OSX and Ubuntu</a> (a little outdated)</li>
@@ -238,9 +886,11 @@
                   <li><a href="http://flurdy.com/docs/herokuplay/play1.html">Play! + Heroku</a> (Play 1)</li>
                   <li><a href="http://flurdy.com/docs/herokuplay/play2.html">Play! 2.0 + Scala + Heroku</a> (Play 2)</li>
                   <li><a href="http://flurdy.com/docs/play/pizza-scala-play-docker-cloud.html">Pizza in the cloud</a> (Play 2.5 &amp; Docker Cloud)</li>
+                  <li><a href="http://flurdy.com/docs/scalainit/startscala.html">Start and stop a Scala application in production</a></li>
                </ul>
             </div>
 
+            <a name="contact"></a>
             <div class="paragraph">
                <a name="contact"></a>
                <h3>Feedback</h3>
