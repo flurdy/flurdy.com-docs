@@ -264,10 +264,7 @@
                   ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin<br/>
                   ENV ACTIVATOR_VERSION <em>1.3.12</em><br/>
                   <br/>
-                  RUN mkdir -p /opt/build &amp;&amp; \<br/>
-                     <!-- &nbsp;&nbsp;mkdir -p $HOME/.sbt/0.13 &amp;&amp; \<br/> -->
-                     &nbsp;&nbsp;mkdir -p /etc/app &amp;&amp; \<br/>
-                     &nbsp;&nbsp;mkdir -p /opt/build <br/>
+                  RUN mkdir -p /opt/build /etc/app<br/>
                   <br/>
                   WORKDIR /opt<br/>
                   <br/>
@@ -385,7 +382,7 @@
                </p>
                <p>
                   It would save you a lot of time to base your image off a more defined base image.
-                  Alternatives base images are:
+                  Alternative base images are:
                </p>
                <ul>
                   <li>
@@ -437,8 +434,7 @@
                      <br/>
                      ENV ACTIVATOR_VERSION <em>1.3.12</em><br/>
                      <br/>
-                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p /etc/app<br/>
+                     RUN mkdir -p /opt/build /etc/app<br/>
                      <br/>
                      WORKDIR /opt<br/>
                      <br/>
@@ -481,8 +477,7 @@
                      <br/>
                      MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
-                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p /etc/app<br/>
+                     RUN mkdir -p /opt/build /etc/app<br/>
                      <br/>
                      COPY conf /etc/app/<br/>
                      <br/>
@@ -564,7 +559,7 @@
                      But that is not very flexible so the prefered option is a special <em>~/.sbt/repositories</em> file.
                      The contents of this file depends on your set up.
                      See <a href="http://www.scala-sbt.org/0.13/docs/Proxy-Repositories.html">the reference for examples</a>.
-                     Below we have enabled local <em>Ivy</em> foldes and proxy server called "<em>special-repository</em>",
+                     Below we have enabled local <em>Ivy</em> folders and proxy server called "<em>special-repository</em>",
                      and commented out some other options.
                      (Apologies about the small font, but the Ivy patterns are really stupidly long).
                   </p>
@@ -589,9 +584,7 @@
                      <br/>
                      MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
-                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p /etc/app <em>&amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p $HOME/.sbt</em><br/>
+                     RUN mkdir -p /opt/build /etc/app <em>$HOME/.sbt</em><br/>
                      <br/>
                      COPY conf /etc/app/<br/>
                      <br/>
@@ -634,7 +627,7 @@
                <div class="paragraph">
                   <h4>Play base image</h4>
                   <p>
-                     If you base your application of my <a href="">Play Framework</a> image,
+                     If you base your application on my <a href="https://hub.docker.com/r/flurdy/play-framework/">Play Framework</a> image,
                      the dependencies for a plain Play application will be present.
                      Which can be 80-100% of the dependencies you need.
                      Your Dockerfile might look like:
@@ -644,8 +637,7 @@
                      <br/>
                      MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
-                     RUN mkdir -p /opt/build &amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p /etc/app<br/>
+                     RUN mkdir -p /opt/build /etc/app<br/>
                      <br/>
                      COPY conf /etc/app/<br/>
                      <br/>
@@ -725,6 +717,8 @@
                      <br/>
                      MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
+                     RUN mkdir -p /etc/app /opt/app<br/>
+                     <br/>
                      COPY conf /etc/app/<br/>
                      <br/>
                      ADD . /opt/build/<br/>
@@ -782,8 +776,7 @@
                      <br/>
                      RUN apk update &amp;&amp; apk add bash<br/>
                      <br/>
-                     RUN mkdir -p /etc/app &amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p /opt/app<br/>
+                     RUN mkdir -p /etc/app /opt/app<br/>
                      <br/>
                      WORKDIR /opt/app<br/>
                      <br/>
@@ -828,8 +821,7 @@
                      ENV ARTVERSION <em>1.0-SNAPSHOT</em><br/>
                      ENV ARTURL     <em>$ARTREPOSITORY/$ARTPATH/$ARTVERSION/$ARTNAME-$ARTVERSION.jar</em><br/>
                      <br/>
-                     RUN mkdir -p /etc/app &amp;&amp; \<br/>
-                        &nbsp;&nbsp;mkdir -p /opt/app<br/>
+                     RUN mkdir -p /etc/app /opt/app<br/>
                      <br/>
                      WORKDIR /opt/app<br/>
                      <br/>
@@ -845,11 +837,6 @@
                      EXPOSE 9000
                   </code>
                   <p>
-                     Though many new projects are rethinking the process and
-                     move the <em>one-binary</em> principle
-                     from one JAR to one Docker image to avoid a two stage build process for each commit.
-                  </p>
-                  <p>
                      The Dockerfile can be made smarter by querying your artifact repository for the latest
                      version dynamically.
                   </p>
@@ -857,6 +844,11 @@
                      The <em>start.sh</em> file needs to call Java with the fat jar as classpath,
                      alternatively with some options and then the start class of the application.
                      (<a href="https://github.com/flurdy/docker-compose-machine-swarm-cloud-example/blob/master/service/src/main/resources/start.sh">An example for a spray app</a>).
+                  </p>
+                  <p>
+                     Though many new projects are rethinking this process and
+                     move the <em>one-binary</em> principle
+                     from one JAR to one Docker image to avoid a two stage build process for each commit.
                   </p>
 
                </div>
@@ -894,7 +886,7 @@
                   </p>
                   <p>
                      If you find all the application's Docker containers override with the same config file,
-                     then just modify the Dockerfile:
+                     then just modify the Dockerfile's <em>Entrypoint</em>:
                   </p>
                   <code class="file wide">
                      ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/docker.conf"]
@@ -916,7 +908,7 @@
                      myproperty=<em>some-default-value</em><br/>
                      myproperty=<em>${MYPROPERTY}</em><br/>
                      otherproperty=<em>some-other-default-value</em><br/>
-                     myotherproperty=<em>${OTHERPROPERTY}</em>
+                     otherproperty=<em>${OTHERPROPERTY}</em>
                   </code>
                </div>
 
