@@ -199,9 +199,9 @@
                   <p>
                      These dependencies will all have to downloaded from central repositories.
                      And you might need beyond 100 dependencies of a few megabytes each,
-                     so the total is often several hundred magabytes.
+                     so the total is often several hundred megabytes.
                      On a fresh install where you need to download everything
-                     this is what is populary is called <em>downloading the internet</em>.
+                     this is what is popularly is called <em>downloading the internet</em>.
                   </p>
                   <img id="downloading-meme" src="downloading.jpg" alt="" />
                   <p>
@@ -235,9 +235,9 @@
                   </p>
                   <p>
                      Which is like frequently watching paint dry.
-                     And very frustrating when neededing to test a new version if relying it on
-                     for <a href="https://en.wikipedia.org/wiki/Continuous_integration">Continuous Integeration</a>.
-                     It is also costly on network bandwith.
+                     And very frustrating when needing to test a new version if relying it on
+                     for <a href="https://en.wikipedia.org/wiki/Continuous_integration">Continuous Integration</a>.
+                     It is also costly on network bandwidth.
                   </p>
                   <p>
                      This tutorial will discuss the possible solutions and work arounds to this problem.
@@ -347,7 +347,7 @@
                   <p>
                      You can extend the <a href="https://docs.docker.com/engine/reference/builder/#/entrypoint">Entrypoint</a>
                      to include more configurations.
-                     E.g. an alternative conf file:
+                     E.g. an alternative configuration file:
                   </p>
                   <code class="wide">ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/alternative.conf"]</code>
                </div>
@@ -500,7 +500,7 @@
                   </code>
                   <p>
                      We use the <em>minimal</em> version of Activator.
-                     The <em>dist</em> version would mean a lot of unneccessary bloat in our Docker layer.
+                     The <em>dist</em> version would mean a lot of unnecessary bloat in our Docker layer.
                   </p>
                </div>
             </div>
@@ -892,7 +892,7 @@
                      ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/docker.conf"]
                   </code>
                   <p>
-                     Individual properties can also be overriden. Either via <em>-DTHISPROPERTY=thisvalue</em>
+                     Individual properties can also be overridden. Either via <em>-DTHISPROPERTY=thisvalue</em>
                      or even better as a environment variable:
                   </p>
                   <code class="wide">
@@ -940,7 +940,7 @@
                <h3>Alternatives</h3>
 
                <p>
-                  Instead of thios document's Play &amp; Docker configurations you might consider:
+                  Instead of this document's Play &amp; Docker configurations you might consider:
                </p>
                <ul>
                   <li><a href="https://github.com/sbt/sbt-native-packager">SBT Native Packager</a></li>
