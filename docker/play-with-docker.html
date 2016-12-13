@@ -305,42 +305,6 @@
                      This bases the image on <em>alpine:3.4</em> with <a href="https://alpinelinux.org/">Alpine Linux</a> as the OS.
                      Alpine is a very barebones OS with a small footprint and has become a very popular as a base Docker image.
                   </p>
-                  <p>
-                     Alternatives base images are:
-                  </p>
-                  <ul>
-                     <li>
-                        OS images:
-                        <ul>
-                           <li><em>ubuntu:16.04</em> from <a href="https://hub.docker.com/_/ubuntu/">Docker Ubuntu</a></li>
-                           <li><em>debian:jessie-slim</em> from <a href="https://hub.docker.com/_/debian/">Docker Debian</a></li>
-                           <li><em>phusion/baseimage:0.9.19</em> from <a href="http://phusion.github.io/baseimage-docker/">Phusion</a>.</li>
-                        </ul>
-                     </li>
-                     <li>
-                        With Java:
-                        <ul>
-                           <li><em>openjdk:8u111-jdk-alpine</em> with <a href="https://en.wikipedia.org/wiki/OpenJDK">OpenJDK</a> 8 preinstalled</li>
-                           <li><em>openjdk:8u111-jdk</em> with <em>Debian Jessie</em> as base OS</li>
-                           <li><em>flurdy/oracle-java8:8u66</em> from <a href="https://hub.docker.com/r/flurdy/oracle-java8/">JDK 8 by Oracle</a></li>
-                           <!-- <li><em>flurdy/oracle-java8:8u111</em> from <a href="https://hub.docker.com/r/flurdy/oracle-java8/">JDK 8 by Oracle</a></li> -->
-                        </ul>
-                     </li>
-                     <li>
-                        With Activator:
-                        <ul>
-                           <li><em>flurdy/activator-mini:1.3.12-alpine</em> with <a href="https://hub.docker.com/r/flurdy/activator-mini/">Activator pre-downloaded</a></li>
-                        </ul>
-                     </li>
-                     <li>
-                        With Play:
-                        <ul>
-                           <li>
-                              <em>flurdy/play-framework:2.5.10-alpine</em> from <a href="https://hub.docker.com/r/flurdy/play-framework/">my Docker Play Framework</a>
-                           </li>
-                        </ul>
-                     </li>
-                  </ul>
                </div>
 
                <a name="full-activator"></a>
@@ -420,9 +384,43 @@
                   and finally compile it all.
                </p>
                <p>
-                  It would save you a lot of time to base your image off a more defined image,
-                  such as the ones mentioned in the <em>Base image</em> paragraph above.
+                  It would save you a lot of time to base your image off a more defined base image.
+                  Alternatives base images are:
                </p>
+               <ul>
+                  <li>
+                     OS images:
+                     <ul>
+                        <li><em>ubuntu:16.04</em> from <a href="https://hub.docker.com/_/ubuntu/">Docker Ubuntu</a></li>
+                        <li><em>debian:jessie-slim</em> from <a href="https://hub.docker.com/_/debian/">Docker Debian</a></li>
+                        <li><em>phusion/baseimage:0.9.19</em> from <a href="http://phusion.github.io/baseimage-docker/">Phusion</a>.</li>
+                     </ul>
+                  </li>
+                  <li>
+                     With Java:
+                     <ul>
+                        <li><em>openjdk:8u111-jdk-alpine</em> with <a href="https://en.wikipedia.org/wiki/OpenJDK">OpenJDK</a> 8 preinstalled</li>
+                        <li><em>openjdk:8u111-jdk</em> with <em>Debian Jessie</em> as base OS</li>
+                        <li><em>flurdy/oracle-java8:8u66</em> from <a href="https://hub.docker.com/r/flurdy/oracle-java8/">JDK 8 by Oracle</a></li>
+                        <!-- <li><em>flurdy/oracle-java8:8u111</em> from <a href="https://hub.docker.com/r/flurdy/oracle-java8/">JDK 8 by Oracle</a></li> -->
+                     </ul>
+                  </li>
+                  <li>
+                     With Activator:
+                     <ul>
+                        <li><em>flurdy/activator:1.3.12-alpine</em> with <a href="https://hub.docker.com/r/flurdy/activator/">Activator pre-downloaded</a></li>
+                        <li><em>flurdy/activator-mini:1.3.12-alpine</em> with <a href="https://hub.docker.com/r/flurdy/activator-mini/">Activator minimal pre-downloaded</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     With Play:
+                     <ul>
+                        <li>
+                           <em>flurdy/play-framework:2.5.10-alpine</em> from <a href="https://hub.docker.com/r/flurdy/play-framework/">my Docker Play Framework</a>
+                        </li>
+                     </ul>
+                  </li>
+               </ul>
 
                <div class="paragraph">
                   <h4>Java base image</h4>
