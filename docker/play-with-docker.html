@@ -5,24 +5,21 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
    <link href="../android/docs.css" rel="stylesheet" type="text/css" />
-   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
    <link href="../git/docs.css" rel="stylesheet" type="text/css" />
    <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
    <link href="../play/docs.css" rel="stylesheet" type="text/css" />
-   <!-- <link href="docs.css" rel="stylesheet" type="text/css" /> -->
-   <style>
-      #cargo img#downloading-meme {
-         width: 16em;
-         float: right;
-         margin: 1em;
-      }
-      #cargo code.wide {
-         max-width: 65em;
-      }
-      #starboard{ width: 11em; }
-   </style>
-   <meta http-equiv="refresh" content="10;play-with-docker.html"/>
-   <!-- Analytics -->
+   <link href="docs2.css" rel="stylesheet" type="text/css" />
+   <script>
+     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+     ga('create', 'UA-281408-1', 'auto');
+     ga('send', 'pageview');
+
+   </script>
 </head>
 <body>
    <div id="ocean">
@@ -55,15 +52,41 @@
          </nav>
          <div id="jib">
             Started: December 2016.
-            Last updated: 12th Dec 2016.
-            <h4>Draft, not yet finished</h4>
+            Last updated: 13th Dec 2016.
          </div>
+         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+         <!-- flurdy.com play with docker -->
+         <ins class="adsbygoogle"
+              style="display:inline-block;width:728px;height:90px"
+              data-ad-client="ca-pub-7805345644641760"
+              data-ad-slot="8190445284"></ins>
+         <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+         </script>
+
          <div id="starboard">
             <nav>
                  <h5>Contents</h5>
                  <ul>
-                    <li><a href="#problem">The&nbsp;problem</a></li>
-                    <li><a href="#full">Full&nbsp;Play Docker&nbsp;build</a></li>
+                    <li>
+                       <a href="#problem">The&nbsp;problem</a>
+                       <ul>
+                          <li><a href="#problem-downloading">Downloading the internet</a></li>
+                          <li><a href="#problem-docker">Inside a Docker container</a></li>
+                       </ul>
+                    </li>
+                    <li>
+                       <a href="#full">Full&nbsp;Play Docker&nbsp;build</a>
+                       <!--
+                       <ul>
+                          <li><a href="#full-base">Base image (FROM)</a></li>
+                          <li><a href="#full-activator">Download and install Activator</a></li>
+                          <li><a href="#full-folders">Application folders</a></li>
+                          <li><a href="#full-executable">Executable</a></li>
+                          <li><a href="#full-port">Port</a></li>
+                       </ul>
+                       -->
+                    </li>
                     <li>
                        <a href="#base-image">Better&nbsp;base&nbsp;image</a>
                        <ul>
@@ -74,7 +97,7 @@
                     <li>
                        <a href="#caching">Caching</a>
                        <ul>
-                          <li><a href="#caching-folders">Mount Ivy &amp; Maven folders</a></li>
+                          <li><a href="#caching-folders">Mount Ivy &amp; Maven</a></li>
                           <li><a href="#caching-repository">Local repository</a></li>
                        </ul>
                     </li>
@@ -89,10 +112,16 @@
                        <a href="#two-step">Two&nbsp;step build</a>
                        <ul>
                           <li><a href="#two-step-manual">Manual binary build</a></li>
-                          <li><a href="#two-step-integration">Integration&nbsp;server binary build</a></li>
+                          <li><a href="#two-step-integration">Integration&nbsp;server binary&nbsp;build</a></li>
                        </ul>
                     </li>
-                    <li><a href="#environment">Environment configuration</a></li>
+                    <li>
+                       <a href="#environment">Environment configuration</a>
+                       <ul>
+                          <li><a href="#environment-runtime">Run&nbsp;time configuration</a></li>
+                          <li><a href="#environment-images">Image per environment</a></li>
+                       </ul>
+                    </li>
                     <li><a href="#alternatives">Alternatives</a></li>
                     <li><a href="#references">References</a></li>
                     <li><a href="#contact">Feedback</a></li>
@@ -155,6 +184,7 @@
          </div>
 
             <a name="problem"></a>
+            <a name="problem-downloading"></a>
             <div class="paragraph">
 
                <h3>The problem</h3>
@@ -166,7 +196,6 @@
                      And the application most likely depends on a further set of dependencies.
                      And these dependencies have further transient dependencies.
                   </p>
-                  <img id="downloading-meme" src="downloading.jpg" alt="" />
                   <p>
                      These dependencies will all have to downloaded from central repositories.
                      And you might need beyond 100 dependencies of a few megabytes each,
@@ -174,6 +203,7 @@
                      On a fresh install where you need to download everything
                      this is what is populary is called <em>downloading the internet</em>.
                   </p>
+                  <img id="downloading-meme" src="downloading.jpg" alt="" />
                   <p>
                      Downloading this on a poor/slow internet connection is when you discover new profanities.
                   </p>
@@ -188,6 +218,7 @@
                   </p>
                </div>
 
+               <a name="problem-docker"></a>
                <div class="paragraph">
 
                   <h4>
@@ -267,6 +298,7 @@
                   EXPOSE 9000
                </code>
 
+               <a name="full-base"></a>
                <div class="paragraph">
                   <h4>Base image (FROM)</h4>
                   <p>
@@ -311,6 +343,7 @@
                   </ul>
                </div>
 
+               <a name="full-activator"></a>
                <div class="paragraph">
                   <h4>Download and install Activator</h4>
                   <p>
@@ -325,6 +358,7 @@
                   </p>
                </div>
 
+               <a name="full-folders"></a>
                <div class="paragraph">
 
                   <h4>Application folders</h4>
@@ -336,6 +370,7 @@
                   </ul>
                </div>
 
+               <a name="full-executable"></a>
                <div class="paragraph">
 
                   <h4>Executable</h4>
@@ -356,6 +391,7 @@
                   <code class="wide">ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/alternative.conf"]</code>
                </div>
 
+               <a name="full-port"></a>
                <div class="paragraph">
 
                   <h4>Port</h4>
@@ -397,7 +433,7 @@
                   <code class="file wide">
                      FROM openjdk:<em>8u111</em>-jdk<em>-alpine</em><br/>
                      <br/>
-                     MAINTAINER <em>YOURNAME</em> &lt;<em>EMAIL/HANDLE</em>&gt;<br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
                      RUN apk update &amp;&amp; apk add bash wget unzip<br/>
                      <br/>
@@ -445,7 +481,7 @@
                   <code class="file wide">
                      FROM flurdy/activator-mini:<em>1.3.12-alpine</em><br/>
                      <br/>
-                     MAINTAINER <em>YOURNAME</em> &lt;<em>EMAIL/HANDLE</em>&gt;<br/>
+                     MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
                      RUN mkdir -p /opt/build &amp;&amp; \<br/>
                         &nbsp;&nbsp;mkdir -p /etc/app<br/>
@@ -469,8 +505,11 @@
                      <br/>
                      EXPOSE 9000
                   </code>
+                  <p>
+                     We use the <em>minimal</em> version of Activator.
+                     The <em>dist</em> version would mean a lot of unneccessary bloat in our Docker layer.
+                  </p>
                </div>
-
             </div>
 
             <a name="caching"></a>
@@ -500,7 +539,7 @@
                      Doing this varies on a <em>Linux</em> box,
                      inside <a href="https://www.vagrantup.com/">Vagrant</a>
                      and on a <em>macOS/OSX</em> machine with either <a href="http://boot2docker.io/">boot2docker</a>
-                     or <a href="https://github.com/mist64/xhyve/">xhyve</a>.
+                     or <a href="https://github.com/mist64/xhyve/">xhyve</a>/moby.
                   </p>
                   <p>
                      The problem is that you would have to do this on all clients that may build this image.
@@ -526,8 +565,24 @@
                   <p>
                      But that is not very flexible so the prefered option is a special <em>~/.sbt/repositories</em> file.
                      The contents of this file depends on your set up.
-                     See <a href="http://www.scala-sbt.org/0.13/docs/Proxy-Repositories.html">the reference for examples.</a>
+                     See <a href="http://www.scala-sbt.org/0.13/docs/Proxy-Repositories.html">the reference for examples</a>.
+                     Below we have enabled local <em>Ivy</em> foldes and proxy server called "<em>special-repository</em>",
+                     and commented out some other options.
+                     (Apologies about the small font, but the Ivy patterns are really stupidly long).
                   </p>
+                  <code class="file wide">
+                     [repositories]<br/>
+                     # activator-local: <span class="very-tiny-code">file://${activator.local.repository-${activator.home-${user.home}/.activator}/repository}, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]</span><br/>
+                     local<br/>
+                     # maven-local<br/>
+                     <em>special-repository: http://repository.example.com/path/</em><br/>
+                     # scala-tools-releases<br/>
+                     # typesafe-releases: http://typesafe.artifactoryonline.com/typesafe/releases<br/>
+                     # typesafe-sbt-releases: <span class="very-tiny-code">http://typesafe.artifactoryonline.com/typesafe/ivy-releases, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]</span><br/>
+                     # typesafe-ivy-releases: <span class="very-tiny-code">http://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext], bootOnly</span><br/>
+                     # maven-central<br/>
+                     # sonatype-snapshots: https://oss.sonatype.org/content/repositories/snapshots
+                  </code>
                   <p>
                      Create such a file in your projects <em>conf</em> folder. Then your Dockerfile may be altered like this:
                   </p>
@@ -573,7 +628,7 @@
 
                <h3>Pre-populated Ivy</h3>
                <p>
-                  An better caching solution is to make sure the real <em>Ivy</em> folder
+                  An better caching solution is to make sure the Docker builder <em>Ivy</em> folder
                   is populated already from a Play build.
                   That way the dependencies will already be cached locally for the real application build.
                </p>
@@ -760,7 +815,7 @@
                   <p>
                      Most organisations will already be practicing the <a href="http://blog.arungupta.me/build-binaries-only-once-continuous-deployment/">one-binary</a>
                      principle of building the JAR with continuous delivery processes.
-                     The project binary is built on a continuous ingegration server and
+                     The project binary is built on a continuous integration server and
                      uploaded to a Maven artifact repository.
                      To include that as part of the Docker build the Dockerfile might look like this:
                   </p>
@@ -794,8 +849,16 @@
                   <p>
                      Though many new projects are rethinking the process and
                      move the <em>one-binary</em> principle
-                     from one JAR to one Docker image to avoid a two stage build process for each commit
-                     amongs other things.
+                     from one JAR to one Docker image to avoid a two stage build process for each commit.
+                  </p>
+                  <p>
+                     The Dockerfile can be made smarter by querying your artifact repository for the latest
+                     version dynamically.
+                  </p>
+                  <p>
+                     The <em>start.sh</em> file needs to call Java with the fat jar as classpath,
+                     alternatively with some options and then the start class of the application.
+                     (<a href="https://github.com/flurdy/docker-compose-machine-swarm-cloud-example/blob/master/service/src/main/resources/start.sh">An example for a spray app</a>).
                   </p>
 
                </div>
@@ -808,43 +871,77 @@
 
                <p>
                   To specify configurations and secrets for the Docker image you have a few options.
+                  You can use the same image but override properties at run time.
+                  Or you can bake a different image per environment.
                </p>
-               <ul>
-                  <li>
-                     Run time overrides:
-                     <ul>
-                        <li>
-                           conf/<em>some-environment</em>.conf:
-                           You tell Docker to run the file with "<em>-Dconfig.file=conf/some-environment.conf</em>".
-                           You can specify a <a href="https://www.playframework.com/documentation/2.5.x/ProductionConfiguration">seperate configuration file</a> for each environment.
-                           Then either include this as part of the project source code,
-                           or as a mounted Docker volume.
-                           Often includes a <em>include application.conf</em> inheritance.
-                           Usefull of several properties change per environment.
-                        </li>
-                        <li>
-                           Docker environment variables.
-                           E.g. <em>MY-PROPERTY=some-value</em>.
-                           Then inside the <em>application.conf</em>:
-                           <code class="file">
-                              my-property=<em>some-default-value</em><br/>
-                              my-property=<em>${MY_PROPERTY}</em>
-                           </code>
-                        </li>
-                     </ul>
-                  </li>
-                  <li>
-                     Alternatively you can bake different Docker images per environment.
-                     Include an <em>ARG</em> command in your Dockerfile:
-                     <code class="file wide">
-                        ARG targetenv<br/>
-                        <br/>
-                        RUN mv /etc/app/${targetenv:-docker}.conf /etc/app/active.conf<br/>
-                        <br/>
-                        ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/active.conf"]
-                     </code>
-                  </li>
-               </ul>
+
+               <a name="environment-runtime"></a>
+               <div class="paragraph">
+
+                  <h4>Run time configuration</h4>
+                  <p>
+                     You can override the <a href="https://www.playframework.com/documentation/2.5.x/ProductionConfiguration">configuration file</a> used, per property or both.
+                  </p>
+                  <p>
+                     Since we use <a href="https://docs.docker.com/engine/reference/builder/#/entrypoint">Entrypoint</a> (and not <a href="https://docs.docker.com/engine/reference/builder/#cmd">CMD</a>)
+                     the command you run the image with only appends to that command,
+                     not replace it, which a <em>CMD</em> would do.
+                  </p>
+                  <code class="wide">docker run -ti --rm <em>yourorg/my-application:latest</em> -Dconfig.file=/etc/app/<em>docker.conf</em></code>
+                  <p>
+                     This executes the <em>/opt/app/stage/bin/app</em> but appends <em>-Dconfig.file=/etc/app/docker.conf</em>
+                     to it.
+                     The configuration file can be part of the application's source code in the <em>conf</em> folder,
+                     or it can be mounted as a Docker volume at runtime.
+                  </p>
+                  <p>
+                     If you find all the application's Docker containers override with the same config file,
+                     then just modify the Dockerfile:
+                  </p>
+                  <code class="file wide">
+                     ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/docker.conf"]
+                  </code>
+                  <p>
+                     Individual properties can also be overriden. Either via <em>-DTHISPROPERTY=thisvalue</em>
+                     or even better as a environment variable:
+                  </p>
+                  <code class="wide">
+                     docker run -ti --rm \<br/>
+                     &nbsp;&nbsp;-e <em>MYPROPERTY=thisvalue</em>
+                     -e <em>OTHERPROPERTY=thatvalue</em>
+                     <em>yourorg/my-application:latest</em>
+                  </code>
+                  <p>
+                     Then inside the <em>conf/application.conf</em>:
+                  </p>
+                  <code class="file">
+                     myproperty=<em>some-default-value</em><br/>
+                     myproperty=<em>${MYPROPERTY}</em><br/>
+                     otherproperty=<em>some-other-default-value</em><br/>
+                     myotherproperty=<em>${OTHERPROPERTY}</em>
+                  </code>
+               </div>
+
+               <a name="environment-images"></a>
+               <div class="paragraph">
+                  <h4>Image per environment</h4>
+                  <p>
+                     Some might prefer to bake different Docker images per environment.
+                     One way to do that is to use the <a href="https://docs.docker.com/engine/reference/builder/#/arg">ARG</a> command.
+                  </p>
+                  <code class="file wide">
+                     ARG targetenv<br/>
+                     <br/>
+                     RUN mv /etc/app/${targetenv:-docker}.conf /etc/app/environment.conf<br/>
+                     <br/>
+                     ENTRYPOINT ["/opt/app/stage/bin/app", "-Dconfig.file=/etc/app/environment.conf"]
+                  </code>
+                  <p>
+                     For each build you need to specify what the <em>ARG</em> value is, e.g. staging, production, etc.
+                  </p>
+                  <code class="wide">docker build --build-arg <em>targetenv=production</em> -t <em>yourorg/my-application-production</em></code>
+
+               </div>
             </div>
 
             <a name="alternatives"></a>
@@ -853,7 +950,7 @@
                <h3>Alternatives</h3>
 
                <p>
-                  Instead of these Play &amp; Docker configurations you might consider:
+                  Instead of thios document's Play &amp; Docker configurations you might consider:
                </p>
                <ul>
                   <li><a href="https://github.com/sbt/sbt-native-packager">SBT Native Packager</a></li>
@@ -873,6 +970,7 @@
                   <li><a href="https://www.oracle.com/java/index.html">Java</a></li>
                   <li><a href="https://www.scala-lang.org">Scala</a></li>
                   <li><a href="https://hub.docker.com/_/java/">Docker Java</a></li>
+                  <li><a href="https://hub.docker.com/r/flurdy/activator-mini/">Docker Activator by Flurdy</a></li>
                   <li><a href="https://hub.docker.com/r/flurdy/play-framework/">Docker Play by Flurdy</a></li>
                </ul>
 
