@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <title></title>
+   <title>Play with Docker</title>
 	<link rel="shortcut icon" href="/favicon.ico">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content="scala,play,framework,docker,ivy"/>
+   <meta http-equiv="description" content="Building Docker images of applications that uses the Play Framework."/>
+   <meta name="viewport" content="initial-scale=0.8"/>
    <link href="../android/docs.css" rel="stylesheet" type="text/css" />
    <link href="docs.css" rel="stylesheet" type="text/css" />
    <link href="../git/docs.css" rel="stylesheet" type="text/css" />
@@ -18,7 +21,6 @@
 
      ga('create', 'UA-281408-1', 'auto');
      ga('send', 'pageview');
-
    </script>
 </head>
 <body>
@@ -37,7 +39,7 @@
             </h1>
             <h4>
                Building Docker images of applications
-               that uses the Play &nbsp;Framework.
+               that uses the Play Framework.
             </h4>
          </header>
          <nav id="lookout">
@@ -717,7 +719,7 @@
                      <br/>
                      MAINTAINER YOURNAME &lt;EMAIL/HANDLE&gt;<br/>
                      <br/>
-                     RUN mkdir -p /etc/app /opt/app<br/>
+                     RUN mkdir -p /opt/build /etc/app /opt/app<br/>
                      <br/>
                      COPY conf /etc/app/<br/>
                      <br/>
