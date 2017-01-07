@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2016-05-09</h6>
+<h6>Last Update: 2017-01-07</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -200,7 +200,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 						</ul>
 					</li>
 					<li><p><a href="#ext_back">Local file backup</a></p></li>
-					<li><p><a href="#ext_spf">Sender ID &amp; SPF</a></p></li>
+					<li><p><a href="#ext_dkim">DKIM &amp; Sender ID</a></p></li>
+               <li><p><a href="#ext_spf">SPF</a></p></li>
 					<li><p><a href="#ext_pyzor">Spam Reporting</a></p></li>
 					<li><p><a href="#ext_list">White/Black lists</a></p></li>
 					<li><p><a href="#ext_pgp">PGP &amp; S/MIME</a></p></li>
@@ -3640,7 +3641,8 @@ delete from aliases where mail = 'foo@bar.com';</code>
 			</ul>
 		</li>
 		<li><p><a href="#ext_back">Local file backup</a><p></li>
-		<li><p><a href="#ext_spf">Sender ID &amp; SPF</a><p></li>
+		<li><p><a href="#ext_dkim">DKIM &amp; Sender ID</a><p></li>
+      <li><p><a href="#ext_spf">SPF</a><p></li>
 		<li><p><a href="#ext_pyzor">Spam reporting</a><p></li>
 		<li><p><a href="#ext_list">White/Black lists</a><p></li>
 		<li><p><a href="#ext_pgp">PGP &amp; S/MIME</a><p></li>
@@ -3906,31 +3908,47 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
+   <a name="ext_dkim"></a>
+   <h3>DKIM &amp; Sender ID</h3>
+   	<p>
+         To verify the sender is who they send they are (too avoid spam and phising) there are a few choices:
+   	</p>
+         <ul>
+            <li><p>DKIM</p></li>
+            <li><p>Sender Id</p></li>
+            <li><p>SPF</p></li>
+         </ul>
+   	<p>
+         My preference is Pobox's SPF detailed in the next section.
+   	</p>
+
+      <h4>DKIM</h4>
+   	<h6 class="red">todo</h6>
+      <p>
+         <a href="http://www.dkim.org/">DKIM</a> does offer some good features,
+         and is worth looking into. I don't use DKIM so can't offer advice here,
+         but there are plenty of other tutorials, such as <a href="https://help.ubuntu.com/community/Postfix/DKIM">this one</a>.
+         If you servers suffers from a lot of spam and greylisting does not work well enough then look into DKIM.
+      </p>
+
+      <h4>Sender ID</h4>
+      <p>
+         <a href="
+   https://en.wikipedia.org/wiki/Sender_ID">Sender ID</a> is a protocol created by Microsoft.
+         It suffers from a few issues of differing standards and design flaws, and is not recommended.
+      </p>
+
+	<h6><a href="#top">Return to top</a>.</h6>
 
 	<a name="ext_spf"></a>
-	<h3>Sender ID &amp; SPF</h3>
-	<p>
-		Further security features is using Microsoft's
-		Sender ID or Pobox's SPF. I'd use SPF as
-		there is much argument over Sender ID.
-	</p>
+	<h3>SPF</h3>
 
-		<p><a href="http://spf.pobox.com/">spf.pobox.com</a></p>
-		<p><a href="http://www.microsoft.com/mscorp/safety/technologies/senderid/">www.microsoft.com/mscorp/safety/technologies/senderid/</a></p>
-
-		<p>
-			SPF should limit who can send mail on behalf of your domains, and is an open design.
-			I do recommend SPF, with some reservations, detailed below.
-		</p>
-		<p>
-			While Microsoft is not always entirely evil,
-			as sometimes they do nice things and make some useful software,
-			I would prefer not to be locked into their Sender ID technology.
-		</p>
-
+   	<p>
+   		<a href="http://www.openspf.org/">SPF</a> restricts which servers can send mail on behalf of your domains, and is an open design.
+   	</p>
 		<h4>SPF configuration</h4>
 		<p>
-			The pobox site has some nice SPF generation tools to setup your SPF configuration.
+			The OpenSPF site has some nice <a href="http://www.openspf.org/Tools">SPF generation tools</a> to setup your SPF configuration.
 			Probably best to use theirs.
 		</p>
 		<p>
@@ -3970,7 +3988,7 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 			</p></li>
 		</ul>
 		<p>
-			And for all these I use <b><i>~all</i></b>!<br/>
+			And for all these I use <b><i>~all</i></b><br/>
 		</p>
 		<p>
 			Ps. Some domains I have added an even stricter SPF, as these are domains that will never send an email.
@@ -4009,12 +4027,27 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 
 		</p>
 		<p>
-			<b>Solution</b>: <br/>
+			<b>Prevention</b>: <br/>
 			Of course you can not list all possible forwarding / backup mx email server that your domain's users might at some point email!<br/>
 			I simple just use the ~all option. Which simple say it is not the expected server, but probably ok. <br/>
 			And if this is added to a scoring by the receiver, then the accumulated spam score might be enough to reject dodgy emails.
 		</p>
 
+      <h4>SPF solution: SRS</h4>
+   	<h6 class="red">todo</h6>
+      <p>
+         <a href="http://www.openspf.org/SRS">SRS, Sender Rewriting Scheme</a>
+         allows emails to be forwarded that SPF wont reject.
+         It does this by changing the "<em>MAIL TO</em>" email address
+         to one of the forwarding server. And also supports
+         forwarding on rejections as the address includes source address.
+      </p>
+      <p>
+         I may extend this to detailed instructions but for now
+         refer to <a href="https://seasonofcode.com/posts/setting-up-dkim-and-srs-in-postfix.html">another tutorial</a>.
+         It uses the <a href="https://github.com/roehling/postsrsd">postsrsd</a> library by <a href="https://github.com/roehling">roehling</a>
+         that are available in the <a href="http://archive.ubuntu.com/ubuntu/pool/universe/p/postsrsd/">Ubuntu repositories</a>.
+      </p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
@@ -5181,9 +5214,9 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 
 
 	<div style="float:right; padding-right: 15px;">
-			<a href="http://flurdy.spreadshirt.com/us/US/Shop/Article/Index/article/I-read-your-email-3691300"><img
+			<a href="https://shop.spreadshirt.com/flurdy/i+read+your+email-A3691300"><img
 				style="border: 1px solid black; background-color:white; padding:3px;"
-				src="http://image.spreadshirt.com/image-server/image/product/4068110/view/1/type/png/width/190/height/190"
+				src="https://image.spreadshirtmedia.com/image-server/v1/products/4068110/views/1,width=800,height=800,appearanceId=54,version=1451985975/i-read-your-email-men-s-ringer-t-shirt.png"
 				onmouseover="this.src='http://image.spreadshirt.com/image-server/image/configuration/6024181/type/png/width/42/height/42'"
 				onmouseout="this.src='http://image.spreadshirt.com/image-server/image/product/4068110/view/1/type/png/width/190/height/190'"
 				width="150" height="150" border="0" alt="I read your email"
@@ -5309,6 +5342,9 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 			2010-05-29:
 		</p></li>
 		-->
+		<li><p>
+			2017-01-97: Added DKIM &amp; SRS
+		</p></li>
 		<li><p>
 			2016-03-01: Added Dovecot.
 		</p></li>

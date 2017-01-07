@@ -621,8 +621,8 @@
 
                <h3>Pre-populated Ivy</h3>
                <p>
-                  An better caching solution is to make sure the Docker builder <em>Ivy</em> folder
-                  is populated already from a Play build.
+                  A better caching solution is to make sure the Docker builder <em>Ivy</em> folder
+                  is already populated from another Play build.
                   That way the dependencies will already be cached locally for the real application build.
                </p>
 
@@ -661,7 +661,7 @@
                      EXPOSE 9000
                   </code>
                   <p>
-                     If you don't want to use the image above you can create your own Play base image if you include the steps.
+                     If you don't want to use the image above you can create your own Play base image if you include this <em>RUN</em> step:
                   </p>
                   <code class="file wide">
                      RUN /opt/activator/bin/activator new playframework-base play-scala &amp;&amp; \<br/>
@@ -681,7 +681,7 @@
                   <h4>Application base image</h4>
                   <p>
                      If your application includes a lot of further dependencies,
-                     you might want to split the Dockerfile into a "application base"
+                     you might want to split the Dockerfile into an "application base"
                      and a "application-main" image.
                      That way the <em>base</em> is only built when framework or dependencies change,
                      whilst the frequent code changes are only causing the <em>main</em> image to be built.
