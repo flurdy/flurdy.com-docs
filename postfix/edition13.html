@@ -4034,7 +4034,6 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 		</p>
 
       <h4>SPF solution: SRS</h4>
-   	<h6 class="red">todo</h6>
       <p>
          <a href="http://www.openspf.org/SRS">SRS, Sender Rewriting Scheme</a>
          allows emails to be forwarded that SPF wont reject.
@@ -4043,11 +4042,24 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
          forwarding on rejections as the address includes source address.
       </p>
       <p>
-         I may extend this to detailed instructions but for now
-         refer to <a href="https://seasonofcode.com/posts/setting-up-dkim-and-srs-in-postfix.html">another tutorial</a>.
-         It uses the <a href="https://github.com/roehling/postsrsd">postsrsd</a> library by <a href="https://github.com/roehling">roehling</a>
-         that are available in the <a href="http://archive.ubuntu.com/ubuntu/pool/universe/p/postsrsd/">Ubuntu repositories</a>.
+         <!-- refer to <a href="https://seasonofcode.com/posts/setting-up-dkim-and-srs-in-postfix.html">another tutorial</a>. -->
+         We will use the <a href="https://github.com/roehling/postsrsd">PostSRSd</a> deamon
+         by <a href="https://github.com/roehling">roehling</a>.
       </p>
+      <code>sudo apt-get install postsrsd</code>
+
+      <p>
+         Add PostSRSd to postfix by appending the canonical lookups:
+      </p>
+      <code class="">sudo vi /etc/postfix/main.cf</code>
+      <code class="document">sender_canonical_maps = tcp:127.0.0.1:10001
+sender_canonical_classes = envelope_sender
+recipient_canonical_maps = tcp:127.0.0.1:10002
+recipient_canonical_classes = envelope_recipient,header_recipient</code>
+      <p>
+         Activate the changes:
+      </p>
+      <code>sudo service postfix reload</code>
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
@@ -4157,7 +4169,7 @@ gpg --gen-key</code>
 		To implement this in postfix,
 		frst create a lookup table in the database.
 	</p>
-	<code>CREATE TABLE `relocated` (
+	<code class="document">CREATE TABLE `relocated` (
 `pkid` smallint(6) NOT NULL auto_increment,
 `oldadr` varchar(128) NOT NULL default '',
 `newadr` varchar(128) NOT NULL default '',
@@ -4168,11 +4180,11 @@ UNIQUE KEY `oldadr` (`oldadr`)
 
 	<p>Then add this to /etc/postfix/main.cf</p>
 
-	<code>relocated_maps = mysql:/etc/postfix/mysql_relocated.cf</code>
+	<code class="document">relocated_maps = mysql:/etc/postfix/mysql_relocated.cf</code>
 
 	<p>The create this file /etc/postfix/mysql_relocated.cf</p>
 
-	<code>user=mail
+	<code class="document">user=mail
 password=<i>apassword</i>
 dbname=maildb
 table=relocated
@@ -4235,11 +4247,20 @@ hosts=127.0.0.1</code>
 		<a href="http://www.google.com/search?q=postfix+admin">Quick search
 		for postfix admin</a> will find many options.
 	</p>
+   <h4>Sorting Office</h4>
 	<p>
-		I have made an application <a href="http://github.com/flurdy/sortingoffice">Sorting Office</a>, <a href="http://github.com/flurdy/sortingoffice">github.com/flurdy/sortingoffice</a>.
+		I have made the application <a href="http://github.com/flurdy/sortingoffice">Sorting Office</a>,
+      availalbe at <a href="http://github.com/flurdy/sortingoffice">github.com/flurdy/sortingoffice</a>.
 		It is for managing data in the database(s), ie domains, users, aliases etc
 		and not for configuration.
-		You can look at a demo at <a href="http://sortingoffice-demo.herokuapp.com">sortingoffice-demo.herokuapp.com</a>.
+   </p>
+   <p>
+      Please contribute if you would like to.
+      It is rough around the edges and may contain some carthesian joins
+      on large enough data sets...
+   </p>
+   <p>
+		You can test a demo at <a href="http://sortingoffice-demo.herokuapp.com">sortingoffice-demo.herokuapp.com</a>.
 	</p>
 	<h6><a href="#top">Return to top</a>.</h6>
 
@@ -4271,9 +4292,9 @@ hosts=127.0.0.1</code>
 			and adding this restriction to smtpd_recipient_restrictions
 			accomplises this.
 		</p>
-	<code>check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf,</code>
+	<code class="document">check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf,</code>
 
-	<code>smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, \
+	<code class="document">smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, \
 	check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf, \
 	reject_non_fqdn_recipient, reject_unauth_destination, \
 	check_relay_domains</code>
