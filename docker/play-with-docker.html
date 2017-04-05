@@ -810,6 +810,13 @@
                      principle of building the JAR with continuous delivery processes.
                      The project binary is built on a continuous integration server and
                      uploaded to a Maven artifact repository.
+                  </p>
+                  <p>
+							Most likely you would assemble the <em>one binary</em> by adding <a href="https://github.com/sbt/sbt-assembly">SBT-Assembly</a> to your projects plugins, 
+							and build the <em>fat</em> binary with:
+                  </p>
+							<code>sbt assembly</code>
+                  <p>
                      To include that as part of the Docker build the Dockerfile might look like this:
                   </p>
                   <code class="file wide">
