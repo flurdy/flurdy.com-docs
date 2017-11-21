@@ -57,7 +57,7 @@
 </div>
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=flurdy"></script>
 <!-- AddThis Button END -->
-<h6><a href="#editions">13th edition</a></h6>
+<h6><a href="#editions">14th edition</a></h6>
 <h6>
 	Author <a href="#author">Ivar Abrahamsen</a>
 </h6>
@@ -423,7 +423,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</td>
 		</tr>
 		<tr>
-			<td colspan="1" nowrap>13th (this)</td>
+			<td colspan="1" nowrap><a href="edition13.html">13th</a></td>
 			<td colspan="1">
 				Released
 			</td>
@@ -434,14 +434,14 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</td>
 		</tr>
 		<tr>
-			<td colspan="1" nowrap><a href="edition14.html">14th</a></td>
+			<td colspan="1" nowrap>14th (this)</td>
 			<td colspan="1">
 				Draft
 			</td>
-			<td colspan="1" nowrap>2016-03</td>
+			<td colspan="1" nowrap>2017-11</td>
 			<td colspan="1" nowrap>2017-11</td>
 			<td colspan="1" class="desc">
-				Based on Ubuntu 16.04 LTS (xenial).
+				Based on Ubuntu 16.04 LTS (xenial). Added DKIM.
 			</td>
 		</tr>
 	</table>
@@ -1160,32 +1160,39 @@ sudo apt-get upgrade</code>
 	</p>
 	<p>
 		First configure which network adapters we are accessing the net.
-		<code>sudo cp /usr/share/doc/shorewall/default-config/interfaces /etc/shorewall/;
+		<code>sudo cp /usr/share/doc/shorewall/examples/one-interface/interfaces /etc/shorewall/;
 sudo vi /etc/shorewall/interfaces</code>
-		<code class="document">net     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs</code>
+		<code class="document"><span class="comment"># If not using sub set hosts replace the zone <em>-</em> with <em>net</em></span>
+<span class="comment">#net     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0</span>
+<span class="comment"># </span>
+-     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0</code>
 	</p>
 	<p>
 		Then we will configure network zones
-		<code>sudo cp /usr/share/doc/shorewall/default-config/zones /etc/shorewall/;
+		<code>sudo cp /usr/share/doc/shorewall/examples/one-interface/zones /etc/shorewall/;
 sudo vi /etc/shorewall/zones</code>
-		Add the firewall if not there and the internet as a zone.
+		Add the firewall if not there and the internet as a zone, and the optional VPC if you need one.
 		<code class="document">fw	firewall
-<span class="comment"># loc 	ipv4</span>
-net     ipv4</code>
+net     ipv4d
+vpc:net     ipv4</code>
 	</p>
 	<p>
-		Then if needed to specify hosts you can do it in this file.
-		E.g. If you wanto specify what is your home IP etc.
-		<code>sudo cp /usr/share/doc/shorewall/default-config/hosts /etc/shorewall/;
-sudo vi /etc/shorewall/hosts</code>
-		<code class="document"><span class="comment"># loc	eth0:192.168.0.0/24</span></code>
-	</p>
+		Then if needed, specify hosts in a <em>hosts</em> file.
+		E.g. If you want to specify what is your home IP etc.
+      or define a subset as a DMZ or VPC.
+      <code>sudo vi /etc/shorewall/hosts</code>
+		<code class="document"><span class="comment">#ZONE     HOST(S)                     OPTIONS</span>
+<span class="comment">net       eth0:0.0.0.0/0</span>
+<span class="comment">vpc       eth0:192.168.0.0/16</span></code>
+
+</p>
 	<p>
 		Then set what is the default policy for firewall access.
 		<code>sudo cp /usr/share/doc/shorewall/default-config/policy /etc/shorewall/;
 sudo vi /etc/shorewall/policy</code>
-		<code class="document">$FW             net             ACCEPT
-net             $FW             DROP            info
+		<code class="document">$FW             vpc             ACCEPT 
+$FW             net             ACCEPT 
+vpc             all             CONTINUE 
 net             all             DROP            info
 <span class="comment"># The FOLLOWING POLICY MUST BE LAST</span>
 all             all             REJECT          info</code>
@@ -1209,7 +1216,8 @@ ACCEPT		-		eth0</code>
 		<i>/usr/share/shorewall</i>.
 		<code>sudo cp /usr/share/doc/shorewall/default-config/rules /etc/shorewall/;
 sudo vi /etc/shorewall/rules</code>
-		<code class="document">SSH/ACCEPT      net             $FW</code>
+		<code class="document">SSH(ACCEPT)      vpc             $FW
+SSH(ACCEPT)      net             $FW</code>
 	</p>
 
 	<p>
@@ -1223,20 +1231,31 @@ sudo vi /etc/shorewall/rules</code>
 		come back to this step and
 		open up SMTP and Web access to others.	</p>
 		<code>vi /etc/shorewall/rules</code>
-		<code class="document">Ping/ACCEPT     net             $FW
-
-# Permit all ICMP traffic FROM the firewall TO the net zone
-ACCEPT          $FW             net             icmp
+		<code class="document">Ping(ACCEPT)     vpc             $FW
+Ping(ACCEPT)     net             $FW
+Trcrt(ACCEPT)    vpc             $FW
+Trcrt(ACCEPT)    net             $FW
 
 # mail lines
-SMTP/ACCEPT     net             $FW
-SMTPS/ACCEPT    net             $FW
-Submission/ACCEPT       net             $FW
-IMAP/ACCEPT     net             $FW
-IMAPS/ACCEPT    net             $FW
+SMTP(ACCEPT)     vpc             $FW
+SMTP(ACCEPT)     net             $FW
+SMTPS(ACCEPT)    vpc             $FW
+SMTPS(ACCEPT)    net             $FW
+Submission(ACCEPT)  vpc             $FW
+Submission(ACCEPT)  net             $FW
+IMAP(ACCEPT)     vpc             $FW
+IMAP(ACCEPT)     net             $FW
+IMAPS(ACCEPT)    vpc             $FW
+IMAPS(ACCEPT)    net             $FW
 
 #web
-Web/ACCEPT      net             $FW</code>
+Web(ACCEPT)      vpc             $FW</code>
+Web(ACCEPT)      net             $FW</code>
+	</p>
+	<p>
+		You may hide ICMP (Ping, Traceroute) from the net if worried about DDOS.
+      Also you may choose not to expose non-TLS ports.
+      Or spread services across instances.
 	</p>
 
 	<p>
