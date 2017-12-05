@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2017-11-28</h6>
+<h6>Last Update: 2017-12-05</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -200,8 +200,14 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 						</ul>
 					</li>
 					<li><p><a href="#ext_back">Local file backup</a></p></li>
-					<li><p><a href="#ext_dkim">DKIM &amp; Sender ID</a></p></li>
-               <li><p><a href="#ext_spf">SPF</a></p></li>
+					<li>
+                  <p><a href="#ext_email_auth">Email Authentication (server-to-server))</a></p>
+                  <ul>
+                     <li><p><a href="#ext_spf">SPF</a></p></li>
+                     <li><p><a href="#ext_srs">SRS</a></p></li>
+                     <li><p><a href="#ext_dkim">DKIM</a></p>
+                  </ul>
+               </li>
 					<li><p><a href="#ext_pyzor">Spam Reporting</a></p></li>
 					<li><p><a href="#ext_list">White/Black lists</a></p></li>
 					<li><p><a href="#ext_pgp">PGP &amp; S/MIME</a></p></li>
@@ -439,7 +445,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				Draft
 			</td>
 			<td colspan="1" nowrap>2017-11</td>
-			<td colspan="1" nowrap>2017-11</td>
+			<td colspan="1" nowrap>2017-12</td>
 			<td colspan="1" class="desc">
 				Based on Ubuntu 16.04 LTS (xenial). Added DKIM.
 			</td>
@@ -3692,8 +3698,13 @@ delete from aliases where mail = 'foo@bar.com';</code>
 			</ul>
 		</li>
 		<li><p><a href="#ext_back">Local file backup</a><p></li>
-		<li><p><a href="#ext_dkim">DKIM &amp; Sender ID</a><p></li>
-      <li><p><a href="#ext_spf">SPF</a><p></li>
+		<li>
+         <p><a href="#ext_email_auth">Email Authentication (server-to-server)</a><p></li>
+		   <ul>
+            <li><p><a href="#ext_spf">SPF</a><p></li>
+            <li><p><a href="#ext_srs">SRS</a><p></li>
+            <li><p><a href="#ext_dkim">DKIM</a><p></li>
+         </ul>
 		<li><p><a href="#ext_pyzor">Spam reporting</a><p></li>
 		<li><p><a href="#ext_list">White/Black lists</a><p></li>
 		<li><p><a href="#ext_pgp">PGP &amp; S/MIME</a><p></li>
@@ -3959,37 +3970,21 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 	<h6><a href="#top">Return to top</a>.</h6>
 
 
-   <a name="ext_dkim"></a>
-   <h3>DKIM &amp; Sender ID</h3>
+   <a name="ext_email_auth"></a>
+   <h3>Email Authentication (server-to-server)</h3>
    	<p>
          To verify the sender is who they send they are (too avoid spam and phising) there are a few choices:
    	</p>
          <ul>
+            <li><p>SPF</p></li>
+            <li><p>SRS</p></li>
             <li><p>DKIM</p></li>
             <li><p>Sender Id</p></li>
-            <li><p>SPF</p></li>
          </ul>
    	<p>
          My preference is Pobox's SPF detailed in the next section.
    	</p>
 
-      <h4>DKIM</h4>
-   	<h6 class="red">todo</h6>
-      <p>
-         <a href="http://www.dkim.org/">DKIM</a> does offer some good features,
-         and is worth looking into. I don't use DKIM so can't offer advice here,
-         but there are plenty of other tutorials, such as <a href="https://help.ubuntu.com/community/Postfix/DKIM">this one</a>.
-         If you servers suffers from a lot of spam and greylisting does not work well enough then look into DKIM.
-      </p>
-
-      <h4>Sender ID</h4>
-      <p>
-         <a href="
-   https://en.wikipedia.org/wiki/Sender_ID">Sender ID</a> is a protocol created by Microsoft.
-         It suffers from a few issues of differing standards and design flaws, and is not recommended.
-      </p>
-
-	<h6><a href="#top">Return to top</a>.</h6>
 
 	<a name="ext_spf"></a>
 	<h3>SPF</h3>
@@ -4048,7 +4043,7 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 		<h4>SPF problem</h4>
 		<p>
 			It is worth noting about SPF, that you should leave the decision to whether to reject or allow
-			the email to the mail servers. Therefore using <b>-all</b> instead of <b>~all</b> is not a good choice.
+			the email to the mail servers. Therefore using <b>-all</b> instead of <b>~all</b> is not a good choice, use <b>~</b>.
 			Leave it to the SPAM scoring by the receiving server, like SpamAssasin does it.
 			You then minimise the risk of false positives.
 		</p>
@@ -4084,13 +4079,18 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 			And if this is added to a scoring by the receiver, then the accumulated spam score might be enough to reject dodgy emails.
 		</p>
 
+	<a name="ext_srs"></a>
       <h4>SPF solution: SRS</h4>
       <p>
          <a href="http://www.openspf.org/SRS">SRS, Sender Rewriting Scheme</a>
          allows emails to be forwarded that SPF wont reject.
-         It does this by changing the "<em>MAIL TO</em>" email address
+         It does this by changing the "<em>MAIL FROM</em>" email address
          to one of the forwarding server. And also supports
          forwarding on rejections as the address includes source address.
+      </p>
+      <p>
+         Note SRS also has a problem. It will forward spam you receive as well. 
+         And your servers' reputation may get a bad spam score. 
       </p>
       <p>
          <!-- refer to <a href="https://seasonofcode.com/posts/setting-up-dkim-and-srs-in-postfix.html">another tutorial</a>. -->
@@ -4113,6 +4113,203 @@ recipient_canonical_classes = envelope_recipient,header_recipient</code>
       <code>sudo service postfix reload</code>
 	<h6><a href="#top">Return to top</a>.</h6>
 
+   <a name="ext_dkim"></a>
+      <h4>DKIM</h4>
+      <!--
+      <p>
+         <a href="http://www.dkim.org/">DKIM</a> does offer some good features,
+         and is worth looking into. I don't use DKIM so can't offer advice here,
+         but there are plenty of other tutorials, such as <a href="https://help.ubuntu.com/community/Postfix/DKIM">this one</a>.
+         If you servers suffers from a lot of spam and greylisting does not work well enough then look into DKIM.
+      </p>
+      -->
+      <p>
+         <a href="http://www.dkim.org/">DKIM</a> offer public key that checks if email sender is allowed so send on behalf of that domain.
+         It is quite rubust and well supported.
+      </p>
+      <code>sudo apt-get install opendkim opendkim-tools</code>
+
+      <p>
+         Open the default config:
+         <code>sudo vi /etc/default/opendkim</code>
+         Change the socket to be under Postfix's chroot:
+         <code class="document">
+SOCKET="local:/var/spool/postfix/var/run/opendkim/opendkim.sock"
+         </code>
+         Create the run time folder:
+         <code>sudo mkdir -p /var/spool/postfix/var/run/opendkim</code>
+         Make sure <em>opendkim</em> user can write to it:
+         <code>sudo chown opendkim:opendkim /var/spool/postfix/var/run/opendkim</code>
+         and postfix:
+         <code>sudo adduser postfix opendkim</code>
+      </p>
+
+      <h5>Configure DKIM</h5>
+
+      <code>sudo vi /etc/opendkim.conf</code>
+         
+      <p>
+       If we want to add DKIM to 3 domains, e.g. <em>example.com, example.co.uk</em> and <em>example.org</em>.
+       And choose <em>default</em> as our DNS selector:
+      </p>
+
+      <code class="document">
+Syslog                  yes
+LogWhy                  yes
+
+Domain                  <i>example.com,example.co.uk,example.org</i>
+<span class="comment"># KeyFile</span>
+Selector                <i>default</i> 
+SubDomains              yes
+
+ExternalIgnoreList      /etc/opendkim/TrustedHosts
+InternalHosts           /etc/opendkim/TrustedHosts
+KeyTable                /etc/opendkim/KeyTable
+SigningTable            /etc/opendkim/SigningTable
+      </code>
+      <p>
+         <em>KeyFile</em> needs to be commented out as we are using multiple keys.
+      </p>
+
+      <h5>Configure Postfix -&gt; DKIM</h5>
+
+      <code>sudo vi /etc/postfix/main.cf</code>
+
+      <code class="document">
+milter_default_action = accept
+smtpd_milters = unix:/var/run/opendkim/opendkim.sock
+non_smtpd_milters = unix:/var/run/opendkim/opendkim.sock
+      </code>
+      
+      <code>sudo vi /etc/postfix/master.cf</code>
+      
+      At the bottom of <em>master.cf</em> lets add a <em>no_milters</em>
+      config to the amavis integration:
+      <code class="document">
+127.0.0.1:10025 inet    n       -       -       -       -       smtpd
+<span class="comment">....</span>
+<span class="comment">....</span>
+<span class="comment">....</span>
+   -o receive_override_options=no_header_body_checks,no_unknown_recipient_checks<i>,no_milters</i>   
+      </code>
+
+      <h5>Generate Keys</h5>
+
+      <code>cd /tmp;
+
+opendkim-genkey -r -d <i>example.com</i>;
+sudo chown opendkim:opendkim default.*; 
+sudo mkdir -p /etc/opendkim/keys/<i>example.com</i>;
+sudo mv default.* /etc/opendkim/keys/<i>example.com</i>/;
+
+opendkim-genkey -r -d <i>example.co.uk</i>;
+sudo chown opendkim:opendkim default.*; 
+sudo mkdir /etc/opendkim/keys/<i>example.co.uk</i>;
+sudo mv default.* /etc/opendkim/keys/<i>example.co.uk</i>/;
+
+opendkim-genkey -r -d <i>example.org</i>;
+sudo chown opendkim:opendkim default.*; 
+sudo mkdir /etc/opendkim/keys/<i>example.org</i>;
+sudo mv default.* /etc/opendkim/keys/<i>example.org</i>/</code>
+
+      <h5>Configure Domains</h5>
+
+      <p>
+         First lets add IPs that we trust,
+         lets assum your server's public ip is <em>1.2.3.4</em>. 
+      </p>
+
+      <code>sudo vi /etc/opendkim/TrustedHosts</code>
+
+      <code class="document">
+127.0.0.1
+localhost
+<i>1.2.3.4</i>
+<i>smtp.example.com</i>
+      </code>
+      
+      <p>
+         Then create the lookup to find the DNS record for each domain:
+      </p>
+
+      <code>sudo vi /etc/opendkim/SigningTable</code>
+
+      <code class="document">
+<i>example.com</i> <i>default</i>._domainkey.<i>example.com</i>
+<i>example.co.uk</i> <i>default</i>._domainkey.<i>example.co.uk</i>
+<i>example.org</i> <i>default</i>._domainkey.<i>example.org</i>
+      </code>
+
+      <p>
+         And the reverse lookup in <em>KeyTable</em> to find the private keys:
+      </p>
+
+      <code>sudo vi /etc/opendkim/KeyTable</code>
+
+      <code class="document">
+<i>default</i>._domainkey.<i>example.com</i> <i>example.com</i>:<i>default</i>:/etc/opendkim/keys/<i>example.com</i>/default.private
+<i>default</i>._domainkey.<i>example.co.uk</i> <i>example.co.uk</i>:<i>default</i>:/etc/opendkim/keys/<i>example.co.uk</i>/default.private
+<i>default</i>._domainkey.<i>example.org</i> <i>example.org</i>:<i>default</i>:/etc/opendkim/keys/<i>example.org</i>/default.private
+      </code>
+
+      <h5>Configure DNS</h5>
+
+      <p>
+         Add a DNS TXT record for each domain for the host <i>default._domainkey</i>.
+         The contents of each domain's public key shows what to add:
+      </p>
+      <code>cat /etc/opendkim/keys/<i>example.com</i>/default.txt</code>
+      <p>
+         E.g.: the value will be something like:
+      </p> 
+      <code class="document">
+v=DKIM1; k=rsa; s=email; p=ABCDE.......FOOBAR
+      </code>
+   
+      <p>
+         Check afterwards if the DNS change is active:
+      </p>
+      <code>dig <i>default</i>._domainkey.<i>example.com</i> txt</code>
+
+      <h5>Test DKIM</h5>
+   
+      <p>
+         Activate the changes and test:
+      </p>
+      <code>sudo service opendkim stop;
+sudo service opendkim start;
+sudo postfix reload</code>
+
+      <p>
+         I suggest tailing <em>syslog</em> and <em>/var/log/mail.log</em>,
+      </p>
+      <p>
+         Then send a test mail via <em>mutt</em>.
+         You can specify sending address in <em>~/.muttrc</em>: 
+      </p>
+      <code>vi ~/.muttrc</code>
+      <code class="document">
+set from="<i>You</i> &lt;<i>you</i>@<i>example.com</i>&gt;"         
+      </code>
+      
+      <code>echo test | mutt -s testmail autorespond+dkim@dk.elandsys.com</code>
+      
+      <p>
+         This will reply in an email with details of how the DKIM worked. 
+      </p>
+
+
+	<h6><a href="#top">Return to top</a>.</h6>
+
+
+      <h4>Sender ID</h4>
+      <p>
+         <a href="
+   https://en.wikipedia.org/wiki/Sender_ID">Sender ID</a> is a protocol created by Microsoft.
+         It suffers from a few issues of differing standards and design flaws, and is not recommended.
+      </p>
+
+	<h6><a href="#top">Return to top</a>.</h6>
 
 	<a name="ext_pyzor"></a>
 	<h3>Spam reporting</h3>
