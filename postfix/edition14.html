@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2017-12-05</h6>
+<h6>Last Update: 2017-12-11</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -442,7 +442,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		<tr>
 			<td colspan="1" nowrap>14th (this)</td>
 			<td colspan="1">
-				Draft
+				Released
 			</td>
 			<td colspan="1" nowrap>2017-11</td>
 			<td colspan="1" nowrap>2017-12</td>
@@ -3991,17 +3991,16 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
    	<p>
    		<a href="http://www.openspf.org/">SPF</a> restricts which servers can send mail on behalf of your domains, and is an open design.
    	</p>
-		<h4>SPF configuration</h4>
+		<h4>SPF DNS configuration</h4>
 		<p>
 			The OpenSPF site has some nice <a href="http://www.openspf.org/Tools">SPF generation tools</a> to setup your SPF configuration.
-			Probably best to use theirs.
 		</p>
 		<p>
-			But the way I have my setup, is generally one domain with detailed SPF, then all other domains just with an SPF alias to it.
+			But the way I have my setup, is generally one domain with detailed SPF in its DNS, then all other domains just with an SPF alias to it.
 			e.g:
 		</p>
 		<p>
-			Main domain DNS TXT field:
+			Main domain (example.com) DNS TXT field:
 		</p>
 		<code>"v=spf1 a mx a:<i>myserver.example.com</i> include:aspmx.googlemail.com include:gmail.com include:_spf.google.com ~all"</code>
 		<p>
@@ -4038,6 +4037,55 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
 		<p>
 			Ps. Some domains I have added an even stricter SPF, as these are domains that will never send an email.
 		</p>
+         
+      <h4>SPF verification</h4>   
+      
+      <p>
+         To add SPF verification to your email server, as part of spam scoring, add this policy server to it:
+      </p>
+      <code>sudo apt-get postfix-policyd-spf-python postfix-pcre</code>
+      <p>
+         Edit its config file, and mark <em>HELO_reject</em> and <em>Mail_From_reject</em> to <em>False</em> so that the email are not rejected but a SPF header are added instead. I.e. part of your scoring. 
+      </p>  
+      <code>sudo vi /etc/postfix-policyd-spf-python/policyd-spf.conf</code>
+      <code class="document"><span class="comment"># HELO_reject = SPF_Not_Pass</span>
+HELO_reject = False
+<span class="comment"># Mail_From_reject = Fail</span>
+Mail_From_reject = False</code>
+   
+      <p>
+         Append to the end of your <em>master.cf</em> file:
+      </p>
+      <code>sudo vi /etc/postfix/master.cf</code>
+      <code class="document">policyd-spf  unix  -       n       n       -       0       spawn
+   user=policyd-spf argv=/usr/bin/policyd-spf</code>
+
+      <p>
+         And add a longer timeout to the end of <em>main.cf</em>:
+      </p>
+      <code>sudo vi /etc/postfix/main.cf</code>
+      <code class="document">policyd-spf_time_limit = 3600</code>
+      <p>
+         And then add the policy check to your <em>smtpd_recipient_restrictions</em>.
+         If you have <em>permit_mynetworks</em> before it, it will correctly skip checking SPF for local mail.
+         Make sure this lines are after the <em>reject_unauth_destination</em>.
+      </p>
+      <code class="document">smtpd_recipient_restrictions = 
+<span class="comment">...</span>
+reject_unauth_destination
+<span class="comment">...</span>
+permit_mynetworks
+<span class="comment">...</span>
+check_policy_service unix:private/policyd-spf,
+<span class="comment">...</span>
+permit
+      </code>
+      <p>
+         Reload postfix and in your <em>mail.log</em> should start to see some lines starting like these:
+      </p>
+      <code class="output">Apr 11 21:26:54 mail policyd-spf[1523]: Pass; id...</code>
+	<h6><a href="#top">Return to top</a>.</h6>
+
 
 		<h4>SPF problem</h4>
 		<p>
@@ -4088,10 +4136,6 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
          forwarding on rejections as the address includes source address.
       </p>
       <p>
-         Note SRS also has a problem. It will forward spam you receive as well. 
-         And your servers' reputation may get a bad spam score. 
-      </p>
-      <p>
          <!-- refer to <a href="https://seasonofcode.com/posts/setting-up-dkim-and-srs-in-postfix.html">another tutorial</a>. -->
          We will use the <a href="https://github.com/roehling/postsrsd">PostSRSd</a> deamon
          by <a href="https://github.com/roehling">roehling</a>.
@@ -4110,6 +4154,14 @@ recipient_canonical_classes = envelope_recipient,header_recipient</code>
          Activate the changes:
       </p>
       <code>sudo service postfix reload</code>
+
+
+      <h4>SRS Problem</h4>
+      <p>
+         Note SRS also has a problem. It will forward spam you receive as well. 
+         And your servers' reputation may get a bad spam score. 
+      </p>
+
 	<h6><a href="#top">Return to top</a>.</h6>
 
    <a name="ext_dkim"></a>
@@ -4211,7 +4263,7 @@ sudo mv default.* /etc/opendkim/keys/<i>example.org</i>/</code>
          If you have any other servers that use this server to send emails on to the internet,
          webmail etc,
          then list those ips and hostnames as well.
-      </p>w
+      </p>
 
       <code>sudo vi /etc/opendkim/TrustedHosts</code>
 
@@ -4294,9 +4346,14 @@ set from="<i>You</i> &lt;<i>you</i>@<i>example.com</i>&gt;"
          This will reply in an email with details if the DKIM signing worked. 
       </p>
 
+	<h6><a href="#top">Return to top</a>.</h6>
+
+      <h4>DMARC</h4>
+	<h6 class="red">todo</h6>
       <p>
-         Further reading and extension is <a href="https://en.wikipedia.org/wiki/Author_Domain_Signing_Practices">ADSP</a>
-         and its better replacement <a href="https://en.wikipedia.org/wiki/DMARC">DMARC</a>
+         To wrap/complete SPF and DKIM, <a href="https://en.wikipedia.org/wiki/DMARC">DMARC</a> is recommended.
+
+
       </p>
 
 
