@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Kubernetes Cookbook</title>
+	<link rel="shortcut icon" href="/favicon.ico">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content=""/>
+   <meta http-equiv="description" content=""/>
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../play/docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+   <h1>Kubernetes Cookbok</h1>
+   <p>
+      Quick command snippets to interact with <a href="#">Kubernetes</a>.
+   </p>
+
+
+
+   <ul>
+      <li><a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/">Cheatsheet</a></li>
+   </ul>
+
+
+   <ul>
+      <li><code>kubectl get pods selector app=somesystem</code></li>
+      <li><code>kubectl get jobs</code></li>
+      <li><code>kubectl exec -it podname -- bash</code></li>
+      <li><code>kubectl proxy -p 8123</code></li>
+      <li><code>kubectl replace -f blah</code></li>
+      <li><code>kubectl scale deployment appname replicas=3</code></li>
+      <li><code>kubectl describe podname</code></li>
+      <li><code>kubectl port-forward </code></li>
+      <li><code>kubectl get configmaps</code></li>
+      <li><code>kubectl get configmaps blah-config -o yml</code></li>
+      <li><code>kubectl delete pods --selector app=card</code></li>
+      <li><code>kubectl apply -f kube/deployment.yml</code></li>
+      <li><code>kubectl apply -f kube/test/config/configmap.yml</code></li>
+      <li><code>kubectl </code></li>
+
+   </ul>
+
+
+</body>
+</html>
+ 

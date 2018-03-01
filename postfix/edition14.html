@@ -4043,7 +4043,7 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
       <p>
          To add SPF verification to your email server, as part of spam scoring, add this policy server to it:
       </p>
-      <code>sudo apt-get postfix-policyd-spf-python postfix-pcre</code>
+      <code>sudo apt-get install postfix-policyd-spf-python postfix-pcre</code>
       <p>
          Edit its config file, and mark <em>HELO_reject</em> and <em>Mail_From_reject</em> to <em>False</em> so that the email are not rejected but a SPF header are added instead. I.e. part of your scoring. 
       </p>  
@@ -4072,9 +4072,9 @@ Mail_From_reject = False</code>
       </p>
       <code class="document">smtpd_recipient_restrictions = 
 <span class="comment">...</span>
-reject_unauth_destination
+reject_unauth_destination,
 <span class="comment">...</span>
-permit_mynetworks
+permit_mynetworks,
 <span class="comment">...</span>
 check_policy_service unix:private/policyd-spf,
 <span class="comment">...</span>
