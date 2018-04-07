@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>VNC via proxy</title>
+	<link rel="shortcut icon" href="/favicon.ico">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content=""/>
+   <meta http-equiv="description" content=""/>
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../play/docs.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+   <h1>VNC via proxy</h1>
+   <h3>Connect from local Linux machine via a gateway proxy to remote Windows machine</h3>
+   <p>
+      How I do remote helpdesk support to family members...
+   </p>
+
+   <ul>
+      <li>
+         On Windows machine install a VNC server.
+         <a href="http://tightvnc.com">TightVNC</a>
+      </li>
+      <li>
+         Create proxy, e.g. launch an Ubuntu instance on <a href="">AWS EC2</a>.
+         Ensure it has a public IP.
+         Add security group with policies:
+         <ul>
+            <li>Port 22 open to 0.0.0.0/0</li>
+            <li>Port range 5500-5599 open to 0.0.0.0/0</li>
+            <li>Port range 5800-5999 open to 0.0.0.0/0</li>
+         </ul>
+      </li>
+      <li>
+         One Linux machine SSH to EC2 proxy server
+         <code>ssh -i ~/.ssh/mysshkey ubuntu@<em>IP.OF.EC2.SERVER</em></code>
+      </li>
+      <li>
+         On EC2 proxy server
+         <ul>
+            <li>
+               Edit ssh config on EC2 proxy server
+               <code>sudo vi /etc/ssh/sshd_config</code>
+            </li>
+            <li>
+               Enable public ssh tunnel ports on EC2 proxy server
+               by enabling <em>GatewayPorts</em> at the end of sshd config file
+               <code>GatewayPorts yes</code>
+            </li>
+            <li>
+               Restart ssh service on EC2 proxy server
+               <code>sudo service sshd restart</code>
+            </li>
+         </ul>
+      </li>
+      <li>
+         On Linux machine
+         <ul>
+            <li>
+               install VNC client.
+               <code>sudo apt-get install xtightvncviewer</code>
+            </li>
+            <li>
+               Open remote SSH tunnel from Linux machine to EC2 based proxy server.
+               <code>ssh -N -T -v -i ~/.ssh/mysshkey -R 5500:0.0.0.0:5500 ubuntu@<em>IP.OF.EC2.SERVER</em></code>
+            </li>
+         </ul>
+      </li>
+      <li>
+         On Windows machine:
+         <ul>
+            <li>
+               Start VNC service (it may have already started).
+             </li>
+            <li>
+               Right click on VNC icon in bottom tray.
+            </li>
+            <li>
+               Choose "Attach Listening Viewer..."
+            </li>
+            <li>
+               Enter IP of EC2 proxy server.
+            </li>
+         </ul>
+      </li>
+      <li>
+         Once finished, 
+         on Windows machine you might want to shutdown TightVNC and even uninstall it so that it is not accidentally switched on later, and left exposed. 
+      </li>
+      <li>
+         Remember to shut down EC2 server, and terminiate it to avoid uneccesary charges.
+      </li>
+   </ul>
+
+</body>
+</html>
+ 
