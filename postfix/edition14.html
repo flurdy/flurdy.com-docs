@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2017-12-11</h6>
+<h6>Last Update: 2018-09-10</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -445,7 +445,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				Released
 			</td>
 			<td colspan="1" nowrap>2017-11</td>
-			<td colspan="1" nowrap>2017-12</td>
+			<td colspan="1" nowrap>2018-09</td>
 			<td colspan="1" class="desc">
 				Based on Ubuntu 16.04 LTS (xenial). Added DKIM.
 			</td>
@@ -739,16 +739,12 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 			<h4>OS: <b>Ubuntu Linux</b></h4>
 			<h6><a href="http://www.ubuntu.com">www.ubuntu.com</a></h6>
 			<p>
-				Ah the age old distro argument...
-				Thankfully this setup should work on most distros.
-				I used to base this howto on Mandrake (now Mandriva),
-				and I started this new edition on a Gentoo box.
-				But I don't have the patience for Gentoo,
-				nor the money to stay with Mandriva Power editions.
-				Why Ubuntu? Its free, simple and slick.
-				As Ubuntu is derived from debian the installations
-				used here will be apt-get based.
-				Please refer to my other editions for details on RPM
+            This howto initially used Mandrake (now Mandriva),
+            a little tangent into Gentoo,
+            before settling on Ubuntu.
+            As Ubuntu extends Debian 
+            most of this howo also works with Debian.
+				Please refer to <a href="#editions">older editions</a> for details on RPM
 				or source based installations.
 			</p>
 		</li>
@@ -780,10 +776,11 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 			<h4>Database: <b>MySQL</b></h4>
 			<h6><a href="http://www.mysql.com">www.mysql.com</a></h6>
 			<p>
-				Although I use Firebird for my application development,
-				(or Hibernate/C-JDBC hybrids),
-				MySQL is well supported for the sort of lookups required
+            MySQL is a popular relational database 
+				and with good support for the sort of lookups required
 				in a mail server.
+            Postgres can also be used, 
+            but not supported by all the tools used for this set up.
 			</p>
 		</li>
 		<li>
@@ -848,7 +845,6 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 			<h6><a href="http://www.roundcube.net">www.roundcube.net</a></h6>
 			<p>
 				Ajaxified prettier web mail client.
-				Not quite as solid as SquirrelMail.
 			</p>
 		</li>
 		<li>
@@ -857,7 +853,7 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 			<p>
 				This guide can be installed locally, co-located or in the cloud.<br/>
 				<a href="http://flurdy.com/docs/ec2/">My preference is ec2</a>,
-				and I provide <a href="#ec2">ec2 based examples</a>,
+            I provide some <a href="#ec2">ec2 based examples</a>,
 				however it makes no difference where you install your mail server.
 			</p>
 		</li>
