@@ -853,7 +853,6 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 			<h6><a href="http://aws.amazon.com/ec2">aws.amazon.com/ec2</a></h6>
 			<p>
 				This guide can be installed locally, co-located or in the cloud.<br/>
-				<a href="http://flurdy.com/docs/ec2/">My preference is ec2</a>,
             I provide some <a href="#ec2">ec2 based examples</a>,
 				however it makes no difference where you install your mail server.
 			</p>
@@ -4349,7 +4348,6 @@ set from="<i>You</i> &lt;<i>you</i>@<i>example.com</i>&gt;"
 
    <a name="ext_dmarc"></a>
       <h4>DMARC</h4>
-	<h6 class="red">todo</h6>
       <p>
          To wrap/complete SPF and DKIM, <a href="https://en.wikipedia.org/wiki/DMARC">DMARC</a> is recommended.
          DMARC is what you use to tell recipient servers what to do if DKIM and SPF fails.
@@ -4370,13 +4368,16 @@ set from="<i>You</i> &lt;<i>you</i>@<i>example.com</i>&gt;"
          Usually add a TXT entry to subdomain like <em>_dmark.example.com</em>,
          with a value similar to:
       </p>
-      <code class="document">v=DMARC1; p=none; pct=100; rua=mailto:somealiasgiventoyou@dmarc.postmarkapp.com; sp=none; aspf=r;</code>
+      <code class="document">v=DMARC1; p=<em>none</em>; pct=100; rua=mailto:<em>somealiasgiventoyou</em>@dmarc.postmarkapp.com; sp=<em>none</em>; aspf=r;</code>
 
       <p>
          Once you feel this works fine, 
-         and you get enough spam through that fails SPF and DMIM that makes it worth blocking at the envelope level for that domain,  
+         and you get enough spam through that fails SPF and DKIM that makes it worth blocking at the envelope level for that domain,  
          then you can harden your DMARC settings by changing the <em>p</em> value in your DNS entry,
          from <em>none</em> to <em>reject</em>.
+      </p>
+      <p>
+         The <em>sp</em> element is for subdomains. You can set this to <em>quarantine</em> if you valid for your setup.
       </p>
 
 
@@ -5148,7 +5149,7 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 		I have made a separate <a href="http://flurdy.com/docs/ec2/index.html">tips and howto on the use of ec2</a>
 		for general server needs.
 		Hope it will be useful for people.
-		It could do with some updating.
+		(It could do with some updating as it has not been updated since 2009).
 	</p>
 
 
@@ -5683,6 +5684,9 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 			2010-05-29:
 		</p></li>
 		-->
+		<li><p>
+			2018-09-10: Filled in DMARC
+		</p></li>
 		<li><p>
 			2017-12-05: Filled in DKIM properly
 		</p></li>
