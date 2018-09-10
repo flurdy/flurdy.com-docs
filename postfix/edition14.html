@@ -206,6 +206,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
                      <li><p><a href="#ext_spf">SPF</a></p></li>
                      <li><p><a href="#ext_srs">SRS</a></p></li>
                      <li><p><a href="#ext_dkim">DKIM</a></p>
+                     <li><p><a href="#ext_dmarc">DMARC</a></p>
                   </ul>
                </li>
 					<li><p><a href="#ext_pyzor">Spam Reporting</a></p></li>
@@ -3700,6 +3701,7 @@ delete from aliases where mail = 'foo@bar.com';</code>
             <li><p><a href="#ext_spf">SPF</a><p></li>
             <li><p><a href="#ext_srs">SRS</a><p></li>
             <li><p><a href="#ext_dkim">DKIM</a><p></li>
+            <li><p><a href="#ext_dmarc">DMARC</a><p></li>
          </ul>
 		<li><p><a href="#ext_pyzor">Spam reporting</a><p></li>
 		<li><p><a href="#ext_list">White/Black lists</a><p></li>
@@ -3972,12 +3974,13 @@ tar cf mail.xxxxx.tar  mail-*.xxxxx.tgz </code>
          To verify that senders are who they say they are (to avoid spam and phising) there are a few choices:
    	</p>
          <ul>
-            <li><p>SPF</p></li>
-            <li><p>SRS</p></li>
-            <li><p>DKIM</p></li>
+            <li><p><a href="#ext_spf">SPF</a></p></li>
+            <li><p><a href="#ext_spf">SRS</a></p></li>
+            <li><p><a href="#ext_dkim">DKIM</a></p></li>
+            <li><p><a href="#ext_dmarc">DMARC</a></p></li>
          </ul>
    	<p>
-         My preference is SPF and DKIM.
+         My preference is using SPF, DKIM and DMARC and not SRS.
    	</p>
 
 
@@ -4344,13 +4347,38 @@ set from="<i>You</i> &lt;<i>you</i>@<i>example.com</i>&gt;"
 
 	<h6><a href="#top">Return to top</a>.</h6>
 
+   <a name="ext_dmarc"></a>
       <h4>DMARC</h4>
 	<h6 class="red">todo</h6>
       <p>
          To wrap/complete SPF and DKIM, <a href="https://en.wikipedia.org/wiki/DMARC">DMARC</a> is recommended.
-
-
+         DMARC is what you use to tell recipient servers what to do if DKIM and SPF fails.
       </p>
+      <p>
+         Initially I would recommend setting DMARC to report only. And not reject. 
+         This way you can monitor how if you get many false positives etc.
+         And if it is even worth it to be restrictive for your domain.
+      </p>
+      <p>
+         <a href="https://dmarc.postmarkapp.com" target="_blank">Postmark</a> is a service I use to monitor and report DMARC.
+         They will guide you on your set up,
+         but basically you register,
+         and they will give an email alias to send DMARC reports via,
+         which you add to your domain's DNS.
+      </p>
+      <p>
+         Usually add a TXT entry to subdomain like <em>_dmark.example.com</em>,
+         with a value similar to:
+      </p>
+      <code class="document">v=DMARC1; p=none; pct=100; rua=mailto:somealiasgiventoyou@dmarc.postmarkapp.com; sp=none; aspf=r;</code>
+
+      <p>
+         Once you feel this works fine, 
+         and you get enough spam through that fails SPF and DMIM that makes it worth blocking at the envelope level for that domain,  
+         then you can harden your DMARC settings by changing the <em>p</em> value in your DNS entry,
+         from <em>none</em> to <em>reject</em>.
+      </p>
+
 
 
 	<h6><a href="#top">Return to top</a>.</h6>
