@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Migrate blog to Jekyll</title>
+   <link rel="shortcut icon" href="/favicon.ico">
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content="jekyll,blogger,blog,kubernetes,digital,ocean,docker,nginx,migrate,migration" />
+   <meta http-equiv="description" content="Migrate a blog from Blogger to Jekyll, hosting on an Nginx Docker container with Digital Ocean's Kubernetes" />
+   <meta name="viewport" content="initial-scale=0.8" />
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../play/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs2.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <style>
+      h1 {
+         font-size: 16pt;
+      }
+      h4 {
+         font-size: 12pt;
+      }
+      p {
+         font-size: 11pt;
+      }
+      li {
+         font-size: 11pt;
+      }
+   </style>
+   <script>
+      (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+         (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+         m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+      ga('create', 'UA-281408-1', 'auto');
+      ga('send', 'pageview');
+   </script>
+   <meta http-equiv="refresh" content="5; url="index.html">
+</head>
+
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/images/cc-by-sa-small.png"
+                  alt="cc by-sa" title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right"
+                  alt="flurdy" title="" class="flurdySmall" /></a>
+         </div>
+         <header>
+            <h1>
+               Migrate blog to Jekyll
+            </h1>
+            <h4>
+               Migrating my own blog from Blogger to a Jekyll generated blog.
+            </h4>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: February 2019.
+            Last updated: 22nd Feb 2019.
+         </div>
+
+         <div id="starboard">
+            <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#background">Background</a></li>
+                  <li><a href="#aim">Aim</a></li>
+                  <li><a href="#jekyll">Jekyll</a></li>
+                  <li>
+                     <a href="#create">Create Jekyll site</a>
+                     <ul>
+                        <li><a href="#docker_compose">Docker Compose</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#migrate_blogger">Migrate old Blogger posts</a></li>
+                  <li><a href="#theme">Theme</a></li>
+                  <li>
+                     <a href="#build">CI Build</a>
+                     <ul>
+                        <li><a href="#dockerfile">Dockerfile</a></li>
+                        <li><a href="#generate_site">Generate _site</a></li>
+                        <li><a href="#build_image">Build Docker image</a></li>
+                        <li><a href="#docker_registry">Docker registry</a></li>
+                        <li><a href="#docker_publish">Publish Docker image</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#hosting">Hosting</a>
+                     <ul>
+                        <li><a href="#digitalocean">Digital Ocean</a></li>
+                        <li><a href="#kubernetes_secret">Kubernetes secret</a></li>
+                        <li><a href="#kubernetes_deployment">Kubernetes deployment</a></li>
+                        <li><a href="#kubernetes_service">Kubernetes service</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#blog_procedure">Blog post procedure</a></li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Contact</a></li>
+               </ul>
+            </nav>
+         </div>
+
+         <div id="cargo">
+
+            <div id="draft">
+               <p>
+                  (<i>
+                  This document has just been published.
+                  <!-- This document has not yet been finalised. -->
+                  <!-- There are sections missing. -->
+                  There may still be many typos and code errors.
+                  Please <a href="#contact">let me know</a>.
+                  </i>)
+               </p>
+            </div>
+
+            <a name="background"></a>
+            <div class="paragraph">
+
+               <h3>Background</h3>
+
+               <p>
+                  I posted two blog posts recently:
+                  <a href="http://blog.flurdy.com/2019/02/migrating-blog-away-from-blogger.html">The first post</a> was about that I am moving
+                  <a href="http://blog.flurdy.com">my blog</a> away from <a href="http://blogger.com">Blogger</a>,
+                  and the reasons why.
+                  And <a href="http://blog.flurdy.com/2019/02/migrate-blog-to-jekyll.html">the second post</a> was that I was moving it to a <a href="http://jekyllrb.com">Jekyll</a> based blog,
+                  and specifying briefly why and how.
+               </p>
+            </div>
+
+            <a name="aim"></a>
+            <div class="paragraph">
+
+               <h3>Aim</h3>
+               <p>
+                  This howto is to show how it was done in detail.
+                  And not why as that is covered in the blog posts.
+               </p>
+
+               <p>
+                  This howto will show you how to create a Jekyll site using a <a href="http://docker.com">Docker</a> container.
+                  How to migrate blog posts from Blogger to Jekyll.
+                  What theme I chose.
+                  How I build my blog with <a href="https://circleci.com">CircleCI</a>,
+                  and how to host it with <a href="http://kubernetes.io">Kubernetes</a>.
+               </p>
+
+               <p>
+                  My blog is at <a href="http://blog.flurdy.com">blog.flurdy.com</a> and the repository is at <a
+                     href="http://github.com/flurdy/blog">github.com/flurdy/blog</a>.
+               </p>
+
+            </div>
+
+            <a name="jekyll"></a>
+            <div class="paragraph">
+
+               <h3>Jekyll</h3>
+
+               <p>
+                  <a href="https://jekyllrb.com">Jekyll</a> is web site generator.
+                  It is written in Ruby and was created by <a href="https://github.com">GitHub</a> to power their <a href="https://pages.github.com/">GitHub pages</a> sites.
+               </p>
+               <p>
+                  It outputs static html pages that you can host with any webserver.
+               </p>
+
+            </div>
+
+            <a name="create"></a>
+            <div class="paragraph">
+
+               <h3>Create Jekyll site</h3>
+
+               <p>
+                  Jekyll is <a href="https://jekyllrb.com/docs">normally installed</a> as a <a href="https://rubygems.org/gems/jekyll/">Ruby Gem</a>.
+                  I do not want Ruby installed locally,
+                  so thankfully there is a good <a href="ttps://hub.docker.com/r/jekyll/jekyll/">Jekyll Docker image</a>
+                  that lets you do all the development inside the container.
+               </p>
+               <p>
+                  Lets launch the container with a bash prompt,
+                  that mounts our local folder as <em>/srv/jekyll</em> within the container:
+               </p>
+
+               <code class="wide">
+                  docker run --rm --volume="$PWD:/srv/jekyll" -it jekyll/jekyll:3.8 /bin/bash
+               </code>
+
+               <p>
+                  And inside the container create a basic site and exit which destroys the container.
+                  However all the files are retained in the mounted volume folder.
+               </p>
+
+               <code class="">
+                  jekyll new myblog<br/>
+                  exit
+               </code>
+
+               <p>
+                  Initialise a Git repository inside the folder and launch a container now exposing a port mapping.
+               </p>
+
+               <code class="wide">
+                  cd myblog<br/>
+                  git init<br/>
+                  docker run --rm --volume="$PWD:/srv/jekyll" -it -p 4000:4000 jekyll/jekyll:3.8 /bin/bash
+               </code>
+
+               <p>
+                  Lets start the built in Jekyll web server from bash.
+               </p>
+
+               <code>
+                  bundle exec jekyll bundler
+               </code>
+
+               <p>
+                  Your plain website is now available at <a href="http://localhost:4000">localhost:4000</a>. (Assuming your docker host is local)
+               </p>
+
+               <p>
+                  Edit <em>_config.yml</em> and other files to see how the changes are reflected.
+               </p>
+
+            </div>
+
+
+            <a name="docker-compose"></a>
+            <div class="paragraph">
+
+               <h4>Docker Compose</h4>
+
+               <p>
+                  For ease of development I create a Docker Compose file to quickly launch the Jekyll server.
+                  And relaunch it quickly if tweaking the <em>Gemfile</em> or <em>_config.yml</em> which does not auto reload as opposed to most other files.
+               </p>
+
+               <code>
+                  vi docker-compose.yml
+               </code>
+
+               <code class="file">
+                  version: '3'<br/>
+                  <br />
+                  services:<br />
+                  &nbsp;&nbsp;jekyll:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;image: jekyll/jekyll:3.8<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;container_name: blog<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;environment:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- JEKYLL_ENV=docker<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;command: jekyll serve --force_polling --livereload --drafts<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;ports:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 4000:4000<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 35729:35729<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;volumes:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ./:/srv/jekyll<br />
+               </code>
+
+               <code>docker-compose up</code>
+
+            </div>
+
+
+            <a name="migrate_blogger"></a>
+            <div class="paragraph">
+
+               <h3>Migrate old Blogger posts</h3>
+
+               <p>
+                  Jekyll does come with a lot of <a href="https://import.jekyllrb.com/docs/home/">plugins to migrate</a> from other Blog and websites to Jekyll.
+                  The <a href="https://import.jekyllrb.com/docs/blogger/">Blogger plugin</a> works well.
+               </p>
+               <p>
+                  First <a href="https://support.google.com/blogger/answer/97416">export your existing Blogger posts</a>.
+                  Move the downloaded xml file into a <em>_import</em> folder for example.
+               </p>
+               <p>
+                  Then run the import script from within a Ruby container, a Jekyll one will do:
+               </p>
+               <code>
+                  ruby -r rubygems -e 'require "jekyll-import";<br/>
+                  &nbsp;&nbsp;&nbsp;JekyllImport::Importers::Blogger.run({<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"source" => "<em>_include/blog-MM-DD-YYYY.xml</em>",<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"no-blogger-info" => false,<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"replace-internal-link" => false, <br />
+                  })'
+               </code>
+
+               <p>
+                  This will create all your posts as files within <em>_posts</em>.
+               </p>
+
+               <p>
+                  In Blogger each post of mine had a year and month prefix folder path, but by default Jekyll also each post in day of the month subfolder as well.
+                  To main the same file names I needed to tweak Jekyll's <em>permalink</em> configuration.
+               </p>
+
+               <code>vi _config.yml</code>
+               <code class="file">permalink: '/:year/:month/:title:output_ext'</code>
+
+            </div>
+
+            <a name="theme"></a>
+            <div class="paragraph">
+
+               <h3>Theme</h3>
+
+               <p>
+                  There are a lot of <a href="https://jekyllrb.com/docs/themes/">Jekyll themes</a> out there. Lost of free ones, quite an extensive amount of themes for sale between $25-$50.
+                  Some are Ruby Gem based which makes installation a breeze.
+               </p>
+
+               <ul>
+                  <li><a href="http://jekyllthemes.org">jekyllthemes.org</a></li>
+                  <li><a href="https://jekyll-themes.com">jekyll-themes.com</a></li>
+                  <li><a href="https://jekyllthemes.io">jekyllthemes.io</a></li>
+                  <li><a href="https://github.com/jekyll/jekyll/wiki/Themes">github.com/jekyll/jekyll/wiki/Themes</a></li>
+                  <li><a href="https://talk.jekyllrb.com/t/jekyll-theme-showcase-share-your-jekyll-themes/">talk.jekyllrb.com/t/jekyll-theme-showcase-share-your-jekyll-themes/</a></li>
+                  <li><a href="https://github.com/planetjekyll/awesome-jekyll-themes">github.com/planetjekyll/awesome-jekyll-themes</a></li>
+               </ul>
+
+               <p>
+                  There was a few paid ones that looked good, but I find it hard to pay for a theme when I am not sure I would end up using it.
+                  However they still got to eat and pay rent so I don't know a better monitisation for them.
+                  I guess a post pay if you like has a lot lower return rate than prepay.
+               </p>
+
+               <p>
+                  Not all are suitable for a blog based websites. And I had further requirements such as a good sidebar, built in support for tags.
+                  In the end I settled on the excellent <a href="https://github.com/artemsheludko/galada">Galada theme</a> by <a href="http://artemsheludko.com">Artem Sheludko</a>.
+                  It is MIT licensed.
+               </p>
+               <p>
+                  I modified the Galada theme a little bit, such as adding a white background to blog posts for easier reading.
+                  I added an avatar vanity part to the sidebar.
+                  For easier browsing to old posts I added archive links in the sidebar, and archive templates.
+                  And I added a common License template for the blog posts content.
+               </p>
+
+               <p>
+                  To support these changes I added these plugins to the <em>_config.yml</em> and <em>Gemfile</em> files:
+               </p>
+
+               <code>vi _config.yml</code>
+               <code class="file">
+                  plugins:<br/>
+                  &nbsp;&nbsp;- jekyll-feed<br />
+                  &nbsp;&nbsp;- jekyll-paginate<br />
+                  &nbsp;&nbsp;- jekyll-sitemap<br />
+                  &nbsp;&nbsp;- jekyll-archives
+               </code>
+
+               <code>vi Gemfile</code>
+               <code class="file">
+                  group :jekyll_plugins do<br />
+                  &nbsp;&nbsp;gem "jekyll-paginate"<br />
+                  &nbsp;&nbsp;gem "jekyll-sitemap"<br />
+                  &nbsp;&nbsp;gem "jekyll-archives"<br />
+                  &nbsp;&nbsp;gem "jekyll-feed", "~> 0.6"<br />
+                  end
+               </code>
+
+
+            </div>
+
+            <a name="build"></a>
+            <div class="paragraph">
+
+               <h3>CI Build</h3>
+
+               <p>
+                  The beauty of Jekyll is that output is static html files and assets in the <em>_site</em> folder.
+                  And that folder can be copied to any webserver and that is all you need.
+               </p>
+
+               <p>
+                  This set up uses <a href="https://circleci.com">CircleCI</a> as the CI build tool.
+                  It will generate the <em>_site</em> folder, create a Docker image, and publish that image to a Docker registry.
+                  For this howto the registry used is <a href="https://quay.io">Quay.io</a>.
+               </p>
+
+               <p>
+                  For this project I create a GitHub repository that I push each change to.
+                  On CircleCI I then added a new build based on this Git repository.
+               </p>
+
+            </div>
+
+            <a name="dockerfile"></a>
+            <div class="paragraph">
+
+               <h4>Dockerfile</h4>
+
+               <p>
+                  Two generate a Docker image to deploy the blog site anywhere,
+                  a very simple <em>Dockerfile</em> based on <a href="https://hub.docker.com/_/nginx">Nginx image</a> will do.
+               </p>
+
+               <code>vi Dockerfile</code>
+               <code class="file">
+                  FROM nginx:1.15-alpine<br/>
+                  <br />
+                  COPY _site /usr/share/nginx/html
+               </code>
+
+            </div>
+
+            <a name="generate_site"></a>
+            <div class="paragraph">
+
+               <h4>Generate <em>_site</em></h4>
+
+               <p>
+                  To generate the <em>_site</em> these steps are required.
+                  (We also unfortunately need to hack a bundler reinstallation step.)
+               </p>
+
+               <code>
+                  mkdir .circleci<br/>
+                  vi .circleci/config.yml
+               </code>
+               <code class="file">
+                  version: 2.1<br/>
+                  jobs:<br />
+                  &nbsp;&nbsp;build:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;docker:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- image: circleci/ruby:2.6.0-node<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;environment:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BUNDLE_PATH: ~/repo/vendor/bundle<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BUNDLE_VERSION: 2.0.1<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;working_directory: ~/repo<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;steps:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- checkout<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- restore_cache:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keys:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- v1-dependencies-{{ checksum "Gemfile.lock" }}<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- v1-dependencies-<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- run:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: install bundler<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: |<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo gem update --system<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo gem uninstall bundler<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo rm /usr/local/bin/bundle<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo rm /usr/local/bin/bundler<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo gem install bundler<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- run:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: install dependencies<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: |<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bundle check || bundle install<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- save_cache:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ./vendor/bundle<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key: v1-dependencies-{{ checksum "Gemfile.lock" }}<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- run:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: Jekyll build<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: bundle exec jekyll build<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- persist_to_workspace:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root: ./<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- _site
+               </code>
+            </div>
+
+            <a name="build_image"></a>
+            <div class="paragraph">
+
+               <h4>Build docker image</h4>
+
+               <p>
+                  Building the Docker image is relatively straight forward.
+                  We also save the image as a tar file to be reused in the later publish step.
+               </p>
+
+               <code class="file">
+                  build-image:<br/>
+                  &nbsp;&nbsp;docker:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;- image: circleci/buildpack-deps:stretch<br />
+                  &nbsp;&nbsp;environment:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;IMAGE_NAME: <em>quay.io/yourusername/myblog</em><br />
+                  &nbsp;&nbsp;steps:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- checkout<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- attach_workspace:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at: ./<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- setup_remote_docker<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- run:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: Build Docker image<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: docker build -t $IMAGE_NAME:latest .<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- run:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: Archive Docker image<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: docker save -o image.tar $IMAGE_NAME<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- persist_to_workspace:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root: .<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- ./image.tar
+               </code>
+
+            </div>
+
+            <a name="docker_registry"></a>
+            <div class="paragraph">
+
+               <h4>Docker registry</h4>
+
+               <p>
+                  Before you upload any Docker images anywhere you need to create a Docker registry for it to upload it.
+               </p>
+               <p>
+                  For this howto we create a <a href="https://quay.io">Quay.io</a> repository.
+                  And a <a href="https://docs.quay.io/glossary/robot-accounts.html">robot user</a> with write permissions to authenticate with.
+               </p>
+
+            </div>
+
+            <a name="docker_publish"></a>
+            <div class="paragraph">
+
+               <h4>Publish Docker image</h4>
+
+               <p>
+                  To upload the Docker image to the registry a few run command is needed.
+                  Also you need to add into CircleCI's project settings two environment variables:
+                  <em>DOCKER_LOGIN</em> and <em>DOCKER_PASSWORD</em>.
+               </p>
+               <p>
+                  From Quay.io these are from the robot user authentication details.
+               </p>
+
+               <code class="file wide">
+                  publish-image:<br/>
+                  &nbsp;&nbsp;docker:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;- image: circleci/buildpack-deps:stretch<br />
+                  &nbsp;&nbsp;environment:<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;IMAGE_NAME: <em>quay.io/yourusername/myblog</em><br/>
+                  &nbsp;&nbsp;steps:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- setup_remote_docker<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- attach_workspace:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at: ./<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- run:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: Load archived Docker image<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: docker load -i image.tar<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- run:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: Upload to registry<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command: |<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo "$DOCKER_PASSWORD" | docker login <em>quay.io</em> -u "$DOCKER_LOGIN" --password-stdin<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;docker push $IMAGE_NAME:latest<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IMAGE_TAG="1.0.${CIRCLE_BUILD_NUM}"<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;docker push $IMAGE_NAME:$IMAGE_TAG
+               </code>
+
+               <p>
+                  For each Git push that triggers a CircleCI build you should now also have Docker images in Quay.io.
+               </p>
+
+            </div>
+
+            <a name="hosting"></a>
+            <div class="paragraph">
+
+               <h3>Hosting</h3>
+
+               <p>
+                  You can host a Jekyll site in so many ways.
+                  You can use <a href="https://jekyllrb.com/docs/deployment/manual/">AWS S3</a>,
+                  <a href="https://jekyllrb.com/docs/github-pages/">GitHub Pages</a> and may others.
+               </p>
+               <p>
+                  I prefer to choose my own <a href="http://kubernetes.io">Kubernetes</a> solution.
+                  That way it can use any plugins it wants and is not tied to a service provider.
+               </p>
+               <p>
+                  You can choose between so many Kubernetes providers.
+                  Your own <a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">Kubernetes the-hard-way</a> set up,
+                  using <a href="https://cloud.google.com/kubernetes-engine/">Google's GKE</a>,
+                  using <a href="https://aws.amazon.com/eks/">Amazon's EKS</a>,
+                  using <a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">Microsoft Azure's AKS</a>,
+                  etc.
+               </p>
+               <p>
+                  I chose <a href="https://m.do.co/c/fea5b8fd61fa">Digital Ocean's</a> recent Kubernetes solution.
+               </p>
+
+            </div>
+
+            <a name="digitalocean"></a>
+            <div class="paragraph">
+
+               <h4>Digital Ocean</h4>
+
+               <p>
+                  In Digital Ocean's console I create a new Kubernetes cluster.
+                  I add one node to it.
+               </p>
+               <p>
+                  I then download the <em>kubectl</em> config to authenticate with the cluster.
+                  I make sure this works by getting the cluster information:
+               </p>
+
+               <code>kubectl cluser-info</code>
+
+            </div>
+
+            <a name="kubernetes_secret"></a>
+            <div class="paragraph">
+
+               <h4>Kubernetes secret</h4>
+
+               <p>
+                  To enable my K8s setup to download images from Quay I need to create a <em>secret</em>.
+               </p>
+               <p>
+                  First I go into Quay.io's console for my docker registry to add another robot user, this time with only read permissions.
+               </p>
+               <p>
+                  Then I create the secret with:
+               </p>
+
+               <code class="wide">
+                  kubectl create secret docker-registry <em>myblog-registry</em> --docker-server=<em>quay.io</em> \<br/>
+                  --docker-username:<em>MYQUAYROBOT</em> --docker-password=<em>MYQUAYROBOTPASSWORD</em>
+               </code>
+
+            </div>
+
+            <a name="kubernetes_deployment"></a>
+            <div class="paragraph">
+
+               <h4>Kubernetes deployment</h4>
+
+               <p>
+                  A simple deployment that refers to the Quay.io stored image and secret.
+               </p>
+
+               <code>
+                  mkdir kube<br/>
+                  vi kube/deployment.yml
+               </code>
+
+               <code class="file">
+                  apiVersion: apps/v1<br/>
+                  kind: Deployment<br />
+                  metadata:<br />
+                  &nbsp;&nbsp;name: <em>myblog-deployment</em><br/>
+                  spec:<br/>
+                  &nbsp;&nbsp;selector:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: <em>myblog</em><br/>
+                  &nbsp;&nbsp;replicas: 2<br/>
+                  &nbsp;&nbsp;template:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: <em>myblog</em><br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;spec:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containers:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: <em>myblog-container</em><br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: <em>quay.io/yourusername/myblog</em>:<em>1.0.2</em><br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 80<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imagePullSecrets:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: <em>myblog-registry</em>
+               </code>
+
+               <p>
+                  Note the tag <em>1.0.2</em>. That must be which ever tag the latest Docker image is with the registry.
+                  An alternative is to use <em>latest</em>, but it is a bit arbitraty to which <em>latest</em> is currently deployed where then...
+               </p>
+
+               <p>
+                  You then apply it to K8s:
+               </p>
+
+               <code>kubectl apply -f kube/deployment.yml</code>
+
+               <p>
+                  And take a look at it with either:
+               </p>
+
+               <code>kubectl get deployments</code>
+               <code>kubectl describe deployments <em>myblog-deployment</em></code>
+
+            </div>
+
+            <a name="kubernetes_service"></a>
+            <div class="paragraph">
+
+               <h4>Kubernetes service</h4>
+
+               <p>
+                  We also need a service to expose the deployment.
+                  You can go direct with a <a href="">NodePort</a> type of service,
+                  but I use <a href="">Load balancer</a> that uses Digital Ocean's cloud controller.
+               </p>
+
+               <p>
+                  It is relatively simple:
+               </p>
+
+               <code>vi kube/service.yml</code>
+
+               <code class="file">
+                  apiVersion: v1<br/>
+                  kind: Service<br />
+                  metadata:<br />
+                  &nbsp;&nbsp;name: <em>myblog-service</em><br/>
+                  spec:<br/>
+                  &nbsp;&nbsp;type: LoadBalancer<br/>
+                  &nbsp;&nbsp;selector:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;app: <em>myblog</em><br/>
+                  &nbsp;&nbsp;ports:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;- protocol: TCP<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port: 80<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;targetPort: 80
+               </code>
+
+               <p>
+                  You then apply the service to K8s:
+               </p>
+
+               <code>kubectl apply -f kube/service.yml</code>
+
+               <p>
+                  And then keep an eye on it until it receives an external IP:
+               </p>
+
+               <code>kubectl get service --watch</code>
+               <code>kubectl describe service <em>myblog-service</em></code>
+
+               <p>
+                  When it has an external IP, then that is it.
+                  The blog is live. Just add the IP to a DNS entry somewhere.
+               </p>
+
+            </div>
+
+            <a name="blog_procedure"></a>
+            <div class="paragraph">
+
+               <h3>Blog posts procedure</h3>
+
+               <p>
+                  I draft blog posts using markdown in the <em>_drafts</em> folder.
+                  I do not prefix with a date.
+                  Locally the Docker Compose  set up will pick the drafts up as blog posts
+                  as it has the <em>--drafts</em> argument.
+               </p>
+
+               <code>
+                  mkdir _drafts<br/>
+                  vi _drafts/<em>a-new-blog</em>.md
+               </code>
+
+               <code class="file">
+                  # A new blog!<br/>
+                  <br/>
+                  Blah blah
+               </code>
+
+               <p>When the draft post is ready to be published, I move it to the _posts folder and prefix with a date.</p>
+
+               <code>
+                  mv _drafts/<em>a-new-blog</em>.md _posts/<em>2019-02-20-a-new-blog</em>.md
+               </code>
+
+               <p>
+                  I commit this to git and push to the origin repository.
+                  CirceCI starts a build, I get notified of the new docker image tag by Quay.io.
+                  I then update the tag number in the K8s <em>deployment.yml</em> file
+                  and reapply it to active the blog post on the live site:
+               </p>
+
+               <code>vi kube/deployment.yml</code>
+
+               <code class="file">
+                  ...<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;image: <em>quay.io/yourusername/myblog</em>:<em>1.0.43</em><br/>
+                  ...
+               </code>
+
+               <code>kubectl apply -f kube/deployment.yml</code>
+
+               <p>
+                  I may later automate the update of the live site on every successful build.
+               </p>
+
+            </div>
+
+
+            <a name="reference"></a>
+            <div class="paragraph">
+               <h3>References</h3>
+               <ul>
+                  <!--
+                  <li><a href=""></a></li>
+                  <li><a href=""></a></li>
+                  <li><a href=""></a></li>
+                  <li><a href=""></a></li>
+                  <li><a href=""></a></li>
+                  -->
+               </ul>
+            </div>
+
+            <a name="contact"></a>
+            <div class="paragraph">
+               <a name="contact"></a>
+               <h3>Feedback</h3>
+               <p>
+                  Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any typos, or useful additions.
+               </p>
+               <p>
+                  <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+                  <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+               </p>
+               <p>
+                  Otherwise <a href="/contact">contact me</a>.
+                  Especially for things factually incorrect.
+                  Apologies for procrastinated replies.
+               </p>
+            </div>
+
+         </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>
