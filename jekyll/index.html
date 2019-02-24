@@ -707,8 +707,9 @@
 
                <p>
                   We also need a service to expose the deployment.
-                  You can go direct with a <a href="">NodePort</a> type of service,
-                  but I use <a href="">Load balancer</a> that uses Digital Ocean's cloud controller.
+                  You can go direct with a <a href="https://kubernetes.io/docs/concepts/services-networking/service/#nodeport">NodePort</a> type of service,
+                  but I use <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Load balancer</a> that uses
+                  <a href="https://github.com/digitalocean/digitalocean-cloud-controller-manager">Digital Ocean's cloud controller</a>.
                </p>
 
                <p>
