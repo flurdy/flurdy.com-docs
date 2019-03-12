@@ -1,0 +1,18 @@
+
+      h2 {
+         font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+         font-size: 14pt;
+      }
+      h4 {
+         margin-top: 5px;
+      }
+      h5 {
+         font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+         font-size: 10pt;
+      }
+      .indented {
+         padding-left: 10px;
+      }
+      #ship {
+         max-width: 65em;
+      }

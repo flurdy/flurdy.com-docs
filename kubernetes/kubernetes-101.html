@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Kubernetes 101: Launch your first application with Kubernetes</title>
+   <link rel="shortcut icon" href="/favicon.ico">
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content="kubernetes,101,deployment,service,digitalocean" />
+   <meta http-equiv="description" content="Learn the basics of Kubernetes. And Launch your first application with Kubernetes" />
+   <meta name="viewport" content="initial-scale=0.8" />
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../play/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs2.css" rel="stylesheet" type="text/css" />
+   <link href="../jekyll/docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <style>
+   </style>
+   <script>
+      // (function (i, s, o, g, r, a, m) {
+      //    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      //       (i[r].q = i[r].q || []).push(arguments)
+      //    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      //       m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      // })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+      // ga('create', 'UA-281408-1', 'auto');
+      // ga('send', 'pageview');
+   </script>
+
+   <meta http-equiv="refresh" content="10; /docs/kubernetes/kubernetes-101.html" />
+</head>
+
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/images/cc-by-sa-small.png"
+                  alt="cc by-sa" title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right"
+                  alt="flurdy" title="" class="flurdySmall" /></a>
+         </div>
+         <header>
+            <h1>
+               Kubernetes 101
+            </h1>
+            <h2>
+               Launch your first application with Kubernetes
+            </h2>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: March 2019.
+            Last updated: 11th Mar 2019.
+         </div>
+
+         <div id="starboard">
+            <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#aim">Aim</a></li>
+                  <li><a href="#kubernetes">What is Kubernetes?</a></li>
+                  <li><a href="#basics">Kubernetes Basics</a></li>
+                  <li>
+                     <a href="#cluster">Create a cluster</a>
+                     <ul>
+                        <li><a href="#cluster_local">Local cluster</a></li>
+                        <li><a href="#cluster_server">Your own cluster</a></li>
+                        <li><a href="#cluster_cloud">Cloud provided services</a></li>
+                        <li><a href="#cluster_tools">3rd party tools</a></li>
+                        <li><a href="#cluster_digitalocean">Digital Ocean cluster</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#tools">Local k8s tools</a></li>
+                  <li>
+                     <a href="#deploy_echo">Deploy dummy app</a>
+                     <ul>
+                        <li><a href="#echo_deployment">Echo deployment</a></li>
+                        <li><a href="#echo_service">Echo service</a></li>
+                        <li><a href="#echo_loadbalancer">Echo load balancer</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#your_application">Your application</a>
+                     <ul>
+                        <li><a href="#multiple_applications">Multiple apps, ssl &amp; registries</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Contact</a></li>
+               </ul>
+            </nav>
+         </div>
+
+         <div id="cargo">
+
+            <div id="draft">
+               <p>
+                  (<i>
+                     This document has recently been published.
+                     <!-- This document has not yet been finalised. -->
+                     <!-- There are sections missing.<br/>&nbsp;&nbsp; -->
+                     There may still be many typos and code errors.
+                     <!-- Please <a href="#contact">let me know</a>. -->
+                  </i>)
+               </p>
+            </div>
+
+            <a name="aim"></a>
+            <div class="paragraph">
+
+               <h3>Aim</h3>
+               <div class="indented">
+                  <p>
+                     A how to guide to show you how to launch your first application in a Kubernetes cluster.
+                  </p>
+                  <p>
+                     It will show examples how to create a cluster, create application, services and load balancers so that your application is available on the internet.
+                  </p>
+                  <p>
+                     And along the way teach some Kubernetes basics (101).
+                  </p>
+               </div>
+            </div>
+
+            <a name="kubernetes"></a>
+            <div class="paragraph">
+               <h3>What is Kubernetes?</h3>
+
+               <div class="indented">
+
+                  <p>
+                     <a href="https://kubernetes.io/">Kubernetes</a> is both an orchestration and hosting tool for scalable containerised applications.
+                  </p>
+                  <p>
+                     Kubernetes (often abbreviated k8s) <a href="https://en.wikipedia.org/wiki/Kubernetes#History">was created by current and former Google staff</a> to copy some of the features of Google's internal tools, notably Borg and others.
+                     It was announced and open sourced by Google in 2014.
+                  </p>
+                  <p>
+                     Since that announcements Kubernetes has been adopted everywhere, and most cloud providers now offer a Kubernetes service, as well as a huge amount of 3rd party tools and services.
+                     It has become the orchestration tool for most for many reasons but important one is that it is open source,
+                     and not proprietary so companies and projects avoids being locked in to one cloud provider (ish).
+                     You can also run k8s on your local machine, and host it yourself on your own metal and colocation servers if you prefer.
+                  </p>
+
+               </div>
+            </div>
+
+            <a name="basics"></a>
+            <div class="paragraph">
+               <h3>Kubernetes basics</h3>
+
+               <div class="indented">
+                  <p>
+                     Kubernetes has become popular as it provides a lot of automated solution to scaling, self healing, optimisation, rollouts, etc.
+                     It has declarative configuration so allows source controlled configuration and easy backup, replication and extension.
+                  </p>
+                  <p>
+                     K8s features is vast, and below I have summarised a few key components.
+                     Over time as you can learn more but this is a starting point.
+                  </p>
+                  <p>
+                     If you want to learn Kubernetes properly I suggest following Kelsey Hightower's <a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">Kubernetes The Hard Way</a>.
+                     But as it says on the tin it is quite <em>comprehensive</em>.
+                  </p>
+
+                  <h5>Cluster</h5>
+                  <div class="indented">
+                     <p>
+                        A Kubernetes cluster is your entire Kubernetes system. Everything is within it.
+                     </p>
+                  </div>
+
+                  <h5>Node</h5>
+                  <div class="indented">
+                     <p>
+                        Nodes are the server instances that run inside your hosting provider to run your Kubernetes cluster on.
+                     </p>
+                     <p>
+                        Nodes are essentially what you pay for if you use a cloud provider's Kubernetes offering.
+                        There are two different nodes, "worker nodes" and "management nodes".
+                        Some of the cloud providers provide the <a href="">master nodes</a> for free.
+                     </p>
+                  </div>
+
+                  <h5>Deployment</h5>
+                  <div class="indented">
+                     <p>
+                        Basically your application.
+                        A <a href="http://docker.com">Docker containerised</a> application that can be scaled.
+                     </p>
+                     <p>
+                        There are many other types of "deployment": e.g. cron jobs, etc, but for the purpose of this guide, and most common use, think of it as your actual application.
+                     </p>
+                  </div>
+
+                  <h5>Pod</h5>
+                  <div class="indented">
+                     <p>
+                        A pod is what you actually horizontally scale across nodes.
+                        It wraps your deployment container as a unit.
+                     </p>
+                     <p>
+                        It may include other deployments that you want associated closely with each other.
+                        And it can include sidecar containers as well.
+                        Most of the time though a container contains just one deployment.
+                     </p>
+                     <p>
+                        A pod is often what you interact with when you are interacting and debugging something running on your Kubernetes
+                        cluster.
+                     </p>
+                  </div>
+
+                  <h5>Service</h5>
+                  <div class="indented">
+                     <p>
+                        The component that exposes your Deployment application. Mostly just internally inside your cluster, but can also be exposed externally.
+                        You can expose it externally directly via a NodePort service type in a crude but often useful manner.
+                        Or via Load Balancer (see below),
+                        or via an Ingress which is the most extensible option.
+                     </p>
+                  </div>
+
+                  <h5>Load Balancer</h5>
+                  <div class="indented">
+                     <p>
+                        A load balancer is a type of service that distributes traffic to your services from the internet.
+                        It will be associated with an external IP address.
+                        If you run Kubernetes on your own hardware it will deploy as a specific service.
+                        But if you use a cloud provider it might utilise that providers custom load balancer.
+                        Think <a href="https://aws.amazon.com/elasticloadbalancing/">ELB</a> if on AWS for example,
+                        or <a href="https://www.digitalocean.com/docs/kubernetes/how-to/add-load-balancers/">Digital Ocean's cloud controller</a>.
+                        Kubernetes will provision and configure the cloud provided load balancer automatically and invisibly for you.
+                     </p>
+                  </div>
+
+                  <h5>Ingress</h5>
+                  <div class="indented">
+                     <p>
+                        Ingresses lets you define which service gets traffic redirected to them.
+                        Usually with a load balancer in front to expose it.
+                        A typical configuration is routing via request host or path.
+                     </p>
+                     <p>
+                        E.g. If you host several apps or websites in the same cluster,
+                        you  might configure the Ingress so that requests to <em>www.example.com</em> goes to one service and <em>www.dummy.org</em> goes to another.
+                     </p>
+                     <p>
+                        Or request to paths starting with <em>/shoppingcart</em> goes to one and <em>/admin</em> goes to another.
+                     </p>
+                  </div>
+
+                  <h5>Config map</h5>
+                  <div class="indented">
+                     <p>
+                        Config maps are the run time configuration and environment variables you define to configure your applications.
+                     </p>
+                  </div>
+
+                  <h5>Secrets</h5>
+                  <div class="indented">
+                     <p>
+                        Secrets are a special type of encrypted config maps.
+                        Suitable for database connections, API tokens, encryption keys and more.
+                     </p>
+                  </div>
+
+                  <h5>And more</h5>
+                  <div class="indented">
+                     <p>
+                        And there is so much more to Kubernetes.
+                        Namespaces, cluster issuers, cronjobs, storage options, DNS, liveness probes, memory limits, autoscaling, etc, etc.
+                     </p>
+                  </div>
+
+               </div>
+            </div>
+
+
+            <a name="cluster"></a>
+            <div class="paragraph">
+               <h3>Create cluster</h3>
+               <div class="indented">
+                  <p>
+                     Your first decision is where to create your Kubernetes cluster.
+                     On your laptop/desktop, your own servers or a cloud provider.
+                  </p>
+
+                  <a name="cluster_local"></a>
+                  <h5>Local cluster</h5>
+                  <div class="indented">
+                     <p>
+                        You can deploy a cluster locally.
+                        With amongst others:
+                     </p>
+                     <ul>
+                        <li>
+                           <a href="https://docs.docker.com/docker-for-mac/">Docker for Mac</a>.
+                           The official client from Docker inc does include an option to <a href="https://docs.docker.com/docker-for-mac/kubernetes/">create a Kubernetes cluster</a> locally.
+                        </li>
+                        <li>
+                           <a href="https://github.com/kubernetes/minikube">Minikube</a>.
+                           A full cluster locally. Widely used for development.
+                        </li>
+                        <li>
+                           <a href="https://microk8s.io/">Microk8s</a>.
+                           Simple local Kubernetes with Ubuntu.
+                        </li>
+                     </ul>
+                     <p>
+                        Having a local cluster is handy for development but not essential.
+                        I suggest delaying setting up a local one until you have a real cluster running elsewhere.
+                     </p>
+                  </div>
+                  <a name="cluster_server"></a>
+                  <h5>Your own servers</h5>
+                  <div class="indented">
+                     <p>
+                        You can follow <a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">Kubernetes The Hard Way</a>
+                        to create a cluster on your own servers from scratch.
+                     </p>
+                     <p>
+                        Or follow some ready made guides for server instances from a cloud provider:
+                     </p>
+                     <ul>
+                        <li><a href="https://kubernetes.io/docs/setup/turnkey/aws/">Amazon's AWS turnkey Kubernetes</a></li>
+                        <li><a href="https://kubernetes.io/docs/setup/turnkey/gce/">Google's GCE turnkey Kubernetes</a></li>
+                        <li><a href="https://kubernetes.io/docs/setup/turnkey/azure/">Microsoft's Azure turnkey Kubernetes</a></li>
+                     </ul>
+                  </div>
+
+                  <a name="cluster_cloud"></a>
+                  <h5>Cloud provider k8s service</h5>
+                  <div class="indented">
+                     <p>
+                        The quickest and easiest way to create a Kubernetes cluster is to use a cloud provider's Kubernetes service.
+                     </p>
+                     <ul>
+                        <li><a href="https://aws.amazon.com/eks/">EKS by AWS</a></li>
+                        <li><a href="https://cloud.google.com/kubernetes-engine/">GKE by Google</a></li>
+                        <li><a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">AKS by Azure</a></li>
+                        <li><a href="https://www.digitalocean.com/products/kubernetes/">Digital Ocean Kubernetes</a></li>
+                     </ul>
+                     <p>
+                        EKS by AWS is probably the most used, primarly because so many already use AWS. However it is not cheap.
+                     </p>
+                     <p>
+                        GKE was launched a long time before the others, and is comprehensive.
+                        Google's offering seems to be the one where Kubernetes is the priority of their entire cloud offering.
+                        For most people I would suggest taking a look at GKE first.
+                     </p>
+                     <p>
+                        I have heard good things about AKS, as I have with a lot of the <em>new</em> Microsoft.
+                        But I have not tried it yet.
+                     </p>
+                     <p>
+                        Digital Ocean's Kubernetes is still in &Beta;eta and is the newest.
+                        It is however my prefered Kubernetes provider as it is quite polished and uncomplicated.
+                     </p>
+                  </div>
+
+                  <a name="cluster_tools"></a>
+                  <h5>3rd party providers and tools</h5>
+                  <div class="indented">
+                     <p>
+                        Many tools exists to abstract the creation and management of clusters in different ways.
+                        Some offer their own hosting, some allows abstract multi cloud clusters, some a fancy UI, etc.
+                        For example:
+                     </p>
+                     <ul>
+                        <li><a href="https://containership.io/">Containership</a></li>
+                        <li><a href="https://rancher.com">Rancher</a></li>
+                        <li><a href="https://coreos.com/tectonic/">Tectonic</a></li>
+                        <li><a href="https://www.openshift.com/">OpenShift</a></li>
+                        <li><a href="https://www.ibm.com/cloud/container-service">IBM container service</a></li>
+                        <!-- <li><a href="https://www.docker.com/products/docker-enterprise">Docker Enterprise</a></li> -->
+                        <li><a href="https://www.joyent.com/triton/kubernetes">Triton Kubernetes</a></li>
+                        <li><a href="https://www.terraform.io/">Terraform</a></li>
+                        <li><a href="https://www.docker.com/products/orchestration">Docker Orchestration</a></li>
+                        <!-- <li><a href=""></a></li> -->
+                     </ul>
+
+                     <p>
+                        Some of these are really good. But I would suggest using vanilla Kubernetes initially to understand it properly.
+                        You might find you don't need any abstractions on top of it.
+                     </p>
+                  </div>
+
+                  <a name="cluster_digitalocean"></a>
+                  <h5>Create a Digital Ocean cluster</h5>
+                  <div class="indented">
+                     <p>
+                        You can create a cluster wherever you prefer, but for the purpose of this howto I would assume it was with <a href="https://digitalocean.com">Digital Ocean</a>.
+                        As Kubernetes is fairly agnostic the rest of the howto is pretty much the same wherever and with whomever your cluster was created.
+                     </p>
+                     <p>
+                        Login or create an account with Digital Ocean. You can use <a href="https://m.do.co/c/fea5b8fd61fa">my referral link</a>.
+                     </p>
+                     <p>
+                        You may need to activate their <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes product</a> if it is still in &Beta;eta.
+                        <a href="https://cloud.digitalocean.com/kubernetes/clusters">Create a new cluster in the admin tool</a>.
+                     </p>
+                  </div>
+
+                  <h5>Cluster Nodes size</h5>
+                  <div class="indented">
+                     <p>
+                        During cluster creation you will probably be asked to specify nodes required.
+                        Digital Ocean defaults to 3 nodes of the 2gb memory instance.
+                        I suggest changing that to 1 node and perhaps 4gb.
+                     </p>
+                     <p>
+                        You can change and scale this differently later when you know your requirements better.
+                        And then you might need more redundancy and scaling requirements.
+                     </p>
+                     <p>
+                        Make sure you download the config that you will use in the next section to set up <em>kubectl</em>.
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+
+
+            <a name="cluster"></a>
+            <div class="paragraph">
+               <h3>Local Kubernetes tools</h3>
+               <div class="indented">
+                  <h5>Install kubectl</h5>
+                  <div class="indented">
+                     <p>
+                        To connect to and control remote Kubernetes clusters you need the <em>kubectl</em> command line tool.
+                     </p>
+                     <p>
+                        It is <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">available for most operating systems and environments</a>.
+                        It is available as <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-native-package-management">.deb &amp; .rpm for Linux OSes</a>.
+                     </p>
+                     <p>
+                        As an Ubuntu Snap package:
+                     </p>
+                     <code>sudo snap install kubectl --classic</code>
+                     <p>
+                        For MacOs you can install it via <a href="">Homebrew</a>:
+                     </p>
+                     <code>brew install kubernetes-cli</code>
+                     <p>
+                        And various options if on Windows.
+                     </p>
+                  </div>
+                  <h5>Config context</h5>
+                  <div class="indented">
+                     <p>
+                        When you created your cluster your provider hopefully supplied a context config for you.
+                        Open <em>~/.kube/config</em> and insert these in to it.
+                     </p>
+                     <p>
+                        It should contain a cluster section, a user section, and a context section that ties these together.
+                        Over time this file will contain config for other staging and production clusters,
+                        so make sure no YAML typos are made.
+                     </p>
+                  </div>
+                  <h5>Connect</h5>
+                  <div class="indented">
+                     <p>
+                        Check if the context is correct with this command that connects your cluster:
+                     </p>
+                     <code>kubectl cluster-info</code>
+                     <p>
+                        Any <em>"can not log in"</em> errors usually means there is a typo in your YAML config.
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+
+            <a name="deploy_echo"></a>
+            <div class="paragraph">
+               <h3>Deploy a dummy application</h3>
+               <div class="indented">
+                  <p>
+                     We will use a real application later.
+                     But first we will use a simple dummy one
+                     to test the tracer bullet stack all the way.
+                  </p>
+                  <p>
+                     A simple Nginx webserver image will suffice,
+                     and <a href="https://www.hashicorp.com/">Hashicorp</a> also provides a special <a href="https://hub.docker.com/r/hashicorp/http-echo/">echo image</a> that is very suitable for this.
+                  </p>
+
+                  <a name="echo_deployment"></a>
+                  <h5>Echo deployment</h5>
+                  <div class="indented">
+                     <p>
+                        Open a deployment.yml file:
+                     </p>
+                     <code>vi echo1-deployment.yml</code>
+                     <code class="file">
+                        apiVersion: apps/v1<br />
+                        kind: Deployment<br />
+                        metadata:<br />
+                        &nbsp;&nbsp;name: echo1<br />
+                        spec:<br />
+                        &nbsp;&nbsp;selector:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo1<br />
+                        &nbsp;&nbsp;replicas: 2<br />
+                        &nbsp;&nbsp;template:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo1<br />
+                        &nbsp;&nbsp;spec:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;containers:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;- name: echo1<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: hashicorp/http-echo<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "-text=<em>echoNumberOne</em>"<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 5678
+                     </code>
+                     <p>
+                        Note, I strongly suggest your version control all your Kubernetes configuration.
+                        Either as part of a project repository in e.g. a root <em>kube</em> folder.
+                        Or as separate config repositories.
+                     </p>
+                     <p>
+                        Lets apply this to your Kubernetes cluster:
+                     </p>
+                     <code>kubectl apply -f echo1-deployment.yml</code>
+                     <p>
+                        You can use the <em>apply</em> or <em>create</em> keyword on initial creation. But only <em>apply</em> to update an existing one from then on.
+                     </p>
+                     <p>
+                        You can see if it deployed without problems with:
+                     </p>
+                     <code>kubectl get deployments</code>
+                     <p>
+                        The output should be something like:
+                     </p>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;DESIRED&nbsp;&nbsp;CURRENT&nbsp;&nbsp;UP-TO-DATE&nbsp;&nbsp;AVAILABLE&nbsp;&nbsp;AGE<br/>
+                        echo1&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2s
+                     </code>
+                  </div>
+
+                  <a name="echo_service"></a>
+                  <h5>Echo service</h5>
+                  <div class="indented">
+                     <p>
+                        We will put a simple service on top that routes port 80 to the replicated containers port 5678.
+                     </p>
+                     <code>vi echo1-service.yml</code>
+                     <code class="file">
+                        apiVersion: v1<br/>
+                        kind: Service<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo1<br/>
+                        spec:<br />
+                        &nbsp;&nbsp;ports:<br />
+                        &nbsp;&nbsp;- port: 80<br />
+                        &nbsp;&nbsp;targetPort: 5678<br />
+                        &nbsp;&nbsp;selector:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;app: echo1
+                     </code>
+                     <p>
+                        Note, you can combine the deployment and service into one YAML file, seperated by a line containing <em>---</em>.
+                        Some people prefer that. I don't.
+                     </p>
+                     <p>
+                        Before we apply this Kubernetes lets check if anything is running.
+                        There should be a <em>kubernetes</em> service on port 443 and nothing else:
+                     </p>
+                     <code>kubectl get services</code>
+                     <code class="output">NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
+                        EXTERNAL-IP&nbsp;
+                        PORT(S)&nbsp;
+                        AGE<br />
+
+                        kubernetes&nbsp;
+                        ClusterIP&nbsp;
+                        10.24.0.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        443/TCP&nbsp;
+                        2d
+                     </code>
+                     <p>
+                        Then lets apply the echo service to Kubernetes:
+                     </p>
+                     <code>kubectl apply -f echo1-service.yml</code>
+                     <p>
+                        And the status of the service(s):
+                     </p>
+                     <code>kubectl get services</code>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
+                        EXTERNAL-IP&nbsp;
+                        PORT(S)&nbsp;
+                        AGE<br/>
+
+                        echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.40.234</em>&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;
+                        5m<br/>
+
+                        kubernetes&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        443/TCP&nbsp;
+                        2d
+                     </code>
+                     <p>
+                        Note, no external port.
+                     </p>
+                     <p>
+                        You can expose this service directly to the internet by changing the service to a
+                        <a href="https://kubernetes.io/docs/concepts/services-networking/service/#nodeport">NodePort</a> type.
+                        Or you can add an external IP by changing the service to a <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">LoadBalancer</a> type.
+                     </p>
+                  </div>
+
+                  <a name="echo_loadbalancer"></a>
+                  <h5>Echo load balancer</h5>
+                  <div class="indented">
+                     <p>
+                        Below we will modify the <em>echo1</em> service to be a load balancer.
+                     </p>
+                     <code>vi echo1-service-loadbalancer.yml</code>
+                     <code class="file">
+                        apiVersion: v1<br/>
+                        kind: Service<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo1<br/>
+                        spec:<br />
+                        &nbsp;&nbsp;type: LoadBalancer<br/>
+                        &nbsp;&nbsp;ports:<br />
+                        &nbsp;&nbsp;- port: 80<br />
+                        &nbsp;&nbsp;targetPort: 5678<br />
+                        &nbsp;&nbsp;selector:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;app: echo1</code>
+                     <p>
+                        Note there was only one line added from the original service,
+                        the <em>type</em> set to <em>LoadBalancer</em> in the <em>spec</em>.
+                     </p>
+                     <code>kubectl apply -f echo1-service-loadbalancer.yml</code>
+                     <code>kubectl get services</code>
+                     <code class="output">
+                           NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
+                           EXTERNAL-IP&nbsp;
+                           PORT(S)&nbsp;
+                           AGE<br/>
+
+                           echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           ClusterIP&nbsp;
+                           <em>10.24.40.234</em>&nbsp;&nbsp;
+                           &lt;pending&gt;&nbsp;&nbsp;&nbsp;
+                           80/TCP&nbsp;&nbsp;
+                           5m<br/>
+
+                           kubernetes&nbsp;
+                           ClusterIP&nbsp;
+                           <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           443/TCP&nbsp;
+                           2d
+                     </code>
+                     <p>
+                        Note the <em>pending</em> in external IP column.
+                        If you keep polling with that command eventualy this changes to:
+                     </p>
+                     <code class="output">
+                           NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
+                           EXTERNAL-IP&nbsp;
+                           PORT(S)&nbsp;
+                           AGE<br/>
+
+                           echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           ClusterIP&nbsp;
+                           <em>10.24.40.234</em>&nbsp;&nbsp;
+                           <em>1.2.3.4</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           80/TCP&nbsp;&nbsp;
+                           5m<br/>
+
+                           kubernetes&nbsp;
+                           ClusterIP&nbsp;
+                           <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                           443/TCP&nbsp;
+                           2d
+                     </code>
+                     <p>
+                        You can now <em>curl</em> or use a browser to reach that external IP.
+                        Or add it your <em>/etc/hosts</em> file or a DNS.
+                     </p>
+                     <code>curl <em>1.2.3.4</em></code>
+                     <code class="output">
+                        <em>echoNumberOne</em>
+                     </code>
+                  </div>
+               </div>
+            </div>
+
+            <a name="your_application"></a>
+            <div class="paragraph">
+               <h3>Your application</h3>
+               <div class="indented">
+                  <p>
+                     You now have an application hosted with Kubernetes exposed to the internet.
+                  </p>
+                  <p>
+                     You can change the image in the echo deployment to your own application.
+                  </p>
+
+                  <a name="multiple_applications"></a>
+                  <h5>Multiple applications, SSL &amp; Docker registries</h5>
+                  <div class="indented">
+                     <p>
+                        However using Kubernetes for a single application is significant overkill.
+                     </p>
+                     <p>
+                        Naturally you want to extend this cluster to include many more applications.
+                        Whether as part of a microservices architecture,
+                        or separate applications and websites all together.
+                     </p>
+                     <p>
+                        In part two of this Kubernetes introduction we will add an Ingress controller
+                        so you can route traffic to multiple applications in the same cluster.
+                     </p>
+                     <p>
+                        We will add a Cluster Issuer so that we can use <a href="https://letsencrypt.org/">Let's Encrypt</a> to add a SSL certificate to your site(s).
+                     <!-- </p>
+                     <p> -->
+                        We will show how to use a 3rd party Docker Registry. I.e. so you can use your own private Docker images for your deployments.
+                     <!-- </p>
+                     <p> -->
+                        And that howto will at the same time introduce <a href="https://github.com/helm/helm">Helm</a> so that installing complicated applications in Kubernetes becomes very simple.
+                     </p>
+                     <p>
+                        Please continue to <a href="kubernetes-ingress-ssl-helm.html">Kubernetes Ingress &amp; ssl with helm</a>
+                        for a more extendable and manageable Kubernetes cluster.
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+            <!--
+
+            <a name="multiple_applications"></a>
+            <div class="paragraph">
+               <h3>Multiple applications</h3>
+               <div class="indented">
+                  <p>
+                     Kubernetes for a single application is significant overkill.
+                     Naturally you want to extend this cluster to include many more applications.
+                     Whether as part of microservices architecture,
+                     or separate applications and websites all together.
+                  </p>
+                  <p>
+                     This can easily be achieved with adding an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a>
+                     behind your load balancer that redirect incomming requests to different services depending on various qualifiers,
+                     most commonly request host name or request path.
+                  </p>
+
+                  <a name="second_application"></a>
+                  <h5>Second application</h5>
+                  <div class="indented">
+                     <p>
+                        Lets create a second application deployment:
+                     </p>
+                     <code>vi echo2-deployment.yml</code>
+                     <code class="file">
+                        apiVersion: apps/v1<br />
+                        kind: Deployment<br />
+                        metadata:<br />
+                        &nbsp;&nbsp;name: echo2<br />
+                        spec:<br />
+                        &nbsp;&nbsp;selector:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo2<br />
+                        &nbsp;&nbsp;replicas: 2<br />
+                        &nbsp;&nbsp;template:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo2<br />
+                        &nbsp;&nbsp;spec:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;containers:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;- name: echo1<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: hashicorp/http-echo<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "-text=<em>echoNumberTwo</em>"<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 5678
+                     </code>
+                     <p>
+                        This is near copy of <em>echo1</em> and of course in a real world scenario this will be a totally different application image.
+                     </p>
+                     <code>kubectl apply -f echo2-deployment.yml</code>
+                     <p>
+                        And a second non load balancer service,
+                        without any <em>LoadBalancer</em> type.
+                     </p>
+                     <code>vi echo2-service.yml</code>
+                     <code class="file">
+                        apiVersion: v1<br/>
+                        kind: Service<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo2<br/>
+                        spec:<br />
+                        &nbsp;&nbsp;ports:<br />
+                        &nbsp;&nbsp;- port: 80<br />
+                        &nbsp;&nbsp;targetPort: 5678<br />
+                        &nbsp;&nbsp;selector:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;app: echo2
+                     </code>
+                     <code>kubectl apply -f echo2-service.yml</code>
+                     <p>
+                        We need to remove the echo1 load balanced service as it is no longer needed.
+                     </p>
+                     <code>
+                        kubectl delete service echo1
+                     </code>
+                     <p>
+                        And reinstate the original plain echo1 service without the <em>LoadBalancer</em> type.
+                     </p>
+                     <code>
+                        kubectl apply -f echo1-service.yml
+                     </code>
+                     <p>
+                        We should have no services with an external IP address.
+                     </p>
+                     <code>
+                        kubectl get services
+                     </code>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
+                        EXTERNAL-IP&nbsp;
+                        PORT(S)&nbsp;
+                        AGE<br/>
+
+                        echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.40.234</em>&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;
+                        15s<br/>
+
+                        echo2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.65.74</em>&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;
+                        48s<br/>
+
+                        kubernetes&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        443/TCP&nbsp;
+                        2d
+                     </code>
+                  </div>
+
+                  <a name="echo_ingress"></a>
+                  <h5>Echo Ingress</h5>
+                  <div class="indented">
+                     <p>
+                        Lets add an <em>Ingress</em> that directs to the different echos depending on hostname.
+                     </p>
+                     <code>vi echo-ingress.yml</code>
+                     <code class="file">
+                        apiVersion: extensions/v1beta1<br/>
+                        kind: Ingress<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo-ingress<br/>
+                        spec:<br/>
+                        &nbsp;&nbsp;rules:<br/>
+                        &nbsp;&nbsp;- host: <em>echo1.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo1<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80<br/>
+                        &nbsp;&nbsp;- host: <em>echo2.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo2<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80
+                     </code>
+                     <p>
+                        Note this redirects on <em>echo1.ex.com</em> and <em>echo2.ex.com</em>.
+                        This will only work if you add these to your <em>/etc/hosts</em> file.
+                        However you may prefer to use real DNS names for others to also use the service,
+                        and to later add SSL etc.
+                        (Though you will have to wait as we have not got an external IP yet)
+                     </p>
+                     <code>kubectl create -f echo-ingress.yml</code>
+                     <code>kubectl get ingress</code>
+                     <code class="file wide">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        HOSTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ADDRESS&nbsp;
+                        PORTS&nbsp;
+                        AGE<br/>
+                        echo-ingress&nbsp;
+                        echo1.ex.com,echo2.ex.com&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80&nbsp;&nbsp;&nbsp;&nbsp;
+                        3s
+                     </code>
+                     <p>
+                        Note the missing address.
+                        We will add a load balancer in front with an external address next.
+                     </p>
+                  </div>
+
+               </div>
+            </div>
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+               <div class="indented">
+
+               </div>
+            </div>
+
+
+
+            <a name="your_application"></a>
+            <div class="paragraph">
+               <h3>Your application</h3>
+               <div class="indented">
+                  <p>
+                     You can now change the echo deployment to be your application.
+                     You will need to change or create a new deployment YAML file
+                     that points to your own <a href="https://docker.com">Docker</a> image and relevant port(s).
+                  </p>
+
+                  <a name="docker_build"></a>
+                  <h5>Docker build</h5>
+                  <div class="indented">
+                     <p>
+                        If you need advice on how to create a Docker Image
+                        you can refer to my <a href="http://flurdy.com/docs/jekyll/">Migrate to Jekyll</a> howto document.
+                        That howto includes instructions on how to use <a href="https://circleci.com">CircleCI</a>
+                        to build a <a href="http://jekyllrb.com/">Jekyll</a> based <a href="http://blog.flurdy.com">blog</a> as a Docker image.
+                        Which it then upload this to <a href="http://quay.io">Quay.io</a>'s Docker registry.
+                     </p>
+                  </div>
+
+                  <a name="registry_secrets"></a>
+                  <h5>Docker registry secrets</h5>
+                  <div class="indented">
+                     <p>
+                        The Jekyll howto then shows how to add a <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secret</a>
+                        to Kubernetes so it can authenticate and download this private image from Quay.
+                        And modifies the deployment in Kubernetes to include this image with a <a href="">imagePullSecrets</a> to use this secret.
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+            <a name="extend"></a>
+            <div class="paragraph">
+               <h3>Extending your cluster</h3>
+               <div class="indented">
+                  <p>
+                     Naurally you want to extend this set uponce it works.
+                  </p>
+
+                  <a name="extend_multiple"></a>
+                  <h5>Multiple applications</h5>
+                  <div class="indented">
+                     <p>
+                        Kubernetes for a single application is significant overkill.
+                        Naturally you want to extend this cluster to include many more applications.
+                        Whether as part of microservices architecture,
+                        or separate applications and websites all together.
+                     </p>
+                     <p>
+                        The follow howto this document, <a href="">Kubernetes with Helm</a>, details how to configure an Ingress.
+                     </p>
+                  </div>
+
+                  SSL
+
+
+               </div>
+            </div>
+
+         -->
+
+            <a name="reference"></a>
+            <div class="paragraph">
+               <h3>References</h3>
+               <ul>
+                  <li><a href="https://kubernetes.io">kubernetes.io</a></li>
+                  <li><a href="https://en.wikipedia.org/wiki/Kubernetes">en.wikipedia.org/wiki/Kubernetes</a></li>
+                  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a></li>
+                  <li><a href="https://github.com/helm/helm">github.com/helm/helm</a></li>
+                  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager">www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager</a></li>
+                  <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">github.com/kelseyhightower/kubernetes-the-hard-way</a></li>
+                  <li><a href="https://docs.docker.com/docker-for-mac/">docs.docker.com/docker-for-mac/</a></li>
+                  <li><a href="https://docs.docker.com/docker-for-mac/kubernetes/">docs.docker.com/docker-for-mac/kubernetes/</a></li>
+                  <li><a href="https://microk8s.io/">microk8s.io</a></li>
+                  <li><a href="https://github.com/kubernetes/minikube">github.com/kubernetes/minikube</a></li>
+                  <li><a href="https://kubernetes.io/docs/setup/turnkey/aws/">kubernetes.io/docs/setup/turnkey/aws/</a></li>
+                  <li><a href="https://kubernetes.io/docs/setup/turnkey/gce/">kubernetes.io/docs/setup/turnkey/gce/</a></li>
+                  <li><a href="https://kubernetes.io/docs/setup/turnkey/azure/">kubernetes.io/docs/setup/turnkey/azure/</a></li>
+                  <li><a href="https://aws.amazon.com/eks/">aws.amazon.com/eks/</a></li>
+                  <li><a href="https://cloud.google.com/kubernetes-engine/">cloud.google.com/kubernetes-engine/</a></li>
+                  <li><a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">azure.microsoft.com/en-us/services/kubernetes-service/</a></li>
+                  <li><a href="https://www.digitalocean.com/products/kubernetes/">www.digitalocean.com/products/kubernetes/</a></li>
+                  <li><a href="https://containership.io/">containership.io</a></li>
+                  <li><a href="https://rancher.com">rancher.com</a></li>
+                  <li><a href="https://coreos.com/tectonic/">coreos.com/tectonic/</a></li>
+                  <li><a href="https://www.openshift.com/">www.openshift.com</a></li>
+                  <li><a href="https://www.ibm.com/cloud/container-service">www.ibm.com/cloud/container-service</a></li>
+                  <li><a href="https://www.docker.com/products/docker-enterprise">www.docker.com/products/docker-enterprise</a></li>
+                  <li><a href="https://www.joyent.com/triton/kubernetes">www.joyent.com/triton/kubernetes</a></li>
+                  <li><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubernetes.io/docs/tasks/tools/install-kubectl/</a></li>
+                  <li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">kubernetes.io/docs/concepts/services-networking/ingress/</a></li>
+                  <li><a href="https://letsencrypt.org/">letsencrypt.org</a></li>
+                  <!--
+                     <li><a href=""></a></li>
+                     <li><a href=""></a></li>
+                  -->
+               </ul>
+            </div>
+
+            <a name="contact"></a>
+            <div class="paragraph">
+               <a name="contact"></a>
+               <h3>Feedback</h3>
+               <div class="indented">
+                  <p>
+                     Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any
+                     typos, or useful additions.
+                  </p>
+                  <p>
+                     <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+                     <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+                  </p>
+                  <p>
+                     Otherwise <a href="/contact">contact me</a>.
+                     Especially for things factually incorrect.
+                     Apologies for procrastinated replies.
+                  </p>
+               </div>
+            </div>
+
+         </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>
+</html>
