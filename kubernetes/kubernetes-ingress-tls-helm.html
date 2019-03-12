@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Kubernetes Ingress and TLS: Use Helm to add Ingress and TLS to your Kubernetes</title>
+   <link rel="shortcut icon" href="/favicon.ico">
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Keywords" content="kubernetes,ingress,helm,ssl,tls,letsencrypt" />
+   <meta http-equiv="description" content="Use Helm to add Ingress and SSL to your Kubernetes. With 3rd party Docker registry." />
+   <meta name="viewport" content="initial-scale=0.8" />
+   <link href="../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../play/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docker/docs2.css" rel="stylesheet" type="text/css" />
+   <link href="../jekyll/docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <style>
+   </style>
+
+   <!-- <meta http-equiv="refresh" content="10; /docs/kubernetes/kubernetes-ingress-tls-helm.html" /> -->
+
+   <script>
+      // (function (i, s, o, g, r, a, m) {
+      //    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      //       (i[r].q = i[r].q || []).push(arguments)
+      //    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      //       m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      // })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+      // ga('create', 'UA-281408-1', 'auto');
+      // ga('send', 'pageview');
+   </script>
+</head>
+
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/images/cc-by-sa-small.png"
+                  alt="cc by-sa" title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right"
+                  alt="flurdy" title="" class="flurdySmall" /></a>
+         </div>
+         <header>
+            <h1>
+               Kubernetes Ingress and TLS
+            </h1>
+            <h2>
+               Add Ingress and TLS to your Kubernetes
+            </h2>
+            <h4>
+               With 3rd party Docker registry.
+               Using Helm
+            </h4>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="http://flurdy.com">flurdy</a></li>
+               <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="http://blog.flurdy.com">blog</a></li>
+               <li><a href="http://shirts.flurdy.com">shirts</a></li>
+               <li><a href="http://www.eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: March 2019.
+            Last updated: 12th Mar 2019.
+         </div>
+
+         <div id="starboard">
+            <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li><a href="#aim">Aim</a></li>
+                  <li><a href="#prerequisite">Prerequisite</a></li>
+                  <li>
+                     <a href="#"></a>
+                     <ul>
+                        <li><a href="#"></a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Contact</a></li>
+               </ul>
+            </nav>
+         </div>
+
+         <div id="cargo">
+
+            <div id="draft">
+               <p>
+                  (<i>
+                     <!-- This document has recently been published. -->
+                     This document has not yet been finalised.
+                     There are sections missing.<br />
+                     &nbsp;&nbsp;
+                     There may still be many typos and code errors.
+                     <!-- Please <a href="#contact">let me know</a>. -->
+                  </i>)
+               </p>
+            </div>
+
+            <a name="aim"></a>
+            <div class="paragraph">
+               <h3>Aim</h3>
+               <div class="indented">
+                  <p>
+                     To show how to add an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a>
+                     to <a href="https://kubernetes.io">Kubernetes</a> so that
+                     you can redirect traffic to multiple applications
+                     to fully utilise a Kubernetes cluster.
+                  </p>
+                  <p>
+                     And to then show how to easily add a <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS certificate</a> to secure your sites traffic,
+                     using <a href="https://letsencrypt.org">Let's Encrypt</a>.
+                  </p>
+                  <p>
+                      In addition we will show how to authenticate and use a 3rd party <a href="">Docker reigistry</a>
+                      so that you can use your private container images in your Kubernetes deployments.
+                  </p>
+                  <p>
+                     All this will be done using <a href="">Helm</a>, the package manager for Kubernetes.
+                  </p>
+               </div>
+            </div>
+
+            <a name="prerequisite"></a>
+            <div class="paragraph">
+
+               <h3>Prerequisite</h3>
+               <div class="indented">
+               </div>
+            </div>
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+               <div class="indented">
+                  <h5></h5>
+                  <div class="indented">
+                  </div>
+               </div>
+            </div>
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+               <div class="indented">
+                  <h5></h5>
+                  <div class="indented">
+                  </div>
+               </div>
+            </div>
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+               <div class="indented">
+                  <h5></h5>
+                  <div class="indented">
+                  </div>
+               </div>
+            </div>
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+               <div class="indented">
+                  <h5></h5>
+                  <div class="indented">
+                  </div>
+               </div>
+            </div>
+
+
+
+
+            <a name="reference"></a>
+            <div class="paragraph">
+               <h3>References</h3>
+               <ul>
+                  <li><a href="https://kubernetes.io">kubernetes.io</a></li>
+                  <li><a href="https://en.wikipedia.org/wiki/Kubernetes">en.wikipedia.org/wiki/Kubernetes</a></li>
+                  <li><a href="https://github.com/helm/helm">github.com/helm/helm</a></li>
+                  <li><a href="https://letsencrypt.org">letsencrypt.org</a></li>
+                  <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">github.com/kelseyhightower/kubernetes-the-hard-way</a></li>
+                  <li><a href="https://aws.amazon.com/eks/">aws.amazon.com/eks/</a></li>
+                  <li><a href="https://cloud.google.com/kubernetes-engine/">cloud.google.com/kubernetes-engine/</a></li>
+                  <li><a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">azure.microsoft.com/en-us/services/kubernetes-service/</a></li>
+                  <li><a href="https://www.digitalocean.com/products/kubernetes/">www.digitalocean.com/products/kubernetes/</a></li>
+                  <li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">kubernetes.io/docs/concepts/services-networking/ingress/</a></li>
+                  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a></li>
+                  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager">www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager</a></li>
+                  <!--
+                     <li><a href=""></a></li>
+                              <li><a href=""></a></li>
+                              <li><a href=""></a></li>
+                              <li><a href=""></a></li>
+                              -->
+               </ul>
+            </div>
+
+            <a name="contact"></a>
+            <div class="paragraph">
+               <a name="contact"></a>
+               <h3>Feedback</h3>
+               <div class="indented">
+                  <p>
+                     Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> for to correct any
+                     typos, or useful additions.
+                  </p>
+                  <p>
+                     <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+                     <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+                  </p>
+                  <p>
+                     Otherwise <a href="/contact">contact me</a>.
+                     Especially for things factually incorrect.
+                     Apologies for procrastinated replies.
+                  </p>
+               </div>
+            </div>
+         </div>
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://shirts.flurdy.com">shirts</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>

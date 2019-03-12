@@ -16,21 +16,17 @@
    <link href="../docker/docs2.css" rel="stylesheet" type="text/css" />
    <link href="../jekyll/docs.css" rel="stylesheet" type="text/css" />
    <link href="docs.css" rel="stylesheet" type="text/css" />
-   <style>
-   </style>
    <script>
-      // (function (i, s, o, g, r, a, m) {
-      //    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-      //       (i[r].q = i[r].q || []).push(arguments)
-      //    }, i[r].l = 1 * new Date(); a = s.createElement(o),
-      //       m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-      // })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+      (function (i, s, o, g, r, a, m) {
+         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+         }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-      // ga('create', 'UA-281408-1', 'auto');
-      // ga('send', 'pageview');
+      ga('create', 'UA-281408-1', 'auto');
+      ga('send', 'pageview');
    </script>
-
-   <meta http-equiv="refresh" content="10; /docs/kubernetes/kubernetes-101.html" />
 </head>
 
 <body>
@@ -62,7 +58,7 @@
          </nav>
          <div id="jib">
             Started: March 2019.
-            Last updated: 11th Mar 2019.
+            Last updated: 12th Mar 2019.
          </div>
 
          <div id="starboard">
@@ -752,7 +748,7 @@
                         so you can route traffic to multiple applications in the same cluster.
                      </p>
                      <p>
-                        We will add a Cluster Issuer so that we can use <a href="https://letsencrypt.org/">Let's Encrypt</a> to add a SSL certificate to your site(s).
+                        We will add a Cluster Issuer so that we can use <a href="https://letsencrypt.org">Let's Encrypt</a> to add a SSL certificate to your site(s).
                      <!-- </p>
                      <p> -->
                         We will show how to use a 3rd party Docker Registry. I.e. so you can use your own private Docker images for your deployments.
@@ -761,262 +757,13 @@
                         And that howto will at the same time introduce <a href="https://github.com/helm/helm">Helm</a> so that installing complicated applications in Kubernetes becomes very simple.
                      </p>
                      <p>
-                        Please continue to <a href="kubernetes-ingress-ssl-helm.html">Kubernetes Ingress &amp; ssl with helm</a>
+                        Please continue to <a href="kubernetes-ingress-tls-helm.html">Kubernetes Ingress &amp; ssl with helm</a>
                         for a more extendable and manageable Kubernetes cluster.
                      </p>
                   </div>
                </div>
             </div>
 
-            <!--
-
-            <a name="multiple_applications"></a>
-            <div class="paragraph">
-               <h3>Multiple applications</h3>
-               <div class="indented">
-                  <p>
-                     Kubernetes for a single application is significant overkill.
-                     Naturally you want to extend this cluster to include many more applications.
-                     Whether as part of microservices architecture,
-                     or separate applications and websites all together.
-                  </p>
-                  <p>
-                     This can easily be achieved with adding an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a>
-                     behind your load balancer that redirect incomming requests to different services depending on various qualifiers,
-                     most commonly request host name or request path.
-                  </p>
-
-                  <a name="second_application"></a>
-                  <h5>Second application</h5>
-                  <div class="indented">
-                     <p>
-                        Lets create a second application deployment:
-                     </p>
-                     <code>vi echo2-deployment.yml</code>
-                     <code class="file">
-                        apiVersion: apps/v1<br />
-                        kind: Deployment<br />
-                        metadata:<br />
-                        &nbsp;&nbsp;name: echo2<br />
-                        spec:<br />
-                        &nbsp;&nbsp;selector:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo2<br />
-                        &nbsp;&nbsp;replicas: 2<br />
-                        &nbsp;&nbsp;template:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo2<br />
-                        &nbsp;&nbsp;spec:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;containers:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;- name: echo1<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: hashicorp/http-echo<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args:<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "-text=<em>echoNumberTwo</em>"<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 5678
-                     </code>
-                     <p>
-                        This is near copy of <em>echo1</em> and of course in a real world scenario this will be a totally different application image.
-                     </p>
-                     <code>kubectl apply -f echo2-deployment.yml</code>
-                     <p>
-                        And a second non load balancer service,
-                        without any <em>LoadBalancer</em> type.
-                     </p>
-                     <code>vi echo2-service.yml</code>
-                     <code class="file">
-                        apiVersion: v1<br/>
-                        kind: Service<br/>
-                        metadata:<br/>
-                        &nbsp;&nbsp;name: echo2<br/>
-                        spec:<br />
-                        &nbsp;&nbsp;ports:<br />
-                        &nbsp;&nbsp;- port: 80<br />
-                        &nbsp;&nbsp;targetPort: 5678<br />
-                        &nbsp;&nbsp;selector:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;app: echo2
-                     </code>
-                     <code>kubectl apply -f echo2-service.yml</code>
-                     <p>
-                        We need to remove the echo1 load balanced service as it is no longer needed.
-                     </p>
-                     <code>
-                        kubectl delete service echo1
-                     </code>
-                     <p>
-                        And reinstate the original plain echo1 service without the <em>LoadBalancer</em> type.
-                     </p>
-                     <code>
-                        kubectl apply -f echo1-service.yml
-                     </code>
-                     <p>
-                        We should have no services with an external IP address.
-                     </p>
-                     <code>
-                        kubectl get services
-                     </code>
-                     <code class="output">
-                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
-                        EXTERNAL-IP&nbsp;
-                        PORT(S)&nbsp;
-                        AGE<br/>
-
-                        echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        ClusterIP&nbsp;
-                        <em>10.24.40.234</em>&nbsp;&nbsp;
-                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        80/TCP&nbsp;&nbsp;
-                        15s<br/>
-
-                        echo2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        ClusterIP&nbsp;
-                        <em>10.24.65.74</em>&nbsp;&nbsp;&nbsp;
-                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        80/TCP&nbsp;&nbsp;
-                        48s<br/>
-
-                        kubernetes&nbsp;
-                        ClusterIP&nbsp;
-                        <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        443/TCP&nbsp;
-                        2d
-                     </code>
-                  </div>
-
-                  <a name="echo_ingress"></a>
-                  <h5>Echo Ingress</h5>
-                  <div class="indented">
-                     <p>
-                        Lets add an <em>Ingress</em> that directs to the different echos depending on hostname.
-                     </p>
-                     <code>vi echo-ingress.yml</code>
-                     <code class="file">
-                        apiVersion: extensions/v1beta1<br/>
-                        kind: Ingress<br/>
-                        metadata:<br/>
-                        &nbsp;&nbsp;name: echo-ingress<br/>
-                        spec:<br/>
-                        &nbsp;&nbsp;rules:<br/>
-                        &nbsp;&nbsp;- host: <em>echo1.ex.com</em><br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo1<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80<br/>
-                        &nbsp;&nbsp;- host: <em>echo2.ex.com</em><br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo2<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80
-                     </code>
-                     <p>
-                        Note this redirects on <em>echo1.ex.com</em> and <em>echo2.ex.com</em>.
-                        This will only work if you add these to your <em>/etc/hosts</em> file.
-                        However you may prefer to use real DNS names for others to also use the service,
-                        and to later add SSL etc.
-                        (Though you will have to wait as we have not got an external IP yet)
-                     </p>
-                     <code>kubectl create -f echo-ingress.yml</code>
-                     <code>kubectl get ingress</code>
-                     <code class="file wide">
-                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        HOSTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        ADDRESS&nbsp;
-                        PORTS&nbsp;
-                        AGE<br/>
-                        echo-ingress&nbsp;
-                        echo1.ex.com,echo2.ex.com&nbsp;
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        80&nbsp;&nbsp;&nbsp;&nbsp;
-                        3s
-                     </code>
-                     <p>
-                        Note the missing address.
-                        We will add a load balancer in front with an external address next.
-                     </p>
-                  </div>
-
-               </div>
-            </div>
-
-            <a name=""></a>
-            <div class="paragraph">
-               <h3></h3>
-               <div class="indented">
-
-               </div>
-            </div>
-
-
-
-            <a name="your_application"></a>
-            <div class="paragraph">
-               <h3>Your application</h3>
-               <div class="indented">
-                  <p>
-                     You can now change the echo deployment to be your application.
-                     You will need to change or create a new deployment YAML file
-                     that points to your own <a href="https://docker.com">Docker</a> image and relevant port(s).
-                  </p>
-
-                  <a name="docker_build"></a>
-                  <h5>Docker build</h5>
-                  <div class="indented">
-                     <p>
-                        If you need advice on how to create a Docker Image
-                        you can refer to my <a href="http://flurdy.com/docs/jekyll/">Migrate to Jekyll</a> howto document.
-                        That howto includes instructions on how to use <a href="https://circleci.com">CircleCI</a>
-                        to build a <a href="http://jekyllrb.com/">Jekyll</a> based <a href="http://blog.flurdy.com">blog</a> as a Docker image.
-                        Which it then upload this to <a href="http://quay.io">Quay.io</a>'s Docker registry.
-                     </p>
-                  </div>
-
-                  <a name="registry_secrets"></a>
-                  <h5>Docker registry secrets</h5>
-                  <div class="indented">
-                     <p>
-                        The Jekyll howto then shows how to add a <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secret</a>
-                        to Kubernetes so it can authenticate and download this private image from Quay.
-                        And modifies the deployment in Kubernetes to include this image with a <a href="">imagePullSecrets</a> to use this secret.
-                     </p>
-                  </div>
-               </div>
-            </div>
-
-            <a name="extend"></a>
-            <div class="paragraph">
-               <h3>Extending your cluster</h3>
-               <div class="indented">
-                  <p>
-                     Naurally you want to extend this set uponce it works.
-                  </p>
-
-                  <a name="extend_multiple"></a>
-                  <h5>Multiple applications</h5>
-                  <div class="indented">
-                     <p>
-                        Kubernetes for a single application is significant overkill.
-                        Naturally you want to extend this cluster to include many more applications.
-                        Whether as part of microservices architecture,
-                        or separate applications and websites all together.
-                     </p>
-                     <p>
-                        The follow howto this document, <a href="">Kubernetes with Helm</a>, details how to configure an Ingress.
-                     </p>
-                  </div>
-
-                  SSL
-
-
-               </div>
-            </div>
-
-         -->
 
             <a name="reference"></a>
             <div class="paragraph">
@@ -1026,7 +773,6 @@
                   <li><a href="https://en.wikipedia.org/wiki/Kubernetes">en.wikipedia.org/wiki/Kubernetes</a></li>
                   <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a></li>
                   <li><a href="https://github.com/helm/helm">github.com/helm/helm</a></li>
-                  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager">www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager</a></li>
                   <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">github.com/kelseyhightower/kubernetes-the-hard-way</a></li>
                   <li><a href="https://docs.docker.com/docker-for-mac/">docs.docker.com/docker-for-mac/</a></li>
                   <li><a href="https://docs.docker.com/docker-for-mac/kubernetes/">docs.docker.com/docker-for-mac/kubernetes/</a></li>
