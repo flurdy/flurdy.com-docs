@@ -423,13 +423,18 @@
                      <p>
                         Make sure you download the config that you will use in the next section to set up <em>kubectl</em>.
                      </p>
+                     <p>
+                        Note, Digital Ocean's Kubernetes config certificates are <a href="https://www.digitalocean.com/community/questions/extend-kubernetes-config-lease">rotated weekly</a>.
+                        So you will have to update your <em>~/.kube/config</em> every time. A bit annoying,
+                        an security <em>feature</em> that I hope they create a more smoother work around soon.
+                     </p>
                   </div>
                </div>
             </div>
 
 
 
-            <a name="cluster"></a>
+            <a name="tools"></a>
             <div class="paragraph">
                <h3>Local Kubernetes tools</h3>
                <div class="indented">

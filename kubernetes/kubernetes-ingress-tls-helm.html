@@ -6,7 +6,7 @@
    <link rel="shortcut icon" href="/favicon.ico">
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
    <meta http-equiv="Keywords" content="kubernetes,ingress,helm,ssl,tls,letsencrypt" />
-   <meta http-equiv="description" content="Use Helm to add Ingress and SSL to your Kubernetes. With 3rd party Docker registry." />
+   <meta http-equiv="description" content="Use Helm to add Ingress and TLS to your Kubernetes" />
    <meta name="viewport" content="initial-scale=0.8" />
    <link href="../android/docs.css" rel="stylesheet" type="text/css" />
    <link href="../docker/docs.css" rel="stylesheet" type="text/css" />
@@ -18,19 +18,16 @@
    <link href="docs.css" rel="stylesheet" type="text/css" />
    <style>
    </style>
-
-   <!-- <meta http-equiv="refresh" content="10; /docs/kubernetes/kubernetes-ingress-tls-helm.html" /> -->
-
    <script>
-      // (function (i, s, o, g, r, a, m) {
-      //    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-      //       (i[r].q = i[r].q || []).push(arguments)
-      //    }, i[r].l = 1 * new Date(); a = s.createElement(o),
-      //       m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-      // })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+      (function (i, s, o, g, r, a, m) {
+         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+         }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-      // ga('create', 'UA-281408-1', 'auto');
-      // ga('send', 'pageview');
+      ga('create', 'UA-281408-1', 'auto');
+      ga('send', 'pageview');
    </script>
 </head>
 
@@ -51,7 +48,6 @@
                Add Ingress and TLS to your Kubernetes
             </h2>
             <h4>
-               With 3rd party Docker registry.
                Using Helm
             </h4>
          </header>
@@ -67,7 +63,7 @@
          </nav>
          <div id="jib">
             Started: March 2019.
-            Last updated: 12th Mar 2019.
+            Last updated: 15th Mar 2019.
          </div>
 
          <div id="starboard">
@@ -75,11 +71,42 @@
                <h5>Contents</h5>
                <ul>
                   <li><a href="#aim">Aim</a></li>
-                  <li><a href="#prerequisite">Prerequisite</a></li>
                   <li>
-                     <a href="#"></a>
+                     <a href="#prerequisite">Prerequisite</a>
                      <ul>
-                        <li><a href="#"></a></li>
+                        <li><a href="#prerequisite_basic">Basic Kubernetes</a></li>
+                        <li><a href="#prerequisite_cluster">Cluster</a></li>
+                        <li><a href="#prerequisite_kubectl">kubectl</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#helm">Helm</a>
+                     <ul>
+                        <li><a href="#helm_install">Install Helm</a></li>
+                        <li><a href="#helm_install_tiller">Install Tiller</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#applications">Applications</a>
+                     <ul>
+                        <li><a href="#application_deployments">Deployment</a></li>
+                        <li><a href="#application_services">Service</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#ingress_controller">Ingress Controller</a>
+                     <ul>
+                        <li><a href="#install_nginx">Install Nginx</a></li>
+                     </ul>
+                  </li>
+                  <li><a href="#application_ingress">Application Ingress</a></li>
+                  <li>
+                     <a href="#tls">TLS Certificate</a>
+                     <ul>
+                        <li><a href="#cert_manager">Install Cert Manager</a></li>
+                        <li><a href="#staging_issuer">Staging Issuer</a></li>
+                        <li><a href="#tls_ingress">Add TLS to Ingress</a></li>
+                        <li><a href="#prod_issuer">Production Issuer</a></li>
                      </ul>
                   </li>
                   <li><a href="#reference">References</a></li>
@@ -93,10 +120,9 @@
             <div id="draft">
                <p>
                   (<i>
-                     <!-- This document has recently been published. -->
-                     This document has not yet been finalised.
-                     There are sections missing.<br />
-                     &nbsp;&nbsp;
+                     This document has recently been published.
+                     <!-- This document has not yet been finalised.
+                     There are sections missing.<br /> &nbsp;&nbsp; -->
                      There may still be many typos and code errors.
                      <!-- Please <a href="#contact">let me know</a>. -->
                   </i>)
@@ -117,10 +143,10 @@
                      And to then show how to easily add a <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS certificate</a> to secure your sites traffic,
                      using <a href="https://letsencrypt.org">Let's Encrypt</a>.
                   </p>
-                  <p>
+                  <!-- <p>
                       In addition we will show how to authenticate and use a 3rd party <a href="">Docker reigistry</a>
                       so that you can use your private container images in your Kubernetes deployments.
-                  </p>
+                  </p> -->
                   <p>
                      All this will be done using <a href="">Helm</a>, the package manager for Kubernetes.
                   </p>
@@ -132,15 +158,805 @@
 
                <h3>Prerequisite</h3>
                <div class="indented">
+                  <p>
+                     This howto follows on from my <em><a href="kubernetes-101.html">Kubernetes 101: Launch your first application with Kubernetes</a></em>.
+                     There is no need to have followed each step in that howto as we will mostly build from scratch in this howto,
+                     and refer to the previous howto where applicable to avoid duplication, but it may help to have read the whole of previous one.
+                  </p>
+
+                  <a name="prerequisite_basic"></a>
+                  <h5>Basic Kubernetes</h5>
+                  <div class="indented">
+                     <p>
+                        You do need some basic understanding of Kubernetes.
+                        Please read my <a href="kubernetes-101.html#basics">Kubernetes basics</a> to get up to scratch.
+                        It's brief but gets you going.
+                     </p>
+                  </div>
+
+                  <a name="prerequisite_cluster"></a>
+                  <h5>Kubernetes cluster</h5>
+                  <div class="indented">
+                     <p>
+                        You do need a Kubernetes cluster up and running.
+                        Please follow my <a href="kubernetes-101.html#cluster">create a Kubernetes cluster</a> instructions.
+                        A <em>fresh</em> new cluster is preferable to avoid any confusion and mistakes, but it should work with existing clusters.
+                     </p>
+                  </div>
+
+                  <a name="prerequisite_kubectl"></a>
+                  <h5>kubectl</h5>
+                  <div class="indented">
+                     <p>
+                        You do need to have <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a> installed.
+                        Please follow my <a href="kubernetes-101.html#tools">install kubectl</a> instructions.
+                     </p>
+                     <p>
+                        And you do need to make sure you have downloaded the cluster configuration and authenticated <em>kubectl</em> with it.
+                        Again, refer to my <a href="kubernetes-101.html#tools">kubectl connect</a> section of the introduction howto.
+                     </p>
+                  </div>
                </div>
             </div>
+
+            <a name="helm"></a>
+            <div class="paragraph">
+               <h3>Helm</h3>
+               <div class="indented">
+                  <p>
+                     <a href="https://github.com/helm/helm"">Helm</a> is the package manager for Kubernetes.
+                     Think the apt, homebrew, npm, rubygem, maven, etc but for k8s.
+                  </p>
+                  <p>
+                     Helm allows one command to install complicated applications.
+                     Often includes RBAC, Namespaces, multiple services, several deployments and other dependencies.
+                  </p>
+                  <p>
+                     Helm uses <a href="https://github.com/helm/charts">charts</a> to define what to install.
+                     This library includes most of the applications you might use with Kubernetes.
+                     You can also create your own charts.
+                  </p>
+                  <p>
+                     Helm consists of a local part, the Helm client, and a server part, the Tiller service.
+                  </p>
+
+                  <a name="helm_install"></a>
+                  <h5>Install Helm</h5>
+                  <div class="indented">
+                     <p>
+                        To <a href="https://helm.sh/docs/using_helm/#installing-helm">install Helm</a> locally you can use Homebrew, Snap,
+                        or there are <a href="https://github.com/helm/helm/releases">binary downloads</a>.
+                     </p>
+                     <code>
+                        brew install kubernetes-helm
+                     </code>
+                     <code>
+                        sudo snap install helm --classic
+                     </code>
+                     <p>
+                        Or download e.g. for Linux 64 bit:
+                     </p>
+                     <code class="wide">
+                        wget https://storage.googleapis.com/kubernetes-helm/helm-<em>v2.13.0-linux-arm64</em>.tar.gz<br/>
+                        tar xzf helm-<em>v2.13.0-linux-arm64</em>.tar.gz<br/>
+                        sudo mv helm tiller /usr/bin/
+                     </code>
+                  </div>
+
+                  <a name="helm_install_tiller"></a>
+                  <h5>Install Tiller</h5>
+                  <div class="indented">
+                     <p>
+                        To install <em>Tiller</em> we first will create a <em>service account</em> for it
+                     </p>
+                     <code class="wide">
+                        kubectl -n kube-system create serviceaccount tiller<br/>
+                        kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+                     </code>
+                     <p>
+                        Then actually install <em>Tiller</em> by initializing <em>Helm</em>.
+                     </p>
+                     <code>
+                        helm init --service-account tiller
+                     </code>
+                     <p>
+                        You can confirm installation by listing any packages installed (none at this time).
+                     </p>
+                     <code>
+                        helm list
+                     </code>
+                  </div>
+               </div>
+            </div>
+
+            <a name="applications"></a>
+            <div class="paragraph">
+               <h3>Applications</h3>
+               <div class="indented">
+                  <p>
+                     Let's setup a simple application deployment and service, similar to the previous howto.
+                     But this time we will set up 2 applications.
+                  </p>
+
+                  <a name="application_deployments"></a>
+                  <h5>Deployment</h5>
+                  <div class="indented">
+                     <p>
+                        First lets create our first <a href="">echo</a> deployment.
+                        (Make sure you version control these files)
+                     </p>
+                     <p>
+                        If you are building from the previous howto this deployment may already exist.
+                     </p>
+                     <code>vi echo1-deployment.yml</code>
+                     <code class="file">
+                        apiVersion: apps/v1<br />
+                        kind: Deployment<br />
+                        metadata:<br />
+                        &nbsp;&nbsp;name: echo1<br />
+                        spec:<br />
+                        &nbsp;&nbsp;selector:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo1<br />
+                        &nbsp;&nbsp;replicas: 2<br />
+                        &nbsp;&nbsp;template:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo1<br />
+                        &nbsp;&nbsp;spec:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;containers:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;- name: echo1<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: hashicorp/http-echo<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "-text=<em>echoNumberOne</em>"<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 5678
+                     </code>
+                     <code>kubectl apply -f echo1-deployment.yml</code>
+                     <p>
+                        And lets quickly create a second echo deployment which we did not have in the previous howto.
+                     </p>
+                     <code>vi echo2-deployment.yml</code>
+                     <code class="file">
+                        apiVersion: apps/v1<br />
+                        kind: Deployment<br />
+                        metadata:<br />
+                        &nbsp;&nbsp;name: echo2<br />
+                        spec:<br />
+                        &nbsp;&nbsp;selector:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo2<br />
+                        &nbsp;&nbsp;replicas: 2<br />
+                        &nbsp;&nbsp;template:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo2<br />
+                        &nbsp;&nbsp;spec:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;containers:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;- name: echo1<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: hashicorp/http-echo<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;args:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- "-text=<em>echoNumberTwo</em>"<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 5678
+                     </code>
+                     <code>kubectl apply -f echo2-deployment.yml</code>
+                     <p>
+                        This should give us two deployments:
+                     </p>
+
+                     <code>kubectl get deployments</code>
+                     <p>
+                        The output should be something like:
+                     </p>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;DESIRED&nbsp;&nbsp;CURRENT&nbsp;&nbsp;UP-TO-DATE&nbsp;&nbsp;AVAILABLE&nbsp;&nbsp;AGE<br/>
+                        echo1&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        21s<br/>
+                        echo2&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2s
+                     </code>
+                  </div>
+
+                  <a name="application_services"></a>
+                  <h5>Services</h5>
+                  <div class="indented">
+                     <p>
+                        If you have come from the previous howto we need to delete the load balanced service.
+                        If fresh cluster this is not needed.
+                     </p>
+                     <code>kubectl delete service echo1</code>
+                     <p>
+                        Lets (re)add a service in front of each of echo1.
+                     </p>
+                     <code>vi echo1-service.yml</code>
+                     <code class="file">
+                        apiVersion: v1<br/>
+                        kind: Service<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo1<br/>
+                        spec:<br />
+                        &nbsp;&nbsp;ports:<br />
+                        &nbsp;&nbsp;- port: 80<br />
+                        &nbsp;&nbsp;targetPort: 5678<br />
+                        &nbsp;&nbsp;selector:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;app: echo1
+                     </code>
+                     <code>kubectl apply -f echo1-service.yml</code>
+                     <p>
+                        And the same for the second echo:
+                     </p>
+                     <code>vi echo2-service.yml</code>
+                     <code class="file">
+                        apiVersion: v1<br/>
+                        kind: Service<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo2<br/>
+                        spec:<br />
+                        &nbsp;&nbsp;ports:<br />
+                        &nbsp;&nbsp;- port: 80<br />
+                        &nbsp;&nbsp;targetPort: 5678<br />
+                        &nbsp;&nbsp;selector:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;app: echo2
+                     </code>
+                     <code>kubectl apply -f echo2-service.yml</code>
+                     <p>
+                        This should create two services listed like this:
+                     </p>
+                     <code>
+                        kubectl get services
+                     </code>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CLUSTER-IP&nbsp;&nbsp;&nbsp;&nbsp;
+                        EXTERNAL-IP&nbsp;
+                        PORT(S)&nbsp;
+                        AGE<br/>
+
+                        echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.40.234</em>&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;
+                        15s<br/>
+
+                        echo2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.65.74</em>&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;
+                        48s<br/>
+
+                        kubernetes&nbsp;
+                        ClusterIP&nbsp;
+                        <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        443/TCP&nbsp;
+                        2d
+                     </code>
+                     <p>
+                        Without any external IP addresses.
+                     </p>
+                     <p>
+                        So now we have two applications exposed as services internally.
+                        To expose these we need an <em>Ingress</em>.
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+            <a name="ingress_controller"></a>
+            <div class="paragraph">
+               <h3>Ingress controller</h3>
+               <div class="indented">
+                  <p>
+                     Before we set up a custom Ingress we need an Ingress controller.
+                     For this we will install it with Helm as it otherwise is a complicated list
+                     of RBAC, namespaces etc that needs to be configured.
+                     An ingress controller is basically a type of load balancer.
+                  </p><p>
+                     A common Ingress controller is <a href="">Nginx</a>.
+                     and there are many alternative to the one we use below including an Nginx based one made by <a
+                        href="https://github.com/nginxinc/kubernetes-ingress">Nginx Inc</a> themselves.
+                     Another popular traffic manager is <a href="https://istio.io/">Istio</a>.
+                  </p>
+
+                  <a name="install_nginx"></a>
+                  <h5>Install Nginx Ingress</h5>
+                  <div class="indented">
+                     <p>
+                        <a href="https://github.com/helm/charts/tree/master/stable/nginx-ingress">This Nginx chart</a> uses <em>ConfigMap</em> to configure <em>Nginx</em>.
+                        We don't need to configure anything in our use case.
+                     </p>
+                     <code>
+                        helm install --name nginx-ingress stable/nginx-ingress
+                     </code>
+                     <p>
+                        As you can see from the output it install a lot of things, that we now don't need to worry about.
+                     </p>
+                     <p>We now have a few more services:</p>
+                     <code>
+                        kubectl get services
+                     </code>
+                     <code class="output wide verywide">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CLUSTER-IP&nbsp;&nbsp;
+                        EXTERNAL-IP
+                        PORT(S)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        AGE<br/>
+
+                        echo1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;&nbsp;&nbsp;
+                        <em>10.24.40.234</em>
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        1d<br/>
+
+                        echo2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;&nbsp;&nbsp;
+                        <em>10.24.65.74</em>&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        1d<br/>
+
+                        kubernetes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ClusterIP&nbsp;&nbsp;&nbsp;
+                        <em>10.24.0.1</em>&nbsp;&nbsp;&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        443/TCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2d<br/>
+
+                        nginx-ingress-controller&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        LoadBalancer
+                        <em>10.24.22.205</em>
+                        <em>1.2.3.4</em>&nbsp;&nbsp;&nbsp;&nbsp;
+                        80:30617/TCP,443:32262/TCP
+                        2m<br/>
+
+                        nginx-ingress-default-backend
+                        ClusterIP&nbsp;&nbsp;&nbsp;
+                        <em>10.24.10.74</em>&nbsp;
+                        &lt;none&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        80/TCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        2m
+                     </code>
+                     <p>
+                        As you can see we now have two more services:
+                        <em>nginx-ingress-controller</em> and <em>nginx-ingress-default-backend</em>.
+                        If you lookup that external IP you will see the default response from <em>nginx-ingress-default-backend</em>,
+                        basically a <em>404</em>. The default backend is what respond when no Ingress rules are matched.
+                     </p>
+                     <code>
+                        curl <em>1.2.3.4</em>
+                     </code>
+                     <code class="output">
+                        default backend - 404
+                     </code>
+                  </div>
+               </div>
+            </div>
+
+            <a name="application_ingress"></a>
+            <div class="paragraph">
+               <h3>Application Ingress</h3>
+               <div class="indented">
+                  <p>
+                     Let's add an Ingress to direct request traffic to our echo services.
+                  </p>
+                   <code>vi echo-ingress.yml</code>
+                  <code class="file">
+                     apiVersion: extensions/v1beta1<br/>
+                     kind: Ingress<br/>
+                     metadata:<br/>
+                     &nbsp;&nbsp;name: echo-ingress<br/>
+                     spec:<br/>
+                     &nbsp;&nbsp;rules:<br/>
+                     &nbsp;&nbsp;- host: <em>echo1.ex.com</em><br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo1<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80<br/>
+                     &nbsp;&nbsp;- host: <em>echo2.ex.com</em><br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo2<br/>
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80
+                  </code>
+                  <p>
+                     Note this redirects on <em>echo1.ex.com</em> and <em>echo2.ex.com</em> (abbreviated from example.com for display purposes).
+                     This will only work if you add these to your <em>/etc/hosts</em> file.
+                     However you may prefer to use real DNS names for others to also use the service,
+                     and to later add SSL etc.
+                  </p>
+                  <code>kubectl create -f echo-ingress.yml</code>
+                  <code>kubectl get ingress</code>
+                  <code class="file">
+                     NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     HOSTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     ADDRESS&nbsp;
+                     PORTS&nbsp;
+                     AGE<br/>
+                     echo-ingress&nbsp;
+                     <em>echo1.ex.com</em>,<em>echo2.ex.com</em>&nbsp;
+                     <em>1.2.3.4</em>&nbsp;
+                     80&nbsp;&nbsp;&nbsp;&nbsp;
+                     3s
+                  </code>
+                  <p>
+                     You now have an Ingress routing traffic from IP <em>1.2.3.4</em> to either echo service depending on hostname in the request.
+                  </p>
+                  <code>
+                     curl <em>1.2.3.4</em>
+                  </code>
+                  <code class="output">
+                     default backend - 404
+                  </code>
+                  <code>
+                     curl <em>echo1.ex.com</em>
+                  </code>
+                  <code class="output">
+                     echoNumberOne
+                  </code>
+                  <code>
+                     curl <em>echo2.ex.com</em>
+                  </code>
+                  <code class="output">
+                     echoNumberTwo
+                  </code>
+               </div>
+            </div>
+
+            <a name="tls"></a>
+            <div class="paragraph">
+               <h3>TLS Certificate with Cert Manager</h3>
+               <div class="indented">
+                  <p>
+                     These days there is no excuse for all web traffic not to use <em>https</em>.
+                     To do that we need to add a <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> certificate to our echo sites.
+                  </p>
+                  <p>
+                     SSL &amp; TLS certificates used to be a convoluted and expensive ordeal.
+                     But not any more since <a href="https://letsencrypt.org/">Let's encrypt</a> was launched.
+                  </p>
+                  <p>
+                     With Kubernetes there is a <a href="https://github.com/jetstack/cert-manager/">Cert Manager</a>
+                     to act as a <a href="https://cert-manager.readthedocs.io/en/latest/reference/clusterissuers.html">Cluster Issuer</a>
+                     for generating and managing certificates with <em>Let's Encrypt</em>,
+                     which makes this very easy to configure and automate.
+                  </p>
+
+                  <a name="cert_manager"></a>
+                  <h5>Install Cert Manager</h5>
+                  <div class="indented">
+                     <p>
+                        With Helm installing a <em>Cert Manager</em> there are a few steps (compared to a lot of steps in a manifest)
+                        to do first:
+                     </p>
+                     <code class="verywide">
+                        kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml<br/>
+                        <!-- kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.7/deploy/manifests/00-crds.yaml<br/> -->
+                     </code>
+                     <p>
+                        Output should list various <em>apiextensions.k8s.io</em> created.
+                     </p>
+                     <code class="wide">
+                        <!-- kubectl create namespace cert-manager<br/> -->
+                        <!-- kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true<br/> -->
+                        kubectl label namespace kube-system certmanager.k8s.io/disable-validation="true"
+                        <!-- helm repo add jetstack https://charts.jetstack.io<br/> -->
+                        <!-- helm repo update -->
+                     </code>
+                     <p>
+                        Then you can install it with:
+                     </p>
+                     <code>
+                        helm install \<br/>
+                        &nbsp;&nbsp;--name cert-manager \<br />
+                        <!-- &nbsp;&nbsp;--namespace cert-manager \<br /> -->
+                        &nbsp;&nbsp;--namespace kube-system \<br />
+                        <!-- &nbsp;&nbsp;--version v0.5.6 \<br/> -->
+                        &nbsp;&nbsp;jetstack/cert-manager
+                     </code>
+                     <p>
+                        I sometimes have to specify which version, e.g. <em>"--version v0.5.2"</em>. But at the time of writing the default works fine.
+                        The output of that should towards the end say
+                     </p>
+                     <code class="output">
+                        cert-manager has been deployed successfully!
+                     </code>
+                  </div>
+
+                  <a name="staging_issuer"></a>
+                  <h5>Staging issuer</h5>
+                  <div class="indented">
+                     <p>
+                        Whilst testing let's create an issuer but use <em>Let's Encrypt's</em> staging server to avoid flooding the production one with bad data.
+                     </p>
+                     <code>
+                        vi staging-issuer.yml
+                     </code>
+                     <code class="file">
+                        apiVersion: certmanager.k8s.io/v1alpha1<br/>
+                        kind: ClusterIssuer<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: <em>letsencrypt-staging</em><br/>
+                        spec:<br/>
+                        &nbsp;&nbsp;acme:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;server: https://acme<em>-staging</em>-v02.api.letsencrypt.org/directory<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;email: <em>youremail@ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;privateKeySecretRef:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: <em>letsencrypt-staging-secret</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http01: {}
+                     </code>
+                     <code>
+                        kube apply -f staging-issuer.yml
+                     </code>
+                     <code>
+                        kube get clusterissuer
+                     </code>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AGE<br/>
+                        <em>letsencrypt-staging</em>&nbsp;&nbsp;&nbsp;16s
+                     </code>
+                  </div>
+
+                  <a name="tls_ingress"></a>
+                  <h5>Add TLS to Ingress</h5>
+                  <div class="indented">
+                     <p>
+                        Lets now modify the ingress for echo to include the cluster issuer and hosts to create a certificate for.
+                     </p>
+                     <code>
+                        vi echo-issuer.yml
+                     </code>
+                     <code class="file">
+                        apiVersion: extensions/v1beta1<br/>
+                        kind: Ingress<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo-ingress<br/>
+                        &nbsp;&nbsp;annotations:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;kubernetes.io/ingress.class: nginx<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;certmanager.k8s.io/cluster-issuer: <em>letsencrypt-staging</em><br/>
+                        spec:<br/>
+                        &nbsp;&nbsp;tls:<br/>
+                        &nbsp;&nbsp;- hosts:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;- <em>echo1.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;- <em>echo2.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;secretName: <em>letsencrypt-staging-secret</em><br/>
+                        &nbsp;&nbsp;rules:<br/>
+                        &nbsp;&nbsp;- host: <em>echo1.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo1<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80<br/>
+                        &nbsp;&nbsp;- host: <em>echo2.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo2<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80
+                     </code>
+                     <code>
+                        kube apply -f echo-issuer.yml
+                     </code>
+                     <code>kubectl get ingress</code>
+                     <code class="file">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        HOSTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ADDRESS&nbsp;
+                        PORTS&nbsp;&nbsp;&nbsp;&nbsp;
+                        AGE<br/>
+                        echo-ingress&nbsp;
+                        <em>echo1.ex.com</em>,<em>echo2.ex.com</em>&nbsp;
+                        <em>3.5.8.13</em>&nbsp;
+                        80, 443&nbsp;
+                        3s
+                     </code>
+                     <p>
+                        You should now also have port 433 redirected to this ingress.
+                        Note, the IP listed in the output is not exposed so ignore it.
+                     </p>
+                     <p>
+                        You can inspect the certificate generated:
+                     </p>
+                     <code>
+                        kube describe certificate <em>letsencrypt-staging</em>
+                     </code>
+                     <p>
+                        It should list your domains under <em>spec/Acme/Config/Domains</em>.
+                        You can also use the <em>describe</em> keyword on the certificate and ingress
+                        to check any recent events, e.g. certificate creation etc.
+                     </p>
+                     <p>
+                        Lets inspect the certificate in a https call with <em>curl</em> and <em>wget</em>.
+                     </p>
+                     <code>
+                        curl -I <em>echo1.ex.com</em>
+                     </code>
+                     <code class="output">
+                        HTTP/1.1 308 Permanent Redirect<br/>
+                        Server: nginx/1.15.8<br/>
+                        ...<br/>
+                        Location: https://<em>echo1.ex.com</em>/
+                     </code>
+                     <code>
+                        get --save-headers -O- <em>echo1.ex.com</em>
+                     </code>
+                     <code class="output verywide">
+                        ...<br/>
+                        Connecting to <em>echo1.ex.com</em> (<em>echo1.ex.com</em>)|<em>1.2.3.4</em>|:443... connected.<br />
+                        ERROR: cannot verify <em>echo1.ex.com</em>'s certificate, issued by ‘CN=Fake LE Intermediate X1’:<br />
+                        Unable to locally verify the issuer's authority.<br />
+                        To connect to <em>echo1.ex.com</em> insecurely, use `--no-check-certificate'.<br />
+                     </code>
+                     <p>
+                        So a normal http request issues a redirect to the https url.
+                        And the https call works and has a certificate. And as expected as it is using the <em>Let's Encrypt</em>
+                        staging API so it is not verified. Lets fix that.
+                     </p>
+                  </div>
+
+                  <a name="prod_issuer"></a>
+                  <h5>Production issuer</h5>
+                  <div class="indented">
+                     <p>
+                        Now the staging provider works lets switch to the real production one.
+                     </p>
+                     <code>vi production-issuer.yml</code>
+                     <code class="file">
+                        apiVersion: certmanager.k8s.io/v1alpha1<br/>
+                        kind: ClusterIssuer<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: <em>letsencrypt-production</em><br/>
+                        spec:<br/>
+                        &nbsp;&nbsp;acme:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;server: https://acme-v02.api.letsencrypt.org/directory<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;email: <em>youremail@ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;privateKeySecretRef:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: <em>letsencrypt-production-secret</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http01: {}
+                     </code>
+                     <code>
+                        kube apply -f production-issuer.yml
+                     </code>
+                     <code>
+                        kube get clusterissuer
+                     </code>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        AGE<br/>
+                        <em>letsencrypt-production</em>&nbsp;&nbsp;6s<br/>
+                        <em>letsencrypt-staging</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15m
+                     </code>
+                     <p>
+                        And then update the cluster issuer and secret in the ingress configuration.
+                     </p>
+                     <code>
+                        vi echo-issuer.yml
+                     </code>
+                     <code class="file">
+                        apiVersion: extensions/v1beta1<br/>
+                        kind: Ingress<br/>
+                        metadata:<br/>
+                        &nbsp;&nbsp;name: echo-ingress<br/>
+                        &nbsp;&nbsp;annotations:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;kubernetes.io/ingress.class: nginx<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;certmanager.k8s.io/cluster-issuer: <em>letsencrypt-production</em><br/>
+                        spec:<br/>
+                        &nbsp;&nbsp;tls:<br/>
+                        &nbsp;&nbsp;- hosts:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;- <em>echo1.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;- <em>echo2.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;secretName: <em>letsencrypt-production-secret</em><br/>
+                        &nbsp;&nbsp;rules:<br/>
+                        &nbsp;&nbsp;- host: <em>echo1.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo1<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80<br/>
+                        &nbsp;&nbsp;- host: <em>echo2.ex.com</em><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paths:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- backend:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serviceName: echo2<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;servicePort: 80
+                     </code>
+                     <code>
+                        kube apply -f echo-issuer.yml
+                     </code>
+                     <code>
+                        kubectl get certificate
+                     </code>
+                     <code class="output">
+                        NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        AGE<br/>
+                        <em>letsencrypt-production-secret</em>&nbsp;
+                        7s<br />
+                        <em>letsencrypt-staging-secret</em>&nbsp;&nbsp;&nbsp;&nbsp;
+                        1d
+                     </code>
+                     <code>
+                        kubectl describe certificate letsencrypt-production
+                     </code>
+                     <code class="output verywide">
+                        ...<br/>
+                        Events:<br/>
+                        Type Reason Age From Message<br/>
+                        ---- ------ ---- ---- -------<br/>
+                        Normal Generated 3m cert-manager Generated new private key<br/>
+                        Normal OrderCreated 3m cert-manager Created Order resource "<em>letsencrypt-prod-secret-9876</em>"<br/>
+                        Normal OrderComplete 2m cert-manager Order "<em>letsencrypt-prod-secret-9876</em>" completed successfully<br/>
+                        Normal CertIssued 2m cert-manager Certificate issued successfully
+                     </code>
+                     <p>
+                        When the events say the certificate has been created successfully:
+                     </p>
+                     <code>
+                        get --save-headers -O- <em>echo1.ex.com</em>
+                     </code>
+                     <code class="output wide">
+                        ...<br/>
+                        Connecting to <em>echo1.ex.com</em> (<em>echo1.ex.com</em>)|<em>1.2.3.4</em>|:443... connected.<br />
+                        ...<br />
+                        HTTP/1.1 200 OK<br/>
+                        ...<br />
+                     </code>
+                     <p>
+                        There should be no certificate errors and wget will simply download the echo1 response of <em>echoNumberOne</em>.
+                     </p>
+                     <p>
+                        So now you have a load balanced service, routing traffic via an ingress and over secure TLS traffic.
+                     </p>
+                     <p>
+                        If you want to try out your own  <em>Docker</em> images, read how to use <a href="kubernetes-101.html#docker-registry">3rd party Docker registry in my previous howto</a>.
+                     </p>
+
+                  </div>
+               </div>
+            </div>
+
+<!--
 
             <a name=""></a>
             <div class="paragraph">
                <h3></h3>
                <div class="indented">
+                  <p>
+
+                  </p>
+
                   <h5></h5>
                   <div class="indented">
+
+                  </div>
+               </div>
+            </div>
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3>Build image</h3>
+               <div class="indented">
+                  <p>
+
+                  </p>
+
+                  <h5>Docker registry</h5>
+                  <div class="indented">
+
                   </div>
                </div>
             </div>
@@ -149,8 +965,13 @@
             <div class="paragraph">
                <h3></h3>
                <div class="indented">
+                  <p>
+
+                  </p>
+
                   <h5></h5>
                   <div class="indented">
+
                   </div>
                </div>
             </div>
@@ -159,9 +980,25 @@
             <div class="paragraph">
                <h3></h3>
                <div class="indented">
+                  <p>
+
+                  </p>
+
                   <h5></h5>
                   <div class="indented">
+
                   </div>
+               </div>
+            </div>
+   Istio
+
+                  <div class="indented">
+                     <p>
+                        Lets add an <em>Ingress</em> that directs to the different echos depending on hostname.
+                     </p>
+
+                  </div>
+
                </div>
             </div>
 
@@ -169,13 +1006,48 @@
             <div class="paragraph">
                <h3></h3>
                <div class="indented">
-                  <h5></h5>
+
+               </div>
+            </div>
+
+
+
+            <a name="your_application"></a>
+            <div class="paragraph">
+               <h3>Your application</h3>
+               <div class="indented">
+                  <p>
+                     You can now change the echo deployment to be your application.
+                     You will need to change or create a new deployment YAML file
+                     that points to your own <a href="https://docker.com">Docker</a> image and relevant port(s).
+                  </p>
+
+                  <a name="docker_build"></a>
+                  <h5>Docker build</h5>
                   <div class="indented">
+                     <p>
+                        If you need advice on how to create a Docker Image
+                        you can refer to my <a href="http://flurdy.com/docs/jekyll/">Migrate to Jekyll</a> howto document.
+                        That howto includes instructions on how to use <a href="https://circleci.com">CircleCI</a>
+                        to build a <a href="http://jekyllrb.com/">Jekyll</a> based <a href="http://blog.flurdy.com">blog</a> as a Docker image.
+                        Which it then upload this to <a href="http://quay.io">Quay.io</a>'s Docker registry.
+                     </p>
+                  </div>
+
+                  <a name="registry_secrets"></a>
+                  <h5>Docker registry secrets</h5>
+                  <div class="indented">
+                     <p>
+                        The Jekyll howto then shows how to add a <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secret</a>
+                        to Kubernetes so it can authenticate and download this private image from Quay.
+                        And modifies the deployment in Kubernetes to include this image with a <a href="">imagePullSecrets</a> to use this secret.
+                     </p>
                   </div>
                </div>
             </div>
 
 
+         -->
 
 
             <a name="reference"></a>
@@ -194,9 +1066,10 @@
                   <li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">kubernetes.io/docs/concepts/services-networking/ingress/</a></li>
                   <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a></li>
                   <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager">www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager</a></li>
+                  <li><a href="https://cert-manager.readthedocs.io/en/latest/reference/clusterissuers.html">cert-manager.readthedocs.io/en/latest/reference/clusterissuers.html</a></li>
+                  <li><a href="https://github.com/jetstack/cert-manager/">github.com/jetstack/cert-manager/</a></li>
                   <!--
                      <li><a href=""></a></li>
-                              <li><a href=""></a></li>
                               <li><a href=""></a></li>
                               <li><a href=""></a></li>
                               -->

@@ -1,18 +1,30 @@
 
-      h2 {
-         font-family: 'Michroma', Tahoma, Geneva, sans-serif;
-         font-size: 14pt;
-      }
-      h4 {
-         margin-top: 5px;
-      }
-      h5 {
-         font-family: 'Michroma', Tahoma, Geneva, sans-serif;
-         font-size: 10pt;
-      }
-      .indented {
-         padding-left: 10px;
-      }
-      #ship {
-         max-width: 65em;
-      }
+h2 {
+   font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+   font-size: 14pt;
+}
+h4 {
+   margin-top: 5px;
+}
+h5 {
+   font-family: 'Michroma', Tahoma, Geneva, sans-serif;
+   font-size: 10pt;
+}
+.indented {
+   padding-left: 10px;
+}
+#ship {
+   max-width: 65em;
+}
+
+code {
+   padding: 0.5em 0.5em 0.35em 1em;
+   line-height: 15px;
+}
+#cargo code.verywide {
+   min-width: 65em;
+   max-width: 75em;
+}
+code.file {
+   padding-bottom: 0.5em;
+}
