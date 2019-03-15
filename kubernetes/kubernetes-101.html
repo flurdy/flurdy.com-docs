@@ -58,7 +58,7 @@
          </nav>
          <div id="jib">
             Started: March 2019.
-            Last updated: 12th Mar 2019.
+            Last updated: 15th Mar 2019.
          </div>
 
          <div id="starboard">
@@ -90,9 +90,11 @@
                   <li>
                      <a href="#your_application">Your application</a>
                      <ul>
-                        <li><a href="#multiple_applications">Multiple apps, ssl &amp; registries</a></li>
+                        <li><a href="#docker-build">Docker build</a></li>
+                        <li><a href="#docker-registry">Docker registry</a></li>
                      </ul>
                   </li>
+                  <li><a href="#multiple_applications">Multiple applications</a></li>
                   <li><a href="#reference">References</a></li>
                   <li><a href="#contact">Contact</a></li>
                </ul>
@@ -732,42 +734,131 @@
                <div class="indented">
                   <p>
                      You now have an application hosted with Kubernetes exposed to the internet.
-                  </p>
-                  <p>
-                     You can change the image in the echo deployment to your own application.
+                     If you want to now is the time to change the echo deployment to your own applications' <a href="https://docker.com">Docker</a> container image(s).
                   </p>
 
-                  <a name="multiple_applications"></a>
-                  <h5>Multiple applications, SSL &amp; Docker registries</h5>
+                  <a name="docker-build"></a>
+                  <h5>Docker build</h5>
                   <div class="indented">
                      <p>
-                        However using Kubernetes for a single application is significant overkill.
+                        To go into detail on how to build a Docker image is out of scope of this howto.
+                        However for a simple example please refer to my <a href="http://flurdy.com/docs/jekyll/">Migrate blog to Jekyll</a> howto
+                         which describes how to use <a href="http://flurdy.com/docs/jekyll/#build">CircleCI to build a docker image</a>,
+                         and how to <a href="http://flurdy.com/docs/jekyll/#docker_registry">upload it to a 3rd party Docker registry</a> (<a href="https://quay.io">Quay.io</a>).
+                     </p>
+                  </div>
+
+                  <a name="docker-registry"></a>
+                  <h5>Docker registry</h5>
+                  <div class="indented">
+                     <p>
+                        To use any publicly available images from <a href="https://www.docker.com/products/docker-hub">Docker hub</a>
+                        just refer to the image name and tag in your deployment's <em>spec/containers/image</em> section.
+                     </p>
+                     <code class="file">
+                        ...<br/>
+                        spec:<br />
+                        &nbsp;&nbsp;containers:<br />
+                        &nbsp;&nbsp;- name: anotherapp<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;image: somecompany/someimage:sometag<br />
+                        ...
+                     </code>
+                     <p>
+                        However most of the time you will use images you have created, that are private and not publicly available.
+                        They may even be stored in a 3rd party Docker Registry,
+                        for example:
+                     </p>
+                     <ul>
+                        <li><a href="https://quay.io">Quay.io</a></li>
+                        <li><a href="https://cloud.google.com/container-registry/">Google Container Registry</a></li>
+                        <li><a href="https://aws.amazon.com/ecr/">Amazon ECR</a></li>
+                     </ul>
+                     <p>
+                        For that you need to configure the authentication that Docker will use to download the image.
+                        This is done via <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Kubernetes Secrets</a>.
                      </p>
                      <p>
-                        Naturally you want to extend this cluster to include many more applications.
-                        Whether as part of a microservices architecture,
-                        or separate applications and websites all together.
+                        In this example I have upload an image to <em>Quay.io</em>.
+                        Quay recommends using <a href="https://docs.quay.io/glossary/robot-accounts.html">Robot accounts</a>,
+                        so I have set one up with my private repository with read access.
+                        Using its username and token I create a <em>docker-registry</em> <em>Secret</em>:
                      </p>
+                     <code class="wide">
+                        kubectl create secret docker-registry <em>MYAPP-registry</em> --docker-server=<em>quay.io</em> \<br/>
+                        &nbsp;&nbsp;--docker-username:<em>MYROBOTUSER</em> --docker-password=<em>MYROBOTPASSWORD</em>
+                     </code>
                      <p>
-                        In part two of this Kubernetes introduction we will add an Ingress controller
-                        so you can route traffic to multiple applications in the same cluster.
+                        Then modify the deployment file to add a <em>imagePullSecrets</em> to the <em>spec/template/spec</em> section.
+                        For example if we just reused the <em>echo1</em> configuration:
                      </p>
+                     <code>
+                        vi echo1-deployment.yml
+                     </code>
+                     <code class="file">
+                        apiVersion: apps/v1<br />
+                        kind: Deployment<br />
+                        metadata:<br />
+                        &nbsp;&nbsp;name: echo1<br />
+                        spec:<br />
+                        &nbsp;&nbsp;selector:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;matchLabels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo1<br />
+                        &nbsp;&nbsp;replicas: 2<br />
+                        &nbsp;&nbsp;template:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;metadata:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app: echo1<br />
+                        &nbsp;&nbsp;spec:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;containers:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;- name: echo1<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image: <em>MYORG</em>/<em>MYAPP</em>:<em>MYTAG</em><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imagePullSecrets:<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: <em>MYAPP-registry</em><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ports:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- containerPort: 5678
+                     </code>
+                     <code>
+                        kubectl apply -f echo1-deployment.yml
+                     </code>
                      <p>
-                        We will add a Cluster Issuer so that we can use <a href="https://letsencrypt.org">Let's Encrypt</a> to add a SSL certificate to your site(s).
-                     <!-- </p>
-                     <p> -->
-                        We will show how to use a 3rd party Docker Registry. I.e. so you can use your own private Docker images for your deployments.
-                     <!-- </p>
-                     <p> -->
-                        And that howto will at the same time introduce <a href="https://github.com/helm/helm">Helm</a> so that installing complicated applications in Kubernetes becomes very simple.
+                        This should download the container image from the private repository.
+                        As this often goes wrong due to typos or permissions,
+                        it is worth checking the status of your pods for a little while.
                      </p>
+                     <code>
+                        kubectl get pods --selector app=echo1
+                     </code>
                      <p>
-                        Please continue to <a href="kubernetes-ingress-tls-helm.html">Kubernetes Ingress &amp; ssl with helm</a>
-                        for a more extendable and manageable Kubernetes cluster.
+                        If you see <em>ImagePullBackOff</em> as status then you have some checking to do.
+                        Otherwise if it says <em>Running</em> then it worked.
                      </p>
                   </div>
                </div>
             </div>
+
+            <a name="multiple_applications"></a>
+            <div class="paragraph">
+               <h3>Multiple applications</h3>
+               <div class="indented">
+                  <p>
+                     Using Kubernetes for a single application is significant overkill.
+                  </p>
+                  <p>
+                     In <a href="kubernetes-ingress-tls-helm.html">part two</a> of this Kubernetes introduction we will add an Ingress controller
+                     so you can route traffic to multiple applications in the same cluster.
+                  </p>
+                  <p>
+                     We will add a Cluster Issuer so that we can use <a href="https://letsencrypt.org">Let's Encrypt</a>
+                     to add a TLS certificate to your site(s).
+                     And that howto will at the same time introduce <a href="https://github.com/helm/helm">Helm</a> so that installing complicated applications in Kubernetes becomes very simple.
+                  </p>
+                  <p>
+                     Please continue to <a href="kubernetes-ingress-tls-helm.html">Kubernetes Ingress &amp; ssl with helm</a>
+                     for a more extendable and manageable Kubernetes cluster.
+                  </p>
+               </div>
+            </div>
+
 
 
             <a name="reference"></a>
@@ -776,7 +867,6 @@
                <ul>
                   <li><a href="https://kubernetes.io">kubernetes.io</a></li>
                   <li><a href="https://en.wikipedia.org/wiki/Kubernetes">en.wikipedia.org/wiki/Kubernetes</a></li>
-                  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a></li>
                   <li><a href="https://github.com/helm/helm">github.com/helm/helm</a></li>
                   <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">github.com/kelseyhightower/kubernetes-the-hard-way</a></li>
                   <li><a href="https://docs.docker.com/docker-for-mac/">docs.docker.com/docker-for-mac/</a></li>
@@ -800,8 +890,15 @@
                   <li><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubernetes.io/docs/tasks/tools/install-kubectl/</a></li>
                   <li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">kubernetes.io/docs/concepts/services-networking/ingress/</a></li>
                   <li><a href="https://letsencrypt.org/">letsencrypt.org</a></li>
+                  <li><a href="https://kubernetes.io/docs/concepts/configuration/secret/">kubernetes.io/docs/concepts/configuration/secret/</a></li>
+                  <li><a href="https://quay.io">quay.io</a></li>
+                  <li><a href="https://cloud.google.com/container-registry/">cloud.google.com/container-registry/</a></li>
+                  <li><a href="https://aws.amazon.com/ecr/">aws.amazon.com/ecr/</a></li>
+                  <li><a
+                     href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a>
+                     <li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/">kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/</a></li>
+                  </li>
                   <!--
-                     <li><a href=""></a></li>
                      <li><a href=""></a></li>
                   -->
                </ul>
