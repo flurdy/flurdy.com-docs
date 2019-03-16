@@ -117,17 +117,17 @@
 
          <div id="cargo">
 
-            <div id="draft">
-               <p>
-                  (<i>
-                     This document has recently been published.
+            <!-- <div id="draft"> -->
+               <!-- <p> -->
+                  <!-- (<i> -->
+                     <!-- This document has recently been published. -->
                      <!-- This document has not yet been finalised.
                      There are sections missing.<br /> &nbsp;&nbsp; -->
-                     There may still be many typos and code errors.
+                     <!-- There may still be many typos and code errors. -->
                      <!-- Please <a href="#contact">let me know</a>. -->
-                  </i>)
-               </p>
-            </div>
+                  <!-- </i>) -->
+               <!-- </p> -->
+            <!-- </div> -->
 
             <a name="aim"></a>
             <div class="paragraph">
@@ -576,7 +576,7 @@
                   </code>
                   <p>
                      Note this redirects on <em>echo1.ex.com</em> and <em>echo2.ex.com</em> (abbreviated from example.com for display purposes).
-                     This will only work if you add these to your <em>/etc/hosts</em> file.
+                     This will only work if you add these to your <em>/etc/hosts</em> file as the external IP <em>1.2.3.4</em> from the <em>ingress controller service</em>.
                      However you may prefer to use real DNS names for others to also use the service,
                      and to later add SSL etc.
                   </p>
@@ -590,12 +590,12 @@
                      AGE<br/>
                      echo-ingress&nbsp;
                      <em>echo1.ex.com</em>,<em>echo2.ex.com</em>&nbsp;
-                     <em>1.2.3.4</em>&nbsp;
+                     <em>5.4.3.2</em>&nbsp;
                      80&nbsp;&nbsp;&nbsp;&nbsp;
                      3s
                   </code>
                   <p>
-                     You now have an Ingress routing traffic from IP <em>1.2.3.4</em> to either echo service depending on hostname in the request.
+                     You now have an Ingress routing traffic to either echo service depending on hostname in the request.
                   </p>
                   <code>
                      curl <em>1.2.3.4</em>
@@ -793,7 +793,7 @@
                         Location: https://<em>echo1.ex.com</em>/
                      </code>
                      <code>
-                        get --save-headers -O- <em>echo1.ex.com</em>
+                        wget --save-headers -O- <em>echo1.ex.com</em>
                      </code>
                      <code class="output verywide">
                         ...<br/>
@@ -906,7 +906,7 @@
                         When the events say the certificate has been created successfully:
                      </p>
                      <code>
-                        get --save-headers -O- <em>echo1.ex.com</em>
+                        wget --save-headers -O- <em>echo1.ex.com</em>
                      </code>
                      <code class="output wide">
                         ...<br/>
@@ -929,130 +929,16 @@
                </div>
             </div>
 
-<!--
-
-            <a name=""></a>
-            <div class="paragraph">
-               <h3></h3>
-               <div class="indented">
-                  <p>
-
-                  </p>
-
-                  <h5></h5>
-                  <div class="indented">
-
-                  </div>
-               </div>
-            </div>
-
-            <a name=""></a>
-            <div class="paragraph">
-               <h3>Build image</h3>
-               <div class="indented">
-                  <p>
-
-                  </p>
-
-                  <h5>Docker registry</h5>
-                  <div class="indented">
-
-                  </div>
-               </div>
-            </div>
-
-            <a name=""></a>
-            <div class="paragraph">
-               <h3></h3>
-               <div class="indented">
-                  <p>
-
-                  </p>
-
-                  <h5></h5>
-                  <div class="indented">
-
-                  </div>
-               </div>
-            </div>
-
-            <a name=""></a>
-            <div class="paragraph">
-               <h3></h3>
-               <div class="indented">
-                  <p>
-
-                  </p>
-
-                  <h5></h5>
-                  <div class="indented">
-
-                  </div>
-               </div>
-            </div>
-   Istio
-
-                  <div class="indented">
-                     <p>
-                        Lets add an <em>Ingress</em> that directs to the different echos depending on hostname.
-                     </p>
-
-                  </div>
-
-               </div>
-            </div>
-
-            <a name=""></a>
-            <div class="paragraph">
-               <h3></h3>
-               <div class="indented">
-
-               </div>
-            </div>
-
-
-
-            <a name="your_application"></a>
-            <div class="paragraph">
-               <h3>Your application</h3>
-               <div class="indented">
-                  <p>
-                     You can now change the echo deployment to be your application.
-                     You will need to change or create a new deployment YAML file
-                     that points to your own <a href="https://docker.com">Docker</a> image and relevant port(s).
-                  </p>
-
-                  <a name="docker_build"></a>
-                  <h5>Docker build</h5>
-                  <div class="indented">
-                     <p>
-                        If you need advice on how to create a Docker Image
-                        you can refer to my <a href="http://flurdy.com/docs/jekyll/">Migrate to Jekyll</a> howto document.
-                        That howto includes instructions on how to use <a href="https://circleci.com">CircleCI</a>
-                        to build a <a href="http://jekyllrb.com/">Jekyll</a> based <a href="http://blog.flurdy.com">blog</a> as a Docker image.
-                        Which it then upload this to <a href="http://quay.io">Quay.io</a>'s Docker registry.
-                     </p>
-                  </div>
-
-                  <a name="registry_secrets"></a>
-                  <h5>Docker registry secrets</h5>
-                  <div class="indented">
-                     <p>
-                        The Jekyll howto then shows how to add a <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secret</a>
-                        to Kubernetes so it can authenticate and download this private image from Quay.
-                        And modifies the deployment in Kubernetes to include this image with a <a href="">imagePullSecrets</a> to use this secret.
-                     </p>
-                  </div>
-               </div>
-            </div>
-
-
-         -->
 
 
             <a name="reference"></a>
             <div class="paragraph">
                <h3>References</h3>
+               <p>
+                  This document was influenced by <a href="https://digitalocean.com">Digital Ocean's</a>
+                  excellent <a href="https://www.digitalocean.com/community/tags/kubernetes?type=tutorials">kubernetes documentation</a>.
+                  I do run some of my clusters with Digital Ocean (<a href="https://m.do.co/c/fea5b8fd61fa">referral link</a>) and they have been very good so far.
+               </p>
                <ul>
                   <li><a href="https://kubernetes.io">kubernetes.io</a></li>
                   <li><a href="https://en.wikipedia.org/wiki/Kubernetes">en.wikipedia.org/wiki/Kubernetes</a></li>
@@ -1064,15 +950,14 @@
                   <li><a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">azure.microsoft.com/en-us/services/kubernetes-service/</a></li>
                   <li><a href="https://www.digitalocean.com/products/kubernetes/">www.digitalocean.com/products/kubernetes/</a></li>
                   <li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">kubernetes.io/docs/concepts/services-networking/ingress/</a></li>
+                  <li><a href="https://www.digitalocean.com/community/tags/kubernetes?type=tutorials">www.digitalocean.com/community/tags/kubernetes?type=tutorials</a></li>
                   <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes">www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-with-cert-manager-on-digitalocean-kubernetes</a></li>
                   <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager">www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager</a></li>
                   <li><a href="https://cert-manager.readthedocs.io/en/latest/reference/clusterissuers.html">cert-manager.readthedocs.io/en/latest/reference/clusterissuers.html</a></li>
                   <li><a href="https://github.com/jetstack/cert-manager/">github.com/jetstack/cert-manager/</a></li>
                   <!--
                      <li><a href=""></a></li>
-                              <li><a href=""></a></li>
-                              <li><a href=""></a></li>
-                              -->
+                  -->
                </ul>
             </div>
 
