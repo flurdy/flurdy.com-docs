@@ -100,6 +100,7 @@
                      </ul>
                   </li>
                   <li><a href="#blog_procedure">Blog post procedure</a></li>
+                  <li><a href="#continuous_deployment">Continuous deployment</a></li>
                   <li><a href="#reference">References</a></li>
                   <li><a href="#contact">Contact</a></li>
                </ul>
@@ -108,18 +109,19 @@
 
          <div id="cargo">
 
+<!--
             <div id="draft">
                <p>
                   (<i>
                   This document has just been published.
-                  <!-- This document has not yet been finalised. -->
-                  <!-- There are sections missing. -->
+                  This document has not yet been finalised.
+                  There are sections missing.
                   There may still be many typos and code errors.
                   Please <a href="#contact">let me know</a>.
                   </i>)
                </p>
             </div>
-
+-->
             <a name="background"></a>
             <div class="paragraph">
 
@@ -788,29 +790,54 @@
                <code>kubectl apply -f kube/deployment.yml</code>
 
                <p>
-                  I may later automate the update of the live site on every successful build.
-               </p>
-
-               <p>
                   Ps. I also temporarily move most posts out of <em>_posts</em> whilst developing for a faster site generation feedback loop.
                </p>
 
             </div>
 
 
-            <a name="reference"></a>
+            <a name="continuous_deployment"></a>
             <div class="paragraph">
-               <h3>References</h3>
-               <ul>
-                  <!--
-                  <li><a href=""></a></li>
-                  <li><a href=""></a></li>
-                  <li><a href=""></a></li>
-                  <li><a href=""></a></li>
-                  <li><a href=""></a></li>
-                  -->
-               </ul>
+
+               <h3>Continuous deployment</h3>
+
+               <p>
+                  A later addition to my blog set up is to automatically deploy my blog images to Kubernetes.
+                  I.e. a type of <a href="https://www.agilealliance.org/glossary/continuous-deployment/">continuous deployment</a>.
+               </p>
+               <p>
+                  For this I use <a href="http://keel.sh">Keel</a>.
+                  Keel lets you set labels that decide how a deployment container is updated.
+               </p>
+               <p>
+                  I installed Keel via <a href="https://helm.sh/">Helm</a>.
+                  Please read my <a href="../kubernetes/kubernetes-ingress-tls-helm.html#helm">Kubernetes Ingress &amp; TLS with Helm doc</a> on how to install Helm.
+               </p>
+               <p>
+                  I then modified my blog depoyment.yml with:
+               </p>
+               <code>
+                  vi kube/deployment.yml
+               </code>
+               <code class="file">
+                  ...<br/>
+                 metadata:<br/>
+                 &nbsp;&nbsp;name: <em>myblog-deployment</em><br/>
+                 &nbsp;&nbsp;labels:<br/>
+                 &nbsp;&nbsp;&nbsp;&nbsp;keel.sh/policy: major<br/>
+                 &nbsp;&nbsp;&nbsp;&nbsp;keel.sh/trigger: poll<br/>
+                 &nbsp;&nbsp;annotations:<br/>
+                 &nbsp;&nbsp;&nbsp;&nbsp;keel.sh/pollschedule: "@every <em>10m</em>"<br/>
+                 ... 
+               </code>
+               <code>kubectl apply -f kube/deployment.yml</code>
+               <p>
+                  So whenever a new <a href="https://semver.org/">Semver</a> tag of my blog image is uploaded to my registry (by CircleCI), 
+                  Keel updates my Kubernetes deployment. 
+               </p>
             </div>
+
+
 
             <a name="contact"></a>
             <div class="paragraph">
