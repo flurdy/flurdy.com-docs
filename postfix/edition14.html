@@ -222,6 +222,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 					<li><p><a href="#ext_admin">Admin software</a></p></li>
 					<li><p><a href="#ext_gmail">Google Apps / GMail</a></p></li>
 					<li><p><a href="#ext_maildrop">Maildrop, spam folder and vacation messaging</a></p></li>
+					<li><p><a href="#ext_dovecot_lmtp_sieve">Dovecot LMTP and Pigeonhole Sieve, spam folder and mail filtering</a></p></li>
 					<li><p><a href="#ext_squirrel">SquirrelMail webmail client</a></p></li>
 					<li><p><a href="#ext_brute">Brute Force</a><p>
 						<ul>
@@ -4876,6 +4877,19 @@ sudo service postfix restart;</code>
 	</p>
 	<p>
 		Please <a href="http://ubuntuforums.org/showpost.php?p=7278296&postcount=223">read his post here</a>.
+	</p>
+<h6><a href="#top">Return to top</a>.</h6>
+
+
+	<a name="ext_dovecot_lmtp_sieve"></a>
+	<h3>Dovecot LMTP and Pigeonhole Sieve, spam folder and mail filtering</h3>
+	<p>
+		Sven M&auml;der has written an extension to this guide (with the <a href="#config-imap-dovecot">Dovecot extension</a>)
+		swapping in Dovecot LMTP for virtual transport and automatically delivering spam to a Junk or Spam folder using Dovecot's Pigeonhole Sieve plugin.
+		It also includes instructions to enable the managesieve protocol and allow to create sieve mail filter scripts in the Roundcube webmail interface.
+	</p>
+	<p>
+		Please <a href="https://rda.ch/dovecot-lmtp-sieve/">follow his guide here</a>.
 	</p>
 <h6><a href="#top">Return to top</a>.</h6>
 
