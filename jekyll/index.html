@@ -62,7 +62,7 @@
          </nav>
          <div id="jib">
             Started: February 2019.
-            Last updated: 22nd Feb 2019.
+            Last updated: 19th July 2019.
          </div>
 
          <div id="starboard">
@@ -167,7 +167,7 @@
                <h3>Jekyll</h3>
 
                <p>
-                  <a href="https://jekyllrb.com">Jekyll</a> is web site generator.
+                  <a href="https://jekyllrb.com">Jekyll</a> is a web site generator.
                   It is written in Ruby and was created by <a href="https://github.com">GitHub</a> to power their <a href="https://pages.github.com/">GitHub pages</a> sites.
                </p>
                <p>
@@ -197,7 +197,7 @@
                </code>
 
                <p>
-                  And inside the container create a basic site and exit which destroys the container.
+                  And inside the container create a basic site and then exit, which destroys the container.
                   However all the files are retained in the mounted volume folder.
                </p>
 
@@ -217,7 +217,7 @@
                </code>
 
                <p>
-                  Lets start the built in Jekyll web server from bash.
+                  Lets start the built-in Jekyll webserver from bash within the container.
                </p>
 
                <code>
@@ -241,7 +241,7 @@
                <h4>Docker Compose</h4>
 
                <p>
-                  For ease of development I create a Docker Compose file to quickly launch the Jekyll server.
+                  For ease of development I created a Docker Compose file to quickly launch the Jekyll server.
                   And relaunch it quickly if tweaking the <em>Gemfile</em> or <em>_config.yml</em> which does not auto reload as opposed to most other files.
                </p>
 
@@ -332,7 +332,7 @@
                <p>
                   There was a few paid ones that looked good, but I find it hard to pay for a theme when I am not sure I would end up using it.
                   However they still got to eat and pay rent so I don't know a better monitisation for them.
-                  I guess a post pay if you like has a lot lower return rate than prepay.
+                  I guess a post-pay if you like has a lot lower return rate than pre-pay.
                </p>
 
                <p>
@@ -379,7 +379,7 @@
                <h3>CI Build</h3>
 
                <p>
-                  The beauty of Jekyll is that output is static html files and assets in the <em>_site</em> folder.
+                  The beauty of Jekyll is that its output is static html files and the assets are in the <em>_site</em> folder.
                   And that folder can be copied to any webserver and that is all you need.
                </p>
 
@@ -516,7 +516,7 @@
                </p>
                <p>
                   For this howto we create a <a href="https://quay.io">Quay.io</a> repository.
-                  And a <a href="https://docs.quay.io/glossary/robot-accounts.html">robot user</a> with write permissions to authenticate with.
+                  And a Quay <a href="https://docs.quay.io/glossary/robot-accounts.html">robot user</a> with write permissions to authenticate with the repository.
                </p>
 
             </div>
@@ -527,7 +527,7 @@
                <h4>Publish Docker image</h4>
 
                <p>
-                  To upload the Docker image to the registry a few run command is needed.
+                  To upload the Docker image to the registry a few _run_ commands are needed.
                   Also you need to add into CircleCI's project settings two environment variables:
                   <em>DOCKER_LOGIN</em> and <em>DOCKER_PASSWORD</em>.
                </p>
@@ -575,11 +575,11 @@
                   <a href="https://jekyllrb.com/docs/github-pages/">GitHub Pages</a> and may others.
                </p>
                <p>
-                  I prefer to choose my own <a href="http://kubernetes.io">Kubernetes</a> solution.
+                  I prefer to use my own <a href="http://kubernetes.io">Kubernetes</a> solution.
                   That way it can use any plugins it wants and is not tied to a service provider.
                </p>
                <p>
-                  You can choose between so many Kubernetes providers.
+                  If interested in Kubernetes you can choose between so many providers these days:
                   Your own <a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">Kubernetes the-hard-way</a> set up,
                   using <a href="https://cloud.google.com/kubernetes-engine/">Google's GKE</a>,
                   using <a href="https://aws.amazon.com/eks/">Amazon's EKS</a>,
@@ -587,7 +587,7 @@
                   etc.
                </p>
                <p>
-                  I chose <a href="https://m.do.co/c/fea5b8fd61fa">Digital Ocean's</a> recent Kubernetes solution.
+                  For my blog I chose <a href="https://m.do.co/c/fea5b8fd61fa">Digital Ocean's</a> recent Kubernetes solution.
                </p>
 
             </div>
@@ -607,6 +607,10 @@
                </p>
 
                <code>kubectl cluster-info</code>
+
+               <p>
+                  Note: Digital Oceans' <a href="https://github.com/digitalocean/doctl">_doctl_</a> tool makes <a href="https://www.digitalocean.com/docs/kubernetes/how-to/connect-to-cluster/">updating your Kubernetes credentials</a> a lot easier.
+               </p>
 
             </div>
 
@@ -671,8 +675,8 @@
                </code>
 
                <p>
-                  Note the tag <em>1.0.2</em>. That must be which ever tag the latest Docker image is with the registry.
-                  An alternative is to use <em>latest</em>, but it is a bit arbitraty to which <em>latest</em> is currently deployed where then...
+                  Note the tag <em>1.0.2</em>. That must be which ever tag the latest Docker image tag in the registry.
+                  An alternative is to use <em>latest</em>, but it is a bit arbitrarily to which <em>latest</em> is currently deployed...
                </p>
 
                <p>
@@ -828,12 +832,12 @@
                  &nbsp;&nbsp;&nbsp;&nbsp;keel.sh/trigger: poll<br/>
                  &nbsp;&nbsp;annotations:<br/>
                  &nbsp;&nbsp;&nbsp;&nbsp;keel.sh/pollschedule: "@every <em>10m</em>"<br/>
-                 ... 
+                 ...
                </code>
                <code>kubectl apply -f kube/deployment.yml</code>
                <p>
-                  So whenever a new <a href="https://semver.org/">Semver</a> tag of my blog image is uploaded to my registry (by CircleCI), 
-                  Keel updates my Kubernetes deployment. 
+                  So whenever a new <a href="https://semver.org/">Semver</a> tag of my blog image is uploaded to my registry (by CircleCI),
+                  Keel updates my Kubernetes deployment.
                </p>
             </div>
 
