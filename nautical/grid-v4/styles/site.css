@@ -90,7 +90,7 @@ body {
 }
 #nautical-figurehead,
 #nautical-anchor {
-   color: black;
+   color: #333333;
    background-color: unset;
 }
 

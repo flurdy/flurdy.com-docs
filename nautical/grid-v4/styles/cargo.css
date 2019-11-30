@@ -13,3 +13,12 @@
   transform: rotate(90deg);
   padding: 5em 0;
 }
+#nautical-stern  {
+   padding-left: 3.6em;
+}
+
+#nautical-stern img {
+   float: right;
+   height: 12px;
+   margin: 0.1em 0.2em;
+}
