@@ -1,0 +1,152 @@
+/*
+ * Site custom styling
+ */
+/*
+ * @flurdy's Nautical grid. v4
+ */
+
+/* Ship borders */
+#nautical-tug > .nautical-compartment,
+#nautical-net > .nautical-compartment,
+#nautical-ama > .nautical-compartment,
+#nautical-lighthouse > .nautical-compartment,
+#nautical-buoy > .nautical-compartment,
+#nautical-hull {
+	border: 0.2em outset #990000;
+}
+
+/* Rounding & shadows */
+#nautical-tug > .nautical-compartment > iframe,
+#nautical-tug > .nautical-compartment img,
+#nautical-net > .nautical-compartment > iframe,
+#nautical-net > .nautical-compartment img,
+#nautical-ama > .nautical-compartment > iframe,
+#nautical-ama > .nautical-compartment img,
+#nautical-net > .nautical-compartment,
+#nautical-tug > .nautical-compartment,
+#nautical-ama > .nautical-compartment,
+#nautical-buoy > .nautical-compartment,
+#nautical-hull {
+	border-radius: 20px;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+}
+
+#nautical-lighthouse > .nautical-compartment {
+ 	border-top-width: 0.1em;
+	border-bottom-right-radius: 20px;
+	border-bottom-left-radius:  20px;
+	-moz-border-radius-bottomleft: 20px;
+	-moz-border-radius-bottomright: 20px;
+	-webkit-border-bottom-left-radius: 20px;
+	-webkit-border-bottom-right-radius: 20px;
+}
+
+#nautical-tug > .nautical-compartment,
+#nautical-net > .nautical-compartment,
+#nautical-ama > .nautical-compartment,
+#nautical-lighthouse > .nautical-compartment,
+#nautical-buoy > .compartment,
+#nautical-hull {
+	box-shadow: 10px 10px 15px -5px #333333;
+	-webkit-box-shadow: 10px 10px 15px -5px #333333;
+	-moz-box-shadow: 10px 10px 15px -5px #333333;
+}
+
+#nautical-figurehead,
+#nautical-anchor {
+   border: 1px dashed silver;
+   border-radius: 10px;
+   margin: 0.2em;
+}
+
+/* Internal borders */
+#nautical-lookout,
+#nautical-stern,
+#nautical-bridge,
+#nautical-aft { border-top: 1px solid #990000; }
+#nautical-lookout,
+#nautical-jib,
+#nautical-foremast { border-bottom: 1px solid #990000;  }
+#nautical-port,
+#nautical-hatch { border-right: 1px solid #990000;  }
+#nautical-starboard,
+#nautical-deck { border-left: 1px solid #990000;  }
+#nautical-prow { border-bottom: 1px dashed silver; }
+
+/* Colours */
+body {
+   background-color: red;
+   color: black;
+}
+#nautical-lighthouse > .nautical-compartment,
+#nautical-buoy > .nautical-compartment,
+#nautical-tug > .nautical-compartment,
+#nautical-net > .nautical-compartment,
+#nautical-ama > .nautical-compartment,
+#nautical-hull {
+   color: gray;
+   background-color: white;
+}
+#nautical-figurehead,
+#nautical-anchor {
+   color: black;
+   background-color: unset;
+}
+
+/* Dimensions */
+.nautical-compartment {
+   padding: 0.2em 1em;
+}
+#nautical-tug > .nautical-compartment,
+#nautical-net > .nautical-compartment {
+   width: 528px;
+   height: 30px;
+}
+#nautical-ama {
+   /* margin-top: 5.8em; */ /* vertical align content at the top */
+   margin-top: -5.8em; /* vertical align content at the center */
+}
+#nautical-ama > .nautical-compartment {
+   height: 400px;
+   width: 50px;
+}
+#nautical-net > .nautical-compartment,
+#nautical-tug > .nautical-compartment {
+   padding-top: 1.5em;
+}
+#nautical-tug > .nautical-compartment {
+   margin: 0 0 1em 0;
+}
+#nautical-net > .nautical-compartment {
+   margin: 1em 0 0 0;
+}
+#nautical-ama {
+   padding: 0 0 0 1.5em;
+}
+#nautical-ama > .nautical-compartment {
+   min-height: 24em;
+}
+#nautical-buoy {
+   margin-top: 0.5em;
+}
+#nautical-ballast {
+   min-height: 20em;
+   min-width: 30em;
+   padding: 0.5em 1em;
+}
+
+/* Fonts */
+.nautical-compartment {
+   font-size: 9pt;
+}
+
+ /* Alignment */
+.nautical-compartment {
+   text-align: center;
+}
+
+/* Disabling grids */
+.nautical-abstract {
+   display: none;
+}

@@ -1,0 +1,36 @@
+/*
+ * @flurdy's Nautical grid. v4
+ */
+
+ html, body {
+   margin-top: 0;
+   margin-bottom: 0;
+}
+#nautical-ocean {
+   display: grid;
+   grid-template-rows: 2em auto 2em;
+   height: 100vh;
+}
+#nautical-fleet {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: nowrap;
+   justify-content: center;
+   /* align-items: flex-start; */ /* vertical align content at the top*/
+   align-items: center; /* vertical align content in the middle */
+}
+#nautical-regatta {
+   display: flex;
+   flex-direction: column;
+   flex-wrap: nowrap;
+   justify-content: center;
+   align-items: center;
+}
+#nautical-keel {
+   display: grid;
+   grid-template-columns: 2em auto 2em;
+}
+#nautical-bulkhead {
+   display: grid;
+   grid-template-columns: 2em auto 2em;
+}

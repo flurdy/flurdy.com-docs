@@ -1,0 +1,15 @@
+/*
+ * Content styling
+ */
+
+#nautical-port div.rotated,
+#nautical-hatch div.rotated {
+  transform: rotate(-90deg);
+  padding: 5em 0;
+}
+#nautical-ama .nautical-compartment div.rotated,
+#nautical-deck div.rotated,
+#nautical-starboard div.rotated {
+  transform: rotate(90deg);
+  padding: 5em 0;
+}
