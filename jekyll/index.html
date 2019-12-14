@@ -62,7 +62,7 @@
          </nav>
          <div id="jib">
             Started: February 2019.
-            Last updated: 19th July 2019.
+            Last updated: 14th December 2019.
          </div>
 
          <div id="starboard">
@@ -109,19 +109,6 @@
 
          <div id="cargo">
 
-<!--
-            <div id="draft">
-               <p>
-                  (<i>
-                  This document has just been published.
-                  This document has not yet been finalised.
-                  There are sections missing.
-                  There may still be many typos and code errors.
-                  Please <a href="#contact">let me know</a>.
-                  </i>)
-               </p>
-            </div>
--->
             <a name="background"></a>
             <div class="paragraph">
 
@@ -241,7 +228,7 @@
                <h4>Docker Compose</h4>
 
                <p>
-                  For ease of development I created a Docker Compose file to quickly launch the Jekyll server.
+                  For ease of development I created a <a href="https://docs.docker.com/compose/">Docker Compose</a> file to quickly launch the Jekyll server.
                   And relaunch it quickly if tweaking the <em>Gemfile</em> or <em>_config.yml</em> which does not auto reload as opposed to most other files.
                </p>
 
@@ -302,7 +289,7 @@
 
                <p>
                   In Blogger each post of mine had a year and month prefix folder path, but by default Jekyll also each post in day of the month subfolder as well.
-                  To main the same file names I needed to tweak Jekyll's <em>permalink</em> configuration.
+                  To maintain the same path/file names I needed to tweak Jekyll's <em>permalink</em> configuration.
                </p>
 
                <code>vi _config.yml</code>
@@ -332,7 +319,7 @@
                <p>
                   There was a few paid ones that looked good, but I find it hard to pay for a theme when I am not sure I would end up using it.
                   However they still got to eat and pay rent so I don't know a better monitisation for them.
-                  I guess a post-pay if you like has a lot lower return rate than pre-pay.
+                  I would guess a post-pay has a lot lower return rate than pre-pay.
                </p>
 
                <p>
@@ -556,6 +543,33 @@
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IMAGE_TAG="1.0.${CIRCLE_BUILD_NUM}"<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG<br/>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;docker push $IMAGE_NAME:$IMAGE_TAG
+               </code>
+
+               <p>
+                  We tie all these up with a CircleCI <em>workflows</em> section:
+               </p>
+
+               <code class="file wide">
+                  workflows:<br/>
+                  &nbsp;&nbsp;version: 2<br/>
+                  &nbsp;&nbsp;build-master:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;jobs:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- build:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filters:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;branches:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;only: master<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- build-image:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;requires:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- build<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filters:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;branches:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;only: master<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- publish-image:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;requires:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- build-image<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;filters:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;branches:<br/>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;only: master
                </code>
 
                <p>
@@ -794,7 +808,8 @@
                <code>kubectl apply -f kube/deployment.yml</code>
 
                <p>
-                  Ps. I also temporarily move most posts out of <em>_posts</em> whilst developing for a faster site generation feedback loop.
+                  Ps. I also temporarily move most of the posts out of <em>_posts</em> whilst developing for a faster site generation feedback loop.
+                  Do not commit these removals to git.
                </p>
 
             </div>
