@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Kubernetes Docker Registries Cookbook</title>
+   <meta name="description" content="Quick recipes on how to add and use various Docker registries with Kubernetes. Recipes for Docker Hub, Quay.io, Google's GCR, AWS' ECR, Azure's AKR and more.">
+   <meta name="keywords" content="kubernetes,k8s,docker,registry,cookbook,hub,quay,gcr,akr,ecr,harbor">
+   <link rel="shortcut icon" href="/favicon.ico">
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta name="viewport" content="initial-scale=0.8" />
+   <link href="../../android/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../../docker/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../../git/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../../letsencrypt/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../../play/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../../docker/docs2.css" rel="stylesheet" type="text/css" />
+   <link href="../../jekyll/docs.css" rel="stylesheet" type="text/css" />
+   <link href="../docs.css" rel="stylesheet" type="text/css" />
+   <link href="docs.css" rel="stylesheet" type="text/css" />
+   <style>
+   </style>
+   <script>
+      // (function (i, s, o, g, r, a, m) {
+      //    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      //       (i[r].q = i[r].q || []).push(arguments)
+      //    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      //       m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      // })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+      // ga('create', 'UA-281408-1', 'auto');
+      // ga('send', 'pageview');
+   </script>
+
+   <meta http-equiv="REFRESH" content="15;">
+
+</head>
+
+<body>
+   <div id="ocean">
+      <div id="ship">
+         <div id="toprighter">
+            <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/images/cc-by-sa-small.png"
+                  alt="cc by-sa" title="Creative Commons Attributions-ShareAlike" border="0" align="right" /></a>
+            <a href="http://flurdy.com"><img src="/images/flurdy_warped_dual_small.png" border="0" align="right"
+                  alt="flurdy" title="" class="flurdySmall" /></a>
+         </div>
+         <header>
+            <h1>
+               Kubernetes Docker Registries Cookbook
+            </h1>
+            <h4>
+               Recipes for using various Docker registries with Kubernetes.
+            </h4>
+         </header>
+         <nav id="lookout">
+            <ul class="horizontal">
+               <li><a href="https://flurdy.com">flurdy</a></li>
+               <li><a href="https://twitter.com/flurdy">@flurdy</a></li>
+               <li><a href="https://blog.flurdy.com">blog</a></li>
+               <!-- <!-- <li><a href="http://shirts.flurdy.com">shirts</a></li> --> -->
+               <li><a href="https://eray.uk">hire</a></li>
+               <li><a href="/docs/">more docs</a></li>
+            </ul>
+         </nav>
+         <div id="jib">
+            Started: December 2019.
+            Last updated: 20th December 2019.
+         </div>
+
+         <div id="starboard">
+            <nav>
+               <h5>Contents</h5>
+               <ul>
+                  <li>
+                     <a href="#aim">Aim</a>
+                     <ul>
+                        <li><a href="#registries">Registries includes</a></li>
+                     </ul>
+                  </li>
+                  <li>
+                     <a href="#prerequisite">Prerequisite</a>
+                  </li>
+                  <li><a href="#recipe_docker_hub">Docker Hub Recipe</a></li>
+                  <li><a href="#recipe_quay">Quay Recipe</a></li>
+                  <li><a href="#recipe_gcr">Google GCR Recipe</a></li>
+                  <li><a href="#contribute">Contribute recipes</a></li>
+                  <li><a href="#reference">References</a></li>
+                  <li><a href="#contact">Contact</a></li>
+               </ul>
+            </nav>
+         </div>
+
+         <div id="cargo">
+
+            <div id="draft">
+               <p>
+                  (<i>
+                     <!-- This document has recently been published. -->
+                     This document has not yet been finalised.
+                     There are sections missing.<br /> &nbsp;&nbsp;
+                     There may still be many typos and code errors.
+                     Please <a href="#contact">let me know</a>.
+                  </i>)
+               </p>
+            </div>
+
+            <a name="aim"></a>
+            <div class="paragraph">
+               <h3>Aim</h3>
+               <div class="indented">
+                  <p>
+                     Showing simple recipes on how to use various <a href="https://docs.docker.com/registry/">Docker registries</a> with <a href="https://kubernetes.io/">Kubernetes</a>.
+                  </p>
+                  <p>
+                     Docker registries details are configured in Kubernetes as <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secrets</a>.
+                     A specific <em>docker-registry</em> type of Secret.
+                  </p>
+                  <p>
+                     Also examples of encrypting the secrets with <a href="https://github.com/bitnami-labs/sealed-secrets">Sealed Secrets</a> for a <a href="https://www.gitops.tech/">GitOps</a> <a href="https://fluxcd.io/">Flux</a> based cluster.
+                  </p>
+               </div>
+
+               <a name="registries"></a>
+               <div class="paragraph">
+                  <h4>Registry Recipes</h4>
+                  <div class="indented">
+                     <ul>
+                        <li>
+                           <a href="#recipe_docker_hub">Docker Hub Recipe</a>
+                        </li>
+                        <li>
+                           <a href="#recipe_quay">Quay.io Recipe</a>
+                        </li>
+                        <li>
+                           <a href="#recipe_gcr">Google's GCR Recipe</a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+
+
+
+            <a name="prerequisite"></a>
+            <div class="paragraph">
+
+               <h3>Prerequisite</h3>
+               <div class="indented">
+
+                  <h5>Kubernetes cluster</h5>
+                  <p>
+                     Obviously.
+                  </p>
+                  <ul>
+                     <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">The hard way</a></li>
+                     <li><a href="https://aws.amazon.com/eks/">EKS</a></li>
+                     <li><a href="https://cloud.google.com/kubernetes-engine/">GKE</a></li>
+                     <li><a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">AKR</a></li>
+                     <li><a href="https://www.digitalocean.com/products/kubernetes/">DOKS</a></li>
+                  </ul>
+
+                  <h5>Kubectl</h5>
+
+                  <ul>
+                     <li>
+                        <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubernetes.io/docs/tasks/tools/install-kubectl/</a>
+                        <ul>
+                           <li>
+                              <code>brew install kubectl</code>
+                           </li>
+                        </ul>
+                     </li>
+                  </ul>
+
+
+                  <h5>Provider CLI</h5>
+                  <p>
+                     Optional.
+                  </p>
+                  <ul>
+                      <li>
+                         <a href="https://eksctl.io/">eksctl</a>
+                         <ul>
+                            <li>
+                               <code>
+                                 brew tap weaveworks/tap;<br/>
+                                  brew install weaveworks/tap/eksctl
+                               </code>
+                            </li>
+                         </ul>
+                      </li>
+                      <li>
+                         <a href="https://cloud.google.com/sdk/">gcloud</a>
+                         <ul>
+                            <li>
+                               <code>
+                                 brew install google-cloud-sdk
+                               </code>
+                            </li>
+                         </ul>
+                      </li>
+                      <li>
+                         <a href="https://github.com/Azure/azure-cli">az</a>
+                         <ul>
+                            <li>
+                               <code>
+                                 brew install azure-cli
+                               </code>
+                            </li>
+                         </ul>
+                      </li>
+                      <li>
+                         <a href="https://github.com/digitalocean/doctl">doctl</a>
+                         <ul>
+                            <li>
+                               <code>
+                                 brew install doctl
+                               </code>
+                            </li>
+                         </ul>
+                      </li>
+                  </ul>
+
+                  <h5>Sealed Secrets</h5>
+                  <p>
+                     Optional.
+                  </p>
+                  <ul>
+                     <li><a href="https://github.com/bitnami-labs/sealed-secrets">github.com/bitnami-labs/sealed-secrets</a></li>
+                     <li>
+                        <a href="https://github.com/flurdy/lemmings/#sealed-secrets">github.com/flurdy/lemmings/#sealed-secrets</a>
+                        <ul>
+                           <li>
+                              <code>brew install kubeseal</code>
+                           </li>
+                        </ul>
+                     </li>
+                  </ul>
+
+
+                  <h5>jq</h5>
+                  <p>
+                     Optional.
+                  </p>
+                  <ul>
+                     <li>
+                        <a href="https://stedolan.github.io/jq/">stedolan.github.io/jq/</a>
+                        <ul>
+                           <li>
+                              <code>
+                                 brew install jq
+                              </code>
+                           </li>
+                        </ul>
+                     </li>
+                  </ul>
+
+               </div>
+            </div>
+
+
+            <a name="recipe_docker_hub"></a>
+            <div class="paragraph">
+               <h3>Docker Hub Recipe</h3>
+
+               <div class="indented">
+                  <ul>
+                     <li><a href="https://cloud.docker.com">cloud.docker.com</a></li>
+                  </ul>
+
+                  <p>
+                     With Docker Hub you use a plain password
+                  </p>
+               </div>
+            </div>
+
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3>Quay Recipe</h3>
+
+               <div class="indented">
+
+                  <ul>
+                     <li><a href="https://quay.io/">quay.io</a></li>
+                  </ul>
+
+                  <p>
+                     Create a Quay Robot account
+                  </p>
+                  <ol>
+                     <li>
+
+                     </li>
+                  </ol>
+               </div>
+            </div>
+
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3>GCR - Google Container Registry Recipe</h3>
+
+               <div class="indented">
+                  <ul>
+                     <li><a href="https://cloud.google.com/container-registry/">cloud.google.com/container-registry/</a></li>
+                  </ul>
+
+                  <p>
+                     For GCR you need a JSON token from GCP's IAM.
+                  </p>
+
+                  <ol>
+                     <li>
+                        Log into your GCP project's IAM section, specifically <em>Service Accounts</em>.
+                        <ul>
+                           <li>
+                              <a href="https://console.cloud.google.com/iam-admin/serviceaccounts">console.cloud.google.com/iam-admin/serviceaccounts</a>
+                           </li>
+                        </ul>
+                     </li>
+                     <li>
+                        Click on <em>Create Service Account</em>.
+                        <ul>
+                           <li>
+                              Give it a decent name.
+                           </li>
+                           <li>
+                              And describe its intentions, i.e. GCR read only. Or write if you are pushing builds as well.
+                           </li>
+                        </ul>
+                     </li>
+                     <li>
+                        Click on <em>Create</em>
+                     </li>
+                     <li>
+                        Select the <em>Select a role</em> dropdown
+                        <ul>
+                           <li>Choose <em>Storage</em> at the bottom</li>
+                           <li>And <em>Storage Admin</em> on the submenu</li>
+                        </ul>
+                     </li>
+                     <li>Click on <em>Continue</em></li>
+                     <li>
+                        Click on the <em>Create key</em>
+                        <ul>
+                           <li>Choose <em>JSON</em></li>
+                        </ul>
+                     </li>
+                     <li>
+                        Click on <em>Create</em>
+                        <ul>
+                           Save the JSON file e.g. as <em>gcr-registry.json</em>.
+                        </ul>
+                     </li>
+                  </ol>
+
+                  <p>
+                     Then we need to create a <em>Kubernetes Secret</em> using the JSON as a one-line data token.
+                  </p>
+
+                  <ol>
+                     <li>
+                        <code>
+                           kubectl create secret docker-registry <em>gcr-registry</em> \<br/>
+                           &nbsp;&nbsp;--dry-run -o yaml \<br/>
+                           &nbsp;&nbsp;--docker-server=https://gcr.io \<br/>
+                           &nbsp;&nbsp;--docker-username=_json_key \<br />
+                           &nbsp;&nbsp;--docker-email=<em>somone@example.com</em> \<br />
+                           &nbsp;&nbsp;--docker-password=(jq -c . <em>gcp-service-account.json</em> ) \<br />
+                           &nbsp;&nbsp;&gt; <em>gcr-registry.yml</em>
+                        </code>
+                     </li>
+                  </ol>
+
+                  <p>
+                     If you do not use GitOps, <em>gcr-registry.yml</em> can now be applied to the cluster.
+                  </p>
+
+                  <ol>
+                     <li>
+                        <code>
+                           kubectl create -f <em>gcr-registry.yml</em>
+                        </code>
+                     </li>
+                  </ol>
+
+                  <p>
+                     If you use GitOps, you would want to encrypt the Secret before adding the encrypted file to version control.
+                  </p>
+
+                  <ol>
+                     <li>
+                        <code>
+                           kubeseal --fetch-cert \<br/>
+                           &nbsp;&nbsp;--controller-namespace=kube-system \<br/>
+                           &nbsp;&nbsp;--controller-name=<em>sealed-secrets</em> \<br/>
+                           &nbsp;&nbsp;&gt; <em>sealed-secrets-cert.pem</em>
+                        </code>
+                     </li>
+                     <li>
+                        <code>
+                           kubeseal --format=yaml \<br/>
+                           &nbsp;&nbsp;--cert=<em>sealed-secrets-cert.pem</em> \<br/>
+                           &nbsp;&nbsp;&lt; <em>gcr-registry.yml</em> \<br/>
+                           &nbsp;&nbsp;&gt; <em>sealed-gcr-registry.yml</em>
+                        </code>
+                     </li>
+                  </ol>
+
+               </div>
+            </div>
+
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+
+               <div class="indented">
+                  <p>
+
+                  </p>
+               </div>
+            </div>
+
+
+            <a name=""></a>
+            <div class="paragraph">
+               <h3></h3>
+
+               <div class="indented">
+                  <p>
+
+                  </p>
+               </div>
+            </div>
+
+
+            <a name=""></a>
+            <div class="">
+               <h3></h3>
+
+               <div class="indented">
+                  <p>
+
+                  </p>
+               </div>
+            </div>
+
+
+            <a name="contribute"></a>
+            <div class="paragraph">
+               <h3>Contribute recipes</h3>
+               <div class="indented">
+                  <p>
+                     Please <a href="http://github.com/flurdy/flurdy.com-docs">contribute</a> recipes for other registries:
+                  </p>
+                  <ul>
+                     <li>
+                        <a href="https://aws.amazon.com/ecr/">AWS' ECR</a>
+                     </li>
+                     <li>
+                        <a href="https://azure.microsoft.com/en-us/services/container-registry/">Azure's AKR</a>
+                     </li>
+                     <li>
+                        <a href="https://goharbor.io/">Harbor</a>
+                     </li>
+                     <li>
+                        <a href="https://docs.gitlab.com/ee/user/packages/container_registry/">Gitlab Container Registry</a>
+                     </li>
+                     <li>
+                        <a href="https://github.com/features/packages">Github Packages</a>
+                     </li>
+                     <li>
+                        <a href="https://www.digitalocean.com/products/container-registry/">DigitalOcean Container Registry</a>
+                     </li>
+                     <li>
+                        <a href="https://jfrog.com/container-registry/">JFrog Container Registry</a>
+                     </li>
+                     <li>
+                        <a href="https://www.sonatype.com/nexus-repository-oss">Sonatype Nexus</a>
+                     </li>
+                     <li>
+                        <a href="https://docs.docker.com/registry/">Docker Registry</a>
+                     </li>
+                  </ul>
+                  <p>
+                     I may eventually add further registry examples myself.
+                  </p>
+                  <p>
+                     Please <a href="http://github.com/flurdy/flurdy.com-docs">fork and send a pull request</a> with recipes.
+                     Please also submit PRs to correct any typos, or useful additions.
+                  </p>
+               </div>
+            </div>
+
+
+            <a name="reference"></a>
+            <div class="paragraph">
+               <h3>References</h3>
+               <p>
+               </p>
+               <ul>
+                  <li><a href="https://kubernetes.io">kubernetes.io</a></li>
+                  <li><a href="https://en.wikipedia.org/wiki/Kubernetes">en.wikipedia.org/wiki/Kubernetes</a></li>
+                  <li><a href="/docs/kubernetes/kubernetes-101.html">Flurdy's Kubernetes 101</a></li>
+                  <li><a href="/docs/kubernetes/kubernetes-ingress-tls-helm.html">Flurdy's Kubernetes Ingress &amp; TLS. With Helm</a></li>
+                  <li><a href="https://github.com/flurdy/lemmings/">Flurdy's Kubernetes configuration with GitOps</a></li>
+                  <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">github.com/kelseyhightower/kubernetes-the-hard-way</a></li>
+                  <li><a href="https://aws.amazon.com/eks/">aws.amazon.com/eks/</a></li>
+                  <li><a href="https://cloud.google.com/kubernetes-engine/">cloud.google.com/kubernetes-engine/</a></li>
+                  <li><a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">azure.microsoft.com/en-us/services/kubernetes-service/</a></li>
+                  <li><a href="https://www.digitalocean.com/products/kubernetes/">www.digitalocean.com/products/kubernetes/</a></li>
+                  <li><a href="https://cloud.docker.com/">cloud.docker.com</a></li>
+                  <li><a href="https://quay.io/">quay.io</a></li>
+                  <li><a href="https://cloud.google.com/container-registry/">cloud.google.com/container-registry/</a></li>
+                  <li><a href="https://aws.amazon.com/ecr/">aws.amazon.com/ecr/</a></li>
+                  <li><a href="https://azure.microsoft.com/en-us/services/container-registry/">azure.microsoft.com/en-us/services/container-registry/</a></li>
+                  <li><a href="https://www.digitalocean.com/products/container-registry/">www.digitalocean.com/products/container-registry/</a></li>
+                  <li><a href="https://jfrog.com/container-registry/">jfrog.com/container-registry/</a></li>
+                  <li><a href="https://github.com/features/packages">github.com/features/packages</a></li>
+                  <li><a href="https://docs.gitlab.com/ee/user/packages/container_registry/">docs.gitlab.com/ee/user/packages/container_registry/</a></li>
+                  <li><a href="https://goharbor.io/">goharbor.io</a></li>
+                  <li><a href="https://github.com/bitnami-labs/sealed-secrets">github.com/bitnami-labs/sealed-secrets</a></li>
+                  <li><a href="https://fluxcd.io/">fluxcd.io</a></li>
+                  <li><a href="https://www.gitops.tech/">www.gitops.tech</a></li>
+                  <li><a href="https://www.sonatype.com/nexus-repository-oss">www.sonatype.com/nexus-repository-oss</a></li>
+                  <li><a href="https://docs.docker.com/registry/">docs.docker.com/registry/</a></li>
+                  <li><a href="https://kubernetes.io/docs/concepts/configuration/secret/">kubernetes.io/docs/concepts/configuration/secret/</a></li>
+                  <!--
+                     <li><a href=""></a></li>
+                  -->
+               </ul>
+            </div>
+
+            <a name="contact"></a>
+            <div class="paragraph">
+               <a name="contact"></a>
+               <h3>Feedback</h3>
+               <div class="indented">
+                  <p>
+                     <a href="http://shirts.flurdy.com">Buy a t-shirt</a> if you found this guide useful.
+                     <a href="http://www.eray.uk">Hire me</a> for short term advice or long term consultancy.
+                  </p>
+                  <p>
+                     Otherwise <a href="/contact">contact me</a>.
+                     Especially for things factually incorrect.
+                     Apologies for procrastinated replies.
+                  </p>
+               </div>
+            </div>
+         </div>
+
+
+         <footer>
+            <nav>
+               <ul class="horizontal">
+                  <li><a href="http://flurdy.com">flurdy</a></li>
+                  <li><a href="http://twitter.com/flurdy">@flurdy</a></li>
+                  <li><a href="http://blog.flurdy.com">blog</a></li>
+                  <li><a href="http://www.eray.uk">hire</a></li>
+                  <li><a href="/docs/">more docs</a></li>
+               </ul>
+            </nav>
+         </footer>
+      </div>
+   </div>
+   <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
+</body>

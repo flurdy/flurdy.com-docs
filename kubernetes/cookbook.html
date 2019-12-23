@@ -53,6 +53,16 @@
       <li><code>kubectl apply -f kube/deployment.yml</code></li>
       <li><code>kubectl apply -f kube/test/config/configmap.yml</code></li>
       <li><code>kubectl </code></li>
+      <li><code>
+      kube create secret docker-registry gcr-registry --dry-run -o yaml --docker-server=https://gcr.io --docker-username=_json_key --docker-email=somone@example.com --docker-password=(jq -c . gcp-service-account.json ) > gcr-registry.yml
+      </code></li>
+      <li><code>
+          kubeseal --format=yaml \
+            --cert=sealed-secrets-cert.pem \
+            &lt; gcr-registry.yml \
+            &gt; secret-gcr-registry.yml
+   </code></li>
+
 
    </ul>
    </div>
