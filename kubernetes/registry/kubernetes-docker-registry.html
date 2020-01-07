@@ -149,9 +149,6 @@
                <div class="indented">
 
                   <h5>Kubernetes cluster</h5>
-                  <!-- <p>
-                     Obviously.
-                  </p> -->
                   <ul>
                      <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">The hard way</a></li>
                      <li><a href="https://aws.amazon.com/eks/">EKS</a></li>
@@ -323,13 +320,13 @@
                      If you do not use GitOps and sealed secrets, <em>dockerhub-registry.yml</em> can now be applied to the cluster.
                   </p>
 
-                  <ol>
+                  <ul>
                      <li>
                         <code>
                            kubectl apply -f <em>dockerhub-registry.yml</em>
                         </code>
                      </li>
-                  </ol>
+                  </ul>
                </div>
             </div>
 
@@ -345,13 +342,88 @@
                   </ul>
 
                   <p>
-                     Create a Quay Robot account
+                     Quay uses <a href="https://docs.quay.io/glossary/robot-accounts.html">robot accounts</a> to access their registry.
                   </p>
                   <ol>
                      <li>
-
+                        Log in to Quay.
+                     </li>
+                     <li>
+                        Go to account settings.
+                     </li>
+                     <li>
+                        Click robot accounts tab
+                        <ul>
+                           <li>
+                              <em>quay.io/user/YOURUSERNAME?tab=robots</em>
+                           </li>
+                        </ul>
+                     </li>
+                     <li>
+                        Click on <em>Create Robot Account</em>
+                        <ul>
+                           <li>
+                              Give it a name, e.g. cluster name. Note lowercase alphanumerical only.
+                           </li>
+                           <li>
+                              Describe intended use.
+                           </li>
+                           <li>
+                              Click <em>Create robot account</em>
+                           </li>
+                        </ul>
+                     </li>
+                     <li>
+                        Specify permission required for each repository.
+                        <ul>
+                           <li>
+                              Click <em>Add permissions</em>
+                           </li>
+                        </ul>
+                     </li>
+                     <li>
+                        Click on the settings <em>cog</em> on your new <em>YOURUSERNAME+ROBOTNAME</em> account row.
+                        <ul>
+                           <li>
+                              Select <em>View Credentials</em>
+                           </li>
+                        </ul>
+                     </li>
+                     <li>
+                        Either download the secret directly from the <em>Kubernetes Secret</em> tab
+                        or create the secret manually by:
+                        <ul>
+                           <li>
+                              Select the <em>Robot Token</em> tab.
+                           </li>
+                           <li>
+                              Note username and token.
+                           </li>
+                           <li>
+                              <code>
+                                 kubectl create secret docker-registry <em>quay-registry</em> \<br/>
+                                 &nbsp;&nbsp;--dry-run -o yaml \<br/>
+                                 &nbsp;&nbsp;--docker-server=https://quay.io \<br/>
+                                 &nbsp;&nbsp;--docker-username=<em>USERNAME+ROBOTNAME</em> \<br />
+                                 &nbsp;&nbsp;--docker-password=<em>ROBOT_TOKEN</em> \<br />
+                                 &nbsp;&nbsp;&gt; <em>quay-registry.yml</em>
+                              </code>
+                           </li>
+                        </ul>
                      </li>
                   </ol>
+
+                  <p>
+                     If you do not use GitOps and sealed secrets, <em>quay-registry.yml</em> can now be applied to the cluster.
+                  </p>
+
+                  <ul>
+                     <li>
+                        <code>
+                           kubectl apply -f <em>quay-registry.yml</em>
+                        </code>
+                     </li>
+                  </ul>
                </div>
             </div>
 
@@ -455,13 +527,13 @@
                      If you do not use GitOps and sealed secrets, <em>gcr-registry.yml</em> can now be applied to the cluster.
                   </p>
 
-                  <ol>
+                  <ul>
                      <li>
                         <code>
                            kubectl apply -f <em>gcr-registry.yml</em>
                         </code>
                      </li>
-                  </ol>
+                  </ul>
 
                </div>
             </div>
@@ -685,3 +757,4 @@
    </div>
    <link href='//fonts.googleapis.com/css?family=Michroma' rel='stylesheet' type='text/css' />
 </body>
+</html>
