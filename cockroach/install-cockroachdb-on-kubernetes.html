@@ -83,6 +83,29 @@
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
 
+
+                              <div class="callout-block callout-warning">
+                                 <div class="icon-holder">
+                                    <i class="fas fa-info-triangle"></i>
+                                 </div>
+                                 <div class="content">
+                                    <h4 class="callout-title">Draft</h4>
+                                    <p>
+                                       This is an early draft.
+                                       May still miss sections,
+                                       bad links,
+                                       no references,
+                                       unverified code,
+                                       babble not yet pruned,
+                                       and full of typos and spelling errors.
+                                    </p>
+                                    <p>
+                                       This is also a new document template,
+                                       so will be tweaked and cruft removed.
+                                    </p>
+                                 </div>
+                              </div>
+
                             <section id="synopsis-section" class="doc-section">
                                 <h2 class="section-title">Synopsis</h2>
                                 <div class="section-block">
@@ -108,61 +131,7 @@
                                        another 3rd party provider
                                        or roll your own.
                                     </p>
-                                    <div class="row">
-                                       <div class="col-md-6 col-12">
-                                          <ul>
-                                             <li><a href="">AKS</a> by Microsoft Azure</li>
-                                             <li><a href="">DOKS</a> by DigitalOcean</li>
-                                             <li><a href="">EKS</a> by Amazon AWS</li>
-                                             <li><a href="">GKE</a> by Google Cloud</li>
-                                             <li><em><a href="">Kubernetes the hard way</a></em></li>
-                                          </ul>
-                                       </div>
-                                    </div>
-                                </div>
-
-                                <div id="pre-cli"  class="section-block">
-                                    <h3 class="block-title">Provider CLI</h3>
-                                    <p>
-                                       Optionally if using a cloud provider,
-                                       their CLI usually makes managing the cluster
-                                       a lot easier.
-                                    </p>
-
-                                    <div class="row">
-                                       <div class="col-md-6 col-12">
-                                          <ul>
-                                             <li>
-                                                <div class="code-block">
-                                                <h6><a href="https://github.com/Azure/azure-cli">azure-cli</a> for AKS</h6>
-                                                   <!-- <h6>macOS:</h6> -->
-                                                   <pre><code class="language-bash">brew install azure-cli</code></pre>
-                                                </div>
-                                             </li>
-                                             <li>
-                                                <div class="code-block">
-                                                <h6><a href="https://github.com/digitalocean/doctl">doctl</a> for DOKS</h6>
-                                                   <pre><code class="language-shell">brew install doctl</code></pre>
-                                                </div>
-                                             </li>
-                                             <li>
-                                                <div class="code-block">
-                                                <h6><a href="https://eksctl.io">eksctl</a> for EKS</h6>
-                                                   <!-- <h6>macOS:</h6> -->
-                                                   <pre><code class="language-bash">brew tap weaveworks/tap;
-brew install weaveworks/tap/eksctl</code></pre>
-                                                </div>
-                                             </li>
-                                             <li>
-                                                <div class="code-block">
-                                                   <h6><a href="https://cloud.google.com/sdk/">gcloud</a> for GKE</h6>
-                                                   <pre><code class="language-bash">brew install google-cloud-sdk</code></pre>
-                                                </div>
-                                             </li>
-                                          </ul>
-                                       </div>
-                                    </div>
-
+                                    <p>Refer to the <a href="#references">provider references for options</a></p>
                                 </div>
 
                                 <div id="pre-kubectl" class="section-block">
@@ -171,23 +140,15 @@ brew install weaveworks/tap/eksctl</code></pre>
                                        You need the CLI for Kubernetes, <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a>, installed locally,
                                        and configured to talk to your cluster.
                                     </p>
+                                    <p>Refer to the <a href="#references">provider CLI references</a> for easy provider credentials</p>
 
                                     <div class="code-block">
                                        <h6>macOS:</h6>
                                        <pre><code class="language-bash">brew install kubernetes-cli</code></pre>
+                                       <h6>Ubuntu:</h6>
+                                       <pre><code class="language-bash">sudo snap install kubectl --classic</code></pre>
                                     </div>
 
-                                </div>
-
-                                <div id="pre-flux" class="section-block">
-                                    <h3 class="block-title">FluxCD</h3>
-                                    <p>
-                                       Optional.
-                                       <a href="https://fluxcd.io">Fluxcd</a> is a way to manage a cluster via GitOps.
-                                    </p>
-                                    <p>
-                                       For help setting up Flux have a look at the <a href="https://github.com/flurdy/lemmings">Lemmings</a> repository.
-                                    </p>
                                 </div>
 
                                 <div id="pre-helm" class="section-block">
@@ -203,15 +164,22 @@ brew install weaveworks/tap/eksctl</code></pre>
                                     </p>
                                 </div>
 
+                                <div id="pre-flux" class="section-block">
+                                    <h3 class="block-title">FluxCD</h3>
+                                    <p>
+                                       Optional.
+                                       <a href="https://fluxcd.io">FluxCd</a> is a way to manage a cluster via GitOps.
+                                    </p>
+                                    <p>
+                                       For help setting up Flux have a look at my <a href="https://github.com/flurdy/lemmings">Lemmings</a> repository.
+                                    </p>
+                                </div>
+
                             </section>
 
                             <section id="install-section" class="doc-section">
 
                                 <h2 class="section-title">Install</h2>
-
-                                <p>
-
-                                </p>
 
                               <div class="callout-block callout-info">
                                  <div class="icon-holder">
@@ -233,6 +201,10 @@ brew install weaveworks/tap/eksctl</code></pre>
 
                                 <div id="install-helm"  class="section-block">
                                     <h3 class="block-title">Via Helm</h3>
+
+                                    <p>
+                                       Installing directly via Helm.
+                                    </p>
 
                                     <div class="callout-block callout-info">
                                        <div class="icon-holder">
@@ -263,9 +235,9 @@ conf:
                                        <pre><code class="language-bash">helm install myroach --values cockroach/my-roach-values.yaml stable/cockroachdb</code></pre>
                                 </div>
                                 <div id="install-flux"  class="section-block">
-                                    <h3 class="block-title">Via Fluxcd</h3>
+                                    <h3 class="block-title">FluxCD &amp; Helm</h3>
                                     <p>
-                                       Alternatively if you use Flux,
+                                       Alternatively if you use Flux and <a href="https://github.com/fluxcd/helm-operator">HelmOperator</a>,
                                        you can create a <em>HelmRelease</em> file.
                                        It includes the custom values similar to directly with Helm.
                                     </p>
@@ -317,7 +289,7 @@ spec:
                                 </div>
 
                                 <div id="install-pods"  class="section-block">
-                                    <h3 class="block-title">Pods</h3>
+                                    <h3 class="block-title">Pods and volumes</h3>
                                     <p>
                                        The Helm chart should create 3 replica node pods,
                                        and one side-car init container pod.
@@ -330,12 +302,19 @@ spec:
 myroach-cockroachdb-0          0/1   Init:0/1              0        2m19s
 myroach-cockroachdb-1          0/1   Init:0/1              0        2m19s
 myroach-cockroachdb-init-j2dgc 0/1   Init:CrashLoopBackOff 4        3m3s</code></pre>
+
+                                    <p>
+                                       You can also check that the statefulset have the required 100GB volumes,
+                                       and that a public and private service has been created.
+                                    </p>
+                                    <pre><code class="language-shell">kubectl get pvc,pv,services</code></pre>
+
                                 </div>
 
                                 <div id="install-certs"  class="section-block">
                                     <h3 class="block-title">Node certificates</h3>
                                     <p>
-                                       You needs to review and approve the CSRs that each node has created to allow them to talk to each other.
+                                       You need to review and approve the CSRs that each node has created to allow them to talk to each other.
                                     </p>
 
                                     <pre><code class="language-shell">kubectl get csr</code></pre>
@@ -368,37 +347,410 @@ default.node.myroach-cockroachdb-1 8m29s s...b     Approved,Issued</code></pre>
                                        Now the init container can also communicate with the db pods.
                                     </p>
 
+
+                                    <div class="callout-block callout-danger">
+                                       <div class="icon-holder">
+                                          <i class="fas fa-exclamation-triangle"></i>
+                                       </div>
+                                       <div class="content">
+                                          <h4 class="callout-title">Pods still crashing</h4>
+                                          <p>
+                                             This is the woolly bit.
+                                             For me the Pods will still not launch properly.
+                                             Sometimes they start but not after many rounds of:
+                                          </p>
+                                          <ul>
+                                             <li>tweaking memory requests limits</li>
+                                             <li>deleting and recreating pods</li>
+                                             <li>deleting, recreating and re-approving CSRs</li>
+                                             <li>deleting and recreating PV & PVCs</li>
+                                             <li>uninstalling and reinstalling the helm charts</li>
+                                             <li>removing and re-adding the HelmRelease files</li>
+                                          </ul>
+                                          <p>
+                                             I don't know why this fails even though the CSRs have been approved.
+                                             And why they eventually after enough random prodding they sometimes work.
+                                             This was the case on GKE, and currently not yet working in AKS.
+                                             I will update this with the specific solution later.
+                                          </p>
+                                       </div>
+                                    </div>
+
+                                </div>
+                           </section>
+
+                            <section id="database-section" class="doc-section">
+                                <h2 class="section-title">Database setup</h2>
+                                <div id="database-connect"  class="section-block">
+                                    <h3 class="block-title">Root connection</h3>
+                                    <p>
+                                       You need to set up a client connection for you to access the database as the root user:
+                                    </p>
+                                    <pre><code class="language-yaml">apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: <em>myroach</em>-client-secure
+  labels:
+    app: <em>myroach</em>-client
+spec:
+  serviceAccountName: <em>myroach</em>
+  initContainers:
+  - name: init-certs
+    image: cockroachdb/cockroach-k8s-request-cert:0.4
+    imagePullPolicy: IfNotPresent
+    command:
+    - "/bin/ash"
+    - "-ecx"
+    - "/request-cert -user=root -namespace=${POD_NAMESPACE} -certs-dir=/cockroach-certs -type=client -symlink-ca-from=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    env:
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    volumeMounts:
+    - name: client-certs
+      mountPath: /cockroach-certs
+  containers:
+  - name: <em>myroach</em>-client
+    image: cockroachdb/cockroach:v19.2.4
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - name: client-certs
+      mountPath: /cockroach-certs
+    command:
+    - sleep
+    - "2147483648" # 2^31
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: client-certs
+    emptyDir: {}</code></pre>
+                                    <p>
+                                       Apply it to your cluster and check the CSRs and approve the certificate:
+                                    </p>
+                                    <pre><code class="language-shell">kubectl get csr</code></pre>
+
+                                    <p>
+                                       You can now connect to the database with:
+                                    </p>
+                                    <pre><code class="language-shell">kubectl exec -it <em>myroach</em>-client-secure \
+  -- ./cockroach sql \
+  --certs-dir=/cockroach-certs \
+  --host=<em>myroach</em>-public</code></pre>
+                                </div>
+                                <div id="database-create"  class="section-block">
+                                    <h3 class="block-title">Create database, user and grants</h3>
+                                    <p>
+
+                                    </p>
+                                    <pre><code class="language-sql">CREATE DATABASE <em>myappdb</em>;
+CREATE USER <em>myappuser</em> WITH PASSWORD 'somerandompassword';
+GRANT CREATE,DROP ON DATABASE <em>myappdb</em> TO <em>myappuser</em>;</code></pre>
+
+                                    <p>
+                                       If you later on want to use the <a href="https://www.cockroachlabs.com/docs/stable/admin-ui-access-and-navigate.html">Cockroach Admin UI</a> with this user,
+                                       you need to add a <em>admin</em> role to it:
+                                    </p>
+                                    <pre><code class="language-sql">INSERT INTO system.role_members (role, member, "isAdmin")
+VALUES ('admin', '<em>myappuser</em>', true);</code></pre>
+
+                                    <p>
+                                       If you get grant permission problems later on, consider this:
+                                    </p>
+                                    <pre><code class="language-sql">SHOW GRANTS ON DATABASE <em>myappdb</em>;
+GRANT ALL ON TABLE <em>myappdb</em>.* TO <em>myappuser</em>;
+GRANT ALL ON SEQUENCE <em>myappdb</em>.* TO <em>myappuser</em>;
+SHOW GRANTS ON TABLE <em>myappdb</em>.*;</code></pre>
                                 </div>
                            </section>
 
                             <section id="client-section" class="doc-section">
-                                <h2 class="section-title">Client configuration</h2>
-                                <div id="client-users"  class="section-block">
-                                    <h3 class="block-title">Database &amp; users</h3>
-                                    <p>
-
-                                    </p>
-                                </div>
+                                <h2 class="section-title">Clients</h2>
                                 <div id="client-certs"  class="section-block">
-                                    <h3 class="block-title">Client certificates</h3>
-                                    <p>
+                                    <h3 class="block-title">Client pod certificates</h3>
 
+
+
+                                    <div class="callout-block callout-warning">
+                                       <div class="icon-holder">
+                                          <i class="fas fa-frown"></i>
+                                       </div>
+                                       <div class="content">
+                                          <h4 class="callout-title">Certificate required</h4>
+                                          <p>
+                                             For every database user for every application pod,
+                                             you need to create a CSR.
+                                          </p>
+                                          <p>
+                                             Whilst not a difficult setup it does mean automation and use of CockroachDB is trickier for little security theater gain.
+                                          </p>
+                                       </div>
+                                    </div>
+
+                                    <p>
+                                       The certificate creation is done by inlining an init container per pod/deployment.
+                                       Similar to the root connection above but with a different username, and no need for a CockroachDB client container.
                                     </p>
+                                    <pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+...
+spec:
+  ...
+    spec:
+      serviceAccountName: <em>myroach</em>
+      volumes:
+      - name: client-certs
+        emptyDir: {}
+      initContainers:
+      - name: init-certs
+        image: cockroachdb/cockroach-k8s-request-cert:0.4
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/bin/ash"
+        - "-ecx"
+        - "/request-cert -user=<em>myappuser</em> -namespace=${POD_NAMESPACE} -certs-dir=/cockroach-certs -type=client -symlink-ca-from=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: client-certs
+          mountPath: /cockroach-certs
+      containers:
+        ...</code></pre>
+
+                                    <p>
+                                       If you scroll along the <em>/request-cert</em> line you will eventually see <em>-user=myappuser</em>.
+                                       Replace the <em>myappuser</em> with the database user you created.
+                                    </p>
+                                    <p>Then in the same file, with your normal container you then add a volume mount</p>
+                                    <pre><code class="language-yaml">...
+containers:
+- name: <em>myapp-container</em>
+   ...
+   volumeMounts:
+   - name: client-certs
+      mountPath: /cockroach-certs
+   ...</code></pre>
+
+                                    <p>Once applied you can then approve the CSR</p>
+
+                                    <pre><code class="language-bash">kubectl get csr</code></pre>
                                 </div>
-                                <div id="client-connections"  class="section-block">
-                                    <h3 class="block-title">Connection configuration</h3>
-                                    <p>
 
+                                <div id="client-connection"  class="section-block">
+                                    <h3 class="block-title">Database connection</h3>
+
+                                    <p>
+                                       Once the certificate is approved we can use it with the client connection to the database.
+                                       This is mostly done via environment variables in the same Kubernetes deployment file used above.
                                     </p>
+
+                                    <div class="callout-block callout-warning">
+                                       <div class="icon-holder">
+                                          <i class="fas fa-info-triangle"></i>
+                                       </div>
+                                       <div class="content">
+                                          <h4 class="callout-title">Secrets</h4>
+                                          <p>
+                                             How you deal with secrets in your Kubernetes cluster is up to you.
+                                          </p>
+                                          <p>
+                                             Below we will just inline the credentials.
+                                             This is terrible and for emphasising the other parts only.
+                                             Never expose this in plain text in a real cluster.
+                                             <!-- Never expose credentials in plain text -->
+                                          </p>
+                                          <p>
+                                             Instead use <a href="https://www.vaultproject.io/">Vault</a>, <a href="https://github.com/bitnami-labs/sealed-secrets/">Sealed Secrets</a>, etc.
+                                          </p>
+                                       </div>
+                                    </div>
+
+                                    <p>
+                                       In the app <em>myapp</em> it is listening to the environment variables <em>DB_DRIVER</em>, <em>DB_URL</em>, <em>DB_USERNAME</em> and <em>DB_PASSWORD</em>. This specifics of this will depend on your own application stack.
+                                    </p>
+
+                                    <pre><code class="language-yaml">...
+containers:
+- name: <em>myapp-container</em>
+   ...
+   env:
+   - name: DB_DRIVER
+      value: org.postgresql.Driver
+   - name: DB_URL
+      value: jdbc:postgresql://<em>myroach</em>-public:26257/<em>myappdb</em>>?sslmode=require&sslcert=/cockroach-certs/client.<em>myappuser</em>.crt&sslkey=/cockroach-certs/client.<em>myappuser</em>.key"
+   - name: DB_USERNAME
+     value: <em>myappuser</em>
+     - name: DB_PASSWORD
+     value: <em>somerandompassword</em>
+   ...</code></pre>
+
+                                   <p>
+                                      If you scroll along the Postgres URL you will see it connects to <em>myroach-public</em> service,
+                                      the <em>myappdb</em> database,
+                                      and uses the <em>myappuser</em> specific crt and key files.
+                                   </p>
+                                   <p>
+                                      If you apply this, then this should be it. Your CockroachDB is now up and running. Hopefully.
+                                   </p>
                                 </div>
                            </section>
 
+                            <section id="evaluation-section" class="doc-section">
+                                <h2 class="section-title">Evaluation</h2>
+                                <p>
+                                   How did I find setting up CockroachDB?
+                                </p>
+                                <div id="evaluation-pros"  class="section-block">
+                                    <h3 class="block-title">Pros</h3>
+                                    <div class="row">
+                                       <div class="col-md-8 col-12">
+                                          <ul>
+                                             <li>Quick Helm install</li>
+                                             <li>CSR approval process is simple</li>
+                                             <li>Drop in for clients using Postgres</li>
+                                             <li>Insecure setup is very quick</li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                                </div>
+                                <div id="evaluation-cons"  class="section-block">
+                                    <h3 class="block-title">Cons</h3>
+                                    <div class="row">
+                                       <div class="col-md-8 col-12">
+                                          <ul>
+                                             <li>Pods still crash after approving CSRs*</li>
+                                             <li>Requiring client certificates</li>
+                                             <li>Resource intensive</li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                                    <p>
+                                       <em>* possibly a typo or missing step I am repeating over and over again...</em>
+                                    </p>
+                                 </div>
+
+                           </section>
+
+                           <a name="references"></a>
                             <section id="reference-section" class="doc-section">
-                                <h2 class="section-title">Reference</h2>
+                                <h2 class="section-title">References</h2>
+
+                                 <div class="row">
+                                    <div class="col-md-10 col-12">
+                                       <ul>
+                                          <li><a href="https://www.cockroachlabs.com/product/">cockroachlabs.com/product/</a></li>
+                                          <li><a href=""></a></li>
+                                          <li><a href=""></a></li>
+                                          <li><a href=""></a></li>
+                                          <li><a href="https://kubernetes.io/">kubernetes.io/</a></li>
+                                          <li><a href="https://helm.sh">helm.sh</a></li>
+                                          <li><a href="https://fluxcd.io">fluxcd.io</a></li>
+                                          <li><a href="https://github.com/fluxcd/helm-operator">github.com/fluxcd/helm-operator</a></li>
+                                          <li><a href="https://brew.sh">brew.sh</a></li>
+                                       </ul>
+                                    </div>
+                                 </div>
+
+                                <div id="reference-provider" class="section-block">
+                                   <h3>Kubernetes providers and setups</h3>
+                                   <div class="row">
+                                      <div class="col-md-10 col-12">
+                                         <ul>
+                                             <li>AKS by Microsoft Azure:<br/>
+                                                <a href="https://azure.microsoft.com/en-us/services/kubernetes-service/">azure.microsoft.com/en-us/services/kubernetes-service/</a></li>
+                                             <li>DOKS by DigitalOcean:<br />
+                                                <a href="https://www.digitalocean.com/products/kubernetes/">digitalocean.com/products/kubernetes/</a></li>
+                                             <li>EKS by Amazon AWS:<br />
+                                                <a href="https://aws.amazon.com/eks/">aws.amazon.com/eks/</a></li>
+                                             <li>GKE by Google Cloud:<br />
+                                                <a href="https://cloud.google.com/kubernetes-engine/">cloud.google.com/kubernetes-engine/</a></li>
+                                             <li>OpenShift by Red Hat:<br />
+                                                <a href="https://www.openshift.com/">openshift.com</a></li>
+                                             <li>RKE by Rancher:<br />
+                                                <a href="https://rancher.com/products/rke/">rancher.com/products/rke/</a></li>
+                                             <li>Triton by Joyent:<br />
+                                                <a href="https://www.joyent.com/triton/kubernetes">joyent.com/triton/kubernetes</a></li>
+                                             <li>Docker Enterprise by Mirantis:<br />
+                                                <a href="https://www.mirantis.com/software/docker/docker-enterprise/">mirantis.com/software/docker/docker-enterprise/</a></li>
+                                             <li><em>Kubernetes the hard way</em>:<br />
+                                                <a href="https://github.com/kelseyhightower/kubernetes-the-hard-way">github.com/kelseyhightower/kubernetes-the-hard-way</a></li>
+                                       </ul>
+                                     </div>
+                                  </div>
+                               </div>
+                               <div id="reference-provider-cli" class="section-block">
+                                   <h3>Provider CLI</h3>
+                                    <p>
+                                       If using a cloud provider,
+                                       their CLI usually makes managing the cluster
+                                       a lot easier.
+                                    </p>
+                                    <div class="row">
+                                       <div class="col-md-10 col-12">
+                                          <ul>
+                                             <li>
+                                                <div class="code-block">
+                                                   <h6><a href="https://github.com/Azure/azure-cli">azure-cli</a> for AKS</h6>
+                                                   <pre><code class="language-bash">brew install azure-cli</code></pre>
+                                                </div>
+                                             </li>
+                                             <li>
+                                                <div class="code-block">
+                                                   <h6><a href="https://github.com/digitalocean/doctl">doctl</a> for DOKS</h6>
+                                                   <pre><code class="language-shell">brew install doctl</code></pre>
+                                                </div>
+                                             </li>
+                                             <li>
+                                                <div class="code-block">
+                                                   <h6><a href="https://eksctl.io">eksctl</a> for EKS</h6>
+                                                   <pre><code class="language-bash">brew tap weaveworks/tap;
+brew install weaveworks/tap/eksctl</code></pre>
+                                                </div>
+                                             </li>
+                                             <li>
+                                                <div class="code-block">
+                                                   <h6><a href="https://cloud.google.com/sdk/">gcloud</a> for GKE</h6>
+                                                   <pre><code class="language-bash">brew install google-cloud-sdk</code></pre>
+                                                </div>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                               </div>
+
+                               <div id="reference-guide" class="section-block">
+                                    <h3>Kubernetes guides</h3>
+                                    <p>By <a href="https://flurdy.com">Flurdy</a></p>
+                                    <div class="row">
+                                       <div class="col-md-10 col-12">
+                                          <ul>
+                                             <li><a href="https://flurdy.com/docs/kubernetes/kubernetes-101.html">Kubernetes 101</a></li>
+                                             <li><a href="https://flurdy.com/docs/kubernetes/kubernetes-ingress-tls-helm.html">Kubernetes Ingress and TLS</a></li>
+                                             <li><a href="https://github.com/flurdy/lemmings/">Kubernetes configuration with GitOps</a></li>
+                                             <li><a href="https://flurdy.com/docs/kubernetes/registry/kubernetes-docker-registry.html">Kubernetes Docker Registries Cookbook</a></li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                                 </div>
+
                            </section>
 
                             <section id="feedback-section" class="doc-section">
-                                <h2 class="section-title">Feedback</h2>
+                                <h2 class="section-title">Feedback</h2><div class="row">
+                                 <div class="col-md-8 col-12">
+                                    <ul>
+                                       <li>Feedback: <a href="https://flurdy.com/contact">flurdy.com/contact</a></li>
+                                       <li>Help: <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a></li>
+                                       <li>Sponsor: <a href="https://www.patreon.com/flurdy">patreon.com/flurdy</a></li>
+                                       <li>Hire: <a href="https://eray.uk">eray.uk</a></li>
+                                       <li>More docs: <a href="https://flurdy.com/docs">flurdy.com/docs</a></li>
+                                       <li>More rants: <a href="https://blog.flurdy.com">blog.flurdy.com</a></li>
+                                       <li>More moans: <a href="https://flurdy.com/docs">@flurdy</a></li>
+                                    </ul>
+                                 </div>
+                              </div>
                            </section>
 
                         </div>
@@ -411,25 +763,38 @@ default.node.myroach-cockroachdb-1 8m29s s...b     Approved,Issued</code></pre>
 	                                <a class="nav-link scrollto" href="#prerequisite-section">Pre-requisite</a>
                                     <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#pre-k8s">Kubernetes cluster</a>
-                                        <a class="nav-link scrollto" href="#pre-cli">Provider CLI</a>
                                         <a class="nav-link scrollto" href="#pre-kubectl">kubectl</a>
-                                        <a class="nav-link scrollto" href="#pre-flux">Fluxcd</a>
                                         <a class="nav-link scrollto" href="#pre-helm">Helm</a>
+                                        <a class="nav-link scrollto" href="#pre-flux">FluxCD</a>
                                     </nav><!--//nav-->
 	                                <a class="nav-link scrollto" href="#install-section">Install</a>
                                     <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#install-helm">Via Helm</a>
-                                        <a class="nav-link scrollto" href="#install-flux">Via Fluxcd</a>
-                                        <a class="nav-link scrollto" href="#install-ods">Pods</a>
+                                        <a class="nav-link scrollto" href="#install-flux">FluxCD &amp; Helm</a>
+                                        <a class="nav-link scrollto" href="#install-pods">Pods and volumes</a>
                                         <a class="nav-link scrollto" href="#install-certs">Node certificates</a>
                                     </nav>
-	                                <a class="nav-link scrollto" href="#client-section">Client configuration</a>
+	                                <a class="nav-link scrollto" href="#database-section">Database setup</a>
                                     <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#client-users">Databases &amp; users</a>
-                                        <a class="nav-link scrollto" href="#client-certs">Client certificates</a>
-                                        <a class="nav-link scrollto" href="#client-connection">Connection configuration</a>
+                                        <a class="nav-link scrollto" href="#database-connect">Root connection</a>
+                                        <a class="nav-link scrollto" href="#database-create">Create database, user and grants</a>
                                     </nav>
-	                                <a class="nav-link scrollto" href="#reference-section">Reference</a>
+	                                <a class="nav-link scrollto" href="#client-section">Clients</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#client-certs">Client pod certificates</a>
+                                        <a class="nav-link scrollto" href="#client-connection">Database connection</a>
+                                    </nav>
+	                                <a class="nav-link scrollto" href="#evaluation-section">Evaluation</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#evaluation-pros">Pros</a>
+                                        <a class="nav-link scrollto" href="#evaluation-cons">Cons</a>
+                                    </nav>
+	                                <a class="nav-link scrollto" href="#reference-section">References</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#reference-provider">Kubernetes providers</a>
+                                        <a class="nav-link scrollto" href="#reference-provider-cli">Provider CLI</a>
+                                        <a class="nav-link scrollto" href="#reference-guide">Kubernetes guides</a>
+                                    </nav>
 	                                <a class="nav-link scrollto" href="#feedback-section">Feedback</a>
 	                            </nav>
                         </div>
@@ -438,7 +803,7 @@ default.node.myroach-cockroachdb-1 8m29s s...b     Approved,Issued</code></pre>
             </div>
         </div>
 
-    </div><!--//page-wrapper-->
+    </div>
 
    <footer id="footer" class="footer text-center">
       <div class="container">
@@ -447,9 +812,8 @@ default.node.myroach-cockroachdb-1 8m29s s...b     Approved,Issued</code></pre>
                target="_blank">Xiaoying Riley</a> for developers</small>
 
       </div>
-      <!--//container-->
    </footer>
-   <!--//footer-->
+
 
    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
       rel='stylesheet' type='text/css'>
