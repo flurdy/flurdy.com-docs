@@ -19,18 +19,18 @@
    <style>
    </style>
    <script>
-      // (function (i, s, o, g, r, a, m) {
-      //    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-      //       (i[r].q = i[r].q || []).push(arguments)
-      //    }, i[r].l = 1 * new Date(); a = s.createElement(o),
-      //       m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-      // })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+      (function (i, s, o, g, r, a, m) {
+         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+         }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-      // ga('create', 'UA-281408-1', 'auto');
-      // ga('send', 'pageview');
+      ga('create', 'UA-281408-1', 'auto');
+      ga('send', 'pageview');
    </script>
 
-   <meta http-equiv="REFRESH" content="15;">
+   <!-- <meta http-equiv="REFRESH" content="15;"> -->
 
 </head>
 
@@ -43,29 +43,12 @@
                <h1 class="logo">
                   <a href="index.html">
                      <span aria-hidden="true" class="icon_documents_alt icon"></span>
-                     <!-- <span class="text-highlight">Pretty</span> -->
                      <a href="http://flurdy.com"><img id="flurdy" src="/images/flurdy_warped_dual.png" alt="flurdy" /></a>
-                     <span class="text-bold">Docs</span>
+                     <a href="http://flurdy.com/docs"><span class="text-bold">Docs</span></a>
                   </a>
                </h1>
 
             </div>
-
-            <!-- <ol class="breadcrumb">
-               <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
-               <li class="breadcrumb-item active">Quick Start</li>
-            </ol> -->
-
-            <!-- <div class="top-search-box">
-               <form class="form-inline search-form justify-content-center" action="" method="get">
-
-                  <input type="text" placeholder="Search..." name="search" class="form-control search-input">
-
-                  <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
-
-               </form>
-            </div> -->
-
          </div>
       </header>
 
@@ -75,7 +58,7 @@
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-database"></i> Install CockroachDB on Kubernetes</h1>
                     <div class="meta"><i class="far fa-clock"></i>
-                      First published: March 2020.  Last updated: 6th March 2020
+                      First published: March 2020.  Last updated: 9th March 2020
                     </div>
                 </div>
 
@@ -115,9 +98,8 @@
                                        and clients.
                                        Optionally manage with <a href="https://fluxcd.io/">FluxCD</a> and install using <a href="https://helm.sh/">Helm</a>.
                                     </p>
-                                    <!-- <a href="https://themes.3rdwavemedia.com/bootstrap-templates/startup/prettydocs-free-bootstrap-theme-for-developers-and-startups/" class="btn btn-green" target="_blank"><i class="fas fa-download"></i> Download PrettyDocs</a> -->
                                 </div>
-                            </section><!--//doc-section-->
+                            </section>
 
                             <section id="prerequisite-section" class="doc-section">
                                 <h2 class="section-title">Pre-requisite</h2>
@@ -135,7 +117,7 @@
                                 </div>
 
                                 <div id="pre-kubectl" class="section-block">
-                                    <h3 class="block-title">Kubectl</h3>
+                                    <h3 class="block-title">Kubernetes CLI</h3>
                                     <p>
                                        You need the CLI for Kubernetes, <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a>, installed locally,
                                        and configured to talk to your cluster.
@@ -384,7 +366,8 @@ default.node.myroach-cockroachdb-1 8m29s s...b     Approved,Issued</code></pre>
                                 <div id="database-connect"  class="section-block">
                                     <h3 class="block-title">Root connection</h3>
                                     <p>
-                                       You need to set up a client connection for you to access the database as the root user:
+                                       You need to set up a client connection for you to access the database as the root user.
+                                       This uses the root client certificate.
                                     </p>
                                     <pre><code class="language-yaml">apiVersion: apps/v1
 kind: Pod
@@ -425,7 +408,7 @@ spec:
   - name: client-certs
     emptyDir: {}</code></pre>
                                     <p>
-                                       Apply it to your cluster and check the CSRs and approve the certificate:
+                                       Apply it to your cluster and check the CSRs and approve the certificate if not already approved.
                                     </p>
                                     <pre><code class="language-shell">kubectl get csr</code></pre>
 
@@ -488,7 +471,7 @@ SHOW GRANTS ON TABLE <em>myappdb</em>.*;</code></pre>
 
                                     <p>
                                        The certificate creation is done by inlining an init container per pod/deployment.
-                                       Similar to the root connection above but with a different username, and no need for a CockroachDB client container.
+                                       Similar to the root connection earlier but with a different username, and no need for a CockroachDB client container.
                                     </p>
                                     <pre><code class="language-yaml">apiVersion: apps/v1
 kind: Deployment
@@ -637,18 +620,28 @@ containers:
                             <section id="reference-section" class="doc-section">
                                 <h2 class="section-title">References</h2>
 
+                                <div id="reference-general" class="section-block">
                                  <div class="row">
                                     <div class="col-md-10 col-12">
                                        <ul>
-                                          <li><a href="https://www.cockroachlabs.com/product/">cockroachlabs.com/product/</a></li>
-                                          <li><a href=""></a></li>
-                                          <li><a href=""></a></li>
-                                          <li><a href=""></a></li>
-                                          <li><a href="https://kubernetes.io/">kubernetes.io/</a></li>
+                                          <li><a href="https://kubernetes.io/">kubernetes.io</a></li>
                                           <li><a href="https://helm.sh">helm.sh</a></li>
                                           <li><a href="https://fluxcd.io">fluxcd.io</a></li>
                                           <li><a href="https://github.com/fluxcd/helm-operator">github.com/fluxcd/helm-operator</a></li>
                                           <li><a href="https://brew.sh">brew.sh</a></li>
+                                       </ul>
+                                    </div>
+                                 </div>
+                              </div>
+
+                                <div id="reference-cockroach" class="section-block">
+                                   <h3>Cockroach references</h3>
+                                   <div class="row">
+                                    <div class="col-md-10 col-12">
+                                       <ul>
+                                          <li><a href="https://www.cockroachlabs.com/product/">cockroachlabs.com/product/</a></li>
+                                          <li><a href="https://www.cockroachlabs.com/docs/v19.2/install-cockroachdb.html">cockroachlabs.com/.../install-cockroachdb.html</a></li>
+                                          <li><a href="https://www.cockroachlabs.com/docs/v19.2/orchestrate-a-local-cluster-with-kubernetes.htm">cockroachlabs.com/.../orchestrate-a-local-cluster-with-kubernetes.htm</a></li>
                                        </ul>
                                     </div>
                                  </div>
@@ -729,7 +722,7 @@ brew install weaveworks/tap/eksctl</code></pre>
                                              <li><a href="https://flurdy.com/docs/kubernetes/kubernetes-101.html">Kubernetes 101</a></li>
                                              <li><a href="https://flurdy.com/docs/kubernetes/kubernetes-ingress-tls-helm.html">Kubernetes Ingress and TLS</a></li>
                                              <li><a href="https://github.com/flurdy/lemmings/">Kubernetes configuration with GitOps</a></li>
-                                             <li><a href="https://flurdy.com/docs/kubernetes/registry/kubernetes-docker-registry.html">Kubernetes Docker Registries Cookbook</a></li>
+                                             <li><a href="https://flurdy.com/docs/kubernetes/registry/kubernetes-docker-registry.html">Kubernetes Docker registries cookbook</a></li>
                                           </ul>
                                        </div>
                                     </div>
@@ -741,7 +734,7 @@ brew install weaveworks/tap/eksctl</code></pre>
                                 <h2 class="section-title">Feedback</h2><div class="row">
                                  <div class="col-md-8 col-12">
                                     <ul>
-                                       <li>Feedback: <a href="https://flurdy.com/contact">flurdy.com/contact</a></li>
+                                       <li>Feedback: <a href="https://flurdy.com/contact/">flurdy.com/contact/</a></li>
                                        <li>Help: <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a></li>
                                        <li>Sponsor: <a href="https://www.patreon.com/flurdy">patreon.com/flurdy</a></li>
                                        <li>Hire: <a href="https://eray.uk">eray.uk</a></li>
@@ -763,7 +756,7 @@ brew install weaveworks/tap/eksctl</code></pre>
 	                                <a class="nav-link scrollto" href="#prerequisite-section">Pre-requisite</a>
                                     <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#pre-k8s">Kubernetes cluster</a>
-                                        <a class="nav-link scrollto" href="#pre-kubectl">kubectl</a>
+                                        <a class="nav-link scrollto" href="#pre-kubectl">Kubernetes CLI</a>
                                         <a class="nav-link scrollto" href="#pre-helm">Helm</a>
                                         <a class="nav-link scrollto" href="#pre-flux">FluxCD</a>
                                     </nav><!--//nav-->
@@ -791,13 +784,19 @@ brew install weaveworks/tap/eksctl</code></pre>
                                     </nav>
 	                                <a class="nav-link scrollto" href="#reference-section">References</a>
                                     <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#reference-cockroach">Cockroach references</a>
                                         <a class="nav-link scrollto" href="#reference-provider">Kubernetes providers</a>
                                         <a class="nav-link scrollto" href="#reference-provider-cli">Provider CLI</a>
                                         <a class="nav-link scrollto" href="#reference-guide">Kubernetes guides</a>
                                     </nav>
 	                                <a class="nav-link scrollto" href="#feedback-section">Feedback</a>
+                                 <div class="license">
+                                    <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/images/cc-by-sa-small.png" alt="cc by-sa"
+                                    title="Creative Commons Attributions-ShareAlike" border="0" /\></a>
+                                 </div>
 	                            </nav>
-                        </div>
+
+                           </div>
                     </div>
                 </div>
             </div>

@@ -2,3 +2,6 @@ header h1 img {
    height: 50px;
    margin: 10px;
 }
+nav .license {
+   padding: 5px 20px 5px 20px;
+}
