@@ -340,9 +340,11 @@ spec:
                                     </div>
 
                                     <div class="code-block">
-                                       <pre><code class="language-shell">git add cockroach/helm-cockroach.yml</code></pre>
+                                       <pre><code class="language-git">git add cockroach/helm-cockroach.yml</code></pre>
                                     </div>
                                 </div>
+
+
 
                                 <div id="install-pods"  class="section-block">
                                     <h3 class="block-title">Pods and volumes</h3>
@@ -350,11 +352,11 @@ spec:
                                        The Helm chart should create 3 replica node pods,
                                        and one side-car init container pod.
                                     </p>
-                                    <pre><code class="language-shell">kubectl get pods</code></pre>
+                                    <pre class="language-bash"><code class="language-bash">kubectl get pods</code></pre>
                                     <p>
                                        Initially they will all fail as you need to approve the CSRs.
                                     </p>
-                                    <pre><code class="language-shell">NAME                           READY STATUS                RESTARTS AGE
+                                    <pre class="command-line language-bash" data-prompt=" " data-output="1-4"><code class="language-bash">NAME                           READY STATUS                RESTARTS AGE
 myroach-cockroachdb-0          0/1   Init:0/1              0        2m19s
 myroach-cockroachdb-1          0/1   Init:0/1              0        2m19s
 myroach-cockroachdb-init-j2dgc 0/1   Init:CrashLoopBackOff 4        3m3s</code></pre>
@@ -375,7 +377,7 @@ myroach-cockroachdb-init-j2dgc 0/1   Init:CrashLoopBackOff 4        3m3s</code><
 
                                     <pre><code class="language-shell">kubectl get csr</code></pre>
 
-                                    <pre><code class="language-shell">NAME                               AGE   REQUESTOR CONDITION
+                                    <pre class="command-line language-bash" data-prompt=" " data-output="1-4"><code class="language-bash">NAME                               AGE   REQUESTOR CONDITION
 default.client.root                10m   s...b     Pending
 default.node.myroach-cockroachdb-0 8m15s s...b     Pending
 default.node.myroach-cockroachdb-1 8m29s s...b     Pending</code></pre>
@@ -392,7 +394,7 @@ default.node.myroach-cockroachdb-1 8m29s s...b     Pending</code></pre>
                                        And do the same to <em>default.node.myroach-cockroachdb-1</em>.
                                     </p>
 
-                                    <pre><code class="language-shell">NAME                               AGE   REQUESTOR CONDITION
+                                    <pre class="command-line language-bash" data-prompt=" " data-output="1-4"><code class="language-bash">NAME                               AGE   REQUESTOR CONDITION
 default.client.root                10m   s...b     Pending
 default.node.myroach-cockroachdb-0 8m15s s...b     Approved,Issued
 default.node.myroach-cockroachdb-1 8m29s s...b     Approved,Issued</code></pre>
