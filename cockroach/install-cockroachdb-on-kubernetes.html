@@ -42,7 +42,7 @@
             <div class="branding">
                <h1 class="logo">
                   <a href="index.html">
-                     <span aria-hidden="true" class="icon_documents_alt icon"></span>
+                     <!-- <span aria-hidden="true" class="icon_documents_alt icon"></span> -->
                      <a href="http://flurdy.com"><img id="flurdy" src="/images/flurdy_warped_dual.png" alt="flurdy" /></a>
                      <a href="http://flurdy.com/docs"><span class="text-bold">Docs</span></a>
                   </a>
@@ -58,7 +58,10 @@
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-database"></i> Install CockroachDB on Kubernetes</h1>
                     <div class="meta"><i class="far fa-clock"></i>
-                      First published: March 2020.  Last updated: 9th March 2020
+                      First published: March 2020.  Last updated: March 2020
+                    </div>
+                    <div class="meta"><i class="fas fa-edit"></i>
+                      Author: Ivar Abrahamsen <a href="https://twitter.com/flurdy">@flurdy</a>
                     </div>
                 </div>
 
@@ -66,10 +69,10 @@
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
 
-
+                           <!--
                               <div class="callout-block callout-warning">
                                  <div class="icon-holder">
-                                    <i class="fas fa-info-triangle"></i>
+                                    <i class="fas fa-info-circle"></i>
                                  </div>
                                  <div class="content">
                                     <h4 class="callout-title">Draft</h4>
@@ -88,16 +91,63 @@
                                     </p>
                                  </div>
                               </div>
+                           -->
+
+                              <div class="callout-block callout-info">
+                                 <div class="icon-holder">
+                                    <i class="fas fa-info-circle"></i>
+                                 </div>
+                                 <div class="content">
+                                    <h4 class="callout-title">Recently published</h4>
+                                    <p>
+                                       There might still be some paragraphs that needs rewording.
+                                    </p>
+                                    <p>
+                                       Please <a href="https://github.com/flurdy/flurdy.com-docs">fork</a>
+                                       and send a small PR if spot any typos.
+                                    </p>
+                                 </div>
+                              </div>
 
                             <section id="synopsis-section" class="doc-section">
-                                <h2 class="section-title">Synopsis</h2>
+                                <h2 class="section-title">What is this?</h2>
                                 <div class="section-block">
-                                    <p>
-                                       Step by step instructions to install <a href="https://www.cockroachlabs.com/product/">CockroachDB</a> in to a <a href="https://kubernetes.io">Kubernetes</a> cluster.
-                                       Setting up secure communication between nodes,
-                                       and clients.
-                                       Optionally manage with <a href="https://fluxcd.io/">FluxCD</a> and install using <a href="https://helm.sh/">Helm</a>.
-                                    </p>
+
+                                    <div class="row">
+                                       <div class="col-md-10 col-12">
+                                          <ul>
+                                             <li>A step by step instructions to install <a href="https://www.cockroachlabs.com/product/">CockroachDB</a> in to a <a
+                                                href="https://kubernetes.io">Kubernetes</a> cluster.</li>
+                                             <li>Setting up secure communication between nodes,
+                                             and clients.</li>
+                                             <li>Installed using <a href="https://helm.sh/">Helm</a> packages.</li>
+                                             <li>Optionally managed with <a href="https://fluxcd.io/">FluxCD</a>.</li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section id="cockroach-section" class="doc-section">
+                                <h2 class="section-title">CockroachDB</h2>
+                                <div id="cockroach-what" class="section-block">
+                                   <h3>What is CockroachDB?</h3>
+                                   <p>
+                                      CockroachDB is a fault tolerant database that scales horiontally for reliability.
+                                      It can self heal and recover from lost nodes.
+                                      Its SQL is <a href="https://www.postgresql.org/">Postgresql</a> compatible.
+                                   </p>
+                                </div>
+                                <div id="cockroach-why" class="section-block">
+                                   <h3>Why CockroachDB</h3>
+                                   <p>
+                                       It has been proven to be reliable and production ready.
+                                       The Postgres compatibility means it can easily be dropped into
+                                       application already using Postgres.
+                                   </p>
+                                   <p>
+                                      As a heavy user of Postgres it seems an easy transition for the architecture that I work with.
+                                   </p>
                                 </div>
                             </section>
 
@@ -114,6 +164,28 @@
                                        or roll your own.
                                     </p>
                                     <p>Refer to the <a href="#references">provider references for options</a></p>
+
+                                    <div class="callout-block callout-info">
+                                       <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                       </div>
+                                       <div class="content">
+                                          <h4 class="callout-title">Node sizes</h4>
+                                          <p>
+                                             CockroachDB is quite resource intensive.
+                                          </p>
+                                          <p>
+                                             Cockroach examples suggest reserving 8GB per pod (node),
+                                             starting with 3 pod replicas.
+                                             My setup scales this back to 4GB on 2 pods.
+                                          </p>
+                                          <p>
+                                             Note your nodes also needs capacity for your applications
+                                             and Kubernetes own bundled pods.
+                                          </p>
+                                       </div>
+                                    </div>
+
                                 </div>
 
                                 <div id="pre-kubectl" class="section-block">
@@ -185,7 +257,7 @@
                                     <h3 class="block-title">Via Helm</h3>
 
                                     <p>
-                                       Installing directly via Helm.
+                                       Installing the CockroachDB package directly via Helm. (not using Flux)
                                     </p>
 
                                     <div class="callout-block callout-info">
@@ -202,6 +274,8 @@
                                        You need to specify some custom memory related values for the database.
                                     </p>
                                     <pre><code class="language-bash">vi cockroach/my-roach-values.yml</code></pre>
+
+                                    <div class="code-block">
                                     <pre><code class="language-yaml">statefulset:
   replicas: 3
   resources:
@@ -211,7 +285,7 @@
       memory: "4Gi"
 conf:
   cache: "1024Mi"
-  max-sql-memory: "1024Mi"</code></pre>
+  max-sql-memory: "1024Mi"</code></pre></div>
 
                                     <div class="code-block">
                                        <pre><code class="language-bash">helm install myroach --values cockroach/my-roach-values.yaml stable/cockroachdb</code></pre>
@@ -531,7 +605,7 @@ containers:
 
                                     <div class="callout-block callout-warning">
                                        <div class="icon-holder">
-                                          <i class="fas fa-info-triangle"></i>
+                                          <i class="fas fa-exclamation-triangle"></i>
                                        </div>
                                        <div class="content">
                                           <h4 class="callout-title">Secrets</h4>
@@ -582,9 +656,11 @@ containers:
 
                             <section id="evaluation-section" class="doc-section">
                                 <h2 class="section-title">Evaluation</h2>
-                                <p>
-                                   How did I find setting up CockroachDB?
-                                </p>
+                                <div class="section-block">
+                                 <p>
+                                    How did I find setting up CockroachDB?
+                                 </p>
+                                </div>
                                 <div id="evaluation-pros"  class="section-block">
                                     <h3 class="block-title">Pros</h3>
                                     <div class="row">
@@ -642,6 +718,7 @@ containers:
                                           <li><a href="https://www.cockroachlabs.com/product/">cockroachlabs.com/product/</a></li>
                                           <li><a href="https://www.cockroachlabs.com/docs/v19.2/install-cockroachdb.html">cockroachlabs.com/.../install-cockroachdb.html</a></li>
                                           <li><a href="https://www.cockroachlabs.com/docs/v19.2/orchestrate-a-local-cluster-with-kubernetes.htm">cockroachlabs.com/.../orchestrate-a-local-cluster-with-kubernetes.htm</a></li>
+                                          <li><a href="https://github.com/cockroachdb/cockroach/tree/master/cloud/kubernetes">github.com/cockroachdb/cockroach/.../cloud/kubernetes</a></li>
                                        </ul>
                                     </div>
                                  </div>
@@ -731,19 +808,39 @@ brew install weaveworks/tap/eksctl</code></pre>
                            </section>
 
                             <section id="feedback-section" class="doc-section">
-                                <h2 class="section-title">Feedback</h2><div class="row">
-                                 <div class="col-md-8 col-12">
-                                    <ul>
-                                       <li>Feedback: <a href="https://flurdy.com/contact/">flurdy.com/contact/</a></li>
-                                       <li>Help: <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a></li>
-                                       <li>Sponsor: <a href="https://www.patreon.com/flurdy">patreon.com/flurdy</a></li>
-                                       <li>Hire: <a href="https://eray.uk">eray.uk</a></li>
-                                       <li>More docs: <a href="https://flurdy.com/docs">flurdy.com/docs</a></li>
-                                       <li>More rants: <a href="https://blog.flurdy.com">blog.flurdy.com</a></li>
-                                       <li>More moans: <a href="https://flurdy.com/docs">@flurdy</a></li>
-                                    </ul>
+                               <h2 class="section-title">Feedback</h2>
+                               <div class="section-block">
+                                  <div class="row">
+                                    <div class="col-md-8 col-12">
+                                        <ul>
+                                          <li>Feedback: <a href="https://flurdy.com/contact/">flurdy.com/contact/</a></li>
+                                          <li>Help: <a href="https://github.com/flurdy/flurdy.com-docs">github.com/flurdy/flurdy.com-docs</a></li>
+                                          <li>Sponsor: <a href="https://www.patreon.com/flurdy">patreon.com/flurdy</a></li>
+                                          <li>Hire: <a href="https://eray.uk">eray.uk</a></li>
+                                          <li>Docs: <a href="https://flurdy.com/docs">flurdy.com/docs</a></li>
+                                          <li>Rants: <a href="https://blog.flurdy.com">blog.flurdy.com</a></li>
+                                          <li>Moans: <a href="https://flurdy.com/docs">@flurdy</a></li>
+                                       </ul>
+                                    </div>
                                  </div>
                               </div>
+                           </section>
+
+                            <section id="license-section" class="doc-section">
+                                <h2 class="section-title">License</h2>
+                                <div class="section-block">
+                                    <div class="row">
+                                       <div class="col-md-2">
+                                          <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License"
+                                                style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
+                                       </div>
+                                       <div class="col-md-10">
+                                          This work is licensed under a<br/>
+                                          <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike
+                                          4.0 International License</a>.
+                                       </div>
+                                    </div>
+                                 </div>
                            </section>
 
                         </div>
@@ -752,7 +849,12 @@ brew install weaveworks/tap/eksctl</code></pre>
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
                         <div id="doc-nav" class="doc-nav">
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-	                                <a class="nav-link scrollto" href="#synopsis-section">Synopsis</a>
+	                                <a class="nav-link scrollto" href="#synopsis-section">What is this?</a>
+	                                <a class="nav-link scrollto" href="#cockroach-section">CockroachDB</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#cockroach-what">What is CockroachDB</a>
+                                        <a class="nav-link scrollto" href="#cockroach-why">Why CockroachDB</a>
+                                    </nav>
 	                                <a class="nav-link scrollto" href="#prerequisite-section">Pre-requisite</a>
                                     <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#pre-k8s">Kubernetes cluster</a>
@@ -790,10 +892,13 @@ brew install weaveworks/tap/eksctl</code></pre>
                                         <a class="nav-link scrollto" href="#reference-guide">Kubernetes guides</a>
                                     </nav>
 	                                <a class="nav-link scrollto" href="#feedback-section">Feedback</a>
-                                 <div class="license">
-                                    <a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/images/cc-by-sa-small.png" alt="cc by-sa"
-                                    title="Creative Commons Attributions-ShareAlike" border="0" /\></a>
-                                 </div>
+                                   <a class="nav-link scrollto" href="#license-section">License</a>
+                                   <nav class="doc-sub-menu nav flex-column">
+                                      <div class="license">
+                                        <a href="http://creativecommons.org/licenses/by-sa/4.0/"><img src="/images/cc-by-sa-small.png" alt="cc by-sa"
+                                           title="Creative Commons Attributions-ShareAlike" border="0" /\></a>
+                                      </div>
+                                   </nav>
 	                            </nav>
 
                            </div>

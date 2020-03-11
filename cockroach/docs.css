@@ -1,3 +1,9 @@
+header.header {
+   padding: 10px 0 5px 30px;
+}
+header .branding h1.logo {
+   font-size: 32px;
+}
 header h1 img {
    height: 50px;
    margin: 10px;
