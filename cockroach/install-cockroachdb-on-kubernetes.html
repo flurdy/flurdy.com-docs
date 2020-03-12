@@ -16,8 +16,6 @@
    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
    <link href="docs.css" rel="stylesheet" type="text/css" />
-   <style>
-   </style>
    <script>
       (function (i, s, o, g, r, a, m) {
          i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
@@ -42,7 +40,6 @@
             <div class="branding">
                <h1 class="logo">
                   <a href="index.html">
-                     <!-- <span aria-hidden="true" class="icon_documents_alt icon"></span> -->
                      <a href="http://flurdy.com"><img id="flurdy" src="/images/flurdy_warped_dual.png" alt="flurdy" /></a>
                      <a href="http://flurdy.com/docs"><span class="text-bold">Docs</span></a>
                   </a>
@@ -211,6 +208,18 @@
                                        This set up assumes <a href="https://helm.sh">Helm</a> is used directly or via Flux
                                        to install packages into Kubernetes.
                                     </p>
+
+                                    <div class="code-block">
+                                       <h6>macOS:</h6>
+                                       <pre><code class="language-bash">brew install helm</code></pre>
+                                    </div>
+                                    <p>
+                                       And then install the stable chart repository.
+                                    </p>
+                                    <div class="code-block">
+                                       <pre><code class="language-bash">helm repo add stable \
+   https:// kubernetes-charts.storage.googleapis.com/</code></pre>
+                                    </div>
                                     <p>
                                        You can install CockroachDB without Helm,
                                        but it requires more steps.
@@ -288,7 +297,8 @@ conf:
   max-sql-memory: "1024Mi"</code></pre></div>
 
                                     <div class="code-block">
-                                       <pre><code class="language-bash">helm install myroach --values cockroach/my-roach-values.yaml stable/cockroachdb</code></pre>
+                                       <pre><code class="language-bash">helm install myroach \
+   --values cockroach/my-roach-values.yaml stable/cockroachdb</code></pre>
                                 </div>
                                 <div id="install-flux"  class="section-block">
                                     <h3 class="block-title">FluxCD &amp; Helm</h3>
@@ -621,7 +631,7 @@ containers:
                                              <!-- Never expose credentials in plain text -->
                                           </p>
                                           <p>
-                                             Instead use <a href="https://www.vaultproject.io/">Vault</a>, <a href="https://github.com/bitnami-labs/sealed-secrets/">Sealed Secrets</a>, etc.
+                                             Instead you should use <a href="https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/">Kubernetes Secrets</a>, <a href="https://github.com/bitnami-labs/sealed-secrets/">Sealed Secrets</a> or <a href="https://www.vaultproject.io/">Vault</a>, etc.
                                           </p>
                                        </div>
                                     </div>
@@ -638,7 +648,7 @@ containers:
    - name: DB_DRIVER
       value: org.postgresql.Driver
    - name: DB_URL
-      value: jdbc:postgresql://<em>myroach</em>-public:26257/<em>myappdb</em>>?sslmode=require&sslcert=/cockroach-certs/client.<em>myappuser</em>.crt&sslkey=/cockroach-certs/client.<em>myappuser</em>.key"
+      value: jdbc:postgresql://<em>myroach</em>-public:26257/<em>myappdb</em>?sslmode=require&sslcert=/cockroach-certs/client.<em>myappuser</em>.crt&sslkey=/cockroach-certs/client.<em>myappuser</em>.key"
    - name: DB_USERNAME
      value: <em>myappuser</em>
      - name: DB_PASSWORD
@@ -809,6 +819,7 @@ brew install weaveworks/tap/eksctl</code></pre>
 
                            </section>
 
+                           <a name="feedback"></a>
                             <section id="feedback-section" class="doc-section">
                                <h2 class="section-title">Feedback</h2>
                                <div class="section-block">
