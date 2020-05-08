@@ -2356,7 +2356,7 @@ smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt</code>
 		Also enabled <i>smtps</i> service (port 465),
 		for some compatibility with some older clients (outlook express etc).
 	</p>
-	<code class="document">submission inet n       -       n       -       -       smtpd
+	<code class="document">submission inet n       -       y       -       -       smtpd
   -o smtpd_sasl_auth_enable=yes
 <span class="comment"># if you do not want to restrict it encryption only, comment out next line</span>
   -o smtpd_tls_auth_only=yes
@@ -2367,7 +2367,7 @@ smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt</code>
   -o smtpd_sasl_security_options=noanonymous,noplaintext
   -o smtpd_sasl_tls_security_options=noanonymous
 <span class="comment"># -o milter_macro_daemon_name=ORIGINATING</span><
-smtps     inet  n       -       -       -       -       smtpd
+smtps     inet  n       -       y       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_sasl_auth_enable=yes
   -o smtpd_tls_auth_only=yes
