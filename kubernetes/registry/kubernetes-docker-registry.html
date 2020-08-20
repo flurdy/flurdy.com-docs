@@ -465,13 +465,15 @@
                      <li>
                         Select the <em>Select a role</em> dropdown
                         <ul>
-                           <li>Choose <em>Storage</em> at the bottom</li>
+                           <li>Choose <em>Cloud Storage</em></li>
                            <li>And <em>Storage Admin</em> on the submenu</li>
                         </ul>
                      </li>
                      <li>Click on <em>Continue</em></li>
+                     <li>No need to grant any users, so click done</li>
+                     <li>Find new service account on the list and click on it to edit (the email address is clickable</li>
                      <li>
-                        Click on the <em>Create key</em>
+                        Click on the <em>Add key</em> button, select "Create new key" on the popup.
                         <ul>
                            <li>Choose <em>JSON</em></li>
                         </ul>
@@ -483,6 +485,9 @@
                         </ul>
                      </li>
                   </ol>
+                  <p>
+                     Note GCP sometimes changes this flow. 
+                  </p>
 
                   <p>
                      Then we need to create a <em>Kubernetes Secret</em> using the JSON as a one-line data token.
