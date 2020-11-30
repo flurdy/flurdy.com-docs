@@ -1335,12 +1335,12 @@ sudo mysql -u root -p
 <span class="comment"># then we create the mail database</span>
 create database maildb;
 <span class="comment"># then we create a new user: "mail"</span>
-CREATE USER 'mail'@'localhost' IDENTIFIED BY 'password_for_mail_user'</i>;
+CREATE USER 'mail'@'localhost' IDENTIFIED BY 'mailPASSWORD'</i>;
 GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost' WITH GRANT OPTION</i>';
-CREATE USER 'mail'@'%' IDENTIFIED BY 'password_for_mail_user'</i>;
+CREATE USER 'mail'@'%' IDENTIFIED BY 'mailPASSWORD'</i>;
 GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>';
 exit;</code>
-		Obviously replace <b><i>password_for_mail_user</i></b> with your chosen password!
+		Obviously replace <b><i>mailPASSWORD</i></b> with your chosen password!
 	</p>
 	<p>
 		Then you will need to create these tables:
