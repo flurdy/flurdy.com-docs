@@ -1174,7 +1174,11 @@ sudo apt-get upgrade</code>
 		<code>sudo cp /usr/share/doc/shorewall/examples/one-interface/interfaces /etc/shorewall/;
 sudo vi /etc/shorewall/interfaces</code>
 		<code class="document"><span class="comment"># If not using sub set hosts replace the zone <em>-</em> with <em>net</em></span>
-<span class="comment">#net     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0</span>
+<span class="comment">###############################################################################
+?FORMAT 1
+###############################################################################
+#ZONE   INTERFACE       OPTIONS
+#net     NET_IF          dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0,physical=eth0</span>
 <span class="comment"># </span>
 -     eth0            detect          dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0</code>
 	</p>
@@ -1184,7 +1188,7 @@ sudo vi /etc/shorewall/interfaces</code>
 sudo vi /etc/shorewall/zones</code>
 		Add the firewall if not there and the internet as a zone, and the optional VPC if you need one.
 		<code class="document">fw	firewall
-net     ipv4d
+net     ipv4
 vpc:net     ipv4</code>
 	</p>
 	<p>
@@ -1211,6 +1215,7 @@ all             all             REJECT          info</code>
 	<p>
 		For safety in case it goes down, you need a way for your own traffic to route to the server instead of denying everything.
 		Older versons of Shorwall will use <i>routestopped</i> file.
+		<b>None of the options <i>routestopped</i> or <i>stoppedrules</i> are supported in Ubuntu Focal as it runs Shorewall 5.2.</b>
 		<code>sudo cp /usr/share/doc/shorewall/default-config/routestopped /etc/shorewall/;
 sudo vi /etc/shorewall/routestopped</code>
 		<code class="document">eth0            0.0.0.0                 routeback</code>
@@ -1225,7 +1230,7 @@ ACCEPT		-		eth0</code>
 		Now for the main firewall rules.
 		You can find predetermined macro rules for Shorewall in
 		<i>/usr/share/shorewall</i>.
-		<code>sudo cp /usr/share/doc/shorewall/default-config/rules /etc/shorewall/;
+		<code>sudo cp /usr/share/doc/shorewall/examples/one-interface/rules /etc/shorewall/;
 sudo vi /etc/shorewall/rules</code>
 		<code class="document">SSH(ACCEPT)      vpc             $FW
 SSH(ACCEPT)      net             $FW</code>
