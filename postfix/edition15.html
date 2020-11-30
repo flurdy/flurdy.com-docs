@@ -1284,7 +1284,7 @@ Web(ACCEPT)      net             $FW</code>
 	</p>
 	<p>
 		Then to switch it on during boot:
-		<code>vi /etc/default/shorewall</code>
+		<code>sudo vi /etc/default/shorewall</code>
 		<code class="document">startup=1</code>
 	</p>
 	<p>
@@ -1326,21 +1326,21 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		You will need the password you specified for <b><i>root</i></b> during MySQL package installation.
 	</p>
 	<p>
-	<code><span class="comment"># If not already done (in package installation)...</span>
-mysqladmin -u root -p password <i>new_password</i>
+	<code><span class="comment"># Secure MySQL</span>
+sudo mysql_secure_installation <i>new_password</i>
 <span class="comment"># log in as root</span>
-mysql -u root -p
+sudo mysql -u root -p
 <span class="comment"># then enter password for the root account when prompted</span>
 <span class="reply">Enter password:</span>
 <span class="comment"># then we create the mail database</span>
 create database maildb;
 <span class="comment"># then we create a new user: "mail"</span>
-GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
-ON maildb.* TO 'mail'@'localhost' IDENTIFIED by '<i>mailPASSWORD</i>';
-GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
-ON maildb.* TO 'mail'@'%' IDENTIFIED by '<i>mailPASSWORD</i>';
+CREATE USER 'mail'@'localhost' IDENTIFIED BY 'password_for_mail_user'</i>;
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost'</i>';
+CREATE USER 'mail'@'%' IDENTIFIED BY 'password_for_mail_user'</i>;
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>';
 exit;</code>
-		Obviously replace <b><i>mailPASSWORD</i></b> with your chosen password!
+		Obviously replace <b><i>password_for_mail_user</i></b> with your chosen password!
 	</p>
 	<p>
 		Then you will need to create these tables:
