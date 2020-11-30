@@ -1406,20 +1406,25 @@ describe aliases; describe domains; describe users;
 exit;</code>
 
 	<p>
-		Next is to edit the MySQL's <b><i>my.cnf</i></b> file.
-		In Ubuntu/debian this is created by default.
-		In Mandrake I had to manually create a blank one in /etc.
-		But we need to configure it, so:
-		<code>sudo vi /etc/mysql/my.cnf</code>
-		In previous versions you needed to comment out this line
-		<code class="document"><span class="comment">#skip-networking</span></code>
-		However in today's file the default is to bind the
-		address to localhost, which is fine.
+		Next is to create a specific config MySQL config file.
+		Before we start adding configuring options, please double check that
+		the bind-adress value is <b>not</b> hashed out:
+		<code>
+			sudo cat mysql.conf.d/mysqld.cnf | grep bind
+		</code>
+		<code>
+			bind-address            = 127.0.0.1
+		</code>
+		When that's confirmed, please configure your specific file like this:
+		<code>sudo vi /etc/mysql/mysql.conf.d/mailconfigmysql.cnf</code>
 		<code class="document">bind-address = 127.0.0.1</code>
 		It is very useful at the start to log any SQL calls that makes it to MySQL.
 		So enable these lines:
-		<code class="document">general_log_file = /var/log/mysql/mysql.log
-general_log = 1</code>
+		<code class="document">
+	        [mysqld]
+		general_log_file = /var/log/mysql/mysql.log
+		general_log = 1
+		</code>
 		Then in a few weeks comment it out when everything is working,
 		as it slows mysql down
 	</p>
