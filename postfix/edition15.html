@@ -980,12 +980,12 @@ y8JYIMG1EKR9YeTQVLalcV2nYjRM/0GXuj0O
 	<p>
 		<code>sudo vi /etc/apt/sources.list </code>
 		Uncomment the lines that have commented out <i>universe</i>. E.g. here are mine for ec2 in Europe:
-		<code>deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty universe
-deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty universe
-deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty-updates universe
-deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ trusty-updates universe</code>
-		<code>deb http://security.ubuntu.com/ubuntu trusty-security universe
-deb-src http://security.ubuntu.com/ubuntu trusty-security universe</code>
+		<code>deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ focal universe
+deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ focal universe
+deb http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ focal-updates universe
+deb-src http://<i>eu-west-1.ec2</i>.archive.ubuntu.com/ubuntu/ focal-updates universe</code>
+		<code>deb http://security.ubuntu.com/ubuntu focal-security universe
+deb-src http://security.ubuntu.com/ubuntu focal-security universe</code>
 		Note the <i>security</i> repository always has to go to the non-mirrored server.
 	</p>
 	<p>
@@ -1199,7 +1199,7 @@ vpc:net     ipv4</code>
 </p>
 	<p>
 		Then set what is the default policy for firewall access.
-		<code>sudo cp /usr/share/doc/shorewall/default-config/policy /etc/shorewall/;
+		<code>sudo cp /usr/share/doc/shorewall/examples/one-interface/policy /etc/shorewall/;
 sudo vi /etc/shorewall/policy</code>
 		<code class="document">$FW             vpc             ACCEPT 
 $FW             net             ACCEPT 
