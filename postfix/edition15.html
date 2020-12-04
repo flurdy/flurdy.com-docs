@@ -60,7 +60,6 @@
 <h6><a href="#editions">15th edition</a></h6>
 <h6>
 	Author <a href="#author">Ivar Abrahamsen</a>
-	Author <a href="#author">Daniel Hansson</a>
 </h6>
 <h6>
 	License:
@@ -1341,9 +1340,9 @@ sudo mysql -u root -p
 create database maildb;
 <span class="comment"># then we create a new user: "mail"</span>
 CREATE USER 'mail'@'localhost' IDENTIFIED BY 'mailPASSWORD'</i>;
-GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost' WITH GRANT OPTION</i>';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost' WITH GRANT OPTION</i>;
 CREATE USER 'mail'@'%' IDENTIFIED BY 'mailPASSWORD'</i>;
-GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>;
 exit;</code>
 		Obviously replace <b><i>mailPASSWORD</i></b> with your chosen password!
 	</p>
@@ -1415,7 +1414,7 @@ exit;</code>
 		Before we start adding configuring options, please double check that
 		the bind-adress value is <b>not</b> hashed out:
 		<code>
-	sudo cat mysql.conf.d/mysqld.cnf | grep bind
+	sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf | grep bind
 		</code>
 		It should look like this
 		<code>
