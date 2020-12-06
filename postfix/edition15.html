@@ -1328,6 +1328,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
         <p>
 <code><span class="comment"># If not already done (in package installation)...</span>
 mysqladmin -u root -p password <i>new_password</i>
+	</code>
 	</p>
 	<p>
 	<code><span class="comment"># Secure MySQL</span>
@@ -1343,7 +1344,9 @@ CREATE USER 'mail'@'localhost' IDENTIFIED BY 'mailPASSWORD'</i>;
 GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost' WITH GRANT OPTION</i>;
 CREATE USER 'mail'@'%' IDENTIFIED BY 'mailPASSWORD'</i>;
 GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>;
-exit;</code>
+exit;
+</code>
+
 		Obviously replace <b><i>mailPASSWORD</i></b> with your chosen password!
 	</p>
 	<p>
@@ -1411,24 +1414,18 @@ exit;</code>
 
 	<p>
 		Next is to create a specific config MySQL config file.
-		Before we start adding configuring options, please double check that
-		the bind-adress value is <b>not</b> hashed out:
-		<code>
-	sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf | grep bind
-		</code>
-		It should look like this
-		<code>
-	bind-address            = 127.0.0.1
-		</code>
-		When that's confirmed, please configure your specific file like this:
-		<code>sudo vi /etc/mysql/mysql.conf.d/mailconfigmysql.cnf</code>
-		It is very useful at the start to log any SQL calls that makes it to MySQL.
-		So enable these lines:
-		<code class="document">
-	[mysqld]
-	general_log_file = /var/log/mysql/mysql.log
-	general_log = 1
-		</code>
+	        Before we start adding configuring options, please double check that
+	        the bind-adress value is <b>not</b> hashed out:
+	        <code>sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf | grep bind</code>
+	        It should look like this
+	        <code>bind-address            = 127.0.0.1</code>
+	        When that's confirmed, please configure your specific file like this:
+	<code>sudo vi /etc/mysql/mysql.conf.d/mailconfigmysql.cnf</code>
+	        It is very useful at the start to log any SQL calls that makes it to MySQL.
+	        So enable these lines:
+	        <code class="comment">[mysqld]
+general_log_file = /var/log/mysql/mysql.log
+general_log = 1</code>
 		Then in a few weeks comment it out when everything is working,
 		as it slows mysql down
 	</p>
