@@ -66,7 +66,7 @@
 	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
 <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
 </h6>
-<h6>Last Update: 2020-05-08</h6>
+<h6>Last Update: 2020-12-04</h6>
 <h6>
 	<a href="#contact">Contact</a> /
 	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -1325,9 +1325,13 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		Take note of your chosen mail username and password.
 		You will need the password you specified for <b><i>root</i></b> during MySQL package installation.
 	</p>
+        <p>
+<code><span class="comment"># If not already done (in package installation)...</span>
+mysqladmin -u root -p password <i>new_password</i>
+	</p>
 	<p>
 	<code><span class="comment"># Secure MySQL</span>
-sudo mysql_secure_installation <i>new_password</i>
+sudo mysql_secure_installation
 <span class="comment"># log in as root</span>
 sudo mysql -u root -p
 <span class="comment"># then enter password for the root account when prompted</span>
@@ -1336,9 +1340,9 @@ sudo mysql -u root -p
 create database maildb;
 <span class="comment"># then we create a new user: "mail"</span>
 CREATE USER 'mail'@'localhost' IDENTIFIED BY 'mailPASSWORD'</i>;
-GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost' WITH GRANT OPTION</i>';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'localhost' WITH GRANT OPTION</i>;
 CREATE USER 'mail'@'%' IDENTIFIED BY 'mailPASSWORD'</i>;
-GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON maildb.* TO 'mail'@'%' WITH GRANT OPTION</i>;
 exit;</code>
 		Obviously replace <b><i>mailPASSWORD</i></b> with your chosen password!
 	</p>
@@ -1410,20 +1414,20 @@ exit;</code>
 		Before we start adding configuring options, please double check that
 		the bind-adress value is <b>not</b> hashed out:
 		<code>
-			sudo cat mysql.conf.d/mysqld.cnf | grep bind
+	sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf | grep bind
 		</code>
+		It should look like this
 		<code>
-			bind-address            = 127.0.0.1
+	bind-address            = 127.0.0.1
 		</code>
 		When that's confirmed, please configure your specific file like this:
 		<code>sudo vi /etc/mysql/mysql.conf.d/mailconfigmysql.cnf</code>
-		<code class="document">bind-address = 127.0.0.1</code>
 		It is very useful at the start to log any SQL calls that makes it to MySQL.
 		So enable these lines:
 		<code class="document">
-	        [mysqld]
-		general_log_file = /var/log/mysql/mysql.log
-		general_log = 1
+	[mysqld]
+	general_log_file = /var/log/mysql/mysql.log
+	general_log = 1
 		</code>
 		Then in a few weeks comment it out when everything is working,
 		as it slows mysql down
