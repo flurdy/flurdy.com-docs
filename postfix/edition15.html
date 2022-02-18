@@ -63,13 +63,13 @@
 </h6>
 <h6>
 	License:
-	<a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
-<!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
-</h6>
-<h6>Last Update: 2020-12-04</h6>
-<h6>
-	<a href="#contact">Contact</a> /
-	<a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
+      <a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
+      <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
+   </h6>
+   <h6>Last Update: 2022-02-18</h6>
+   <h6>
+      <a href="#contact">Contact</a> /
+      <a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
 	<a href="#contribute">Contribute</a>
 </h6>
 
@@ -1578,17 +1578,23 @@ smtpd_helo_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_host
 smtpd_sender_restrictions = permit_mynetworks, warn_if_reject reject_non_fqdn_sender,
 		reject_unknown_sender_domain, reject_unauth_pipelining, permit
 <span class="comment"># Requirements for the connecting server </span>
-smtpd_client_restrictions = reject_rbl_client sbl.spamhaus.org,
+smtpd_client_restrictions = permit_mynetworks, reject_rbl_client sbl.spamhaus.org,
 		reject_rbl_client blackholes.easynet.nl
 <span class="comment"># Requirement for the recipient address</span>
 smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks,
 		reject_non_fqdn_recipient, reject_unknown_recipient_domain,
 		reject_unauth_destination, permit
 smtpd_data_restrictions = reject_unauth_pipelining</code>
-	</p>
-	<p>
-		Further restrictions:
-		<code class="document"><span class="comment"># require proper helo at connections </span>
+      </p>
+      <p>
+         Note February 2022: Spamhaus has a new suggested behaviour to avoid false positives.
+         Change <em>smtpd_recipient_restrictions</em> to:
+         <code
+            class="document">smtpd_recipient_restrictions = reject_rbl_client zen.spamhaus.org=127.0.0.[2..11], reject_rhsbl_sender dbl.spamhaus.org=127.0.1.[2..99], reject_rhsbl_helo dbl.spamhaus.org=127.0.1.[2..99], reject_rhsbl_reverse_client dbl.spamhaus.org=127.0.1.[2..99], warn_if_reject reject_rbl_client zen.spamhaus.org=127.255.255.[1..255], reject_unauth_pipelining, permit_mynetworks, reject_non_fqdn_recipient, reject_unknown_recipient_domain, reject_unauth_destination, permit</code>
+      </p>
+      <p>
+         Further restrictions:
+         <code class="document"><span class="comment"># require proper helo at connections </span>
 smtpd_helo_required = yes
 <span class="comment"># waste spammers time before rejecting them</span>
 smtpd_delay_reject = yes
@@ -5780,7 +5786,14 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 			2010-05-29:
 		</p></li>
 		-->
-		<li><p>
+         <li>
+            <p>
+               2022-02-18: Spamhous changed their responses.
+               https://docs.spamhaus.com/datasets/docs/source/40-real-world-usage/PublicMirrors/MTAs/020-Postfix.html
+            </p>
+         </li>
+         <li>
+            <p>
 			2018-09-10: Filled in DMARC
 		</p></li>
 		<li><p>
