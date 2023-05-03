@@ -66,7 +66,7 @@
       <a href="http://flurdy.com/docs/license/respect">Respect</a> (CC by-sa)
       <!-- 	on top of <a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons by-sa</a>. -->
    </h6>
-   <h6>Last Update: 2022-02-18</h6>
+   <h6>Last Update: 2023-05-03</h6>
    <h6>
       <a href="#contact">Contact</a> /
       <a href="http://www.ubuntuforums.org/showthread.php?t=185913">Discuss</a> /
@@ -88,14 +88,13 @@ google_ad_client = "pub-7805345644641760";
 /* top leaderboard */
 google_ad_slot = "6513264856";
 google_ad_width = 728;
-google_ad_height = 90;
+         google_ad_height = 90;
 //-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
-	<ul>
-		<li>
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script>
+      <ul>
+         <li>
 			<h5><a href="#editions">Editions</a></h5>
 			<p>List of different versions of this document.</p>
 		</li>
@@ -453,16 +452,16 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 				Based on Ubuntu 16.04 LTS (xenial). Added DKIM.
 			</td>
 		</tr>
-		<tr>
-			<td colspan="1" nowrap>15th (this)</td>
-			<td colspan="1">
-				Draft
-			</td>
-			<td colspan="1" nowrap>2020-04</td>
-			<td colspan="1" nowrap>2020-05</td>
-			<td colspan="1" class="desc">
-				Based on Ubuntu 20.04 LTS (focal).
-			</td>
+         <tr>
+            <td colspan="1" nowrap>15th (this)</td>
+            <td colspan="1">
+               Released
+            </td>
+            <td colspan="1" nowrap>2020-04</td>
+            <td colspan="1" nowrap>2022-01</td>
+            <td colspan="1" class="desc">
+               Based on Ubuntu 20.04 LTS (focal).
+            </td>
 		</tr>
 	</table>
 
@@ -529,14 +528,13 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<a name="intro_research"></a>
 	<h3>Research</h3>
 	<p>
-		Don't take my word for it!
-		Research other opinions and methods.
-		Look at my <a href="#references">references</a>,
-		look at <a href="http://www.postfix.org/docs.html"
-			>Postfix.org's howtos</a>,
-		read the excellent books available
-		(E.g. Kyle's or Hildebrandt's),
-		search the web or read the proper
+         Don't take my word for it!
+         Research other opinions and methods.
+         Look at my <a href="#references">references</a>,
+         look at <a href="http://www.postfix.org/docs.html">Postfix.org's howtos</a>,
+         read the excellent books available
+         (E.g. Kyle's or Hildebrandt's),
+         search the web or read the proper
 		<a href="http://www.postfix.org/docs.html">documentation</a>.
 	</p>
 	<p>
@@ -552,7 +550,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<tr>
 		<td rowspan="4" style="vertical-aling: top">
 			<p>
-				If you found this howto very useful,  spread the word and help others?
+                  If you found this howto very useful, spread the word and help others?
 			</p>
 			<p>
 				If this howto was exceptionally useful why not donate me some <b><i>beer</i></b> money?<br/>
@@ -4449,18 +4447,52 @@ set from="<i>You</i> &lt;<i>you</i>@<i>example.com</i>&gt;"
 	<h3>White/Black Lists</h3>
 	<h6 class="red">todo</h6>
 
+      <p>
+         You can implement white and black lists
+         to explicitly allow or block domains and users.
+      </p>
+
+		<h4>Blacklists</h4>
 		<p>
-			You can implement white and black lists
-			to explicitly allow or block domains and users.
+		 In <em>/etc/postfix/main.cf</em> you can extend <em>smtpd_recipient_restrictions</em> with more RBL blocking lists from <a href="https://spamhaus.org">Spamhaus</a> and others. E.g.:
+		</p>
+		<code class="document">smtpd_recipient_restrictions = permit_mynetworks,
+		reject_non_fqdn_recipient, reject_unknown_recipient_domain,
+		reject_unauth_destination, 
+		reject_rhsbl_reverse_client dbl.spamhaus.org,
+		reject_rhsbl_helo dbl.spamhaus.org,
+		reject_rhsbl_sender dbl.spamhaus.org,
+		reject_rbl_client zen.spamhaus.org,
+		reject_rbl_client blackholes.easynet.nl, 
+		permit</code>
+
+		<p>
+		 But note if you use a public DNS resolver on the server (e.g. Google DNS) - you will receive false positives from Spamhaus, and it will block most emails!
+		  <a href="https://www.spamresource.com/2021/10/be-careful-using-spamhaus-with-open.html">Read why</a>.
 		</p>
 		<p>
-			You have already visited the option
-			of a <a href="#config-simple-mta">blackhole list of known open relays</a>
-			in the postfix configuration.
+		  You can register with <a href="https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account/">Spamhaus DQS</a> to work around this.
+		  And <a href="https://docs.spamhaus.com/datasets/docs/source/40-real-world-usage/PublicMirrors/MTAs/020-Postfix.html">some work arounds</a>.
+		  Or use other RBLs that are less restrictive.
 		</p>
+      
+		<h4>Whitelists</h4>
+      
 		<p>
-			You can implement further lists inside Postfix or SpamAssassin.
-			Amavisd-new already has a few well known white/black listed items
+		  If desired add whitelists to <em>smtpd_recipient_restrictions</em> from e.g. <a href="https://www.dnswl.org/">dnswl.org</a> or Spamhaus.
+		  Though I find the idea of whitelists potentially limiting. But useful in some scenarios.
+		</p>
+		<code class="document">smtpd_recipient_restrictions = permit_mynetworks,
+		reject_non_fqdn_recipient, reject_unknown_recipient_domain,
+		reject_unauth_destination, 
+		permit_dnswl_client list.dnswl.org=127.0.[0..255].[1..3],
+		permit_dnswl_client swl.spamhaus.org,
+		reject_rbl_client blackholes.easynet.nl, 
+		permit</code>
+
+      <p>
+         You can implement further lists inside Postfix or SpamAssassin.
+         Amavisd-new already has a few well known white/black listed items
 			in its config files.
 			SpamAssissin also has a feature to automatically learn white lists.
 		</p>
@@ -4503,13 +4535,13 @@ gpg --gen-key</code>
 			add you private key under the security tab.
 			The private key is found via listing the GnuPG
 			keys as above, then it is the 8 characters
-			after the "sub 1024g/" bit of you key.
-		</p>
-		<p>
-			To use GnuPG with	Thunderbird
-			you need to install
-			<a href="http://www.mozdev.org">EnigMail</a>.
-		</p>
+         after the "sub 1024g/" bit of you key.
+      </p>
+      <p>
+         To use GnuPG with Thunderbird
+         you need to install
+         <a href="http://www.mozdev.org">EnigMail</a>.
+      </p>
 		<p>
 			S/MIME is another way to encrypt and/or sign messages.
 			You can create you own certificate
@@ -4648,13 +4680,13 @@ hosts=127.0.0.1</code>
 		which are useful for some domains,
 		then eventually some addresses will be target for spam.
 		You can then either stop the catch all,
-		or stop indivdual addresses.
-		</p>
-		<p>
-			Implementing a lookup	and adding this restriction to
-			smtpd_recipient_restrictions accomplishes this.
-		</p>
-	<code class="document">check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf,</code>
+         or stop indivdual addresses.
+      </p>
+      <p>
+         Implementing a lookup and adding this restriction to
+         smtpd_recipient_restrictions accomplishes this.
+      </p>
+      <code class="document">check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf,</code>
 
 	<code class="document">smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, \
 	check_recipient_access mysql:/etc/postfix/mysql_block_recip.cf, \
@@ -5142,13 +5174,13 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 
 	<a name="ext_sug"></a>
 	<h3>Suggestions?</h3>
-	<p>
-		If you have any suggestions to other ways of extending
-		a postfix server, then fire off a mail to me via
-		the <a href="#contact">contact form</a> further down.<br/>
-		(Or rather, I'd prefer that you write down the extension, and let me know the link! :))
-	</p>
-</div>
+      <p>
+         If you have any suggestions to other ways of extending
+         a postfix server, then fire off a mail to me via
+         the <a href="#contact">contact form</a> further down.<br />
+         (Or rather, I'd prefer that you write down the extension, and let me know the link! :))
+      </p>
+   </div>
 <h6><a href="#top">Return to top</a>.</h6>
 
 
@@ -5787,7 +5819,10 @@ ACCEPT		net		$FW		tcp		<i>1092</i></code>
 		<li><p>
 			2010-05-29:
 		</p></li>
-		-->
+   -->
+		<li><p>
+			2023-05-03: Added Spamhaus work arounds if desired.
+		</p></li>
          <!--
          <li>
             <p>
