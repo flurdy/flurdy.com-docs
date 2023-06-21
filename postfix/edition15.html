@@ -3668,12 +3668,12 @@ sudo /etc/init.d/courier-authdaemon start</code>
 		So test the services via <a href="#test">testing section</a>.
 	</p>
 
-	<h4>Insert data<h4>
-	<p>
-		Insert your mail domains, aliases and users using the  <a href="#data">data section</a>.
-	</p>
-	<p>
-		Sometimes there are test data already in the database. Remove them.
+      <h4>Insert data<h4>
+            <p>
+               Insert your mail domains, aliases and users using the <a href="#data">data section</a>.
+            </p>
+            <p>
+               Sometimes there are test data already in the database. Remove them.
 		E.g.:
 		<code>mysql -u mail -p<i>apassword</i> maildb</code>
 		<code>delete from domains where domain = 'bar.com';
