@@ -1,0 +1,6 @@
+logs/
+.git
+.cache
+
+.hgignore
+.gitignore
