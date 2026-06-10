@@ -234,6 +234,17 @@ listen_on unix:@kitty</code></pre>
                   <code>~/.local/bin/kitty-agent-title</code>:
                </p>
 
+               <div class="note">
+                  <strong>Where should the script live?</strong>
+                  A single script in <code>~/.local/bin</code> keeps the basic setup
+                  shared and avoids duplicating fixes. It also works naturally when
+                  that directory is already on <code>PATH</code>.
+                  Agent-owned locations are equally valid:
+                  <code>~/.claude/kitty-title.sh</code> and
+                  <code>~/.codex/kitty-title.sh</code>. Separate files become useful
+                  when Claude Code and Codex need different events or title logic.
+               </div>
+
                <pre><code class="language-bash">#!/usr/bin/env bash
 
 AGENT=${1:-agent}
@@ -300,6 +311,40 @@ fi
                <p>Make it executable:</p>
 
                <pre><code>chmod +x ~/.local/bin/kitty-agent-title</code></pre>
+
+               <p>
+                  If using separate agent scripts, make both executable and update
+                  the hook commands in the following sections:
+               </p>
+
+               <pre><code>chmod +x ~/.claude/kitty-title.sh ~/.codex/kitty-title.sh</code></pre>
+
+               <table>
+                  <thead>
+                     <tr>
+                        <th>Layout</th>
+                        <th>Hook command</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td>Shared script for Claude Code</td>
+                        <td><code>~/.local/bin/kitty-agent-title claude</code></td>
+                     </tr>
+                     <tr>
+                        <td>Shared script for Codex</td>
+                        <td><code>~/.local/bin/kitty-agent-title codex</code></td>
+                     </tr>
+                     <tr>
+                        <td>Claude-specific script</td>
+                        <td><code>~/.claude/kitty-title.sh</code></td>
+                     </tr>
+                     <tr>
+                        <td>Codex-specific script</td>
+                        <td><code>~/.codex/kitty-title.sh</code></td>
+                     </tr>
+                  </tbody>
+               </table>
 
                <p>
                   The script deliberately ignores errors. A title failure must never
