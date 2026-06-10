@@ -74,7 +74,18 @@
                   <li><a href="#claude">Claude Code hooks</a></li>
                   <li><a href="#codex">Codex hooks</a></li>
                   <li><a href="#shell">Restore the shell title</a></li>
-                  <li><a href="#extensions">Further refinements</a></li>
+                  <li>
+                     <a href="#extensions">Further refinements</a>
+                     <ul>
+                        <li><a href="#fonts">Nerd Fonts and emoji</a></li>
+                        <li><a href="#worktrees">Git worktrees</a></li>
+                        <li><a href="#branches">Short branch names</a></li>
+                        <li><a href="#aliases">Repository aliases</a></li>
+                        <li><a href="#beads">Beads task IDs</a></li>
+                        <li><a href="#states">More agent states</a></li>
+                        <li><a href="#logging">Debug logging</a></li>
+                     </ul>
+                  </li>
                   <li><a href="#troubleshooting">Troubleshooting</a></li>
                   <li><a href="#references">References</a></li>
                </ul>
@@ -102,10 +113,24 @@
             <section id="result">
                <h2>The result</h2>
 
+               <p class="example-label">Portable baseline</p>
                <div class="tab-demo" aria-label="Example Kitty tab titles">
                   <span class="tab active">C flurdy.com/docs &#9881;</span>
                   <span class="tab">X dotfiles &#10067;</span>
                   <span class="tab">C tulipan/ABC-123 &#10004;</span>
+               </div>
+
+               <div class="result-advanced">
+                  <div>
+                     <p class="example-label">Extended setup in daily use</p>
+                     <p>
+                        The later <a href="#extensions">refinements</a> replace the
+                        plain markers with Nerd Font repository glyphs, shorter names
+                        and richer task or state information.
+                     </p>
+                  </div>
+                  <img src="images/kitty-tabs-in-use.png"
+                     alt="Two real Kitty tabs using Nerd Font Git glyphs, short repository names and lifecycle emoji." />
                </div>
 
                <p>A compact title can contain:</p>
@@ -163,7 +188,7 @@
 
                <ul>
                   <li><a href="https://sw.kovidgoyal.net/kitty/">Kitty</a> terminal;</li>
-                  <li>Bash, Git and Python 3;</li>
+                  <li>Bash, Git and <a href="https://jqlang.github.io/jq/">jq</a>;</li>
                   <li>Claude Code, Codex, or both; and</li>
                   <li>optionally Fish for the shell-title reset shown below.</li>
                </ul>
@@ -216,9 +241,8 @@ PAYLOAD=$(cat)
 
 json_value() {
   local key="$1"
-  printf '%s' "$PAYLOAD" | python3 -c \
-    "import json,sys; print(json.load(sys.stdin).get('$key', ''))" \
-    2&gt;/dev/null
+  printf '%s' "$PAYLOAD" | jq -r --arg key "$key" \
+    '.[$key] // empty' 2&gt;/dev/null
 }
 
 EVENT=$(json_value hook_event_name)
@@ -484,24 +508,339 @@ end</code></pre>
 
                <p>
                   The separate Claude and Codex scripts this article grew from
-                  go further than the portable example:
+                  go further than the portable example. Each refinement below is
+                  independent, so add only the parts which match your workflow.
                </p>
 
-               <ul>
-                  <li>resolve the real repository name when using Git worktrees;</li>
-                  <li>strip common branch prefixes and shorten ticket branches;</li>
-                  <li>show an active or recently completed Beads issue on the main branch;</li>
-                  <li>allow a per-session repository alias with <code>KITTY_TITLE_REPO_ALIAS</code>;</li>
-                  <li>distinguish subagent and compaction states; and</li>
-                  <li>write an optional event log under <code>/tmp</code> for debugging.</li>
-               </ul>
+               <h3 id="fonts">Nerd Fonts and emoji</h3>
 
                <p>
-                  Those refinements are useful once the basic lifecycle works, but
-                  repository naming and task detection are personal conventions.
-                  Keep the first version small enough that a broken title script is
-                  easy to diagnose. I keep the surrounding terminal configuration in
-                  my <a href="https://github.com/flurdy/dotfiles">dotfiles repository</a>.
+                  The plain <code>C</code> and <code>X</code> agent markers work
+                  everywhere. My own titles use a Git branch glyph inside a repository
+                  and a folder glyph outside Git:
+               </p>
+
+               <figure class="symbol-figure">
+                  <img src="images/kitty-title-symbols.png"
+                     alt="Example Kitty tabs with Git branch and folder Nerd Font glyphs, followed by start, thinking, tool, question, done, compact and subagent state symbols." />
+                  <figcaption>
+                     A browser-safe snapshot rendered from my local Nerd Font and
+                     emoji fonts.
+                  </figcaption>
+               </figure>
+
+               <p>
+                  The first two are private-use characters supplied by
+                  <a href="https://www.nerdfonts.com/">Nerd Fonts</a>. You can use a
+                  fully patched programming font, or let Kitty map only the symbol
+                  code points to <code>Symbols Nerd Font Mono</code>. The bitmap above
+                  is used because a web browser cannot rely on Kitty's font mapping
+                  and may otherwise display empty boxes:
+               </p>
+
+               <pre><code>symbol_map U+E725 Symbols Nerd Font Mono
+symbol_map U+F024B Symbols Nerd Font Mono</code></pre>
+
+               <p>
+                  Nerd Font versions occasionally move glyphs between code points.
+                  Copy the actual symbols from a picker or your prompt configuration,
+                  and test them directly in Kitty before putting them in a hook.
+               </p>
+
+               <p>
+                  I use ordinary Unicode emoji for the lifecycle states shown above.
+                  Emoji appearance depends on the fallback font and operating system,
+                  and some render wider than one terminal cell. If compact alignment
+                  matters more than colour, replace them with ASCII such as
+                  <code>S</code>, <code>...</code>, <code>*</code>,
+                  <code>?</code> and <code>OK</code>.
+               </p>
+
+               <p>The richer repository label then starts like this:</p>
+
+               <pre><code class="language-bash">GIT_MARK=$'\uE725'
+FOLDER_MARK=$'\U000F024B'
+
+if [ -n "$GIT_ROOT" ]; then
+  MARK="$GIT_MARK"
+else
+  MARK="$FOLDER_MARK"
+fi
+
+case "$AGENT" in
+  claude) LABEL="$MARK-$REPO" ;;
+  codex)  LABEL="◈$MARK-$REPO" ;;
+esac</code></pre>
+
+               <h3 id="worktrees">Use the repository name in Git worktrees</h3>
+
+               <p>
+                  <code>git rev-parse --show-toplevel</code> returns the worktree
+                  directory. If worktrees have names such as
+                  <code>worktree-fix-login</code>, that is less useful than the
+                  shared repository name.
+               </p>
+
+               <p>
+                  Claude Code can create an isolated worktree with
+                  <code>claude -w</code>. With no optional name, it generates a
+                  memorable but long name such as <code>mellow-soaring-summit</code>.
+                  You can supply a name with <code>claude -w fix-login</code>, but it
+                  still describes the worktree rather than the repository.
+               </p>
+
+               <table>
+                  <thead>
+                     <tr>
+                        <th>Source</th>
+                        <th>Example tab repository label</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td>Worktree directory from bare <code>claude -w</code></td>
+                        <td><code>mellow-soaring-summit</code></td>
+                     </tr>
+                     <tr>
+                        <td>Named worktree from <code>claude -w fix-login</code></td>
+                        <td><code>fix-login</code></td>
+                     </tr>
+                     <tr>
+                        <td>Shared Git common directory</td>
+                        <td><code>flurdy.com-docs</code></td>
+                     </tr>
+                  </tbody>
+               </table>
+
+               <p>
+                  Git's common directory points back to the main repository. Resolve
+                  it as an absolute path and use its parent directory:
+               </p>
+
+               <pre><code class="language-bash">GIT_ROOT=$(git -C "$CWD" rev-parse --show-toplevel 2&gt;/dev/null || true)
+GIT_COMMON_DIR=$(git -C "$CWD" \
+  rev-parse --path-format=absolute --git-common-dir 2&gt;/dev/null || true)
+
+if [ -n "$GIT_ROOT" ]; then
+  if [ -n "$GIT_COMMON_DIR" ]; then
+    REPO=$(basename "$(dirname "$GIT_COMMON_DIR")")
+  else
+    REPO=$(basename "$GIT_ROOT")
+  fi
+else
+  REPO=$(basename "$CWD")
+fi</code></pre>
+
+               <h3 id="branches">Shorten branch names</h3>
+
+               <p>
+                  Full branch names quickly consume a narrow tab. I remove conventional
+                  prefixes, preserve useful pull-request and ticket IDs, and otherwise
+                  keep only the first part:
+               </p>
+
+               <pre><code class="language-bash">short_branch() {
+  local branch="$1"
+  branch="${branch#worktree-}"
+  branch="${branch#feature/}"
+  branch="${branch#fix/}"
+  branch="${branch#bugfix/}"
+  branch="${branch#chore/}"
+
+  case "$branch" in
+    main|master|trunk|"") printf '' ;;
+    pr-[0-9]*|PR-[0-9]*)
+      printf '%s' "$branch" | sed -E 's/^([Pp][Rr]-[0-9]+).*/\1/'
+      ;;
+    [A-Za-z][A-Za-z]-[0-9]*|[A-Za-z][A-Za-z][A-Za-z]-[0-9]*)
+      printf '%s' "$branch" | sed -E 's/^([A-Za-z]+-[0-9]+).*/\1/'
+      ;;
+    *-*) printf '%s' "${branch%%-*}" ;;
+    *) printf '%s' "$branch" ;;
+  esac
+}
+
+BRANCH_SHORT=$(short_branch "$BRANCH")
+[ -n "$BRANCH_SHORT" ] &amp;&amp; LABEL="$LABEL/$BRANCH_SHORT"</code></pre>
+
+               <p>
+                  Tune this to your own branch conventions. Aggressive shortening is
+                  only helpful when the retained prefix remains unambiguous.
+               </p>
+
+               <h3 id="aliases">Override awkward repository names</h3>
+
+               <p>
+                  Compose wrappers, monorepos and checked-out customer projects may
+                  have directory names which are too long or misleading. An environment
+                  variable gives a session a deliberate display name:
+               </p>
+
+               <table>
+                  <thead>
+                     <tr>
+                        <th>Directory or repository name</th>
+                        <th>Useful alias</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td><code>flurdy.com-compose</code></td>
+                        <td><code>flurdy.com</code></td>
+                     </tr>
+                     <tr>
+                        <td><code>customer-platform-infrastructure-compose-development</code></td>
+                        <td><code>customer-platform</code></td>
+                     </tr>
+                     <tr>
+                        <td><code>frontend-applications-monorepo</code></td>
+                        <td><code>frontend</code></td>
+                     </tr>
+                  </tbody>
+               </table>
+
+               <pre><code class="language-bash">REPO_DISPLAY=${KITTY_TITLE_REPO_ALIAS:-$REPO}
+LABEL="$MARK-$REPO_DISPLAY"</code></pre>
+
+               <p>
+                  For a persistent project-specific alias, add it to a
+                  <a href="https://direnv.net/">direnv</a> <code>.envrc</code>:
+               </p>
+
+               <pre><code class="language-bash">export KITTY_TITLE_REPO_ALIAS=flurdy.com</code></pre>
+
+               <p>Approve the file once:</p>
+
+               <pre><code>direnv allow</code></pre>
+
+               <p>
+                  The variable is loaded when entering the directory and removed when
+                  leaving it. Claude Code and Codex then inherit the right alias
+                  without changing their launch commands.
+               </p>
+
+               <p>For a one-off session, prefix the agent command directly:</p>
+
+               <pre><code>KITTY_TITLE_REPO_ALIAS=flurdy.com codex
+KITTY_TITLE_REPO_ALIAS=website claude</code></pre>
+
+               <h3 id="beads">Show a Beads task on the main branch</h3>
+
+               <p>
+                  A feature branch often supplies the task identifier. On
+                  <code>main</code> or <code>master</code>, my projects may instead
+                  use <a href="https://github.com/gastownhall/beads">Beads</a>, whose
+                  issue records live in <code>.beads/issues.jsonl</code>.
+               </p>
+
+               <p>
+                  The advanced script looks for a task ID in the hook payload, then
+                  remembers one task per agent session under <code>/tmp</code>.
+                  If there is no explicit task, it uses the only issue currently
+                  <code>in_progress</code>. A closed task receives a leading
+                  <code>✓</code>.
+               </p>
+
+               <pre><code class="language-bash">SESSION_ID=$(json_value session_id)
+ISSUES_FILE="$GIT_ROOT/.beads/issues.jsonl"
+STATE_FILE="/tmp/kitty-bead-session-$SESSION_ID"
+
+evidence=$(printf '%s' "$PAYLOAD" | jq -r '
+  [
+    .prompt?,
+    .tool_input.command?,
+    .tool_input.args?,
+    .tool_input.issue_id?,
+    .tool_input.id?
+  ] | map(select(type == "string")) | join("\n")
+')
+
+candidate=$(printf '%s' "$evidence" \
+  | grep -Eo '[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9]+' \
+  | awk '!seen[$0]++' \
+  | while read -r id; do
+      jq -e --arg id "$id" 'select(.id == $id)' \
+        "$ISSUES_FILE" &gt;/dev/null &amp;&amp; printf '%s\n' "$id"
+    done \
+  | head -1)
+
+if [ -n "$candidate" ]; then
+  printf '%s' "$candidate" &gt; "$STATE_FILE"
+elif [ -s "$STATE_FILE" ]; then
+  candidate=$(cat "$STATE_FILE")
+fi</code></pre>
+
+               <div class="note">
+                  <strong>This is deliberately optional.</strong>
+                  This part adds conventions specific to Beads and makes heavier use
+                  of the <code>jq</code> already used by the shared script. Validate
+                  candidate IDs against the issue file rather than displaying every
+                  ticket-shaped string found in a prompt or command.
+               </div>
+
+               <h3 id="states">Add more lifecycle states</h3>
+
+               <p>
+                  The basic hooks cover the main working loop. Codex can also expose
+                  compaction and subagent activity. Add those events to
+                  <code>~/.codex/hooks.json</code> using the same command handler,
+                  then extend the title mapping:
+               </p>
+
+               <pre><code class="language-bash">case "$EVENT" in
+  PreCompact|PostCompact) TITLE="$LABEL·🧹" ;;
+  SubagentStart)          TITLE="$LABEL·👥" ;;
+  SubagentStop)           TITLE="$LABEL·✅" ;;
+esac</code></pre>
+
+               <p>
+                  Claude Code notifications can be noisy and may overwrite a more
+                  useful title after a turn. My Claude script ignores passive
+                  <code>Notification</code> events and distinguishes a direct
+                  question from a general permission request:
+               </p>
+
+               <pre><code class="language-bash">case "$EVENT" in
+  Notification)
+    exit 0
+    ;;
+  PermissionRequest)
+    TOOL=$(json_value tool_name)
+    case "$TOOL" in
+      AskUserQuestion) TITLE="$LABEL·❔" ;;
+      *)               TITLE="$LABEL·❓" ;;
+    esac
+    ;;
+esac</code></pre>
+
+               <h3 id="logging">Log hook events while tuning</h3>
+
+               <p>
+                  Hook payloads and event timing are easiest to understand from a
+                  small append-only log. Keep it outside the repository and never let
+                  logging failure break the hook:
+               </p>
+
+               <pre><code class="language-bash">LOG_FILE=${KITTY_TITLE_LOG:-/tmp/kitty-agent-title.log}
+TOOL=$(json_value tool_name)
+
+{
+  printf '%s agent=%s event=%s cwd=%s tool=%s\n' \
+    "$(date +%Y-%m-%dT%H:%M:%S%z)" \
+    "$AGENT" "$EVENT" "$CWD" "$TOOL"
+} &gt;&gt; "$LOG_FILE" 2&gt;/dev/null || true</code></pre>
+
+               <p>
+                  Hook payloads can contain prompts, commands or file paths. Log only
+                  the fields you need, keep the file private, and remove or rotate it
+                  once the integration is stable.
+               </p>
+
+               <p>
+                  My surrounding terminal configuration lives in
+                  <a href="https://github.com/flurdy/dotfiles">flurdy/dotfiles</a>.
+                  The title scripts there continue to evolve, while the shared script
+                  in this guide remains the easier starting point.
                </p>
             </section>
 
@@ -559,6 +898,26 @@ end</code></pre>
                   <li>
                      <a href="https://developers.openai.com/codex/hooks/">
                         Codex hooks
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://www.nerdfonts.com/">
+                        Nerd Fonts
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://jqlang.github.io/jq/">
+                        jq
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://direnv.net/">
+                        direnv
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://github.com/gastownhall/beads">
+                        Beads
                      </a>
                   </li>
                   <li>

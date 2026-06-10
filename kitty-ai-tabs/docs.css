@@ -196,6 +196,15 @@ h1 {
    line-height: 1.35;
 }
 
+#starboard li ul {
+   margin-top: 0.2rem;
+   padding-left: 0.8rem;
+}
+
+#starboard li li {
+   font-size: 0.72rem;
+}
+
 #cargo {
    min-width: 0;
 }
@@ -216,6 +225,14 @@ h2 {
    border-bottom: 2px solid var(--line);
    font-size: 1.7rem;
    line-height: 1.2;
+}
+
+h3 {
+   margin: 2.3rem 0 0.8rem;
+   color: var(--accent-dark);
+   font-size: 1.22rem;
+   line-height: 1.25;
+   scroll-margin-top: 1rem;
 }
 
 p,
@@ -299,6 +316,55 @@ pre code {
 .tab.active {
    background: var(--gold);
    color: #202630;
+}
+
+.example-label {
+   margin-bottom: 0.35rem;
+   color: var(--muted);
+   font: bold 0.75rem Arial, Helvetica, sans-serif;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+}
+
+.result-advanced {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) minmax(240px, 380px);
+   gap: 1.2rem;
+   align-items: center;
+   margin: 0 0 1.8rem;
+   padding: 1rem;
+   background: #e9e3d8;
+   border-left: 5px solid var(--gold);
+}
+
+.result-advanced p:last-child {
+   margin-bottom: 0;
+}
+
+.result-advanced img {
+   display: block;
+   width: 100%;
+   height: auto;
+   border: 1px solid var(--line);
+   border-radius: 4px;
+}
+
+.symbol-figure {
+   margin: 1rem 0 1.4rem;
+}
+
+.symbol-figure img {
+   display: block;
+   width: 100%;
+   height: auto;
+   border: 1px solid var(--line);
+   border-radius: 3px;
+}
+
+.symbol-figure figcaption {
+   margin-top: 0.35rem;
+   color: var(--muted);
+   font: 0.78rem Arial, Helvetica, sans-serif;
 }
 
 table {
@@ -386,6 +452,10 @@ footer nav {
       max-width: none;
    }
 
+   .result-advanced {
+      grid-template-columns: 1fr;
+   }
+
    footer {
       margin-right: -1.2rem;
       margin-left: -1.2rem;
@@ -428,7 +498,8 @@ footer nav {
    :root:not([data-theme="light"]) #jib,
    :root:not([data-theme="light"]) footer,
    :root:not([data-theme="light"]) #starboard,
-   :root:not([data-theme="light"]) th {
+   :root:not([data-theme="light"]) th,
+   :root:not([data-theme="light"]) .result-advanced {
       background: #25343d;
    }
 
@@ -464,7 +535,8 @@ footer nav {
 :root[data-theme="dark"] #jib,
 :root[data-theme="dark"] footer,
 :root[data-theme="dark"] #starboard,
-:root[data-theme="dark"] th {
+:root[data-theme="dark"] th,
+:root[data-theme="dark"] .result-advanced {
    background: #25343d;
 }
 
