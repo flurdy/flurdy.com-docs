@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>Useful Kitty tab titles for Claude Code and Codex</title>
+   <meta name="description"
+      content="Use Claude Code and Codex hooks to show repository, branch and agent state in Kitty terminal tab titles." />
+   <meta name="keywords"
+      content="kitty,terminal,claude code,codex,hooks,tab title,bash,fish" />
+   <link rel="shortcut icon" href="/favicon.ico" />
+   <link rel="stylesheet" href="docs.css" />
+   <script>
+      (function () {
+         var theme = localStorage.getItem("flurdy-doc-theme");
+         if (theme === "light" || theme === "dark") {
+            document.documentElement.dataset.theme = theme;
+         }
+      }());
+   </script>
+</head>
+
+<body>
+   <div id="ocean">
+      <main id="ship">
+         <div id="toprighter">
+            <button id="theme-toggle" type="button"
+               aria-label="Change colour theme" title="Change colour theme">
+               <span aria-hidden="true">&#9788;</span>
+               <span class="theme-label">Theme</span>
+            </button>
+            <a href="https://creativecommons.org/licenses/by-sa/2.5/">
+               <img src="/images/cc-by-sa-small.png"
+                  alt="Creative Commons Attribution-ShareAlike" />
+            </a>
+            <a href="/">
+               <img src="/images/flurdy_warped_dual_small.png"
+                  alt="flurdy" class="flurdy-small" />
+            </a>
+         </div>
+
+         <header>
+            <p class="eyebrow">Terminal workflow</p>
+            <h1>Useful Kitty tab titles for Claude Code and Codex</h1>
+            <p class="subtitle">
+               Show which repository an agent is working in, what it is doing,
+               and when it needs attention.
+            </p>
+         </header>
+
+         <nav id="lookout" aria-label="Site navigation">
+            <ul>
+               <li><a href="/">flurdy</a></li>
+               <li><a href="/docs/">more docs</a></li>
+               <li><a href="https://github.com/flurdy">github</a></li>
+               <li><a href="https://github.com/flurdy/dotfiles">dotfiles</a></li>
+            </ul>
+         </nav>
+
+         <div id="jib">
+            First published: June 2026.
+            Last updated: 10th June 2026.
+         </div>
+
+         <aside id="starboard">
+            <nav aria-label="Article contents">
+               <h2>Contents</h2>
+               <ul>
+                  <li><a href="#result">The result</a></li>
+                  <li><a href="#approach">How it works</a></li>
+                  <li><a href="#requirements">Requirements</a></li>
+                  <li><a href="#kitty">Configure Kitty</a></li>
+                  <li><a href="#script">Shared title script</a></li>
+                  <li><a href="#claude">Claude Code hooks</a></li>
+                  <li><a href="#codex">Codex hooks</a></li>
+                  <li><a href="#shell">Restore the shell title</a></li>
+                  <li><a href="#extensions">Further refinements</a></li>
+                  <li><a href="#troubleshooting">Troubleshooting</a></li>
+                  <li><a href="#references">References</a></li>
+               </ul>
+            </nav>
+         </aside>
+
+         <article id="cargo">
+            <section class="intro">
+               <p>
+                  I often have several terminal tabs running
+                  <a href="https://code.claude.com/docs/en/overview">Claude Code</a>
+                  and <a href="https://developers.openai.com/codex/">Codex</a>.
+                  Default terminal titles do not make it obvious which agent owns
+                  a tab, which repository it is changing, or whether it is working,
+                  waiting for permission, or finished.
+               </p>
+               <p>
+                  Both coding agents expose lifecycle hooks. Those hooks can call a
+                  small script which uses Kitty remote control to update the current
+                  tab title. A shell prompt hook restores the normal directory title
+                  after the agent exits.
+               </p>
+            </section>
+
+            <section id="result">
+               <h2>The result</h2>
+
+               <div class="tab-demo" aria-label="Example Kitty tab titles">
+                  <span class="tab active">C flurdy.com/docs &#9881;</span>
+                  <span class="tab">X dotfiles &#10067;</span>
+                  <span class="tab">C tulipan/ABC-123 &#10004;</span>
+               </div>
+
+               <p>A compact title can contain:</p>
+               <ul>
+                  <li>the agent: <code>C</code> for Claude Code or <code>X</code> for Codex;</li>
+                  <li>the Git repository, or current directory outside Git;</li>
+                  <li>a shortened branch or task identifier; and</li>
+                  <li>a state marker showing what the agent is doing.</li>
+               </ul>
+
+               <table>
+                  <thead>
+                     <tr>
+                        <th>State</th>
+                        <th>Marker</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr><td>Session started</td><td>&#127793;</td></tr>
+                     <tr><td>Thinking or waiting for input</td><td>&#128173;</td></tr>
+                     <tr><td>Using a tool</td><td>&#9881;</td></tr>
+                     <tr><td>Permission or answer required</td><td>&#10067;</td></tr>
+                     <tr><td>Turn finished</td><td>&#10004;</td></tr>
+                     <tr><td>Compacting context</td><td>&#129529;</td></tr>
+                  </tbody>
+               </table>
+
+               <p>
+                  The exact labels and symbols are personal preference. The useful
+                  part is that the title changes with the agent lifecycle.
+               </p>
+            </section>
+
+            <section id="approach">
+               <h2>How it works</h2>
+
+               <ol>
+                  <li>Kitty listens on a local Unix socket for remote-control commands.</li>
+                  <li>Claude Code or Codex emits a lifecycle hook event.</li>
+                  <li>The hook passes JSON on standard input to a Bash script.</li>
+                  <li>The script derives a short repository and branch label.</li>
+                  <li><code>kitten @ set-tab-title</code> updates the Kitty tab.</li>
+                  <li>The next Fish prompt restores the ordinary working-directory title.</li>
+               </ol>
+
+               <div class="note">
+                  <strong>Keep hook scripts quiet.</strong>
+                  Agent hooks may capture standard output. Redirect Kitty commands
+                  and diagnostics so title updates do not appear in the conversation.
+               </div>
+            </section>
+
+            <section id="requirements">
+               <h2>Requirements</h2>
+
+               <ul>
+                  <li><a href="https://sw.kovidgoyal.net/kitty/">Kitty</a> terminal;</li>
+                  <li>Bash, Git and Python 3;</li>
+                  <li>Claude Code, Codex, or both; and</li>
+                  <li>optionally Fish for the shell-title reset shown below.</li>
+               </ul>
+
+               <p>
+                  The example uses plain letters and standard Unicode symbols.
+                  My own titles also use Nerd Font Git and folder glyphs, but those
+                  should only be added when the configured terminal font supports them.
+               </p>
+            </section>
+
+            <section id="kitty">
+               <h2>Configure Kitty remote control</h2>
+
+               <p>Add a local socket to <code>~/.config/kitty/kitty.conf</code>:</p>
+
+               <pre><code>allow_remote_control socket-only
+listen_on unix:@kitty</code></pre>
+
+               <p>
+                  Restart Kitty after changing <code>listen_on</code>. Test the
+                  connection from a Kitty shell:
+               </p>
+
+               <pre><code>kitten @ set-tab-title "title test"</code></pre>
+
+               <p>If that does not find the socket, specify it explicitly:</p>
+
+               <pre><code>kitten @ --to unix:@kitty set-tab-title "title test"</code></pre>
+
+               <div class="warning">
+                  <strong>Remote control is powerful.</strong>
+                  Use a local Unix socket and read Kitty's remote-control security
+                  documentation before allowing broader access.
+               </div>
+            </section>
+
+            <section id="script">
+               <h2>Create a shared title script</h2>
+
+               <p>
+                  Save this portable baseline as
+                  <code>~/.local/bin/kitty-agent-title</code>:
+               </p>
+
+               <pre><code class="language-bash">#!/usr/bin/env bash
+
+AGENT=${1:-agent}
+PAYLOAD=$(cat)
+
+json_value() {
+  local key="$1"
+  printf '%s' "$PAYLOAD" | python3 -c \
+    "import json,sys; print(json.load(sys.stdin).get('$key', ''))" \
+    2&gt;/dev/null
+}
+
+EVENT=$(json_value hook_event_name)
+CWD=$(json_value cwd)
+[ -z "$CWD" ] &amp;&amp; CWD="$PWD"
+
+GIT_ROOT=$(git -C "$CWD" rev-parse --show-toplevel 2&gt;/dev/null || true)
+BRANCH=$(git -C "$CWD" branch --show-current 2&gt;/dev/null || true)
+
+if [ -n "$GIT_ROOT" ]; then
+  REPO=$(basename "$GIT_ROOT")
+else
+  REPO=$(basename "$CWD")
+fi
+
+case "$BRANCH" in
+  main|master|trunk|"") BRANCH="" ;;
+  feature/*|fix/*|bugfix/*|chore/*) BRANCH=${BRANCH#*/} ;;
+esac
+
+case "$AGENT" in
+  claude) LABEL="C $REPO" ;;
+  codex)  LABEL="X $REPO" ;;
+  *)      LABEL="$AGENT $REPO" ;;
+esac
+
+[ -n "$BRANCH" ] &amp;&amp; LABEL="$LABEL/$BRANCH"
+
+case "$EVENT" in
+  SessionStart)                  MARK="&#127793;" ;;
+  UserPromptSubmit|PostToolUse)  MARK="&#128173;" ;;
+  PreToolUse)                    MARK="&#9881;" ;;
+  PermissionRequest)             MARK="&#10067;" ;;
+  Stop|SubagentStop)             MARK="&#10004;" ;;
+  PreCompact|PostCompact)        MARK="&#129529;" ;;
+  *)                             MARK="" ;;
+esac
+
+TITLE="$LABEL"
+[ -n "$MARK" ] &amp;&amp; TITLE="$TITLE $MARK"
+
+if command -v kitten &gt;/dev/null 2&gt;&amp;1; then
+  kitten @ set-tab-title "$TITLE" &gt;/dev/null 2&gt;&amp;1 \
+    || kitten @ --to unix:@kitty set-tab-title "$TITLE" &gt;/dev/null 2&gt;&amp;1 \
+    || true
+fi
+
+# Fallback to terminal title escape sequences.
+(
+  exec 2&gt;/dev/null
+  printf '\e]30;%s\a' "$TITLE" &gt; /dev/tty || true
+  printf '\e]2;%s\a' "$TITLE" &gt; /dev/tty || true
+) || true</code></pre>
+
+               <p>Make it executable:</p>
+
+               <pre><code>chmod +x ~/.local/bin/kitty-agent-title</code></pre>
+
+               <p>
+                  The script deliberately ignores errors. A title failure must never
+                  interrupt an agent session.
+               </p>
+            </section>
+
+            <section id="claude">
+               <h2>Connect Claude Code hooks</h2>
+
+               <p>
+                  Merge hooks like these into
+                  <code>~/.claude/settings.json</code>. If that file already has a
+                  <code>hooks</code> object, add the event entries rather than
+                  replacing the whole file.
+               </p>
+
+               <pre><code class="language-json">{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title claude"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title claude"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title claude"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title claude"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title claude"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+               <p>
+                  Add <code>PostToolUse</code> and <code>PreCompact</code> in the
+                  same form if you want the finer state transitions shown earlier.
+               </p>
+            </section>
+
+            <section id="codex">
+               <h2>Connect Codex hooks</h2>
+
+               <p>
+                  Codex reads user hooks from <code>~/.codex/hooks.json</code>.
+                  Like Claude Code, it includes <code>hook_event_name</code> in the
+                  JSON payload, so each hook can call the same command:
+               </p>
+
+               <pre><code class="language-json">{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/kitty-agent-title codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+               <p>
+                  Codex asks you to review new or changed command hooks. Use
+                  <code>/hooks</code> in the CLI to inspect and trust the definition.
+                  Matching hooks from different configuration layers are combined,
+                  so check for duplicates if the title updates more than expected.
+               </p>
+            </section>
+
+            <section id="shell">
+               <h2>Restore the shell title</h2>
+
+               <p>
+                  Without a reset, the completed agent title remains after returning
+                  to the shell. Fish can restore a directory-based title whenever it
+                  displays a prompt.
+               </p>
+
+               <p>
+                  Create
+                  <code>~/.config/fish/functions/update_kitty_tab_title.fish</code>:
+               </p>
+
+               <pre><code class="language-fish">function update_kitty_tab_title \
+    --description 'Reset Kitty tab title to the shell location' \
+    --on-event fish_prompt
+
+    status is-interactive; or return
+    set -q KITTY_WINDOW_ID; or return
+
+    set -l title (prompt_pwd)
+    test -n "$title"; or set title (pwd)
+
+    if type -q kitten
+        kitten @ set-tab-title "$title" &gt;/dev/null 2&gt;&amp;1
+        or kitten @ --to unix:@kitty set-tab-title "$title" &gt;/dev/null 2&gt;&amp;1
+    end
+
+    printf '\e]30;%s\a' "$title" &gt;/dev/tty 2&gt;/dev/null
+    printf '\e]2;%s\a' "$title" &gt;/dev/tty 2&gt;/dev/null
+end</code></pre>
+
+               <p>Load it from <code>~/.config/fish/config.fish</code>:</p>
+
+               <pre><code class="language-fish">source ~/.config/fish/functions/update_kitty_tab_title.fish</code></pre>
+
+               <p>
+                  Bash and Zsh can do the same from their prompt hooks. The important
+                  detail is that the shell should only reset the title when a prompt
+                  is shown, not while the foreground agent is running.
+               </p>
+            </section>
+
+            <section id="extensions">
+               <h2>Further refinements</h2>
+
+               <p>
+                  The separate Claude and Codex scripts this article grew from
+                  go further than the portable example:
+               </p>
+
+               <ul>
+                  <li>resolve the real repository name when using Git worktrees;</li>
+                  <li>strip common branch prefixes and shorten ticket branches;</li>
+                  <li>show an active or recently completed Beads issue on the main branch;</li>
+                  <li>allow a per-session repository alias with <code>KITTY_TITLE_REPO_ALIAS</code>;</li>
+                  <li>distinguish subagent and compaction states; and</li>
+                  <li>write an optional event log under <code>/tmp</code> for debugging.</li>
+               </ul>
+
+               <p>
+                  Those refinements are useful once the basic lifecycle works, but
+                  repository naming and task detection are personal conventions.
+                  Keep the first version small enough that a broken title script is
+                  easy to diagnose. I keep the surrounding terminal configuration in
+                  my <a href="https://github.com/flurdy/dotfiles">dotfiles repository</a>.
+               </p>
+            </section>
+
+            <section id="troubleshooting">
+               <h2>Troubleshooting</h2>
+
+               <dl>
+                  <dt>The title does not change</dt>
+                  <dd>
+                     Test <code>kitten @ --to unix:@kitty set-tab-title test</code>,
+                     confirm the script is executable, then inspect the agent's hook
+                     configuration.
+                  </dd>
+
+                  <dt>Codex says the hook needs review</dt>
+                  <dd>
+                     Open <code>/hooks</code> and trust the exact command definition.
+                     Editing the hook changes its hash and requires another review.
+                  </dd>
+
+                  <dt>The hook runs, but uses the wrong repository</dt>
+                  <dd>
+                     Log the received <code>cwd</code> field. Agents may start from a
+                     subdirectory, and Git worktrees need extra handling if you want
+                     the shared repository name.
+                  </dd>
+
+                  <dt>The agent prints control output</dt>
+                  <dd>
+                     Redirect both standard output and standard error from every
+                     <code>kitten</code> invocation.
+                  </dd>
+
+                  <dt>Symbols appear as boxes</dt>
+                  <dd>
+                     Use plain ASCII markers or configure a font containing the
+                     selected Unicode or Nerd Font glyphs.
+                  </dd>
+               </dl>
+            </section>
+
+            <section id="references">
+               <h2>References</h2>
+               <ul>
+                  <li>
+                     <a href="https://sw.kovidgoyal.net/kitty/remote-control/">
+                        Kitty remote control
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://code.claude.com/docs/en/hooks">
+                        Claude Code hooks reference
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://developers.openai.com/codex/hooks/">
+                        Codex hooks
+                     </a>
+                  </li>
+                  <li>
+                     <a href="https://github.com/flurdy/dotfiles">
+                        flurdy/dotfiles
+                     </a>
+                  </li>
+               </ul>
+            </section>
+         </article>
+
+         <footer>
+            <nav aria-label="Footer navigation">
+               <a href="/">flurdy</a>
+               <a href="/docs/">more docs</a>
+               <a href="/contact/">contact</a>
+            </nav>
+         </footer>
+      </main>
+   </div>
+   <script>
+      (function () {
+         var key = "flurdy-doc-theme";
+         var root = document.documentElement;
+         var button = document.getElementById("theme-toggle");
+         var icon = button.querySelector("[aria-hidden]");
+         var label = button.querySelector(".theme-label");
+
+         function currentTheme() {
+            return root.dataset.theme ||
+               (window.matchMedia("(prefers-color-scheme: dark)").matches
+                  ? "dark" : "light");
+         }
+
+         function render() {
+            var explicit = root.dataset.theme;
+            var current = currentTheme();
+            icon.textContent = current === "dark" ? "\u263e" : "\u2600";
+            label.textContent = explicit ? current : "auto";
+            button.title = "Theme: " + (explicit || "automatic");
+         }
+
+         button.addEventListener("click", function () {
+            var explicit = root.dataset.theme;
+            var next = explicit === "light"
+               ? "dark"
+               : explicit === "dark"
+                  ? ""
+                  : currentTheme() === "dark" ? "light" : "dark";
+
+            if (next) {
+               root.dataset.theme = next;
+               localStorage.setItem(key, next);
+            } else {
+               delete root.dataset.theme;
+               localStorage.removeItem(key);
+            }
+            render();
+         });
+
+         window.matchMedia("(prefers-color-scheme: dark)")
+            .addEventListener("change", render);
+         render();
+      }());
+   </script>
+</body>
+</html>
