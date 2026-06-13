@@ -59,7 +59,7 @@
 
          <div id="jib">
             First published: June 2026.
-            Last updated: 10th June 2026.
+            Last updated: 13th June 2026.
          </div>
 
          <aside id="starboard">
@@ -81,6 +81,7 @@
                         <li><a href="#worktrees">Git worktrees</a></li>
                         <li><a href="#branches">Short branch names</a></li>
                         <li><a href="#aliases">Repository aliases</a></li>
+                        <li><a href="#roles">Persistent session roles</a></li>
                         <li><a href="#beads">Beads task IDs</a></li>
                         <li><a href="#states">More agent states</a></li>
                         <li><a href="#logging">Debug logging</a></li>
@@ -768,6 +769,78 @@ LABEL="$MARK-$REPO_DISPLAY"</code></pre>
 
                <pre><code>KITTY_TITLE_REPO_ALIAS=flurdy.com codex
 KITTY_TITLE_REPO_ALIAS=website claude</code></pre>
+
+               <h3 id="roles">Add a persistent role to long-running sessions</h3>
+
+               <p>
+                  Some agent sessions spend all day running a watch loop: monitoring
+                  releases, pull requests, CI or another recurring workflow. A
+                  repository title alone does not distinguish that tab from ordinary
+                  work in the same checkout. Keep the repository first, then add a
+                  short role before the lifecycle state:
+               </p>
+
+               <pre><code>-platform·🚢 releases·💭
+-payments·🚢 releases·❔
+-platform·👀 PRs·✅</code></pre>
+
+               <p>
+                  The <code>UserPromptSubmit</code> payload contains the submitted
+                  prompt and a session ID. Match only deliberate command invocations,
+                  remember the role under <code>/tmp</code>, and read it again on
+                  every later hook event:
+               </p>
+
+               <pre><code class="language-bash">role_for_prompt() {
+  case "$1" in
+    /watch-release|/watch-release\ *|\$watch-release|\$watch-release\ *)
+      printf '🚢 releases'
+      ;;
+    /watch-prs|/watch-prs\ *|\$watch-prs|\$watch-prs\ *)
+      printf '👀 PRs'
+      ;;
+  esac
+}
+
+session_role() {
+  [ -n "$SESSION_ID" ] || return
+
+  local session_key role_file prompt role
+  session_key=$(printf '%s' "$SESSION_ID" | tr -cd 'A-Za-z0-9._-')
+  [ -n "$session_key" ] || return
+  role_file="/tmp/kitty-role-$AGENT-$session_key"
+
+  if [ "$EVENT" = "UserPromptSubmit" ]; then
+    prompt=$(json_value prompt)
+    role=$(role_for_prompt "$prompt")
+    [ -n "$role" ] &amp;&amp; printf '%s' "$role" &gt; "$role_file"
+  fi
+
+  [ -r "$role_file" ] &amp;&amp; cat "$role_file"
+}
+
+SESSION_ID=$(json_value session_id)
+ROLE=$(session_role)
+[ -n "$ROLE" ] &amp;&amp; LABEL="$LABEL·$ROLE"</code></pre>
+
+               <p>
+                  Put this after constructing the repository and branch label but
+                  before adding the event marker. Prefixing the state file with the
+                  agent name prevents Claude Code and Codex sessions from colliding.
+                  Exact command matching also avoids assigning a role merely because
+                  a normal prompt discusses <code>/watch-release</code>.
+               </p>
+
+               <div class="note">
+                  <strong>These command names are only examples.</strong>
+                  Replace the mapping with the recurring commands or skills in your
+                  own setup. The important pattern is repository first, optional
+                  session role second, and transient lifecycle state last.
+                  My <code>watch-release</code> and <code>watch-prs</code> examples
+                  live in the public
+                  <a href="https://github.com/flurdy/agent-skills">flurdy/agent-skills</a>
+                  repository, but those skills are not required for this technique.
+               </div>
 
                <h3 id="beads">Show a Beads task on the main branch</h3>
 
