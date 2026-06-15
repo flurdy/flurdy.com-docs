@@ -59,7 +59,7 @@
 
          <div id="jib">
             First published: June 2026.
-            Last updated: 13th June 2026.
+            Last updated: 15th June 2026.
          </div>
 
          <aside id="starboard">
@@ -78,6 +78,8 @@
                      <a href="#extensions">Further refinements</a>
                      <ul>
                         <li><a href="#fonts">Nerd Fonts and emoji</a></li>
+                        <li><a href="#font-baseline">Adjust the glyph baseline</a></li>
+                        <li><a href="#ssh">Use titles over SSH</a></li>
                         <li><a href="#worktrees">Git worktrees</a></li>
                         <li><a href="#branches">Short branch names</a></li>
                         <li><a href="#aliases">Repository aliases</a></li>
@@ -530,8 +532,8 @@ fi
     test -n "$title"; or set title (pwd)
 
     if type -q kitten
-        kitten @ set-tab-title "$title" &gt;/dev/null 2&gt;&amp;1
-        or kitten @ --to unix:@kitty set-tab-title "$title" &gt;/dev/null 2&gt;&amp;1
+        kitten @ set-tab-title "" &gt;/dev/null 2&gt;&amp;1
+        or kitten @ --to unix:@kitty set-tab-title "" &gt;/dev/null 2&gt;&amp;1
     end
 
     printf '\e]30;%s\a' "$title" &gt;/dev/tty 2&gt;/dev/null
@@ -547,6 +549,15 @@ end</code></pre>
                   detail is that the shell should only reset the title when a prompt
                   is shown, not while the foreground agent is running.
                </p>
+
+               <div class="note">
+                  <strong>Clear the explicit tab title first.</strong>
+                  Calling <code>set-tab-title</code> with an empty title returns the
+                  tab to following the active terminal window title. Setting the
+                  directory itself as an explicit tab title looks identical locally,
+                  but prevents title escape sequences arriving over SSH from taking
+                  effect.
+               </div>
             </section>
 
             <section id="extensions">
@@ -617,6 +628,114 @@ case "$AGENT" in
   claude) LABEL="$MARK-$REPO" ;;
   codex)  LABEL="◈$MARK-$REPO" ;;
 esac</code></pre>
+
+               <h3 id="font-baseline">Adjust the glyph baseline</h3>
+
+               <p>
+                  Emoji and fallback glyphs may sit slightly low in the tab bar.
+                  Kitty can raise the font baseline globally:
+               </p>
+
+               <pre><code>font_size 12.0
+modify_font baseline 1px</code></pre>
+
+               <p>
+                  Reload Kitty after changing it. This affects text inside terminal
+                  windows as well as tab titles, so start with one pixel. Raising it
+                  further may centre the emoji while making ordinary text look too
+                  high. Tab-bar margins move the whole bar and do not correct the
+                  glyph baseline.
+               </p>
+
+               <h3 id="ssh">Use agent titles over SSH</h3>
+
+               <p>
+                  A remote Claude Code or Codex process cannot connect to the Kitty
+                  Unix socket on the local machine. Ordinary terminal title escape
+                  sequences do cross an SSH pseudo-terminal, but Claude Code may
+                  immediately replace the window title with its own status.
+               </p>
+
+               <p>
+                  Kitty remote-control commands can also travel inside the terminal
+                  stream. Permit only tab-title changes in the local
+                  <code>kitty.conf</code>:
+               </p>
+
+               <pre><code>allow_remote_control socket
+remote_control_password "" set-tab-title
+listen_on unix:@kitty</code></pre>
+
+               <p>
+                  Reload Kitty, then create a new tab. Kitty applies a changed
+                  remote-control policy only to newly created terminal windows.
+                  The empty password is deliberately restricted to
+                  <code>set-tab-title</code>; do not replace it with unrestricted
+                  remote control.
+               </p>
+
+               <p>
+                  Agent hooks may inherit <code>SSH_TTY</code> without having a
+                  controlling <code>/dev/tty</code>. In that case
+                  <code>kitten @</code> fails even though the SSH terminal is known.
+                  Send the narrowly permitted command directly to
+                  <code>$SSH_TTY</code>:
+               </p>
+
+               <pre><code class="language-bash">set_kitty_tab_title() {
+  if [ -n "$SSH_TTY" ]; then
+    local command
+    command=$(jq -cn --arg title "$TITLE" \
+      '{cmd:"set-tab-title",
+        version:[0,26,0],
+        no_response:true,
+        payload:{title:$title}}')
+    printf '\eP@kitty-cmd%s\e\\' "$command" &gt; "$SSH_TTY"
+  elif command -v kitten &gt;/dev/null 2&gt;&amp;1; then
+    kitten @ set-tab-title "$TITLE" &gt;/dev/null 2&gt;&amp;1 \
+      || kitten @ --to unix:@kitty set-tab-title "$TITLE" \
+           &gt;/dev/null 2&gt;&amp;1
+  fi
+}
+
+set_kitty_tab_title 2&gt;/dev/null || true</code></pre>
+
+               <p>
+                  The older protocol version is intentional: newer Kitty versions
+                  accept commands from older compatible clients. The
+                  <code>no_response</code> flag prevents the hook waiting for a
+                  reply on a terminal it does not read.
+               </p>
+
+               <p>
+                  A small marker distinguishes remote agents without displaying long
+                  cloud hostnames. An optional alias is useful when several remote
+                  machines are open:
+               </p>
+
+               <pre><code class="language-bash">if [ -n "$SSH_TTY" ]; then
+  REMOTE_PREFIX="🌐"
+  [ -n "$KITTY_TITLE_HOST_ALIAS" ] \
+    &amp;&amp; REMOTE_PREFIX="$REMOTE_PREFIX$KITTY_TITLE_HOST_ALIAS/"
+  LABEL="$REMOTE_PREFIX·$LABEL"
+fi</code></pre>
+
+               <pre><code>🌐·GIT-letterbox·DONE
+🌐rv/·GIT-letterbox·DONE</code></pre>
+
+               <p>
+                  In Kitty, <code>GIT</code> and <code>DONE</code> can be the Nerd
+                  Font and emoji markers introduced above. Plain text is used here
+                  because private-use Nerd Font glyphs are not reliable in browsers.
+               </p>
+
+               <div class="note">
+                  <strong>Use a non-whitespace separator.</strong>
+                  My tab template displays <code>{title.split()[0]}</code>, so an
+                  ordinary space after the globe would leave only the globe visible.
+                  The middle dot matches the separator already used before the
+                  lifecycle state.
+               </div>
 
                <h3 id="worktrees">Use the repository name in Git worktrees</h3>
 
@@ -996,6 +1115,14 @@ TOOL=$(json_value tool_name)
                   <dd>
                      Use plain ASCII markers or configure a font containing the
                      selected Unicode or Nerd Font glyphs.
+                  </dd>
+
+                  <dt>The title flashes briefly over SSH, then changes back</dt>
+                  <dd>
+                     The agent is replacing the terminal window title. Use the
+                     restricted in-band Kitty command from the SSH refinement, and
+                     ensure the local shell reset clears rather than pins an explicit
+                     tab title.
                   </dd>
                </dl>
             </section>
