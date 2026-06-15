@@ -899,9 +899,9 @@ KITTY_TITLE_REPO_ALIAS=website claude</code></pre>
                   short role before the lifecycle state:
                </p>
 
-               <pre><code>-platform·🚢 releases·💭
--payments·🚢 releases·❔
--platform·👀 PRs·✅</code></pre>
+               <pre><code>-platform·🚢-releases·💭
+-payments·🚢-releases·❔
+-platform·👀-PRs·✅</code></pre>
 
                <p>
                   The <code>UserPromptSubmit</code> payload contains the submitted
@@ -913,10 +913,10 @@ KITTY_TITLE_REPO_ALIAS=website claude</code></pre>
                <pre><code class="language-bash">role_for_prompt() {
   case "$1" in
     /watch-release|/watch-release\ *|\$watch-release|\$watch-release\ *)
-      printf '🚢 releases'
+      printf '🚢-releases'
       ;;
     /watch-prs|/watch-prs\ *|\$watch-prs|\$watch-prs\ *)
-      printf '👀 PRs'
+      printf '👀-PRs'
       ;;
   esac
 }
@@ -935,7 +935,7 @@ session_role() {
     [ -n "$role" ] &amp;&amp; printf '%s' "$role" &gt; "$role_file"
   fi
 
-  [ -r "$role_file" ] &amp;&amp; cat "$role_file"
+  [ -r "$role_file" ] &amp;&amp; sed -E 's/[[:space:]]+/-/g' "$role_file"
 }
 
 SESSION_ID=$(json_value session_id)
@@ -948,6 +948,9 @@ ROLE=$(session_role)
                   agent name prevents Claude Code and Codex sessions from colliding.
                   Exact command matching also avoids assigning a role merely because
                   a normal prompt discusses <code>/watch-release</code>.
+                  Avoid whitespace in role labels when the tab template uses
+                  <code>{title.split()[0]}</code>, or the later lifecycle marker
+                  will be hidden.
                </p>
 
                <div class="note">
